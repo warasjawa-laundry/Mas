@@ -1,4 +1,4 @@
-// script.js - Final Dribbble Logic with Clean Code
+// script.js - Final Clean Logic
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (isMenuOpen) {
             mobileMenu.classList.remove('hidden');
-            body.classList.add('overflow-hidden');
+            body.classList.add('overflow-hidden'); // Kunci scroll layar utama
             mobileBtn.innerHTML = iconClose;
             
             setTimeout(() => {
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             mobileMenu.classList.remove('opacity-100', 'scale-100');
             mobileMenu.classList.add('opacity-0', 'scale-95');
-            body.classList.remove('overflow-hidden');
+            body.classList.remove('overflow-hidden'); // Lepas kunci scroll
             mobileBtn.innerHTML = iconHamburger;
             
             setTimeout(() => {
@@ -46,24 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 2. NAVBAR SCROLL EFFECT ---
-    const navbar = document.getElementById('navbar');
-    // Mencari inner container navbar (div dengan ID 'navbar-inner' yang baru kita tambah)
     const navbarContainer = document.getElementById('navbar-inner');
 
     window.addEventListener('scroll', () => {
         if (navbarContainer) {
             if (window.scrollY > 20) {
-                // Efek saat scroll (Putih bersih)
                 if(window.innerWidth >= 768) {
                    navbarContainer.classList.add('navbar-scrolled');
-                   // Hilangkan transparansi default
                    navbarContainer.classList.remove('md:bg-white/80', 'border-white/40'); 
                 } else {
                    navbarContainer.classList.add('bg-white', 'shadow-md');
                    navbarContainer.classList.remove('bg-white/90');
                 }
             } else {
-                // Efek saat di atas (Transparan/Glassmorphism)
                 if(window.innerWidth >= 768) {
                    navbarContainer.classList.remove('navbar-scrolled');
                    navbarContainer.classList.add('md:bg-white/80', 'border-white/40');
@@ -90,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', revealOnScroll);
     revealOnScroll();
 
-    // --- 4. DYNAMIC WHATSAPP GREETING ---
+    // --- 4. DYNAMIC WHATSAPP ---
     const waLinks = document.querySelectorAll('a[href^="https://wa.me"]');
     const jam = new Date().getHours();
     let sapaan = "Halo";
@@ -108,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- 5. HANDLE TOMBOL PROMO TAS (Pemisahan JS dari HTML) ---
+    // --- 5. HANDLE TOMBOL PROMO TAS ---
     const btnKlaimTas = document.getElementById('btn-klaim-tas');
     if (btnKlaimTas) {
         btnKlaimTas.addEventListener('click', () => {
