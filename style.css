@@ -1,0 +1,84 @@
+/* style.css - Final Dribbble Style */
+
+/* Import Font Modern: Outfit (Pengganti Poppins) */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+html {
+    scroll-behavior: smooth;
+    font-family: 'Outfit', sans-serif; 
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar (Lebih Tipis & Rapi) */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* --- HERO SECTION --- */
+.hero-bg {
+    /* Link Gambar Background Hero dari GitHub Anda */
+    background-image: url('https://github.com/warasjawa-laundry/Web-asset/blob/d3732ef323d933418ae73095f9d02a4f685e3fc9/file_0000000026e471fa90d1cf491899dd50.png?raw=true');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Efek Parallax */
+}
+
+/* Fix untuk iPhone (iOS mematikan parallax agar tidak nge-zoom) */
+@media (max-width: 1024px) {
+    .hero-bg { background-attachment: scroll; }
+}
+
+/* --- UTILITIES (Dribbble Style) --- */
+
+/* Bayangan Halus (Dipakai di Card Harga & Testimoni) */
+.soft-shadow {
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+}
+
+/* Efek Kaca (Glassmorphism) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* --- ANIMASI --- */
+
+/* Navbar saat discroll */
+.navbar-scrolled {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+}
+
+/* Reveal Animation (Muncul dari bawah) */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); /* Easing smooth */
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Floating WhatsApp Animation */
+.floating-wa {
+    animation: float 3s ease-in-out infinite;
+    z-index: 9999;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
