@@ -2,19 +2,17 @@
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="google-site-verification" content="H-B_kUFBBXQrFTx4EMd5bhN1yG27vCoLGxMAHdJiasw" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <meta name="google-site-verification" content="H-B_kUFBBXQrFTx4EMd5bhN1yG27vCoLGxMAHdJiasw" />
     <title>Mas Jawa Laundry - Jasa Laundry Premium Kandang Jati Kulon</title>
     <meta name="description" content="Jasa Laundry Kiloan & Satuan Terbaik di Kandang Jati Kulon (Depan Masjid Al-Hidayah). Terima cuci karpet, gorden, hambal. Antar jemput, bersih, wangi, & rapi. Hubungi MJL: 0823-1335-9989.">
     <meta name="keywords" content="laundry kandang jati kulon, laundry kiloan terdekat, cuci karpet, laundry express, mas jawa laundry, MJL laundry, cuci boneka, laundry antar jemput">
     <meta name="author" content="Mas Jawa Laundry">
-    
     <meta name="geo.region" content="ID-JI">
     <meta name="geo.placename" content="Kandang Jati Kulon">
     <meta name="geo.position" content="-7.762957;113.431273">
     <meta name="ICBM" content="-7.762957, 113.431273">
-
     <meta property="og:type" content="website">
     <meta property="og:title" content="Mas Jawa Laundry - Cuci Bersih, Wangi & Rapi">
     <meta property="og:description" content="Solusi laundry premium. Gratis tas eksklusif untuk member! Cek harga & promo disini.">
@@ -25,75 +23,94 @@
     <meta http-equiv="Expires" content="0">
 
     <link rel="icon" type="image/jpg" href="https://github.com/warasjawa-laundry/Web-asset/blob/f259a9e48d3a52552e97d5540546f359ca16631f/IMG-20251228-WA0010.jpg?raw=true">
-
-    <link rel="preload" as="image" href="https://github.com/warasjawa-laundry/Web-asset/blob/d3732ef323d933418ae73095f9d02a4f685e3fc9/file_0000000026e471fa90d1cf491899dd50.png?raw=true">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.0"> </head>
-<body class="bg-slate-50 text-slate-800 antialiased overflow-x-hidden selection:bg-purple-100 selection:text-purple-900">
 
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
-        <div class="container mx-auto px-4 md:px-8 max-w-7xl relative">
-            <div id="navbar-inner" class="flex justify-between items-center bg-white/90 backdrop-blur-md md:bg-white/80 md:rounded-full px-4 py-3 md:px-6 md:py-2 border border-white/40 shadow-sm rounded-2xl transition-all duration-300 z-50 relative">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden selection:bg-purple-200 selection:text-purple-900 pb-20 md:pb-0">
+
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 pt-4 px-4">
+        <div class="container mx-auto max-w-7xl">
+            <div id="navbar-inner" class="flex justify-between items-center glass rounded-full px-6 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300">
                 
-                <a href="#" class="flex items-center gap-2">
-                    <img src="https://github.com/warasjawa-laundry/Web-asset/blob/f259a9e48d3a52552e97d5540546f359ca16631f/IMG-20251228-WA0010.jpg?raw=true" alt="Logo MJL" class="h-8 md:h-9 w-auto object-contain">
-                    <span class="font-bold text-gray-800 tracking-tight hidden sm:block">Mas Jawa</span>
+                <a href="#" class="flex items-center gap-3 group">
+                    <img src="https://github.com/warasjawa-laundry/Web-asset/blob/f259a9e48d3a52552e97d5540546f359ca16631f/IMG-20251228-WA0010.jpg?raw=true" alt="Logo MJL" class="h-9 w-auto object-contain transition-transform group-hover:scale-110">
+                    <span class="font-bold text-slate-800 tracking-tight hidden sm:block text-lg">Mas Jawa</span>
                 </a>
         
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#home" class="text-sm font-medium text-gray-600 hover:text-purple-600 transition">Beranda</a>
-                    <a href="#keunggulan" class="text-sm font-medium text-gray-600 hover:text-purple-600 transition">Keunggulan</a>
-                    <a href="#promo" class="text-sm font-bold text-orange-500 hover:text-orange-600 transition">Info Member</a>
-                    <a href="#testimoni" class="text-sm font-medium text-gray-600 hover:text-purple-600 transition">Testimoni</a>
-                    <a href="#layanan" class="text-sm font-medium text-gray-600 hover:text-purple-600 transition">Harga</a>
-                    <a href="#kontak" class="bg-gray-900 text-white px-5 py-2 rounded-full hover:bg-purple-600 transition shadow-lg hover:shadow-purple-500/30 text-sm font-semibold transform hover:-translate-y-0.5">Hubungi WA</a>
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="#home" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-purple-600 rounded-full hover:bg-purple-50 transition">Beranda</a>
+                    <a href="#keunggulan" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-purple-600 rounded-full hover:bg-purple-50 transition">Keunggulan</a>
+                    <a href="#promo" class="px-4 py-2 text-sm font-bold text-orange-500 hover:text-orange-600 rounded-full hover:bg-orange-50 transition">Info Member</a>
+                    <a href="#testimoni" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-purple-600 rounded-full hover:bg-purple-50 transition">Testimoni</a>
+                    <a href="#layanan" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-purple-600 rounded-full hover:bg-purple-50 transition">Harga</a>
+                    
+                    <div class="w-px h-6 bg-slate-200 mx-2"></div>
+                    
+                    <a href="#kontak" class="ml-2 bg-slate-900 text-white px-6 py-2.5 rounded-full hover:bg-purple-600 transition shadow-lg hover:shadow-purple-500/30 text-sm font-semibold transform hover:-translate-y-0.5">Hubungi WA</a>
                 </div>
         
-                <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-800 focus:outline-none bg-gray-50 rounded-lg active:scale-95 transition">
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-800 bg-white rounded-full shadow-sm border border-slate-100 active:scale-95 transition" aria-label="Menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </div>
 
-            <div id="mobile-menu" class="hidden absolute top-20 left-4 right-4 bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-white/50 p-6 flex-col items-center space-y-2 opacity-0 transform scale-95 transition-all duration-300 origin-top z-40">
-                <a href="#home" class="mobile-link block w-full text-center py-3 text-lg font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Beranda</a>
-                <a href="#keunggulan" class="mobile-link block w-full text-center py-3 text-lg font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Keunggulan</a>
-                <a href="#promo" class="mobile-link block w-full text-center py-3 text-lg font-bold text-orange-500 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition">Info Member</a>
-                <a href="#testimoni" class="mobile-link block w-full text-center py-3 text-lg font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Testimoni</a>
-                <a href="#layanan" class="mobile-link block w-full text-center py-3 text-lg font-medium text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Daftar Harga</a>
-                <div class="pt-2 w-full">
-                    <a href="#kontak" class="mobile-link block w-full text-center py-3 text-lg font-bold bg-gray-900 text-white rounded-xl shadow-lg active:scale-95 transition">Hubungi Kami</a>
+            <div id="mobile-menu" class="hidden absolute top-20 left-4 right-4 glass rounded-[2rem] shadow-2xl p-2 flex-col items-center opacity-0 transform scale-95 transition-all duration-300 origin-top z-40 border border-white/60">
+                <div class="bg-white/50 rounded-[1.5rem] p-4 w-full flex flex-col gap-2">
+                    <a href="#home" class="mobile-link block w-full text-center py-3 text-base font-medium text-slate-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Beranda</a>
+                    <a href="#keunggulan" class="mobile-link block w-full text-center py-3 text-base font-medium text-slate-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Keunggulan</a>
+                    <a href="#promo" class="mobile-link block w-full text-center py-3 text-base font-bold text-orange-500 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition">Info Member</a>
+                    <a href="#testimoni" class="mobile-link block w-full text-center py-3 text-base font-medium text-slate-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Testimoni</a>
+                    <a href="#layanan" class="mobile-link block w-full text-center py-3 text-base font-medium text-slate-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition">Daftar Harga</a>
+                    <a href="#kontak" class="mobile-link block w-full text-center py-3 text-base font-bold bg-slate-900 text-white rounded-xl shadow-lg mt-2">Hubungi Kami</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <section id="home" class="hero-bg min-h-[95vh] md:min-h-[85vh] flex items-center relative pt-20">
-        <div class="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-gray-900/30 z-0"></div>
-        
-        <div class="container mx-auto px-4 md:px-8 max-w-7xl relative z-10 text-center md:text-left">
-            <div class="reveal max-w-4xl">
-                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 mb-6">
-                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                    <span class="text-white text-xs font-semibold tracking-wide uppercase">Buka: 07.00 - 20.00 WIB</span>
+    <section id="home" class="hero-bg min-h-screen flex items-center relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-900/20 z-0"></div>
+        <div class="container mx-auto px-4 md:px-8 max-w-7xl relative z-10 pt-20">
+            <div class="reveal max-w-3xl">
+                <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-5 py-2 mb-8 shadow-lg">
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                    </span>
+                    <span class="text-white text-xs font-bold tracking-widest uppercase opacity-90">Buka: 07.00 - 20.00 WIB</span>
                 </div>
                 
-                <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-[0.95] tracking-tight">
-                    Laundry <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Level Up.</span>
+                <h1 class="text-5xl sm:text-7xl lg:text-8xl font-bold text-white mb-8 leading-[0.9] tracking-tight">
+                    Laundry <br> 
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400">Level Up.</span>
                 </h1>
                 
-                <p class="text-lg md:text-2xl text-gray-200 mb-10 max-w-xl md:max-w-2xl leading-relaxed font-light">
+                <p class="text-lg md:text-2xl text-slate-300 mb-10 max-w-xl leading-relaxed font-light border-l-4 border-purple-500 pl-6">
                     Mas Jawa Laundry hadir dengan standar baru. Pakaian bersih, wangi, dan rapi seperti baru.
                 </p>
                 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                    <a href="https://wa.me/6282313359989?text=Halo%20MJL,%20mau%20order%20antar%20jemput" target="_blank" class="bg-white text-gray-900 font-bold py-4 px-8 rounded-full hover:bg-gray-100 transition flex items-center justify-center gap-2 shadow-xl hover:shadow-white/20 transform hover:-translate-y-1">
-                        Pesan Sekarang
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://wa.me/6282313359989?text=Halo%20MJL,%20mau%20order%20antar%20jemput" target="_blank" class="bg-white text-slate-900 font-bold py-4 px-10 rounded-full hover:bg-slate-50 transition flex items-center justify-center gap-3 shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transform hover:-translate-y-1">
+                        <span>Pesan Sekarang</span>
+                        <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                     </a>
-                    <a href="#layanan" class="bg-transparent border border-white/30 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full hover:bg-white/10 transition">
+                    <a href="#layanan" class="glass text-white font-bold py-4 px-10 rounded-full hover:bg-white/20 transition text-center backdrop-blur-md border border-white/30">
                         Cek Harga
                     </a>
                 </div>
@@ -101,108 +118,122 @@
         </div>
     </section>
 
-    <section id="keunggulan" class="py-20 md:py-28 bg-white">
+    <section id="keunggulan" class="py-24 bg-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-100/50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
         <div class="container mx-auto px-4 md:px-8 max-w-7xl">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4 reveal">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-4 reveal">
                 <div>
-                    <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Kenapa MJL?</h2>
-                    <p class="text-gray-500 max-w-md">Kami menggabungkan teknologi cuci modern dengan ketelitian manual.</p>
+                    <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">Kenapa MJL?</h2>
+                    <p class="text-slate-500 text-lg max-w-md font-light">Kami menggabungkan teknologi cuci modern dengan ketelitian manual.</p>
                 </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-2 bg-purple-50 p-8 rounded-[2rem] hover:bg-purple-100 transition duration-500 group reveal border border-purple-100">
-                    <div class="flex justify-between items-start">
+                <div class="md:col-span-2 bg-purple-50/50 p-8 md:p-10 rounded-[2.5rem] hover:bg-purple-50 transition duration-500 group reveal border border-purple-100 hover:shadow-xl hover:shadow-purple-100">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
-                            <h3 class="text-2xl font-bold mb-2 text-gray-800">1 Mesin = 1 Pelanggan</h3>
-                            <p class="text-gray-600">Privasi dan kebersihan terjamin. Pakaian Anda tidak akan pernah dicampur dengan milik orang lain.</p>
+                            <div class="bg-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm text-2xl mb-6 group-hover:scale-110 transition duration-300">🛡️</div>
+                            <h3 class="text-2xl font-bold mb-3 text-slate-800">1 Mesin = 1 Pelanggan</h3>
+                            <p class="text-slate-600 leading-relaxed">Privasi dan kebersihan terjamin. Pakaian Anda tidak akan pernah dicampur dengan milik orang lain.</p>
                         </div>
-                        <div class="bg-white p-3 rounded-2xl shadow-sm text-3xl group-hover:scale-110 transition">🛡️</div>
                     </div>
                 </div>
-                <div class="bg-orange-50 p-8 rounded-[2rem] hover:bg-orange-100 transition duration-500 group reveal border border-orange-100">
-                    <div class="bg-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm text-2xl mb-4 group-hover:rotate-12 transition">⚡</div>
-                    <h3 class="text-xl font-bold mb-2 text-gray-800">Garansi Waktu</h3>
-                    <p class="text-gray-600 text-sm">Telat? Kami beri diskon kompensasi langsung.</p>
+                <div class="bg-orange-50/50 p-8 md:p-10 rounded-[2.5rem] hover:bg-orange-50 transition duration-500 group reveal border border-orange-100 hover:shadow-xl hover:shadow-orange-100">
+                    <div class="bg-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm text-2xl mb-6 group-hover:rotate-12 transition duration-300">⚡</div>
+                    <h3 class="text-xl font-bold mb-2 text-slate-800">Garansi Waktu</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">Telat? Kami beri diskon kompensasi langsung.</p>
                 </div>
-                <div class="bg-blue-50 p-8 rounded-[2rem] hover:bg-blue-100 transition duration-500 group reveal border border-blue-100">
-                    <div class="bg-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm text-2xl mb-4 group-hover:rotate-12 transition">💧</div>
-                    <h3 class="text-xl font-bold mb-2 text-gray-800">Filter Air Ganda</h3>
-                    <p class="text-gray-600 text-sm">Air baku PDAM yang disaring 2x menjamin baju putih tidak kusam.</p>
+                <div class="bg-blue-50/50 p-8 md:p-10 rounded-[2.5rem] hover:bg-blue-50 transition duration-500 group reveal border border-blue-100 hover:shadow-xl hover:shadow-blue-100">
+                    <div class="bg-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm text-2xl mb-6 group-hover:rotate-12 transition duration-300">💧</div>
+                    <h3 class="text-xl font-bold mb-2 text-slate-800">Filter Air Ganda</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">Air baku PDAM yang disaring 2x menjamin baju putih tidak kusam.</p>
                 </div>
-                <div class="md:col-span-2 bg-gray-50 p-8 rounded-[2rem] hover:bg-gray-100 transition duration-500 group reveal flex items-center justify-between border border-gray-100">
+                <div class="md:col-span-2 bg-slate-50 p-8 md:p-10 rounded-[2.5rem] hover:bg-white transition duration-500 group reveal border border-slate-100 hover:shadow-xl hover:shadow-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div>
-                        <h3 class="text-2xl font-bold mb-2 text-gray-800">Parfum Grade A+</h3>
-                        <p class="text-gray-600">Wangi mewah yang tahan lama hingga berhari-hari di dalam lemari.</p>
+                        <h3 class="text-2xl font-bold mb-2 text-slate-800">Parfum Grade A+</h3>
+                        <p class="text-slate-600">Wangi mewah yang tahan lama hingga berhari-hari di dalam lemari.</p>
                     </div>
-                    <div class="text-5xl group-hover:-translate-y-2 transition">🌸</div>
+                    <div class="text-6xl group-hover:-translate-y-4 transition duration-500 drop-shadow-lg">🌸</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="promo" class="py-20 md:py-28 bg-white overflow-hidden relative">
-        <div class="container mx-auto px-4 md:px-8 max-w-7xl relative z-10">
-            <div class="bg-gray-900 rounded-[3rem] p-8 md:p-16 relative overflow-hidden shadow-2xl reveal">
-                <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-                <div class="flex flex-col md:flex-row items-center gap-12 relative z-10">
-                    <div class="w-full md:w-1/2">
-                        <img src="https://github.com/warasjawa-laundry/Web-asset/blob/f259a9e48d3a52552e97d5540546f359ca16631f/IMG-20251228-WA0011.jpg?raw=true" alt="Tas MJL" class="w-full rounded-2xl shadow-lg transform rotate-2 hover:rotate-0 transition duration-500 border-4 border-gray-800">
+    <section id="promo" class="py-24 bg-white">
+        <div class="container mx-auto px-4 md:px-8 max-w-7xl">
+            <div class="bg-slate-900 rounded-[3rem] p-8 md:p-20 relative overflow-hidden shadow-2xl reveal isolate">
+                <div class="absolute inset-0 opacity-20" style="background-image: url('https://www.transparenttextures.com/patterns/stardust.png');"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full opacity-30 blur-[100px] -z-10 translate-x-1/3 -translate-y-1/3"></div>
+                <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500 rounded-full opacity-30 blur-[100px] -z-10 -translate-x-1/3 translate-y-1/3"></div>
+
+                <div class="flex flex-col md:flex-row items-center gap-16 relative z-10">
+                    <div class="w-full md:w-5/12 perspective-1000">
+                        <div class="relative group">
+                            <div class="absolute inset-0 bg-white/20 rounded-2xl rotate-6 transform transition-transform group-hover:rotate-3"></div>
+                            <img src="https://github.com/warasjawa-laundry/Web-asset/blob/f259a9e48d3a52552e97d5540546f359ca16631f/IMG-20251228-WA0011.jpg?raw=true" loading="lazy" alt="Tas MJL" class="relative w-full rounded-2xl shadow-2xl transform transition-transform group-hover:-translate-y-2 border-2 border-white/10">
+                        </div>
                     </div>
-                    <div class="w-full md:w-1/2 text-center md:text-left">
-                        <span class="text-purple-400 font-bold tracking-wider text-sm uppercase">Loyalty Program</span>
-                        <h2 class="text-3xl md:text-5xl font-bold text-white mt-2 mb-6">Gratis Tas Eksklusif.</h2>
-                        <p class="text-gray-400 text-lg mb-8">Stop pakai kantong kresek. Jadilah member MJL dan dapatkan tas laundry jumbo yang kuat, muat bedcover, dan ramah lingkungan.</p>
+                    <div class="w-full md:w-7/12 text-center md:text-left">
+                        <div class="inline-block px-4 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold uppercase tracking-wider mb-6 shadow-lg shadow-orange-500/30">
+                            Loyalty Program
+                        </div>
+                        <h2 class="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">Gratis Tas Eksklusif.</h2>
+                        <p class="text-slate-300 text-lg md:text-xl mb-10 font-light leading-relaxed">Stop pakai kantong kresek. Jadilah member MJL dan dapatkan tas laundry jumbo yang kuat, muat bedcover, dan ramah lingkungan.</p>
                         
-                        <button id="btn-klaim-tas" class="bg-white text-gray-900 px-8 py-4 rounded-full font-bold hover:bg-purple-50 transition transform hover:scale-105 shadow-lg">
-                            Klaim Tas Sekarang
+                        <button id="btn-klaim-tas" class="group bg-white text-slate-900 px-10 py-5 rounded-full font-bold text-lg hover:bg-purple-50 transition transform hover:scale-[1.02] shadow-[0_0_50px_-10px_rgba(255,255,255,0.3)]">
+                            Klaim Tas Sekarang 
+                            <span class="inline-block ml-2 transition-transform group-hover:translate-x-1">→</span>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="absolute -top-20 -right-20 w-64 h-64 bg-purple-600 rounded-full opacity-20 blur-3xl"></div>
-        <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-600 rounded-full opacity-20 blur-3xl"></div>
     </section>
 
-    <section id="testimoni" class="py-20 md:py-28 bg-slate-50">
+    <section id="testimoni" class="py-24 bg-slate-50">
         <div class="container mx-auto px-4 md:px-8 max-w-7xl">
-            <div class="text-center mb-16 reveal">
-                <h2 class="text-3xl md:text-5xl font-bold text-gray-900">Kata Mereka</h2>
-                <p class="text-gray-500 mt-4">Bukti kepuasan pelanggan setia Mas Jawa Laundry.</p>
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">Kata Mereka</h2>
+                <p class="text-slate-500 mt-4 text-lg">Bukti kepuasan pelanggan setia Mas Jawa Laundry.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-[2rem] soft-shadow reveal hover:-translate-y-2 transition duration-300 border border-gray-100">
-                    <div class="flex text-yellow-400 mb-4">★★★★★</div>
-                    <p class="text-gray-600 mb-6 italic">"Dulu sering kecewa laundry lain bajunya apek. Di Mas Jawa beneran wangi sampe seminggu di lemari. Recommended!"</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">S</div>
+                <div class="bg-white p-10 rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-2 transition duration-500 reveal border border-slate-100 flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex text-yellow-400 mb-6 gap-1">★★★★★</div>
+                        <p class="text-slate-600 mb-8 italic text-lg leading-relaxed">"Dulu sering kecewa laundry lain bajunya apek. Di Mas Jawa beneran wangi sampe seminggu di lemari. Recommended!"</p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-6 border-t border-slate-50">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-lg">S</div>
                         <div>
-                            <h4 class="font-bold text-gray-900">Ibu Sari</h4>
-                            <p class="text-xs text-gray-500">Ibu Rumah Tangga</p>
+                            <h4 class="font-bold text-slate-900">Ibu Sari</h4>
+                            <p class="text-sm text-slate-500">Ibu Rumah Tangga</p>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-8 rounded-[2rem] soft-shadow reveal hover:-translate-y-2 transition duration-300 border border-gray-100">
-                    <div class="flex text-yellow-400 mb-4">★★★★★</div>
-                    <p class="text-gray-600 mb-6 italic">"Penyelamat anak kost. Antar jemputnya on time, admin ramah, harga masuk akal banget untuk kualitas ini."</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">D</div>
+                <div class="bg-white p-10 rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-2 transition duration-500 reveal border border-slate-100 flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex text-yellow-400 mb-6 gap-1">★★★★★</div>
+                        <p class="text-slate-600 mb-8 italic text-lg leading-relaxed">"Penyelamat anak kost. Antar jemputnya on time, admin ramah, harga masuk akal banget untuk kualitas ini."</p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-6 border-t border-slate-50">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-lg">D</div>
                         <div>
-                            <h4 class="font-bold text-gray-900">Dimas Anggara</h4>
-                            <p class="text-xs text-gray-500">Mahasiswa</p>
+                            <h4 class="font-bold text-slate-900">Dimas Anggara</h4>
+                            <p class="text-sm text-slate-500">Mahasiswa</p>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-8 rounded-[2rem] soft-shadow reveal hover:-translate-y-2 transition duration-300 border border-gray-100">
-                    <div class="flex text-yellow-400 mb-4">★★★★★</div>
-                    <p class="text-gray-600 mb-6 italic">"Laundry bedcover di tempat lain menggumpal. Di sini hasilnya lembut & mengembang lagi. Puas banget."</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold">R</div>
+                <div class="bg-white p-10 rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-2 transition duration-500 reveal border border-slate-100 flex flex-col justify-between h-full">
+                    <div>
+                        <div class="flex text-yellow-400 mb-6 gap-1">★★★★★</div>
+                        <p class="text-slate-600 mb-8 italic text-lg leading-relaxed">"Laundry bedcover di tempat lain menggumpal. Di sini hasilnya lembut & mengembang lagi. Puas banget."</p>
+                    </div>
+                    <div class="flex items-center gap-4 pt-6 border-t border-slate-50">
+                        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 font-bold text-lg">R</div>
                         <div>
-                            <h4 class="font-bold text-gray-900">Mbak Rini</h4>
-                            <p class="text-xs text-gray-500">Karyawan</p>
+                            <h4 class="font-bold text-slate-900">Mbak Rini</h4>
+                            <p class="text-sm text-slate-500">Karyawan</p>
                         </div>
                     </div>
                 </div>
@@ -210,137 +241,158 @@
         </div>
     </section>
 
-    <section id="layanan" class="py-20 md:py-28 bg-white">
+    <section id="layanan" class="py-24 bg-white">
         <div class="container mx-auto px-4 md:px-8 max-w-7xl">
-            <div class="text-center mb-16 reveal">
-                <h2 class="text-3xl md:text-5xl font-bold text-gray-900">Pricelist Transparan</h2>
-                <p class="text-gray-500 mt-4">Pilih paket yang sesuai dengan kebutuhan waktumu.</p>
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">Pricelist Transparan</h2>
+                <p class="text-slate-500 mt-4 text-lg">Pilih paket yang sesuai dengan kebutuhan waktumu.</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                <div class="bg-white p-8 rounded-[2rem] soft-shadow reveal hover:-translate-y-1 transition duration-300 border border-gray-100">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="bg-purple-100 p-3 rounded-xl text-purple-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
+                <div class="bg-white p-10 rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] reveal hover:shadow-2xl transition duration-500 border border-slate-100 relative group">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-t-[2.5rem]"></div>
+                    <div class="flex items-center gap-5 mb-10">
+                        <div class="bg-purple-50 p-4 rounded-2xl text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900">Cuci Kiloan</h3>
+                        <h3 class="text-3xl font-bold text-slate-900">Cuci Kiloan</h3>
                     </div>
-                    
-                    <div class="space-y-6">
-                        <li class="border-b border-gray-100 pb-3 list-none">
-                            <span class="block font-bold text-gray-800 mb-2">Reguler (1-3 Hari)</span>
-                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                    <div class="space-y-8">
+                        <div class="pb-6 border-b border-slate-100">
+                            <div class="flex items-center mb-3">
+                                <span class="w-2 h-2 rounded-full bg-blue-500 mr-3"></span>
+                                <span class="font-bold text-slate-800 text-lg">Reguler (1-3 Hari)</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600 mb-2 pl-5">
                                 <span>Cuci Lipat</span>
-                                <span class="font-bold text-blue-600">3K/kg</span>
+                                <span class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">3K/kg</span>
                             </div>
-                            <div class="flex justify-between text-sm text-gray-600">
+                            <div class="flex justify-between text-slate-600 pl-5">
                                 <span>Cuci Setrika</span>
-                                <span class="font-bold text-blue-600">5K/kg</span>
+                                <span class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">5K/kg</span>
                             </div>
-                        </li>
-                        <li class="border-b border-gray-100 pb-3 list-none">
-                            <span class="block font-bold text-gray-800 mb-2">Express (1-2 Hari)</span>
-                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        </div>
+                        <div class="pb-6 border-b border-slate-100">
+                            <div class="flex items-center mb-3">
+                                <span class="w-2 h-2 rounded-full bg-purple-500 mr-3"></span>
+                                <span class="font-bold text-slate-800 text-lg">Express (1-2 Hari)</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600 mb-2 pl-5">
                                 <span>Cuci Lipat</span>
-                                <span class="font-bold text-blue-600">5K/kg</span>
+                                <span class="font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">5K/kg</span>
                             </div>
-                            <div class="flex justify-between text-sm text-gray-600">
+                            <div class="flex justify-between text-slate-600 pl-5">
                                 <span>Cuci Setrika</span>
-                                <span class="font-bold text-blue-600">7K/kg</span>
+                                <span class="font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-lg">7K/kg</span>
                             </div>
-                        </li>
-                        <li class="list-none">
-                            <span class="block font-bold text-gray-800 mb-2">Kilat (6 Jam)</span>
-                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        </div>
+                        <div>
+                            <div class="flex items-center mb-3">
+                                <span class="w-2 h-2 rounded-full bg-orange-500 mr-3"></span>
+                                <span class="font-bold text-slate-800 text-lg">Kilat (6 Jam)</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600 mb-2 pl-5">
                                 <span>Cuci Lipat</span>
-                                <span class="font-bold text-blue-600">7K/kg</span>
+                                <span class="font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-lg">7K/kg</span>
                             </div>
-                            <div class="flex justify-between text-sm text-gray-600">
+                            <div class="flex justify-between text-slate-600 pl-5">
                                 <span>Cuci Setrika</span>
-                                <span class="font-bold text-blue-600">10K/kg</span>
+                                <span class="font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-lg">10K/kg</span>
                             </div>
-                        </li>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-gray-900 text-white p-8 rounded-[2rem] soft-shadow reveal hover:-translate-y-1 transition duration-300 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500 rounded-full blur-[50px] opacity-20"></div>
+                <div class="bg-slate-900 text-white p-10 rounded-[2.5rem] shadow-2xl reveal hover:-translate-y-2 transition duration-500 relative overflow-hidden flex flex-col">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600 rounded-full blur-[80px] opacity-20 -mr-16 -mt-16"></div>
+                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 rounded-full blur-[80px] opacity-20 -ml-16 -mb-16"></div>
                     
-                    <div class="flex items-center gap-4 mb-8 relative z-10">
-                        <div class="bg-white/10 p-3 rounded-xl">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                    <div class="flex items-center gap-5 mb-10 relative z-10">
+                        <div class="bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold">Meteran & Satuan</h3>
+                        <h3 class="text-3xl font-bold">Meteran & Satuan</h3>
                     </div>
 
-                    <ul class="space-y-5 relative z-10">
-                        <li class="flex justify-between items-center border-b border-gray-700 pb-3">
-                            <span class="text-gray-300">Gorden Tebal (Meter)</span>
-                            <span class="font-bold text-xl">Rp 4.500</span>
-                        </li>
-                        <li class="flex justify-between items-center border-b border-gray-700 pb-3">
-                            <span class="text-gray-300">Gorden Tipis (Meter)</span>
-                            <span class="font-bold text-xl">Rp 3.500</span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-8 pt-6 border-t border-gray-800 text-center">
-                        <p class="text-gray-400 text-sm mb-3">"Punya barang spesial lain? Tenang, konsultasikan gratis!"</p>
-                        <a href="https://wa.me/6282313359989?text=Halo%20MJL,%20mau%20tanya%20harga%20laundry%20lainnya" target="_blank" class="text-white font-bold underline hover:text-purple-300">Chat Admin untuk Penawaran →</a>
+                    <div class="space-y-6 relative z-10 flex-grow">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-5">
+                            <span class="text-slate-300 text-lg">Gorden Tebal (Meter)</span>
+                            <span class="font-bold text-2xl text-purple-300">Rp 4.500</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-white/10 pb-5">
+                            <span class="text-slate-300 text-lg">Gorden Tipis (Meter)</span>
+                            <span class="font-bold text-2xl text-purple-300">Rp 3.500</span>
+                        </div>
+                        <div class="p-6 bg-white/5 rounded-2xl border border-white/5 mt-8">
+                            <p class="text-slate-400 text-sm mb-4 text-center">"Punya barang spesial lain? Tenang, konsultasikan gratis!"</p>
+                            <a href="https://wa.me/6282313359989?text=Halo%20MJL,%20mau%20tanya%20harga%20laundry%20lainnya" target="_blank" class="block w-full bg-white text-slate-900 font-bold text-center py-3 rounded-xl hover:bg-purple-50 transition">Chat Admin →</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-20 bg-slate-50">
+    <section class="py-24 bg-slate-50">
         <div class="container mx-auto px-4 md:px-8 max-w-7xl">
             <div class="flex flex-col md:flex-row justify-between items-end mb-12 reveal">
                 <div>
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Dapur Produksi</h2>
-                    <p class="text-gray-500 mt-2">Transparansi proses untuk kepercayaan Anda.</p>
+                    <h2 class="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">Dapur Produksi</h2>
+                    <p class="text-slate-500 mt-2 text-lg">Transparansi proses untuk kepercayaan Anda.</p>
                 </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="group relative rounded-[2rem] overflow-hidden shadow-md h-80 reveal">
-                    <img src="https://github.com/warasjawa-laundry/Web-asset/blob/2443b01c65d801e913a4af77fe1c153288c5fbac/IMG-20251228-WA0007.jpg?raw=true" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 brightness-90 group-hover:brightness-100">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-8 flex flex-col justify-end">
-                        <h3 class="text-white text-2xl font-bold">Packing Rapi</h3>
-                        <p class="text-gray-300 text-sm mt-1">Plastik segel & higienis.</p>
+                <div class="group relative rounded-[2.5rem] overflow-hidden shadow-lg h-96 reveal cursor-pointer">
+                    <img src="https://github.com/warasjawa-laundry/Web-asset/blob/2443b01c65d801e913a4af77fe1c153288c5fbac/IMG-20251228-WA0007.jpg?raw=true" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-10 flex flex-col justify-end transition duration-300">
+                        <h3 class="text-white text-3xl font-bold mb-1 translate-y-2 group-hover:translate-y-0 transition">Packing Rapi</h3>
+                        <p class="text-slate-300 text-lg opacity-0 group-hover:opacity-100 transition duration-500 delay-100">Plastik segel & higienis.</p>
                     </div>
                 </div>
-                <div class="group relative rounded-[2rem] overflow-hidden shadow-md h-80 reveal">
-                    <img src="https://github.com/warasjawa-laundry/Web-asset/blob/2443b01c65d801e913a4af77fe1c153288c5fbac/IMG-20251228-WA0005.jpg?raw=true" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 brightness-90 group-hover:brightness-100">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-8 flex flex-col justify-end">
-                        <h3 class="text-white text-2xl font-bold">Workshop Bersih</h3>
-                        <p class="text-gray-300 text-sm mt-1">Sirkulasi udara maksimal.</p>
+                <div class="group relative rounded-[2.5rem] overflow-hidden shadow-lg h-96 reveal cursor-pointer">
+                    <img src="https://github.com/warasjawa-laundry/Web-asset/blob/2443b01c65d801e913a4af77fe1c153288c5fbac/IMG-20251228-WA0005.jpg?raw=true" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-10 flex flex-col justify-end transition duration-300">
+                        <h3 class="text-white text-3xl font-bold mb-1 translate-y-2 group-hover:translate-y-0 transition">Workshop Bersih</h3>
+                        <p class="text-slate-300 text-lg opacity-0 group-hover:opacity-100 transition duration-500 delay-100">Sirkulasi udara maksimal.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer id="kontak" class="bg-white border-t border-gray-100 pt-20 pb-10">
+    <footer id="kontak" class="bg-white border-t border-slate-100 pt-24 pb-12">
         <div class="container mx-auto px-4 md:px-8 max-w-7xl text-center">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">Mas Jawa Laundry</h2>
-            <p class="text-gray-500 max-w-lg mx-auto mb-8">
-                Jl. Raya Kandang Jati Kulon RT.06 RW.01 <br> (Depan Masjid Al-Hidayah)
-            </p>
-            <div class="flex justify-center gap-4 mb-12">
-                <a href="https://wa.me/6282313359989" class="bg-green-100 text-green-700 px-6 py-2 rounded-full font-bold hover:bg-green-200 transition">WhatsApp Admin</a>
-                <a href="#" class="bg-gray-100 text-gray-700 px-6 py-2 rounded-full font-bold hover:bg-gray-200 transition">Instagram</a>
+            <div class="reveal">
+                <h2 class="text-3xl font-bold text-slate-900 mb-6">Mas Jawa Laundry</h2>
+                <p class="text-slate-500 max-w-lg mx-auto mb-10 text-lg leading-relaxed">
+                    Jl. Raya Kandang Jati Kulon RT.06 RW.01 <br> (Depan Masjid Al-Hidayah)
+                </p>
+                <div class="flex justify-center gap-4 mb-16">
+                    <a href="https://wa.me/6282313359989" class="bg-green-100 text-green-700 px-8 py-3 rounded-full font-bold hover:bg-green-200 transition">WhatsApp Admin</a>
+                    <a href="#" class="bg-slate-100 text-slate-700 px-8 py-3 rounded-full font-bold hover:bg-slate-200 transition">Instagram</a>
+                </div>
+                <div class="map-container w-full h-80 bg-slate-100 rounded-[3rem] overflow-hidden mb-12 relative shadow-inner">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d506.7449500149932!2d113.43978213259427!3d-7.762629472382369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7013996fa9af7%3A0xb62d1f6d46982a7!2sMAS%20JAWA%20LAUNDRY!5e0!3m2!1sid!2sid!4v1767328358741!5m2!1sid!2sid" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div class="w-full border-t border-slate-100 pt-8">
+                    <p class="text-slate-400 text-sm">© 2024 Mas Jawa Laundry (MJL). All rights reserved.</p>
+                </div>
             </div>
-            
-            <div class="w-full h-64 bg-gray-100 rounded-[2rem] overflow-hidden mb-12 grayscale hover:grayscale-0 transition duration-500">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d506.7449500149932!2d113.43978213259427!3d-7.762629472382369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7013996fa9af7%3A0xb62d1f6d46982a7!2sMAS%20JAWA%20LAUNDRY!5e0!3m2!1sid!2sid!4v1767328358741!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-
-            <p class="text-gray-400 text-sm">© 2024 Mas Jawa Laundry (MJL). All rights reserved.</p>
         </div>
     </footer>
 
-        <script type="application/ld+json">
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 p-3 z-50 flex gap-3 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <a href="https://wa.me/6282313359989?text=Halo%20MJL,%20mau%20tanya%20harga" target="_blank" class="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl text-sm hover:bg-slate-200 transition active:scale-95">
+            Tanya Harga
+        </a>
+        <a href="https://wa.me/6282313359989?text=Halo%20MJL,%20mau%20order%20antar%20jemput" target="_blank" class="flex-1 flex items-center justify-center gap-2 bg-purple-600 text-white font-bold py-3 rounded-xl text-sm hover:bg-purple-700 transition shadow-lg shadow-purple-200 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            Pesan Jemput
+        </a>
+    </div>
+
+    <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LaundryService",
@@ -361,38 +413,15 @@
         "longitude": 113.439944
       },
       "areaServed": [
-        {
-          "@type": "Place",
-          "name": "Kandang Jati Kulon"
-        },
-        {
-          "@type": "Place",
-          "name": "Kandang Jati Wetan"
-        },
-        {
-          "@type": "Place",
-          "name": "Kraksaan"
-        },
-        {
-          "@type": "Place",
-          "name": "Semampir"
-        },
-        {
-          "@type": "AdministrativeArea",
-          "name": "Probolinggo"
-        }
+        { "@type": "Place", "name": "Kandang Jati Kulon" },
+        { "@type": "Place", "name": "Kandang Jati Wetan" },
+        { "@type": "Place", "name": "Kraksaan" },
+        { "@type": "Place", "name": "Semampir" },
+        { "@type": "AdministrativeArea", "name": "Probolinggo" }
       ],
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday"
-        ],
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         "opens": "07:00",
         "closes": "20:00"
       },
@@ -403,12 +432,10 @@
     }
     </script>
 
-
-    <script src="script.js?v=1.0"></script>
-    
-    <a href="https://wa.me/6282313359989?text=Halo%20MJL" target="_blank" class="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition duration-300 flex items-center justify-center w-14 h-14 floating-wa">
-        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <a href="https://wa.me/6282313359989?text=Halo%20MJL" target="_blank" class="hidden md:flex fixed bottom-8 right-8 z-50 bg-green-500 text-white p-4 rounded-full shadow-[0_10px_30px_rgba(34,197,94,0.4)] hover:bg-green-600 transition duration-300 items-center justify-center w-16 h-16 animate-float group">
+        <svg class="w-8 h-8 group-hover:scale-110 transition duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
 
+    <script src="script.js"></script>
 </body>
 </html>
