@@ -1,26 +1,20 @@
-// script.js - Final Clean Logic
-
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 1. MOBILE MENU LOGIC ---
+    // 1. MOBILE MENU LOGIC
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const mobileLinks = document.querySelectorAll('.mobile-link');
-    const body = document.body;
-
+    
     const iconHamburger = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>`;
     const iconClose = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-
+    
     let isMenuOpen = false;
 
     function toggleMenu() {
         isMenuOpen = !isMenuOpen;
-        
         if (isMenuOpen) {
             mobileMenu.classList.remove('hidden');
-            body.classList.add('overflow-hidden'); // Kunci scroll layar utama
             mobileBtn.innerHTML = iconClose;
-            
             setTimeout(() => {
                 mobileMenu.classList.remove('opacity-0', 'scale-95');
                 mobileMenu.classList.add('opacity-100', 'scale-100');
@@ -28,49 +22,36 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             mobileMenu.classList.remove('opacity-100', 'scale-100');
             mobileMenu.classList.add('opacity-0', 'scale-95');
-            body.classList.remove('overflow-hidden'); // Lepas kunci scroll
             mobileBtn.innerHTML = iconHamburger;
-            
             setTimeout(() => {
                 mobileMenu.classList.add('hidden');
             }, 300);
         }
     }
 
-    mobileBtn.addEventListener('click', toggleMenu);
+    if (mobileBtn) {
+        mobileBtn.addEventListener('click', toggleMenu);
+    }
 
     mobileLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (isMenuOpen) toggleMenu();
-        });
+        link.addEventListener('click', () => { if (isMenuOpen) toggleMenu(); });
     });
 
-    // --- 2. NAVBAR SCROLL EFFECT ---
+    // 2. NAVBAR SCROLL EFFECT (Blurry Glass)
     const navbarContainer = document.getElementById('navbar-inner');
-
     window.addEventListener('scroll', () => {
-        if (navbarContainer) {
-            if (window.scrollY > 20) {
-                if(window.innerWidth >= 768) {
-                   navbarContainer.classList.add('navbar-scrolled');
-                   navbarContainer.classList.remove('md:bg-white/80', 'border-white/40'); 
-                } else {
-                   navbarContainer.classList.add('bg-white', 'shadow-md');
-                   navbarContainer.classList.remove('bg-white/90');
-                }
-            } else {
-                if(window.innerWidth >= 768) {
-                   navbarContainer.classList.remove('navbar-scrolled');
-                   navbarContainer.classList.add('md:bg-white/80', 'border-white/40');
-                } else {
-                   navbarContainer.classList.remove('bg-white', 'shadow-md');
-                   navbarContainer.classList.add('bg-white/90');
-                }
-            }
+        if (!navbarContainer) return;
+        
+        if (window.scrollY > 20) {
+            navbarContainer.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-md');
+            navbarContainer.classList.remove('glass');
+        } else {
+            navbarContainer.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-md');
+            navbarContainer.classList.add('glass');
         }
     });
 
-    // --- 3. SCROLL REVEAL ANIMATION ---
+    // 3. SCROLL REVEAL ANIMATION (Smooth Up)
     const reveals = document.querySelectorAll('.reveal');
     const revealOnScroll = () => {
         const windowHeight = window.innerHeight;
@@ -85,11 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', revealOnScroll);
     revealOnScroll();
 
-    // --- 4. DYNAMIC WHATSAPP ---
+    // 4. DYNAMIC WHATSAPP GREETING
     const waLinks = document.querySelectorAll('a[href^="https://wa.me"]');
     const jam = new Date().getHours();
     let sapaan = "Halo";
-
     if (jam >= 4 && jam < 10) sapaan = "Selamat Pagi";
     else if (jam >= 10 && jam < 15) sapaan = "Selamat Siang";
     else if (jam >= 15 && jam < 19) sapaan = "Selamat Sore";
@@ -97,17 +77,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     waLinks.forEach(link => {
         let originalHref = link.getAttribute('href');
-        if (originalHref.includes("Halo")) {
+        if (originalHref && originalHref.includes("Halo")) {
              let newHref = originalHref.replace("Halo", encodeURIComponent(sapaan)); 
              link.setAttribute('href', newHref);
         }
     });
 
-    // --- 5. HANDLE TOMBOL PROMO TAS ---
+    // 5. PROMO BUTTON HANDLER
     const btnKlaimTas = document.getElementById('btn-klaim-tas');
     if (btnKlaimTas) {
         btnKlaimTas.addEventListener('click', () => {
-            window.open('https://wa.me/6282313359989?text=Halo%20MJL,%20cara%20dapat%20tas%20member%20gimana?', '_blank');
+            window.open(`https://wa.me/6282313359989?text=${encodeURIComponent(sapaan)}%20MJL,%20cara%20dapat%20tas%20member%20gimana?`, '_blank');
         });
     }
 });
