@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-# GANTI DENGAN URL NETLIFY BARU ANDA
+# Sitemap Location (Wajib ada untuk fix SEO Netlify)
 Sitemap: https://masjawalaundry.netlify.app/sitemap.xml
