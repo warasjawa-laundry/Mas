@@ -5,67 +5,61 @@
     --accent: #f97316;
 }
 
+/* LENIS SCROLL (Wajib) */
+html.lenis { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-scrolling iframe { pointer-events: none; } /* Mencegah map nyangkut */
+
 body {
     font-family: 'Outfit', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* CUSTOM SCROLLBAR */
+/* HARDWARE ACCELERATION (GPU Priority) */
+.gsap-card, .gsap-testi, .gsap-reveal, .gsap-image, #promo img {
+    transform: translateZ(0); 
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
+/* GLASSMORPHISM */
+.glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* SCROLLBAR */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #f8fafc; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid #f8fafc; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* GLASSMORPHISM UTILS */
-.glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.glass-dark {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
 /* ANIMATIONS */
-.reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Floating Animation for WA */
 @keyframes float {
     0% { transform: translateY(0px); box-shadow: 0 5px 15px 0px rgba(0,0,0,0.2); }
     50% { transform: translateY(-6px); box-shadow: 0 15px 25px 0px rgba(0,0,0,0.1); }
     100% { transform: translateY(0px); box-shadow: 0 5px 15px 0px rgba(0,0,0,0.2); }
 }
-.animate-float {
-    animation: float 3s ease-in-out infinite;
-}
+.animate-float { animation: float 3s ease-in-out infinite; }
 
-/* Hero Image Enhancement */
-.hero-bg {
-    background-image: url('https://github.com/warasjawa-laundry/Web-asset/blob/d3732ef323d933418ae73095f9d02a4f685e3fc9/file_0000000026e471fa90d1cf491899dd50.png?raw=true');
-    background-size: cover;
-    background-position: center;
+.text-shimmer {
+    background-size: 200% auto;
+    animation: shine 4s linear infinite;
 }
+@keyframes shine { to { background-position: 200% center; } }
 
-/* MAP ENHANCEMENT */
-.map-container iframe {
-    filter: grayscale(100%);
-    transition: filter 0.5s ease;
-}
-.map-container:hover iframe {
-    filter: grayscale(0%);
-    opacity: 1 !important;
-}
+/* ELEMENT STYLES */
+.map-container iframe { filter: grayscale(100%); transition: filter 0.5s ease; }
+.map-container:hover iframe { filter: grayscale(0%); opacity: 1 !important; }
+
+/* Icon Pop */
+.gsap-card:hover div.bg-white { transform: scale(1.15) rotate(5deg); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.gsap-card div.bg-white { transition: transform 0.3s ease; }
+
+/* Parallax Image Fix */
+.gsap-image img { height: 120%; object-fit: cover; transform: translateY(-10%); }
