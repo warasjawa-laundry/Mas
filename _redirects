@@ -1,0 +1,2 @@
+# Paksa semua trafik dari subdomain netlify ke domain utama
+https://masjawalaundry.netlify.app/* https://masjawalaundry.web.id/:splat  301!
