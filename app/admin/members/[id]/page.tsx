@@ -61,7 +61,7 @@ export default async function OwnerMember({params,searchParams}:Props){
    <div className="owner-count-box"><span>Total transaksi tercatat</span><strong>{failed?"—":total}</strong>
     <small>Hanya berubah saat pemilik menekan tombol dan penyimpanan berhasil.</small></div>
    <div className="owner-point-summary">
-     <div><span>Saldo poin ${pointYear}${pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
+     <div><span>Saldo poin {pointYear}{pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
      {pointYear!==2027&&<div><span>Saldo program 2027</span><strong>{balancesR.error?"—":futurePoints?.points_total??0}</strong></div>}
    </div>
    <div className="owner-point-settings-link"><Link href={"/admin/points/rules?year="+pointYear}>Atur nominal & poin →</Link></div>
