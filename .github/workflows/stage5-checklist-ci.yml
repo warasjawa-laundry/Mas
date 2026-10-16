@@ -1,0 +1,33 @@
+name: Stage 5 Owner Checklist and Scan
+on:
+  push:
+    branches: [feature/stage5-owner-checklist]
+  pull_request:
+    paths:
+      - "app/admin/**"
+      - "app/k/**"
+      - "components/admin/**"
+      - "lib/laundry/**"
+      - "supabase/migrations/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tests/**"
+      - ".github/workflows/stage5-checklist-ci.yml"
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/stage5.ui.spec.ts tests/stage4-progress.ui.spec.ts

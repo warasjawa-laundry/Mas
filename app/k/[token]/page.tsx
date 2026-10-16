@@ -29,7 +29,7 @@ export default async function MemberProgress({params}:Props) {
       <p className="admin-kicker">MAS JAWA LAUNDRY</p>
       <h1>Progress Member</h1>
       <p className="member-public-id">{memberNumber(item.member_number)}</p>
-      <div className="member-count"><span>Transaksi tercatat</span><strong>{total}</strong><small>Checklist dicatat oleh pemilik laundry, bukan saat kartu di-scan.</small></div>
+      <div className="member-count"><span>Transaksi tercatat</span><strong>{total}</strong><small>Transaksi akan bertambah setelah dicatat oleh petugas laundry.</small></div>
       <h2>Promo untuk Anda</h2>
       {promos.length ? <ul className="member-public-promos">{promos.slice(0,20).map((p:{title:string},i:number)=><li key={i}>{p.title}</li>)}</ul> : <p className="member-note">Belum ada promo khusus untuk kartu ini.</p>}
       <p className="member-note">Halaman ini hanya menampilkan informasi. Tunjukkan kartu ke pemilik laundry untuk mencatat transaksi.</p>
