@@ -23,7 +23,7 @@ test("WhatsApp contact and consent are read only after owner authentication",()=
   assert.match(detail,/whatsapp_e164,whatsapp_promo_consent/);
   assert.match(detail,/whatsappConsent=\{member\.whatsapp_promo_consent===true\}/);
   assert.match(whatsapp,/props\.memberActive && validPhone && props\.whatsappConsent/);
-  assert.match(whatsapp,/^\s*const digits=allowed \?/m);
+  assert.match(whatsapp,/const digits=allowed && validE164\(props\.whatsappPhone\) \?/);
   assert.doesNotMatch(publicCard,/whatsapp_e164|whatsapp_promo_consent|PromoWhatsapp/);
 });
 
