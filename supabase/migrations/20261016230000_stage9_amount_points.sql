@@ -160,10 +160,12 @@ grant execute on function public.laundry_record_amount_visit(uuid,bigint,text,uu
 create or replace function laundry_private.public_point_balances(p_digest_hex text)
 returns table(program_year integer,points_total bigint,point_transactions bigint)
 language plpgsql security definer set search_path=''
-as $
+as $$
 begin
- if p_digest_hex is null or p_digest_hex !~ '^[0-9a-f]{64}
-   coalesce(sum(t.awarded_points) filter(where t.visit_event_id is not null),0)::bigint,
+ if p_digest_hex is null or p_digest_hex !~ '^[0-9a-f]{64}$' then return; end if;
+ return query
+ select r.program_year,
+   coalesce(sum(t.awarded_points),0)::bigint,
    count(t.visit_event_id)::bigint
  from public.laundry_member_cards c
  join public.laundry_members m on m.id=c.member_id
@@ -175,7 +177,7 @@ begin
  group by r.program_year
  order by r.program_year desc;
 end;
-$;
+$$;
 revoke all on function laundry_private.public_point_balances(text) from public,anon,authenticated;
 grant execute on function laundry_private.public_point_balances(text) to anon,authenticated;
 create or replace function public.laundry_public_point_balances(p_digest_hex text)
@@ -185,11 +187,10 @@ as $$ select * from laundry_private.public_point_balances(p_digest_hex); $$;
 revoke all on function public.laundry_public_point_balances(text) from public,anon,authenticated;
 grant execute on function public.laundry_public_point_balances(text) to anon,authenticated;
 
-
 create or replace function laundry_private.owner_point_balances(p_member_id uuid)
 returns table(program_year integer,points_total bigint,point_transactions bigint)
 language plpgsql security definer set search_path=''
-as $
+as $$
 begin
  if auth.uid() is null or not exists(select 1 from public.laundry_owner_accounts
  where auth_user_id=auth.uid() and is_active)
@@ -205,44 +206,15 @@ begin
   )
  group by r.program_year order by r.program_year desc;
 end;
-$;
+$$;
 revoke all on function laundry_private.owner_point_balances(uuid) from public,anon,authenticated;
 grant execute on function laundry_private.owner_point_balances(uuid) to authenticated;
 create or replace function public.laundry_owner_point_balances(p_member_id uuid)
 returns table(program_year integer,points_total bigint,point_transactions bigint)
 language sql security invoker set search_path=''
-as $ select * from laundry_private.owner_point_balances(p_member_id); $;
+as $$ select * from laundry_private.owner_point_balances(p_member_id); $$;
 revoke all on function public.laundry_owner_point_balances(uuid) from public,anon,authenticated;
 grant execute on function public.laundry_owner_point_balances(uuid) to authenticated;
-
-comment on function public.laundry_record_amount_visit(uuid,bigint,text,uuid) is
- 'Explicit owner action: one checklist ADD + amount and points snapshot, idempotent. VOID excludes points from balance.';
-comment on function public.laundry_set_point_rules(integer,jsonb,integer) is
- 'Owner-only future tier changes with optimistic revision; prior transactions retain awarded points.';
- then return; end if;
- return query
- select r.program_year,
-   coalesce(sum(t.awarded_points) filter(where t.visit_event_id is not null),0)::bigint,
-   count(t.visit_event_id)::bigint
- from public.laundry_member_cards c
- join public.laundry_members m on m.id=c.member_id
- cross join public.laundry_point_rules r
- left join public.laundry_amount_transactions t on t.member_id=m.id and t.program_year=r.program_year
-  and not exists(select 1 from public.laundry_checklist_events rev
-    where rev.reverses_event_id=t.visit_event_id and rev.event_type='VOID')
- where c.token_digest=decode(p_digest_hex,'hex') and c.revoked_at is null and m.is_active
-  and p_digest_hex ~ '^[a-f0-9]{64}$'
- group by r.program_year
- order by r.program_year desc;
-$$;
-revoke all on function laundry_private.public_point_balances(text) from public,anon,authenticated;
-grant execute on function laundry_private.public_point_balances(text) to anon,authenticated;
-create or replace function public.laundry_public_point_balances(p_digest_hex text)
-returns table(program_year integer,points_total bigint,point_transactions bigint)
-language sql security invoker set search_path=''
-as $$ select * from laundry_private.public_point_balances(p_digest_hex); $$;
-revoke all on function public.laundry_public_point_balances(text) from public,anon,authenticated;
-grant execute on function public.laundry_public_point_balances(text) to anon,authenticated;
 
 comment on function public.laundry_record_amount_visit(uuid,bigint,text,uuid) is
  'Explicit owner action: one checklist ADD + amount and points snapshot, idempotent. VOID excludes points from balance.';
