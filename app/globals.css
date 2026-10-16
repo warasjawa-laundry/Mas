@@ -123,14 +123,11 @@ h3 { font-size: 1.22rem; }
 .contact-address { display: flex; flex-direction: column; color: var(--muted); gap: 3px; margin: 23px 0 26px; font-size: .9rem; }
 .contact-address strong { color: var(--ink); font-size: 1rem; }
 .contact-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.contact-map { min-height: 375px; background: #e9edee; border-radius: 16px; overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
-.map-illustration { position: absolute; inset: 0; background: linear-gradient(152deg, #f1f3f4, #dce7e2); overflow: hidden; }
-.map-line { position: absolute; width: 160%; height: 18px; background: #fff; transform: rotate(-25deg); left: -30%; border: 1px solid #d9e0e5; }
-.map-line-one { top: 25%; }.map-line-two { top: 70%; transform: rotate(20deg); }.map-line-three { top: 50%; transform: rotate(85deg); }
-.map-pin { position: absolute; left: 52%; top: 40%; transform: translate(-50%, -50%); border: 5px solid white; box-shadow: 0 8px 20px rgb(0 0 0 / .16); color: white; border-radius: 50%; background: var(--brand); width: 70px; height: 70px; display: grid; place-items: center; font-weight: 800; }
-.map-caption { position: relative; margin: 14px; padding: 15px 19px; border-radius: 11px; background: white; display: flex; flex-direction: column; gap: 3px; font-size: .93rem; }
-.map-caption span { color: var(--muted); font-size: .8rem; }
-
+.contact-location-card { background: #f3f0fa; border: 1px solid #e6dcf1; border-radius: 17px; padding: clamp(27px, 4vw, 45px); min-height: 360px; display: flex; align-items: flex-start; flex-direction: column; justify-content: center; }
+.location-label { font-weight: 800; letter-spacing: .12em; font-size: .73rem; color: var(--brand); margin-bottom: 28px; }
+.location-monogram { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 13px; background: #241a39; color: #fff; font-weight: 800; margin-bottom: 17px; letter-spacing: -.05em; }
+.contact-location-card h3 { margin-bottom: 9px; }
+.contact-location-card p { color: #4d576b; margin-bottom: 5px; line-height: 1.65; }
 .site-footer { background: #f7f9fc; border-top: 1px solid var(--line); }
 .footer-inner { padding: 31px 0; display: grid; grid-template-columns: 1.1fr 1fr auto; gap: 25px; align-items: center; }
 .footer-inner strong { font-size: .98rem; }
@@ -184,7 +181,7 @@ h3 { font-size: 1.22rem; }
   .about-image-main { height: 365px; }
   .member-feature { gap: 14px; }
   .member-feature-steps>div { padding: 14px 0; }
-  .contact-map { min-height: 260px; }
+  .contact-location-card { min-height: 260px; }
   .footer-inner { display: flex; align-items: start; flex-direction: column; gap: 18px; }
   .member-information { padding: 30px 0 70px; }
   .breadcrumb { margin-bottom: 37px; }
