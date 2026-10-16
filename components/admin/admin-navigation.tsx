@@ -21,7 +21,7 @@ function currentSection(pathname: string, href: string) {
 export default function AdminNavigation() {
   const pathname = usePathname();
   // No extra owner fetch from navigation; every admin page/action enforces
-  // requireOwner() on the server and DB RLS is still authoritative.
+  // server-side owner verification and DB RLS remain authoritative.
   if (!pathname || pathname === "/admin/login") return null;
 
   const navItems = sections.map(({ href, label }) => (
