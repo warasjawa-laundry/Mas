@@ -30,5 +30,13 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test tests/stage4.ui.spec.ts
+      - run: npx playwright test tests/stage4.ui.spec.ts tests/stage4-progress.ui.spec.ts
       - run: npx playwright test tests/public.ui.spec.ts
+      - name: Upload customer progress layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mas-jawa-customer-qr-layout
+          path: artifacts/stage4/
+          if-no-files-found: warn
+          retention-days: 7
