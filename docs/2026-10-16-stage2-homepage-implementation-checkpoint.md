@@ -1,3 +1,30 @@
+# Stage 2 — Teknik lulus, persetujuan konten/Android fisik tertunda
+Tanggal evaluasi: 2026-10-16 WIB
+Branch: `feature/stage2-homepage-redesign`
+HEAD audit: `7b59043555f62d902519c2bc3047a3fef9b1f9e3`
+
+## Verifikasi yang sudah benar-benar dilakukan
+- [x] `package.json` memiliki versi langsung yang dipin (Next 16.4.2, React 19.3.1, TypeScript 5.9.3) plus `package-lock.json`. Node engine 24.x; GitHub Actions `npm ci`.
+- [x] Bootstrap workflow yang sementara memakai `contents:write` sudah dihapus setelah lockfile dibuat. Workflow CI reguler hanya `contents:read`.
+- [x] `/membership` punya OG title, description, URL dan Twitter metadata khusus, bukan fallback homepage. Render preview diverifikasi HTML: homepage dan membership HTTP 200, OG URL dan title benar.
+- [x] Preview terbaru `https://masjawalaundry-epd965x37-ombotak-property-s-projects.vercel.app/`, commit `7b590435`, status Vercel **READY** (preview, bukan production).
+- [x] GitHub Actions [run 38864136617](https://github.com/warasjawa-laundry/Mas/actions/runs/38864136617) **SUCCESS**: npm ci, unit test, TypeScript, build, Chromium test + screenshot.
+- [x] CI Chromium viewport QA pada `/` dan `/membership`: 320/360/390/768/1024/1440 px, 12 screenshot, nol horizontal overflow; navigasi mobile, reduced motion, metadata dan status membership belum live dites.
+- [x] Manual inspection screenshot awal menemukan CTA WhatsApp sticky menutupi foto hero di HP. CTA duplikat dihapus, dan [run 38864136617](https://github.com/warasjawa-laundry/Mas/actions/runs/38864136617) + screenshot final memastikan overlay hilang. Artefak `mas-jawa-stage2-screenshots` tersedia di run tersebut hingga 2026-10-23.
+- [x] [run PR 38864142619](https://github.com/warasjawa-laundry/Mas/actions/runs/38864142619) **SUCCESS** untuk commit yang sama.
+- [x] Production Vercel tetap `main` commit `46dcafb5f9a2f2c69b591e5e7c4a6c6e848ba1ef`, status READY. Tidak ada merge atau promosi ke production.
+
+## Acceptance bisnis yang masih menahan merge
+- [ ] Konfirmasi harga, jenis dan durasi layanan. Semua angka saat ini warisan dari HTML lama, bukan tarif bisnis terkini yang diverifikasi.
+- [ ] Validasi foto, logo, kontak/jam/lokasi, program tas member dan materi publik lainnya oleh owner.
+- [ ] Uji sentuh, readability, layout, dan kamera Android fisik dengan owner. CI Chromium viewport bukan perangkat asli.
+- [ ] Review keakuratan copy harga dan kesiapan hosting/rollback setelah migrasi Next.js.
+- [ ] Stage 3–7 (akun owner, DB, scanner, kartu, checklist, promo dan WA) belum diimplementasikan; `NEXT_PUBLIC_MEMBERSHIP_LAUNCHED` harus tetap OFF.
+
+**Status resmi Stage 2: IMPLEMENTATION + AUTOMATED BROWSER QA PASS; OWNER ACCEPTANCE PENDING.** Jangan merge atau deploy production sampai tanda centang bisnis terpenuhi.
+
+---
+
 ## Visual Chromium QA — hasil 12 screenshot Stage 2 (2026-10-16)
 
 Workflow [run 38863719894](https://github.com/warasjawa-laundry/Mas/actions/runs/38863719894) lulus test, typecheck, build, dan Playwright pada viewports 320/360/390/768/1024/1440 untuk homepage serta /membership (12 screenshot). Screenshot artifact `mas-jawa-stage2-screenshots` diperiksa manual. Kedua halaman punya hierarki yang terbaca, tak ada horizontal overflow atau blank page. **Temuan nyata:** `.mobile-cta` yang menempel di bawah layar menutupi sebagian foto hero ketika pengunjung membuka homepage HP; CTA juga menduplikasi CTA hero. Tindakan: hapus sticky CTA duplikat dan pertahankan CTA hero + menu mobile, kemudian jalankan ulang screenshot suite.
