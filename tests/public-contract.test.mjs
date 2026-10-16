@@ -54,7 +54,7 @@ test("no secrets, fake customer reviews or unconfirmed automatic rewards in new 
 test("membership has a dedicated Open Graph and Twitter description", () => {
   assert.match(member, /openGraph:/);
   assert.match(member, /url: "\/membership"/);
-  assert.match(member, /Kartu Member \\| Mas Jawa Laundry/);
+  assert.ok(member.includes('title: "Kartu Member | Mas Jawa Laundry"'));
   assert.match(member, /twitter:/);
   assert.match(member, /memberDescription/);
 });
