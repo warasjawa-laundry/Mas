@@ -1,0 +1,30 @@
+name: Stage 6 Owner Manual Promotions
+on:
+  push:
+    branches: [feature/stage6-manual-promotions]
+  pull_request:
+    paths:
+      - "app/admin/**"
+      - "components/admin/**"
+      - "app/k/**"
+      - "supabase/migrations/**"
+      - "tests/**"
+      - ".github/workflows/stage6-promos-ci.yml"
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/stage5.ui.spec.ts tests/stage4-progress.ui.spec.ts
