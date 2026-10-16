@@ -1,4 +1,5 @@
 import { grantManualPromo, finishManualPromo } from "@/app/admin/promotions/actions";
+import PromoWhatsapp from "@/components/admin/promo-whatsapp";
 
 type Promotion = {
   id:string;title:string;terms:string|null;status:string;
@@ -13,6 +14,9 @@ type Props={
   error?:string;
   result?:string;
   loadFailed:boolean;
+  whatsappPhone:string|null;
+  whatsappConsent:boolean;
+  memberActive:boolean;
 };
 function wibDate(date:string) {
   return new Intl.DateTimeFormat("id-ID",{
@@ -32,9 +36,9 @@ const results:Record<string,string>={
 };
 
 export default function MemberPromotions({
- memberId,memberName,requestId,promos,error,result,loadFailed
+ memberId,memberName,requestId,promos,error,result,loadFailed,whatsappPhone,whatsappConsent,memberActive
 }:Props){
- return <section className="owner-promo-section" aria-labelledby="promo-owner-heading">
+ return <section id="promo-member" className="owner-promo-section" aria-labelledby="promo-owner-heading">
    <div className="owner-promo-header">
      <div>
        <p className="admin-kicker">DIPILIH PEMILIK</p>
@@ -68,11 +72,18 @@ export default function MemberPromotions({
       const expired=p.status==="AVAILABLE"&&!!p.expires_at&&new Date(p.expires_at).getTime()<=Date.now();
       const label=p.status==="USED"?"Digunakan":p.status==="CANCELLED"?"Dibatalkan":expired?"Kedaluwarsa":"Tersedia";
       return <li key={p.id} className="owner-promo-item">
-        <div className="owner-promo-title"><strong>{p.title}</strong><span>{label}</span></div>
+        <div className="owner-promo-title"><strong>{p.title}</strong></div>
+        <div className="owner-promo-status-row"><span className="owner-promo-status">{label}</span></div>
         {p.terms&&<p>{p.terms}</p>}
         <small>Diberikan {wibDate(p.created_at)}{p.expires_at?" · Berakhir "+wibDate(p.expires_at):""}</small>
         {p.status==="USED"&&p.redeemed_at&&<small>Dipakai {wibDate(p.redeemed_at)}</small>}
         {p.status==="CANCELLED"&&<small>Dibatalkan{p.cancel_reason?": "+p.cancel_reason:""}</small>}
+        {p.status==="AVAILABLE" && !expired && memberActive && <details className="owner-promo-whatsapp">
+          <summary>Siapkan pesan WhatsApp</summary>
+          <PromoWhatsapp promoId={p.id} memberName={memberName} title={p.title} terms={p.terms}
+            expiresAt={p.expires_at} whatsappPhone={whatsappPhone}
+            whatsappConsent={whatsappConsent} memberActive={memberActive}/>
+        </details>}
         {p.status==="AVAILABLE" && <div className="owner-promo-actions">
           {!expired&&<form action={finishManualPromo}>
             <input type="hidden" name="memberId" value={memberId}/>

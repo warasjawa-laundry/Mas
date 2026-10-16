@@ -14,7 +14,7 @@ export default async function OwnerMember({params,searchParams}:Props){
  const {id}=await params,notice=await searchParams;
  if(!validId.test(id))notFound();
  const [memberR,addsR,voidsR,historyR,promosR]=await Promise.all([
-  supabase.from("laundry_members").select("id,member_number,display_name,is_active").eq("id",id).maybeSingle(),
+  supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent").eq("id",id).maybeSingle(),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","ADD"),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","VOID"),
   supabase.from("laundry_checklist_events")
@@ -75,6 +75,7 @@ export default async function OwnerMember({params,searchParams}:Props){
     })}</ul>}
    <MemberPromotions memberId={id} memberName={member.display_name}
      requestId={promoRequestId} promos={promosR.data||[]}
+     whatsappPhone={member.whatsapp_e164} whatsappConsent={member.whatsapp_promo_consent===true} memberActive={member.is_active}
      loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>
    <div className="admin-shortcuts"><Link href={`/admin/members/${id}/card`}>Lihat Kartu QR →</Link><Link href="/admin/scan">Scan Kartu Lain →</Link></div>
   </section>
