@@ -50,3 +50,11 @@ test("no secrets, fake customer reviews or unconfirmed automatic rewards in new 
   assert.doesNotMatch(page, /SUPABASE_SERVICE_ROLE_KEY|api_key|password|Ibu Sari|Dimas Anggara|Mbak Rini/);
   assert.doesNotMatch(member, /promo otomatis|poin otomatis/i);
 });
+
+test("membership has a dedicated Open Graph and Twitter description", () => {
+  assert.match(member, /openGraph:/);
+  assert.match(member, /url: "\/membership"/);
+  assert.match(member, /Kartu Member \\| Mas Jawa Laundry/);
+  assert.match(member, /twitter:/);
+  assert.match(member, /memberDescription/);
+});

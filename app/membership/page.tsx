@@ -4,10 +4,25 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { memberProgramLaunched, whatsappLink } from "@/lib/site";
 
+const memberDescription = "Kenali kartu member Mas Jawa Laundry: daftar melalui petugas, bawa kartu QR, cek catatan transaksi tanpa login. Promo diberikan langsung oleh pemilik laundry.";
+
 export const metadata: Metadata = {
   title: "Kartu Member",
-  description: "Cara kerja kartu member Mas Jawa Laundry: daftar melalui petugas, bawa kartu QR, dan lihat catatan transaksi. Promo diberikan secara manual oleh pemilik.",
+  description: memberDescription,
   alternates: { canonical: "/membership" },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "/membership",
+    title: "Kartu Member | Mas Jawa Laundry",
+    description: memberDescription,
+    siteName: "Mas Jawa Laundry",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kartu Member | Mas Jawa Laundry",
+    description: memberDescription,
+  },
 };
 
 export default function MembershipPage() {
