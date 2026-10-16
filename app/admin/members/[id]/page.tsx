@@ -6,6 +6,7 @@ import {memberNumber} from "@/lib/laundry/card";
 import {correctOwnerVisit} from "@/app/admin/visits/actions";
 import AmountVisitForm from "@/components/admin/amount-visit-form";
 import MemberPromotions from "@/components/admin/member-promotions";
+import {timeAdmin} from "@/lib/admin/timing";
 
 type Props={params:Promise<{id:string}>,searchParams:Promise<{error?:string;recorded?:string;corrected?:string;requestId?:string;amountRequestId?:string;amountRecorded?:string;pointsEarned?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
 const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -14,7 +15,7 @@ export default async function OwnerMember({params,searchParams}:Props){
  const {id}=await params,notice=await searchParams;
  if(!validId.test(id))notFound();
  const pointYear=Number(new Intl.DateTimeFormat("en-US",{year:"numeric",timeZone:"Asia/Jakarta"}).format(new Date()));
- const [memberR,addsR,voidsR,historyR,promosR,amountsR,balancesR,rulesR]=await Promise.all([
+ const [memberR,addsR,voidsR,historyR,promosR,amountsR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
   supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent").eq("id",id).maybeSingle(),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","ADD"),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","VOID"),
@@ -30,7 +31,7 @@ export default async function OwnerMember({params,searchParams}:Props){
   supabase.rpc("laundry_owner_point_balances",{p_member_id:id}),
   supabase.from("laundry_point_rules").select("tiers,program_year,revision")
     .eq("program_year",pointYear).maybeSingle()
- ]);
+ ]));
  if(memberR.error || !memberR.data)notFound();
  const member=memberR.data;
  const failed=!!(addsR.error||voidsR.error||historyR.error);
