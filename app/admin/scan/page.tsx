@@ -10,7 +10,7 @@ export default async function OwnerScan() {
       <h1>Scan Kartu Member</h1>
       <p className="admin-hint">Login sudah tersedia. Scanner kamera dan pencatatan transaksi akan diaktifkan pada tahap selanjutnya.</p>
       <div className="admin-placeholder"><span aria-hidden="true" className="admin-placeholder-icon">⌗</span><strong>Scanner belum diaktifkan</strong><span>Fitur ini sedang disiapkan. Tidak ada transaksi yang akan tercatat di halaman ini.</span></div>
-      <div className="admin-shortcuts"><Link href="/admin/settings">Ubah Password →</Link><Link href="/">Kembali ke Beranda →</Link></div>
+      <div className="admin-shortcuts"><Link href="/admin/members">Kelola Member →</Link><Link href="/admin/settings">Ubah Password →</Link><Link href="/">Kembali ke Beranda →</Link></div>
     </div>
   </main>;
 }
