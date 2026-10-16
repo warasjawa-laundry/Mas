@@ -22,9 +22,10 @@ export async function updateMemberContact(formData:FormData) {
   }
   const consentAction=String(formData.get("consentAction")??"");
   const customerConfirmed=formData.get("customerConfirmed")==="on";
-  const expected=Number(String(formData.get("expectedRevision")??""));
+  const expectedRaw=String(formData.get("expectedRevision")??"");
+  const expected=Number(expectedRaw);
   if(!["KEEP","GRANT","REVOKE"].includes(consentAction) ||
-     !Number.isSafeInteger(expected) || expected<0)redirect(back+"?error=invalid");
+     !/^(0|[1-9][0-9]{0,14})$/.test(expectedRaw) || !Number.isSafeInteger(expected))redirect(back+"?error=invalid");
 
   if(consentAction==="GRANT" && (!phone || !customerConfirmed)) {
     redirect(back+"?error=consent");
