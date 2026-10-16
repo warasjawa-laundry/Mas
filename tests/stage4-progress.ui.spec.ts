@@ -22,13 +22,13 @@ for(const width of [320, 360, 390, 768, 1440]) {
    await expect(page.locator(".member-count strong")).toHaveText("0");
    await expect(page.locator(".member-public-shell")).toBeVisible();
    const values=await page.evaluate(()=>{
-      const root=document.querySelector(".member-public");
-      const label=document.querySelector(".member-count span");
-      const number=document.querySelector(".member-count strong");
-      const small=document.querySelector(".member-count small");
+      const root=document.querySelector<HTMLElement>(".member-public")!;
+      const label=document.querySelector<HTMLElement>(".member-count span")!;
+      const number=document.querySelector<HTMLElement>(".member-count strong")!;
+      const small=document.querySelector<HTMLElement>(".member-count small")!;
       return {
        overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth,
-       flex:getComputedStyle(document.querySelector(".member-count")).display,
+       flex:getComputedStyle(document.querySelector<HTMLElement>(".member-count")!).display,
        labelBottom:label.getBoundingClientRect().bottom,
        numberTop:number.getBoundingClientRect().top,
        numberBottom:number.getBoundingClientRect().bottom,
