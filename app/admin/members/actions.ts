@@ -15,7 +15,7 @@ export async function registerLaundryMember(formData: FormData) {
   const consent = formData.get("consent") === "on";
   if (consent && !phone) redirect("/admin/members/new?error=consent");
   const requestId = String(formData.get("requestId") ?? "");
-  if (!/^[a-f0-9-]{36}$/i.test(requestId)) redirect("/admin/members/new?error=invalid");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)) redirect("/admin/members/new?error=invalid");
   const token = newCardToken();
   const { data, error } = await owner.supabase.rpc("laundry_register_member", {
     p_display_name: display_name,
@@ -27,7 +27,7 @@ export async function registerLaundryMember(formData: FormData) {
   });
   if (error || !data || typeof data !== "string") {
     // Avoid log payloads/QR material. Server response never includes an untrusted error.
-    redirect("/admin/members/new?error=save");
+    redirect("/admin/members/new?error=save&requestId=" + encodeURIComponent(requestId));
   }
   redirect("/admin/members/" + data + "/card");
 }
