@@ -1,20 +1,21 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { createOwnerClient } from "@/lib/supabase/server";
+import { timeAdmin } from "@/lib/admin/timing";
 
 export async function getVerifiedOwner() {
   const supabase = await createOwnerClient();
   if (!supabase) return null;
 
   // getUser validates the Auth identity with the Supabase Auth server, not just local cookie claims.
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const { data: { user }, error } = await timeAdmin("owner.auth.getUser", () => supabase.auth.getUser());
   if (error || !user || user.is_anonymous) return null;
 
-  const { data: owner, error: roleError } = await supabase
+  const { data: owner, error: roleError } = await timeAdmin("owner.role.lookup", () => supabase
     .from("laundry_owner_accounts")
     .select("is_active")
     .eq("auth_user_id", user.id)
-    .maybeSingle();
+    .maybeSingle());
 
   if (roleError || owner?.is_active !== true) return null;
   return { user, supabase };
