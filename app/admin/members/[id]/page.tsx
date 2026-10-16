@@ -37,6 +37,7 @@ export default async function OwnerMember({params,searchParams}:Props){
   <section className="admin-content owner-member-page">
    <p className="admin-kicker">CATAT TRANSAKSI</p><h1>{member.display_name}</h1>
    <p className="admin-hint">{memberNumber(member.member_number)} · {member.is_active?"Member aktif":"Member nonaktif"}</p>
+   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data & WhatsApp</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
    {notice.recorded==="1" && <p className="admin-success" role="status">1 transaksi berhasil dicatat.</p>}
    {notice.corrected==="1" && <p className="admin-success" role="status">Transaksi berhasil dibatalkan dengan riwayat tetap tersimpan.</p>}
    {notice.error && <p className="admin-error" role="alert">
