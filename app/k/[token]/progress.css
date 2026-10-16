@@ -112,3 +112,13 @@
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Stage 9: customer sees balances only; no customer name, transaction notes or phone. */
+.member-point-progress{margin:12px 0 27px}
+.member-point-primary{display:grid;gap:7px;background:#f6f1fd;border:1px solid #e9dff9;border-radius:13px;padding:22px 18px;margin-bottom:11px}
+.member-point-primary span{font-size:13px;color:#4f5a72;font-weight:750}
+.member-point-primary strong{font-size:clamp(29px,8vw,38px);line-height:1.1;color:#53278d;font-variant-numeric:tabular-nums}
+.member-point-primary small{font-size:12px;line-height:1.55;color:#607084}
+.member-point-trial{font-size:13px;line-height:1.6;color:#536377;background:#f7f8fb;padding:12px;border-radius:10px}
+.member-point-trial strong{font-variant-numeric:tabular-nums;color:#4c2a7d}
