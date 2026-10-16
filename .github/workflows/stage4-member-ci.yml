@@ -1,0 +1,34 @@
+name: Stage 4 Member and QR
+on:
+  push:
+    branches: [feature/stage4-member-card]
+  pull_request:
+    paths:
+      - "app/admin/**"
+      - "app/k/**"
+      - "lib/laundry/**"
+      - "supabase/migrations/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tests/**"
+      - "app/admin/admin.css"
+      - ".github/workflows/stage4-member-ci.yml"
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/stage4.ui.spec.ts
+      - run: npx playwright test tests/public.ui.spec.ts
