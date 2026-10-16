@@ -1,0 +1,33 @@
+.admin-root{background:#f7f8fb;min-height:100vh;color:#1b2637;font-family:Outfit,system-ui,-apple-system,sans-serif}
+.admin-root a{text-decoration:none}.admin-root button,.admin-root input{font:inherit}
+.admin-auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 16px}
+.admin-login-card{width:min(100%,430px);padding:clamp(24px,6vw,40px);border:1px solid #e0e5ed;background:white;border-radius:20px;box-shadow:0 12px 38px #1822360c}
+.admin-icon{width:48px;height:48px;background:#262038;color:white;border-radius:12px;display:grid;place-items:center;font-size:16px;font-weight:800;margin-bottom:25px}
+.admin-kicker{font-size:12px;letter-spacing:.11em;font-weight:800;color:#6d28d9;margin:0 0 12px}
+.admin-root h1{font-size:clamp(26px,5vw,34px);line-height:1.15;letter-spacing:-.035em;margin:0 0 10px}
+.admin-hint{color:#536274;line-height:1.6;font-size:15px;margin-bottom:24px}
+.admin-form{display:flex;flex-direction:column;gap:9px}
+.admin-form label{font-size:14px;font-weight:700;margin-top:6px}
+.admin-form input{width:100%;min-height:50px;padding:12px 14px;border:1px solid #b5c1d0;border-radius:10px;font-size:16px;background:white;color:#1b2637}
+.admin-form input:focus{outline:3px solid #e7d8ff;border-color:#6d28d9}
+.admin-primary{background:#6d28d9;color:white;border:0;border-radius:11px;min-height:50px;font-weight:700;cursor:pointer;margin-top:18px;padding:12px 20px}
+.admin-primary:hover{background:#5922b3}.admin-password-field{position:relative}
+.admin-password-field input{padding-right:112px}
+.admin-show-password{position:absolute;right:8px;top:6px;min-height:38px;border:0;border-radius:8px;background:#f3f1f8;color:#4d2d83;cursor:pointer;padding:4px 11px;font-size:13px}
+.admin-footnote{border-top:1px solid #e8ecf1;padding-top:20px;margin:27px 0 0;color:#637186;font-size:12px}
+.admin-error,.admin-success{padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5}.admin-error{background:#fff0f0;border:1px solid #f6caca;color:#923e3e}.admin-success{background:#eaf8ee;color:#176b45;border:1px solid #b8e2c5}
+.admin-workspace{min-height:100vh}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px max(20px,calc((100vw - 1100px)/2));background:white;border-bottom:1px solid #e5eaf0}
+.admin-brand{font-weight:700;color:#2c2640}.admin-brand strong{margin-left:9px}
+.admin-logout{border:1px solid #ccd3df;background:white;padding:11px 18px;border-radius:9px;min-height:44px;cursor:pointer}
+.admin-content{max-width:780px;padding:52px 20px;margin:auto}
+.admin-placeholder{border:1px dashed #b6aac8;min-height:270px;border-radius:17px;padding:30px;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px}
+.admin-placeholder-icon{font-size:40px;font-weight:800;color:#6d28d9}
+.admin-placeholder strong{font-size:18px}
+.admin-placeholder span:not(.admin-placeholder-icon){color:#607086;font-size:14px}
+.admin-shortcuts{margin-top:20px;display:flex;flex-wrap:wrap;gap:22px;color:#6d28d9;font-weight:700}
+.admin-settings{max-width:540px}
+.admin-settings .admin-form{background:white;border:1px solid #e3e8f0;border-radius:18px;padding:clamp(20px,5vw,30px)}
+.admin-helper{font-size:12px;color:#5d6978;margin:0}
+@media(max-width:470px){.admin-content{padding:32px 16px}.admin-topbar{padding:13px 16px}.admin-brand strong{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.admin-root *{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
