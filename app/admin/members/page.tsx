@@ -26,7 +26,7 @@ export default async function MemberList({searchParams}: Params) {
           <span>{query ? "Coba nama lain." : "Daftarkan pelanggan pertama lewat tombol Tambah Member."}</span></div> :
         <ul className="member-list">{data.map(m=><li key={m.id}>
           <div><strong>{m.display_name}</strong><span>{memberNumber(m.member_number)} · {m.is_active ? "Aktif" : "Nonaktif"}</span></div>
-          <nav className="owner-member-links" aria-label={`Aksi untuk ${m.display_name}`}><Link href={`/admin/members/${m.id}`}>Catat Transaksi</Link><Link href={`/admin/members/${m.id}#promo-member`}>Promo</Link><Link href={`/admin/members/${m.id}/card`}>Kartu QR</Link></nav>
+          <nav className="owner-member-links" aria-label={`Aksi untuk ${m.display_name}`}><Link href={`/admin/members/${m.id}`}>Catat Transaksi</Link><Link href={`/admin/members/${m.id}#promo-member`}>Promo</Link><Link href={`/admin/members/${m.id}/card`}>Kartu QR</Link><Link href={`/admin/members/${m.id}/edit`}>Ubah Data</Link></nav>
         </li>)}</ul>}
       <p className="member-note">Data nomor WhatsApp tidak ditampilkan dalam daftar publik. Pencarian dibatasi pada 100 hasil terbaru.</p>
     </section>
