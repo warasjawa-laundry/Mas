@@ -22,9 +22,9 @@ export async function updateMemberContact(formData:FormData) {
   }
   const consentAction=String(formData.get("consentAction")??"");
   const customerConfirmed=formData.get("customerConfirmed")==="on";
-  const expected=String(formData.get("expectedUpdatedAt")??"");
+  const expected=Number(String(formData.get("expectedRevision")??""));
   if(!["KEEP","GRANT","REVOKE"].includes(consentAction) ||
-     !expected || Number.isNaN(Date.parse(expected)))redirect(back+"?error=invalid");
+     !Number.isSafeInteger(expected) || expected<0)redirect(back+"?error=invalid");
 
   if(consentAction==="GRANT" && (!phone || !customerConfirmed)) {
     redirect(back+"?error=consent");
@@ -35,7 +35,7 @@ export async function updateMemberContact(formData:FormData) {
     p_whatsapp_e164:phone,
     p_consent_action:consentAction,
     p_customer_confirmed:customerConfirmed,
-    p_expected_updated_at:expected,
+    p_expected_revision:expected,
     p_request_id:requestId
   });
   if(error || (data!=="UPDATED" && data!=="UNCHANGED")) {
