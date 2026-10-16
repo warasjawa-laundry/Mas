@@ -35,6 +35,6 @@ test("no configured Auth identity means password cannot be accepted in demo prev
   await page.getByLabel("ID Pengguna").fill("masjawalaundry");
   await page.locator('input[name="password"]').fill("NotARealLivePassword!");
   await page.getByRole("button", { name: "Masuk" }).click();
-  await expect(page.getByRole("alert")).toContainText("belum diaktifkan");
+  await expect(page.locator(".admin-error[role='alert']")).toContainText("belum diaktifkan");
   await expect(page).toHaveURL(/\/admin\/login/);
 });
