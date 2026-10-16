@@ -319,3 +319,21 @@
   .admin-home-stats>div{padding:15px}
   .admin-shell-mobile a{font-size:11px}
 }
+
+/* Stage 3: keep transaction entry ahead of the heavier secondary tasks. */
+.owner-member-page .owner-count-box{flex-direction:row;text-align:left;justify-content:space-between;align-items:center;gap:18px;margin:15px 0 12px;padding:13px 17px}
+.owner-member-page .owner-count-box span{font-size:13px}
+.owner-member-page .owner-count-box strong{font-size:34px;flex:0 0 auto}
+.owner-member-page .owner-count-box small{display:none}
+.owner-member-page .owner-point-summary{margin:10px 0 4px}
+.owner-member-page .owner-point-summary>div{padding:12px}
+.owner-member-page .owner-point-summary strong{font-size:26px}
+.owner-member-page .owner-amount-form{margin-top:8px}
+.owner-member-page .owner-detail-jump-links{margin:20px 0 26px}
+.owner-history-details{border:1px solid #dfe4ec;background:#fff;border-radius:13px;padding:0 14px;margin:14px 0 28px}
+.owner-history-details>summary{cursor:pointer;min-height:50px;display:flex;align-items:center;font-size:14px;font-weight:750;color:#532a8a}
+.owner-history-details[open]>summary{border-bottom:1px solid #e8e5ed}
+.admin-member-pagination{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:18px 0}
+.admin-member-pagination a{min-height:44px;display:inline-flex;align-items:center;padding:10px 15px;border:1px solid #dcd9e4;border-radius:9px;background:white;color:#542a8d;font-weight:750;font-size:13px}
+.admin-member-pagination span{font-size:13px;color:#58647b}
+@media(max-width:440px){.owner-member-page .owner-count-box strong{font-size:30px}.owner-member-page .owner-point-summary>div{padding:11px}.admin-member-pagination{gap:6px}.admin-member-pagination a{padding:9px}}
