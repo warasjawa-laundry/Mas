@@ -1,0 +1,271 @@
+.admin-root{background:#f7f8fb;min-height:100vh;color:#1b2637;font-family:Outfit,system-ui,-apple-system,sans-serif}
+.admin-root a{text-decoration:none}.admin-root button,.admin-root input{font:inherit}
+.admin-auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 16px}
+.admin-login-card{width:min(100%,430px);padding:clamp(24px,6vw,40px);border:1px solid #e0e5ed;background:white;border-radius:20px;box-shadow:0 12px 38px #1822360c}
+.admin-icon{width:48px;height:48px;background:#262038;color:white;border-radius:12px;display:grid;place-items:center;font-size:16px;font-weight:800;margin-bottom:25px}
+.admin-kicker{font-size:12px;letter-spacing:.11em;font-weight:800;color:#6d28d9;margin:0 0 12px}
+.admin-root h1{font-size:clamp(26px,5vw,34px);line-height:1.15;letter-spacing:-.035em;margin:0 0 10px}
+.admin-hint{color:#536274;line-height:1.6;font-size:15px;margin-bottom:24px}
+.admin-form{display:flex;flex-direction:column;gap:9px}
+.admin-form label{font-size:14px;font-weight:700;margin-top:6px}
+.admin-form input{width:100%;min-height:50px;padding:12px 14px;border:1px solid #b5c1d0;border-radius:10px;font-size:16px;background:white;color:#1b2637}
+.admin-form input:focus{outline:3px solid #e7d8ff;border-color:#6d28d9}
+.admin-primary{background:#6d28d9;color:white;border:0;border-radius:11px;min-height:50px;font-weight:700;cursor:pointer;margin-top:18px;padding:12px 20px}
+.admin-primary:hover{background:#5922b3}.admin-password-field{position:relative}
+.admin-password-field input{padding-right:112px}
+.admin-show-password{position:absolute;right:8px;top:6px;min-height:38px;border:0;border-radius:8px;background:#f3f1f8;color:#4d2d83;cursor:pointer;padding:4px 11px;font-size:13px}
+.admin-footnote{border-top:1px solid #e8ecf1;padding-top:20px;margin:27px 0 0;color:#637186;font-size:12px}
+.admin-error,.admin-success{padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5}.admin-error{background:#fff0f0;border:1px solid #f6caca;color:#923e3e}.admin-success{background:#eaf8ee;color:#176b45;border:1px solid #b8e2c5}
+.admin-workspace{min-height:100vh}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px max(20px,calc((100vw - 1100px)/2));background:white;border-bottom:1px solid #e5eaf0}
+.admin-brand{font-weight:700;color:#2c2640}.admin-brand strong{margin-left:9px}
+.admin-logout{border:1px solid #ccd3df;background:white;padding:11px 18px;border-radius:9px;min-height:44px;cursor:pointer}
+.admin-content{max-width:780px;padding:52px 20px;margin:auto}
+.admin-placeholder{border:1px dashed #b6aac8;min-height:270px;border-radius:17px;padding:30px;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px}
+.admin-placeholder-icon{font-size:40px;font-weight:800;color:#6d28d9}
+.admin-placeholder strong{font-size:18px}
+.admin-placeholder span:not(.admin-placeholder-icon){color:#607086;font-size:14px}
+.admin-shortcuts{margin-top:20px;display:flex;flex-wrap:wrap;gap:22px;color:#6d28d9;font-weight:700}
+.admin-settings{max-width:540px}
+.admin-settings .admin-form{background:white;border:1px solid #e3e8f0;border-radius:18px;padding:clamp(20px,5vw,30px)}
+.admin-helper{font-size:12px;color:#5d6978;margin:0}
+@media(max-width:470px){.admin-content{padding:32px 16px}.admin-topbar{padding:13px 16px}.admin-brand strong{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.admin-root *{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+
+.member-toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:28px 0}.member-search{display:flex;flex:1 1 240px;gap:8px}.member-search input{min-width:0;width:100%;min-height:48px;background:#fff;border:1px solid #b6c1d0;border-radius:10px;padding:12px;font:inherit;font-size:16px}.member-search button{min-height:48px;border:1px solid #c9d2de;border-radius:10px;background:white;padding:0 15px;font-weight:700}.member-add{display:inline-flex;align-items:center;justify-content:center;background:#6629bf!important;color:white!important;min-height:48px;padding:12px 18px;border-radius:11px;border:0;font-size:15px;font-weight:750;cursor:pointer}.member-empty{background:white;border:1px solid #e2e6ed;border-radius:15px;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;padding:24px}.member-empty span,.member-note{color:#64748b;font-size:13px;line-height:1.6}.member-list{list-style:none;margin:0;padding:0;background:#fff;border:1px solid #e2e7ef;border-radius:15px;overflow:hidden}.member-list li{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:17px 20px;border-bottom:1px solid #e2e7ef}.member-list li:last-child{border-bottom:0}.member-list li>div{display:flex;flex-direction:column;gap:5px;min-width:0}.member-list strong{overflow-wrap:anywhere}.member-list span{font-size:13px;color:#64748b}.member-list li a{color:#5d2aa9;font-weight:700;font-size:14px;min-height:44px;display:flex;align-items:center;text-align:right;flex:0 0 auto}.member-note{margin-top:18px}.member-form .member-consent{display:flex;align-items:flex-start;gap:12px;line-height:1.5;font-size:14px;font-weight:500}.member-consent input{width:22px!important;height:22px!important;min-height:22px!important;margin:0;flex:0 0 22px}.member-form button:disabled{opacity:.55;cursor:not-allowed}.sr-only{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}.print-card-page{max-width:950px}.mj-card{width:85.6mm;height:53.98mm;border:1px solid #c8cbd1;border-radius:3mm;display:grid;grid-template-columns:minmax(0,1fr) 31mm;gap:1mm;padding:3.5mm;background:white;color:#1d2839;box-sizing:border-box;overflow:hidden}.mj-card-info{min-width:0;display:flex;flex-direction:column;justify-content:space-between}.mj-card-heading{font-weight:850;font-size:12px;line-height:1.2}.mj-card-heading strong{font-size:10px;margin-left:4px}.mj-card-bottom{display:flex;flex-direction:column;gap:1.5mm}.mj-card-bottom small{font-size:8px;color:#5b21b6;letter-spacing:.07em;font-weight:850}.mj-card-bottom strong{font-size:13px;line-height:1.15;overflow-wrap:anywhere;max-height:42px;overflow:hidden}.mj-card-bottom span{font-size:10px;letter-spacing:.04em}.mj-card-qr{display:flex;align-items:center;justify-content:center}.mj-card-qr svg{display:block;width:29mm;height:29mm}.mj-card-watermark{color:#ae4545;font-size:11px;font-weight:800;letter-spacing:.08em}.member-public{background:#f7f8fb;color:#1b2637;min-height:100vh;padding:32px 16px;font-family:Outfit,system-ui,sans-serif}.member-public-shell{max-width:460px;margin:0 auto;background:white;border:1px solid #e3e7f0;border-radius:20px;padding:clamp(22px,5vw,36px)}.member-public h1{font-size:32px;letter-spacing:-.035em;margin:0 0 8px}.member-public-id{font-weight:800;color:#5c2bab}.member-count{background:#f7f3ff;border-radius:16px;padding:27px;display:flex;flex-direction:column;gap:8px;text-align:center;margin:24px 0}.member-count span{font-size:14px}.member-count strong{font-size:60px;line-height:1.1;color:#4a258e;font-variant-numeric:tabular-nums}.member-count small{font-size:12px;color:#58677c;line-height:1.6}.member-public h2{font-size:19px}.member-public-promos{padding-left:18px}.member-public-promos li{margin:8px 0;overflow-wrap:anywhere}.member-public-foot{display:block;border-top:1px solid #e1e5ed;padding-top:20px;margin-top:24px;color:#64748b}
+@media(max-width:520px){.member-toolbar{flex-direction:column;align-items:stretch}.member-search{flex-basis:auto}.member-list li{padding:15px 13px;gap:10px}.member-list li a{font-size:13px}.print-card-page{padding:28px 10px}.mj-card{margin:auto;max-width:100%}}
+@media print{@page{size:A4;margin:12mm}.admin-root,.admin-workspace,.print-card-page{background:#fff!important;min-height:0!important}.no-print,.mj-card-watermark{display:none!important}.print-card-page{padding:0!important;margin:0!important;max-width:none!important}.mj-card{margin:0!important;box-shadow:none;break-inside:avoid}}
+
+/* Stage 5: scan preview and explicit, auditable owner visit recording */
+.owner-scanner{margin:22px 0;background:#fff;border:1px solid #e3e7ef;border-radius:18px;padding:clamp(18px,5vw,28px)}
+.owner-scanner-heading h2,.owner-member-page h2{font-size:21px;letter-spacing:-.025em;line-height:1.25;margin:0 0 10px}
+.owner-scanner-heading p{font-size:14px;color:#5c6a7d;line-height:1.65}
+.owner-camera{max-width:460px;margin:18px auto;background:#161b2a;aspect-ratio:4/3;border-radius:14px;overflow:hidden;display:grid;place-items:center;position:relative}
+.owner-camera video{width:100%;height:100%;object-fit:cover;display:block}
+.owner-scan-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.owner-scan-actions .admin-logout{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#1b2637}
+.owner-secondary-actions{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:26px 0}
+.owner-member-links{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:0 0 auto}
+.owner-member-links a{min-height:36px!important}
+.owner-member-page{max-width:700px}
+.owner-count-box{display:flex;flex-direction:column;align-items:center;gap:6px;padding:25px 20px;background:#f4effb;border-radius:16px;border:1px solid #e8def8;text-align:center;margin:24px 0}
+.owner-count-box span{font-size:14px;font-weight:700}
+.owner-count-box strong{font-variant-numeric:tabular-nums;color:#4d2588;font-size:clamp(54px,12vw,70px);line-height:1.05}
+.owner-count-box small{font-size:12px;color:#5d6b79;line-height:1.5}
+.owner-record-button{width:100%;min-height:58px;font-size:18px;margin:0}
+.owner-record-button:disabled{opacity:.6}
+.owner-visit-history{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:9px}
+.owner-visit-history li{background:white;border:1px solid #e4e8ef;border-radius:12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:15px;padding:17px}
+.owner-visit-history li>div:first-child{display:flex;flex-direction:column;gap:5px}
+.owner-visit-history li strong{font-size:15px}
+.owner-visit-history li span,.owner-visit-history li small{color:#687488;font-size:12px}
+.owner-void-box summary{min-height:44px;display:flex;align-items:center;color:#852c2c;cursor:pointer;font-size:14px;font-weight:700}
+.owner-void-box form{display:grid;gap:7px;margin-top:6px;max-width:320px}
+.owner-void-box label{font-weight:650;font-size:13px}
+.owner-void-box input{min-height:46px;min-width:0;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px}
+.owner-void-box button{min-height:44px}
+@media(max-width:440px){.owner-scanner{padding:16px}.owner-scan-actions>*{flex:1 1 160px;text-align:center}.owner-member-links a{font-size:12px!important}}
+
+
+/* Gallery QR scan: clear, reachable buttons on mobile and no image uploads. */
+.owner-camera-placeholder{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:20px;color:#d9d7e3;font-size:14px;line-height:1.6;
+  background:#242336;
+}
+.owner-camera:not(.owner-camera-active) video{visibility:hidden}
+.owner-gallery-button{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-height:48px;padding:10px 16px;font-weight:700;cursor:pointer
+}
+.owner-gallery-button:disabled{opacity:.6;cursor:wait}
+.owner-gallery-hint{
+  margin:13px 0 0;color:#5e6b7c;font-size:13px;line-height:1.55;
+}
+.owner-scan-actions>.sr-only{flex:initial}
+@media(max-width:440px){
+  .owner-scan-actions>:not(input){flex:1 1 100%;min-height:48px}
+}
+
+
+/* Stage 6 owner-assigned promotions, never earned from checklist counts */
+.owner-promo-section{margin:38px 0 24px;padding-top:22px;border-top:1px solid #e1e5ed}
+.owner-promo-header .admin-kicker{margin-bottom:8px}
+.owner-promo-header h2{font-size:22px;margin:0}
+.owner-promo-create{background:#fff;border:1px solid #ded6ec;border-radius:14px;margin:18px 0 22px;overflow:hidden}
+.owner-promo-create>summary{display:flex;align-items:center;cursor:pointer;min-height:54px;padding:15px 18px;color:#5726a0;font-size:15px;font-weight:800}
+.owner-promo-create[open]>summary{border-bottom:1px solid #ebe5f3}
+.owner-promo-form{padding:18px;display:grid;gap:11px}
+.owner-promo-form>p:first-child{color:#59677b;font-size:14px;line-height:1.5;margin:0}
+.owner-promo-form label,.owner-promo-cancel label{font-size:14px;font-weight:750}
+.owner-promo-form input,.owner-promo-form textarea,.owner-promo-cancel input{width:100%;min-width:0;background:#fff;border:1px solid #bdc7d4;border-radius:10px;min-height:48px;padding:12px 13px;color:#1b2637;font:inherit;font-size:16px}
+.owner-promo-form textarea{resize:vertical;min-height:94px}
+.owner-promo-form button{margin-top:4px}
+.owner-promo-form .member-note{margin:0}
+.owner-promo-empty{margin:18px 0;padding:17px;background:#fff;border:1px dashed #ccd3e0;border-radius:12px}
+.owner-promo-list{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px}
+.owner-promo-item{padding:18px;background:#fff;border:1px solid #e3e8f0;border-radius:13px;display:grid;gap:9px;overflow-wrap:anywhere}
+.owner-promo-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.owner-promo-title strong{font-size:16px;line-height:1.4}
+.owner-promo-title span{border-radius:100px;background:#f3eefb;color:#552f85;font-size:12px;font-weight:700;padding:5px 9px}
+.owner-promo-item>p{margin:0;color:#48576b;font-size:14px;line-height:1.6;white-space:pre-wrap}
+.owner-promo-item>small{color:#697789;font-size:12px;line-height:1.4}
+.owner-promo-actions{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;margin-top:5px}
+.owner-promo-actions button{min-height:44px;cursor:pointer}
+.owner-promo-cancel summary{min-height:44px;display:flex;align-items:center;color:#8c3d3d;cursor:pointer;font-size:14px;font-weight:700}
+.owner-promo-cancel form{display:grid;gap:9px;margin-top:8px;max-width:310px}
+.owner-promo-cancel button{max-width:310px}
+@media(max-width:440px){
+ .owner-promo-actions{flex-direction:column;align-items:stretch}
+ .owner-promo-actions>*{width:100%}
+ .owner-promo-actions button{width:100%}
+}
+
+
+/* Stage 7: discoverable member promo actions and compact-screen safety */
+.member-list li>.owner-member-links{
+  display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;
+  align-items:center;gap:7px;min-width:0;flex:0 1 auto;
+}
+.member-list li>.owner-member-links a{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-height:44px!important;text-align:center!important;
+  border:1px solid #e1d6f2;background:#faf7ff;color:#552b91;
+  border-radius:9px;padding:8px 10px;
+  font-size:13px;font-weight:750;line-height:1.4;
+}
+.member-list li>.owner-member-links a:focus-visible,
+.owner-promo-whatsapp summary:focus-visible,
+.owner-wa-actions a:focus-visible,
+.owner-wa-actions button:focus-visible{outline:3px solid #ae8ce9;outline-offset:2px}
+.owner-promo-section{scroll-margin-top:20px}
+.owner-promo-item{min-width:0;position:relative;isolation:isolate}
+.owner-promo-title{min-width:0;display:block}
+.owner-promo-title strong{display:block;max-width:100%;overflow-wrap:anywhere}
+.owner-promo-status-row{display:flex;justify-content:flex-start;align-items:center;min-height:29px;max-width:100%}
+.owner-promo-status{display:inline-flex;align-items:center;max-width:100%;min-width:0;
+  width:max-content;overflow-wrap:anywhere;
+  border-radius:100px;background:#f3eefb;color:#552f85;
+  font-size:12px;font-weight:750;line-height:1.3;padding:6px 11px;
+}
+.owner-promo-whatsapp{border-top:1px solid #e9e5f0;padding-top:8px;margin-top:7px;min-width:0}
+.owner-promo-whatsapp>summary{
+  min-height:48px;display:flex;align-items:center;font-size:14px;
+  font-weight:750;color:#552b91;cursor:pointer;line-height:1.5;
+}
+.owner-wa-panel{display:grid;min-width:0;gap:9px;margin:12px 0 6px}
+.owner-wa-panel h3{font-size:17px;line-height:1.35;margin:0}
+.owner-wa-panel>p{font-size:13px;line-height:1.6;color:#5d6978;margin:0}
+.owner-wa-panel>label{font-size:13px;font-weight:750}
+.owner-wa-panel textarea{display:block;width:100%;min-width:0;box-sizing:border-box;
+  font:inherit;font-size:16px;line-height:1.6;resize:vertical;
+  border:1px solid #bcc6d6;border-radius:10px;background:#fff;color:#172337;padding:13px}
+.owner-wa-panel textarea:focus-visible{outline:3px solid #e4d7fa;border-color:#6d28d9}
+.owner-wa-actions{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
+.owner-wa-actions>*{flex:1 1 140px;min-height:48px!important;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  text-decoration:none;padding:10px 13px;margin:0}
+.owner-wa-actions button:disabled{cursor:not-allowed;opacity:.5}
+.owner-wa-panel .owner-wa-warning{color:#873b29;background:#fff7ed;
+  border:1px solid #f0d4b6;padding:12px;border-radius:10px}
+.owner-wa-panel .owner-wa-hint{color:#536576}
+.owner-wa-panel .owner-wa-feedback{font-weight:650;color:#3f2c6c}
+@media(max-width:600px){
+  .member-list li{display:flex;flex-direction:column;align-items:stretch;gap:13px}
+  .member-list li>div:first-child{min-width:0;width:100%}
+  .member-list li>.owner-member-links{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;width:100%;max-width:100%;flex:none;
+  }
+  .member-list li>.owner-member-links a{
+    min-width:0;width:100%;height:100%;box-sizing:border-box;
+    font-size:12px!important;padding:8px 5px;white-space:normal;overflow-wrap:anywhere;
+  }
+  .owner-promo-item{padding:16px}
+  .owner-promo-status-row{padding-right:52px}
+  .owner-wa-actions{flex-direction:column;align-items:stretch}
+  .owner-wa-actions>*{flex:initial;width:100%}
+}
+@media(max-width:350px){
+  .member-list li>.owner-member-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .member-list li>.owner-member-links a:first-child{grid-column:1/-1}
+  .owner-promo-item{padding:14px}
+}
+
+
+/* Stage 8: owner member contact editor — approachable on small Android screens */
+.owner-detail-jump-links{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:16px 0 24px}
+.owner-detail-jump-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;text-align:center;font-weight:700;font-size:13px;text-decoration:none;color:#512a8b}
+.owner-member-edit{max-width:700px}
+.owner-edit-card{margin:22px 0;padding:clamp(18px,4vw,27px);border:1px solid #e0e4ed;border-radius:18px;background:white;display:grid;gap:12px;min-width:0}
+.owner-edit-card>label:not(.owner-consent-attestation){font-size:14px;font-weight:800;color:#1b2637}
+.owner-edit-card>input:not([type=hidden]),.owner-edit-card>select{width:100%;min-width:0;box-sizing:border-box;min-height:50px;padding:11px 13px;border:1px solid #b9c4d3;border-radius:10px;font:inherit;font-size:16px;color:#1b2637;background:white}
+.owner-edit-card>select{white-space:normal;max-width:100%}
+.owner-edit-card input:focus-visible,.owner-edit-card select:focus-visible{outline:3px solid #e3d7f5;border-color:#6d28d9}
+.owner-edit-card>.admin-helper{color:#667587;font-size:13px;line-height:1.55;margin:0 0 10px}
+.owner-consent-current{display:grid;gap:5px;border-radius:12px;background:#f6f3fb;border:1px solid #e6def2;padding:15px;margin:7px 0}
+.owner-consent-current strong{font-size:14px}
+.owner-consent-current span{font-size:15px;color:#4a2783;font-weight:750}
+.owner-consent-current small{color:#55647a;line-height:1.5}
+.owner-consent-attestation{display:flex;align-items:flex-start;gap:13px;padding:14px 12px;background:#fafafd;border:1px solid #e3e5ed;border-radius:12px;font-size:14px;line-height:1.6;cursor:pointer}
+.owner-consent-attestation input{width:22px;height:22px;flex:0 0 22px;margin-top:1px;accent-color:#6427bd}
+.owner-edit-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:9px}
+.owner-edit-actions>*{flex:1 1 170px;min-height:48px!important;box-sizing:border-box}
+.owner-edit-actions .admin-primary{margin:0}
+.owner-edit-actions a{display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#1b2637;text-decoration:none}
+.owner-contact-history{margin:27px 0}
+.owner-contact-history h2{font-size:19px;margin:0 0 8px}
+.owner-contact-history ul{list-style:none;display:grid;gap:9px;padding:0;margin:17px 0 0}
+.owner-contact-history li{display:grid;gap:5px;padding:15px;background:white;border:1px solid #e1e5ec;border-radius:11px}
+.owner-contact-history li strong{font-size:14px}
+.owner-contact-history li small{font-size:12px;line-height:1.5;color:#667489}
+.owner-wa-edit-link{display:inline-flex;align-items:center;min-height:44px;font-size:14px;font-weight:750;color:#5b2ba4;text-decoration:none}
+@media(max-width:600px){
+ .member-list li>.owner-member-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .owner-detail-jump-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .owner-detail-jump-links a{box-sizing:border-box;width:100%;padding:10px 8px;overflow-wrap:anywhere}
+ .owner-detail-jump-links a:first-child{grid-column:1/-1}
+ .owner-edit-actions{flex-direction:column;align-items:stretch}
+ .owner-edit-actions>*{flex:auto;width:100%}
+}
+
+
+/* Stage 9 — amount-based transactions and year-isolated point rules */
+.owner-point-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:14px 0 6px}
+.owner-point-summary>div{min-width:0;background:#fff;border:1px solid #ded6ee;border-radius:14px;padding:16px;display:grid;gap:5px}
+.owner-point-summary span{font-size:12px;font-weight:700;color:#5c6380;line-height:1.5}
+.owner-point-summary strong{font-size:clamp(24px,5.6vw,34px);color:#51258e;font-variant-numeric:tabular-nums;line-height:1.15}
+.owner-point-settings-link{margin:6px 0 22px}
+.owner-point-settings-link a{color:#5a2e9a;font-size:14px;font-weight:750;min-height:44px;display:inline-flex;align-items:center}
+.owner-amount-form{background:#fff;border:1px solid #e2e5ec;border-radius:17px;padding:clamp(16px,4vw,25px);display:grid;gap:12px;margin:14px 0 24px}
+.owner-amount-form label{font-size:14px;font-weight:800;color:#202b3b}
+.owner-amount-form input,.owner-amount-form textarea{min-width:0;width:100%;border:1px solid #c1cbd8;border-radius:10px;padding:13px;font:inherit;font-size:16px;color:#1b2637;background:#fff;box-sizing:border-box}
+.owner-amount-form input{min-height:52px}
+.owner-amount-form textarea{min-height:88px;resize:vertical}
+.owner-amount-form input:focus-visible,.owner-amount-form textarea:focus-visible,
+.owner-point-rule-form input:focus-visible{outline:3px solid #dacef4;outline-offset:2px}
+.owner-point-estimate{background:#f6f1fd;border:1px solid #e6d9f8;border-radius:12px;padding:15px;display:grid;gap:5px}
+.owner-point-estimate>span{font-size:13px;font-weight:700}
+.owner-point-estimate>strong{font-size:24px;color:#57258e;font-variant-numeric:tabular-nums}
+.owner-point-estimate small{font-size:12px;color:#5c6c7d;line-height:1.5}
+.owner-amount-form .member-note{margin:0}
+.owner-point-rules{max-width:740px}
+.owner-point-year-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 18px}
+.owner-point-year-tabs a{display:flex;align-items:center;justify-content:center;min-height:46px;padding:10px 15px;border:1px solid #ded7ea;border-radius:11px;text-decoration:none;font-size:14px;font-weight:750;background:#fff;color:#4d3e68}
+.owner-point-year-tabs a[aria-current=page]{color:#fff;background:#5e29a4;border-color:#5e29a4}
+.owner-point-rule-form{display:grid;gap:12px;margin:20px 0 30px}
+.owner-point-rule-form>p{margin-bottom:6px}
+.owner-point-rule-form fieldset{min-width:0;background:#fff;border:1px solid #dfe3ea;border-radius:14px;padding:17px;margin:0}
+.owner-point-rule-form legend{font-size:15px;font-weight:800;color:#25213a;padding:0 5px}
+.owner-rule-inputs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.owner-rule-inputs label{display:grid;gap:7px;font-weight:750;font-size:13px}
+.owner-rule-inputs input{width:100%;min-width:0;min-height:47px;border:1px solid #bcc7d6;border-radius:9px;padding:11px 12px;font-size:16px;background:#fff}
+.owner-point-rule-form fieldset small{display:block;color:#6d7889;font-size:12px;margin:11px 0 0;line-height:1.5}
+.owner-point-rule-form>.admin-primary{width:100%;min-height:54px}
+@media(max-width:440px){
+ .owner-point-summary{grid-template-columns:1fr 1fr;gap:8px}
+ .owner-point-summary>div{padding:14px 11px}
+ .owner-point-summary strong{font-size:26px}
+ .owner-rule-inputs{gap:9px}
+ .owner-rule-inputs label{font-size:12px}
+}
