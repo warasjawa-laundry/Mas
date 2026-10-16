@@ -26,4 +26,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test tests/stage5.ui.spec.ts tests/stage4-progress.ui.spec.ts
+      - run: npx playwright test tests/stage4-progress.ui.spec.ts tests/stage5.ui.spec.ts tests/stage8.ui.spec.ts
