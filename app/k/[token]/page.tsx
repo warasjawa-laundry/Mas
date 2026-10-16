@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./progress.css";
 import { createHash } from "node:crypto";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
