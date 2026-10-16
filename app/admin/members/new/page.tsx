@@ -3,11 +3,13 @@ import { randomUUID } from "node:crypto";
 import { requireOwner } from "@/lib/supabase/owner";
 import { cardIssuanceReady } from "@/lib/laundry/card";
 import { registerLaundryMember } from "@/app/admin/members/actions";
-type Props={searchParams:Promise<{error?:string}>};
+type Props={searchParams:Promise<{error?:string;requestId?:string}>};
 export default async function CreateMember({searchParams}:Props) {
   await requireOwner();
   const ready=cardIssuanceReady();
-  const err=(await searchParams).error;
+  const q=await searchParams;
+  const err=q.error;
+  const requestId=q.requestId && /^[0-9a-f-]{36}$/i.test(q.requestId) ? q.requestId : randomUUID();
   const messages:Record<string,string>={
     unavailable:"Pendaftaran belum aktif. Hubungi pengelola situs.",
     invalid:"Periksa nama dan nomor WhatsApp yang dimasukkan.",
@@ -22,7 +24,7 @@ export default async function CreateMember({searchParams}:Props) {
       {!ready && <p className="admin-error" role="alert">Penerbitan kartu sedang disiapkan. Data belum dapat disimpan.</p>}
       {err && <p className="admin-error" role="alert">{messages[err] || messages.save}</p>}
       <form className="admin-form member-form" action={registerLaundryMember}>
-        <input type="hidden" name="requestId" value={randomUUID()}/>
+        <input type="hidden" name="requestId" value={requestId}/>
         <label htmlFor="member-name">Nama pelanggan *</label>
         <input id="member-name" name="name" minLength={2} maxLength={100} autoComplete="name" placeholder="Nama pelanggan" required disabled={!ready}/>
         <label htmlFor="member-phone">WhatsApp (opsional)</label>
