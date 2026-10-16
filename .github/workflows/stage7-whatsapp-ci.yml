@@ -5,6 +5,11 @@ on:
   pull_request:
     paths:
       - "app/admin/**"
+      - "app/membership/**"
+      - "app/page.tsx"
+      - "components/site-header.tsx"
+      - "components/customer-card-scanner.tsx"
+      - "app/globals.css"
       - "components/admin/**"
       - "app/k/**"
       - "tests/**"
