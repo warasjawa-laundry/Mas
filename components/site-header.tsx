@@ -5,7 +5,7 @@ import { assets, site, whatsappLink } from "@/lib/site";
 const nav = [
   { href: "/#layanan", text: "Layanan & Harga" },
   { href: "/#keunggulan", text: "Tentang Kami" },
-  { href: "/#promo", text: "Kartu Member" },
+  { href: "/membership", text: "Kartu Member" },
   { href: "/#kontak", text: "Lokasi" },
 ];
 
