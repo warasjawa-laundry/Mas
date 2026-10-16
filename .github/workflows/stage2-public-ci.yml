@@ -1,0 +1,35 @@
+name: Stage 2 Public Site
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "components/**"
+      - "lib/**"
+      - "tests/**"
+      - "package.json"
+      - "tsconfig.json"
+      - "next.config.ts"
+      - ".github/workflows/stage2-public-ci.yml"
+  push:
+    branches:
+      - feature/stage2-homepage-redesign
+
+permissions:
+  contents: read
+
+jobs:
+  validate-public-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Stage 2 does not yet have a lockfile. Before merge, generate and review
+      # package-lock.json in a networked workspace, then switch to npm ci.
+      - run: npm install --no-audit --no-fund
+      - run: npm run test
+      - run: npm run typecheck
+      - run: npm run build
