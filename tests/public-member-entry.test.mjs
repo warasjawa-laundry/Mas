@@ -14,9 +14,9 @@ const style=read("app/globals.css");
 test("public header points to actual member page, not inactive homepage section",()=>{
  assert.match(header,/href: "\/membership", text: "Kartu Member"/);
  assert.doesNotMatch(header,/href: "\/#promo", text: "Kartu Member"/);
- assert.match(home,/href="\/membership"/);
+ assert.match(home,/siteHref\("\/membership"\)/);
  assert.match(membership,/<CustomerCardScanner \/>/);
- assert.match(membership,/href="\/admin\/login"/);
+ assert.match(membership,/siteHref\("\/admin\/login"\)/);
 });
 
 test("member holders can use camera or gallery locally, without login or searching names",()=>{

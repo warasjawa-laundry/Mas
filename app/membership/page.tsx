@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import CustomerCardScanner from "@/components/customer-card-scanner";
+import { siteHref } from "@/lib/navigation";
 import { memberProgramLaunched, whatsappLink } from "@/lib/site";
 
 const memberDescription = "Kenali kartu member Mas Jawa Laundry: daftar melalui petugas, bawa kartu QR, cek catatan transaksi tanpa login. Promo diberikan langsung oleh pemilik laundry.";
@@ -32,7 +33,7 @@ export default function MembershipPage() {
       <SiteHeader />
       <main className="member-information">
         <div className="shell">
-          <div className="breadcrumb"><Link href="/">Beranda</Link><span aria-hidden="true">/</span><span>Kartu Member</span></div>
+          <div className="breadcrumb"><Link href={siteHref("/")}>Beranda</Link><span aria-hidden="true">/</span><span>Kartu Member</span></div>
           <div className="member-page-heading">
             <p className="eyebrow">KARTU MEMBER MAS JAWA LAUNDRY</p>
             <h1>Simpan kartu, transaksi tercatat.</h1>
@@ -40,7 +41,7 @@ export default function MembershipPage() {
             {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Jika sudah menerima kartu QR uji coba dari petugas, Anda bisa membuka progresnya di bawah. Pendaftaran tetap dibantu petugas.</div>}
           </div>
           <CustomerCardScanner />
-          <p className="member-owner-entry">Khusus pemilik laundry: <Link href="/admin/login">Masuk ke pengelolaan kartu member →</Link></p>
+          <p className="member-owner-entry">Khusus pemilik laundry: <Link href={siteHref("/admin/login")}>Masuk ke pengelolaan kartu member →</Link></p>
           <div className="how-grid">
             <article className="how-card"><span>01</span><h2>Daftar ke petugas</h2><p>Anda cukup memberikan nama. Nomor WhatsApp bersifat opsional untuk menerima informasi promo jika Anda setuju.</p></article>
             <article className="how-card"><span>02</span><h2>Bawa kartu saat laundry</h2><p>Petugas memindai QR di kartu dan mengonfirmasi satu catatan transaksi. Tidak perlu memasang aplikasi.</p></article>
