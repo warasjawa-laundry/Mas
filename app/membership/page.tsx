@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import CustomerCardScanner from "@/components/customer-card-scanner";
 import { memberProgramLaunched, whatsappLink } from "@/lib/site";
 
 const memberDescription = "Kenali kartu member Mas Jawa Laundry: daftar melalui petugas, bawa kartu QR, cek catatan transaksi tanpa login. Promo diberikan langsung oleh pemilik laundry.";
@@ -38,6 +39,8 @@ export default function MembershipPage() {
             <p>Pengganti kartu stempel kertas. Setiap kali laundry, petugas cukup memindai kartu lalu mencatat transaksi Anda.</p>
             {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Kartu QR belum diterbitkan secara online. Silakan tanyakan kepada petugas untuk informasi terbaru.</div>}
           </div>
+          <CustomerCardScanner />
+          <p className="member-owner-entry">Khusus pemilik laundry: <Link href="/admin/login">Masuk ke pengelolaan kartu member →</Link></p>
           <div className="how-grid">
             <article className="how-card"><span>01</span><h2>Daftar ke petugas</h2><p>Anda cukup memberikan nama. Nomor WhatsApp bersifat opsional untuk menerima informasi promo jika Anda setuju.</p></article>
             <article className="how-card"><span>02</span><h2>Bawa kartu saat laundry</h2><p>Petugas memindai QR di kartu dan mengonfirmasi satu catatan transaksi. Tidak perlu memasang aplikasi.</p></article>
