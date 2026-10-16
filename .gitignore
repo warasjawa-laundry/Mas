@@ -6,3 +6,7 @@ out/
 !.env.example
 *.tsbuildinfo
 .DS_Store
+
+artifacts/
+playwright-report/
+test-results/

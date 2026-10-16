@@ -1,3 +1,13 @@
+## Stage 2 aktual — SEO, dependency, dan preview rendering (2026-10-16 WIB)
+
+- Vercel preview build `f854907` merender `/` dan `/membership` dengan HTTP **200** melalui Vercel authenticated fetch; `robots.txt`, `sitemap.xml` dan URL optimasi hero image juga memberi HTTP **200**. Ini adalah request-level smoke, bukan sertifikasi visual.
+- Metadata `/membership` kini memiliki Open Graph dan Twitter khusus; ada kontrak tes untuk menjaga perbedaan dari homepage.
+- Lockfile `package-lock.json` dibuat GitHub Actions pada branch saja, versi dependency top-level ditetapkan tepat, dan `engines.node` menjadi `24.x`, sesuai versi proyek Vercel saat ini. CI Stage 2 menggunakan `npm ci`, bukan install bebas.
+- Playwright Chromium menambah matriks layout 320/360/390/768/1024/1440px untuk `/` dan `/membership`, tanpa horizontal overflow, menu mobile, metadata, reduced motion. Bukti screenshot disimpan sebagai GitHub Actions artifact; hasil PASS/FAIL ditentukan dari CI terbaru (jangan menyimpulkan lulus sebelum menjalankan).
+- Image artwork/harga berasal dari kode lama dan harus disetujui oleh owner. Konten membership tetap diberi label program sedang disiapkan. Tidak ada backend atau scanner pada Stage 2.
+- Browser headless bukan perangkat Android fisik; aksesibilitas, keterbacaan, input sentuh, dan cropping foto tetap memerlukan owner UAT pada perangkat nyata.
+- `main` dan domain produksi belum disentuh; jangan merge/deploy sebelum UAT dan konten faktual disetujui.
+
 ## Hasil verifikasi aktual Stage 2 — 16 Oktober 2026
 - GitHub Actions `Stage 2 Public Site` untuk commit terbaru sebelumnya `0719dde20`: [run 38860506010](https://github.com/warasjawa-laundry/Mas/actions/runs/38860506010) **SUCCESS**: `npm install`, `npm run test`, `npm run typecheck`, `npm run build` lulus. Hasil ini membuktikan build kode, BUKAN audit tampilan Android atau produksi.
 - UX refinement terakhir: panel lokasi memakai alamat terverifikasi dari konten kode lama dan tautan Google Maps; ilustrasi peta generik/fiktif dihilangkan agar tidak menyesatkan.

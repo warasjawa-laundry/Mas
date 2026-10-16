@@ -8,6 +8,8 @@ on:
       - "lib/**"
       - "tests/**"
       - "package.json"
+      - "package-lock.json"
+      - "playwright.config.ts"
       - "tsconfig.json"
       - "next.config.ts"
       - ".github/workflows/stage2-public-ci.yml"
@@ -21,15 +23,26 @@ permissions:
 jobs:
   validate-public-site:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
-      # Stage 2 does not yet have a lockfile. Before merge, generate and review
-      # package-lock.json in a networked workspace, then switch to npm ci.
-      - run: npm install --no-audit --no-fund
+          node-version: "24"
+          cache: "npm"
+      - run: npm ci --no-audit --no-fund
       - run: npm run test
       - run: npm run typecheck
       - run: npm run build
+      - name: Install Chromium for viewport QA
+        run: npx playwright install --with-deps chromium
+      - name: Test mobile/desktop viewports and capture screenshots
+        run: npm run test:ui
+      - name: Preserve rendered screenshots for UX review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mas-jawa-stage2-screenshots
+          path: artifacts/screenshots/
+          if-no-files-found: warn
+          retention-days: 7
