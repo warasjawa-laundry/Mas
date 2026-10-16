@@ -191,3 +191,40 @@
   .member-list li>.owner-member-links a:first-child{grid-column:1/-1}
   .owner-promo-item{padding:14px}
 }
+
+
+/* Stage 8: owner member contact editor — approachable on small Android screens */
+.owner-detail-jump-links{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:16px 0 24px}
+.owner-detail-jump-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;text-align:center;font-weight:700;font-size:13px;text-decoration:none;color:#512a8b}
+.owner-member-edit{max-width:700px}
+.owner-edit-card{margin:22px 0;padding:clamp(18px,4vw,27px);border:1px solid #e0e4ed;border-radius:18px;background:white;display:grid;gap:12px;min-width:0}
+.owner-edit-card>label:not(.owner-consent-attestation){font-size:14px;font-weight:800;color:#1b2637}
+.owner-edit-card>input:not([type=hidden]),.owner-edit-card>select{width:100%;min-width:0;box-sizing:border-box;min-height:50px;padding:11px 13px;border:1px solid #b9c4d3;border-radius:10px;font:inherit;font-size:16px;color:#1b2637;background:white}
+.owner-edit-card>select{white-space:normal;max-width:100%}
+.owner-edit-card input:focus-visible,.owner-edit-card select:focus-visible{outline:3px solid #e3d7f5;border-color:#6d28d9}
+.owner-edit-card>.admin-helper{color:#667587;font-size:13px;line-height:1.55;margin:0 0 10px}
+.owner-consent-current{display:grid;gap:5px;border-radius:12px;background:#f6f3fb;border:1px solid #e6def2;padding:15px;margin:7px 0}
+.owner-consent-current strong{font-size:14px}
+.owner-consent-current span{font-size:15px;color:#4a2783;font-weight:750}
+.owner-consent-current small{color:#55647a;line-height:1.5}
+.owner-consent-attestation{display:flex;align-items:flex-start;gap:13px;padding:14px 12px;background:#fafafd;border:1px solid #e3e5ed;border-radius:12px;font-size:14px;line-height:1.6;cursor:pointer}
+.owner-consent-attestation input{width:22px;height:22px;flex:0 0 22px;margin-top:1px;accent-color:#6427bd}
+.owner-edit-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:9px}
+.owner-edit-actions>*{flex:1 1 170px;min-height:48px!important;box-sizing:border-box}
+.owner-edit-actions .admin-primary{margin:0}
+.owner-edit-actions a{display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#1b2637;text-decoration:none}
+.owner-contact-history{margin:27px 0}
+.owner-contact-history h2{font-size:19px;margin:0 0 8px}
+.owner-contact-history ul{list-style:none;display:grid;gap:9px;padding:0;margin:17px 0 0}
+.owner-contact-history li{display:grid;gap:5px;padding:15px;background:white;border:1px solid #e1e5ec;border-radius:11px}
+.owner-contact-history li strong{font-size:14px}
+.owner-contact-history li small{font-size:12px;line-height:1.5;color:#667489}
+.owner-wa-edit-link{display:inline-flex;align-items:center;min-height:44px;font-size:14px;font-weight:750;color:#5b2ba4;text-decoration:none}
+@media(max-width:600px){
+ .member-list li>.owner-member-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .owner-detail-jump-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .owner-detail-jump-links a{box-sizing:border-box;width:100%;padding:10px 8px;overflow-wrap:anywhere}
+ .owner-detail-jump-links a:first-child{grid-column:1/-1}
+ .owner-edit-actions{flex-direction:column;align-items:stretch}
+ .owner-edit-actions>*{flex:auto;width:100%}
+}
