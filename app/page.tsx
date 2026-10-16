@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import {
   assets, curtainPrices, kiloPackages, memberProgramLaunched, site, whatsappLink,
 } from "@/lib/site";
+import { siteHref } from "@/lib/navigation";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -40,7 +41,7 @@ export default function HomePage() {
             <p className="hero-description">Cari layanan laundry dan harga yang sesuai kebutuhan. Kalau ingin tanya dulu, langsung hubungi kami lewat WhatsApp.</p>
             <div className="hero-actions">
               <a className="button button-primary" href={whatsappService} target="_blank" rel="noopener noreferrer">Hubungi lewat WhatsApp <span aria-hidden="true">↗</span></a>
-              <a className="button button-secondary" href="#layanan">Lihat daftar harga <span aria-hidden="true">↓</span></a>
+              <a className="button button-secondary" href={siteHref("/#layanan")}>Lihat daftar harga <span aria-hidden="true">↓</span></a>
             </div>
             <p className="hero-location"><span className="location-mark" aria-hidden="true" /> {site.shortAddress} <span aria-hidden="true">·</span> {site.landmark}</p>
           </div>
@@ -118,7 +119,7 @@ export default function HomePage() {
                 <p>{memberProgramLaunched
                   ? "Daftar di laundry, bawa kartu saat bertransaksi, dan lihat jumlah transaksi lewat QR Code pada kartu."
                   : "Kami sedang menyiapkan kartu member dengan pencatatan transaksi digital. Pendaftaran dan pengecekan akan dibantu oleh petugas ketika program mulai tersedia."}</p>
-                <Link className="button button-white" href="/membership">Pelajari kartu member <span aria-hidden="true">→</span></Link>
+                <Link className="button button-white" href={siteHref("/membership")}>Pelajari kartu member <span aria-hidden="true">→</span></Link>
               </div>
               <div className="member-feature-steps" aria-label="Cara kerja kartu member">
                 <div><span className="feature-step-number">01</span><span><strong>Daftar di laundry</strong><small>Petugas membantu membuat kartu member.</small></span></div>
