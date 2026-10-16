@@ -53,5 +53,6 @@ test("visits and manual promo lifecycle still independent of WhatsApp drafts",()
   assert.doesNotMatch(whatsapp,/recordOwnerVisit|laundry_record_visit|grantManualPromo|finishManualPromo/);
   assert.match(promos,/action=\{grantManualPromo\}/);
   assert.match(promos,/action=\{finishManualPromo\}/);
-  assert.match(detail,/action=\{recordOwnerVisit\}/);
+  assert.match(detail,/<AmountVisitForm/);
+  assert.match(read("components/admin/amount-visit-form.tsx"),/action=\{recordAmountVisit\}/);
 });
