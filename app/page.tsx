@@ -146,10 +146,13 @@ export default function HomePage() {
                 <a className="button button-secondary" href="https://www.google.com/maps/search/?api=1&query=Mas%20Jawa%20Laundry%20Kandang%20Jati%20Kulon" target="_blank" rel="noopener noreferrer">Petunjuk lokasi <span aria-hidden="true">↗</span></a>
               </div>
             </div>
-            <div className="contact-map" aria-label="Lokasi Mas Jawa Laundry">
-              <div className="map-illustration" aria-hidden="true"><span className="map-line map-line-one" /><span className="map-line map-line-two" /><span className="map-line map-line-three" /><span className="map-pin">MJL</span></div>
-              <div className="map-caption"><strong>Mas Jawa Laundry</strong><span>Kandang Jati Kulon · Probolinggo</span></div>
-            </div>
+            <aside className="contact-location-card" aria-label="Alamat Mas Jawa Laundry">
+              <span className="location-label">ALAMAT LAUNDRY</span>
+              <span className="location-monogram" aria-hidden="true">MJ</span>
+              <h3>Mas Jawa Laundry</h3>
+              <p>{site.address}<br />{site.landmark}<br />{site.shortAddress}</p>
+              <a className="inline-link" href="https://www.google.com/maps/search/?api=1&query=Mas%20Jawa%20Laundry%20Kandang%20Jati%20Kulon" target="_blank" rel="noopener noreferrer">Buka Google Maps <span aria-hidden="true">↗</span></a>
+            </aside>
           </div>
         </section>
       </main>
