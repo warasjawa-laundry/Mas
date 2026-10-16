@@ -1,0 +1,51 @@
+name: Bootstrap Stage 3 Supabase Dependency Lockfile
+
+# Temporary branch-only workflow; removed after commit to avoid persistent write permissions.
+on:
+  push:
+    branches:
+      - feature/stage3-membership-auth-data
+    paths:
+      - .github/workflows/stage3-dependency-bootstrap.yml
+
+permissions:
+  contents: write
+
+jobs:
+  pin:
+    if: github.repository == 'warasjawa-laundry/Mas' && github.ref == 'refs/heads/feature/stage3-membership-auth-data'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/stage3-membership-auth-data
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Resolve dependency graph, no postinstall scripts
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Pin new Supabase client dependencies exactly
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p = JSON.parse(fs.readFileSync('package.json','utf8'));
+          const lock = JSON.parse(fs.readFileSync('package-lock.json','utf8'));
+          for(const name of ['@supabase/ssr', '@supabase/supabase-js']){
+            const exact = lock.packages['node_modules/'+name]?.version;
+            if(!exact)throw new Error('Missing '+name);
+            p.dependencies[name] = exact;
+          }
+          fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n');
+          NODE
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit exact manifest and lockfile only to stage 3
+        run: |
+          if [ -n "$(git status --porcelain -- package.json package-lock.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json package-lock.json
+            git commit -m "build(stage3): lock Supabase Auth SSR dependency graph"
+            git push origin HEAD:feature/stage3-membership-auth-data
+          fi
