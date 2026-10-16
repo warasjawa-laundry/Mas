@@ -23,7 +23,7 @@ export default async function EditMember({params,searchParams}:Props) {
   const notice=await searchParams;
   const [memberR,changesR]=await Promise.all([
     supabase.from("laundry_members")
-      .select("id,member_number,display_name,whatsapp_e164,whatsapp_promo_consent,whatsapp_consent_at,updated_at,is_active")
+      .select("id,member_number,display_name,whatsapp_e164,whatsapp_promo_consent,whatsapp_consent_at,member_edit_revision,is_active")
       .eq("id",id).maybeSingle(),
     supabase.from("laundry_member_contact_events")
       .select("id,action,name_changed,phone_changed,consent_before,consent_after,created_at")
@@ -32,7 +32,6 @@ export default async function EditMember({params,searchParams}:Props) {
   if(memberR.error || !memberR.data)notFound();
   const member=memberR.data;
   const consent=member.whatsapp_promo_consent===true;
-  const updatedAt=member.updated_at as string;
   const formattedConsent=member.whatsapp_consent_at ?
     new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(new Date(member.whatsapp_consent_at))+" WIB":null;
 
@@ -55,7 +54,7 @@ export default async function EditMember({params,searchParams}:Props) {
       <form action={updateMemberContact} className="owner-edit-card">
         <input type="hidden" name="memberId" value={id}/>
         <input type="hidden" name="requestId" value={randomUUID()}/>
-        <input type="hidden" name="expectedUpdatedAt" value={updatedAt}/>
+        <input type="hidden" name="expectedRevision" value={member.member_edit_revision}/>
         <label htmlFor="edit-member-name">Nama pelanggan</label>
         <input id="edit-member-name" name="name" type="text" minLength={2} maxLength={100}
           defaultValue={member.display_name} autoComplete="name" required disabled={!member.is_active}/>
