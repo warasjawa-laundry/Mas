@@ -69,3 +69,24 @@
 .owner-void-box input{min-height:46px;min-width:0;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px}
 .owner-void-box button{min-height:44px}
 @media(max-width:440px){.owner-scanner{padding:16px}.owner-qr-paste>div{flex-wrap:wrap}.owner-qr-paste>div input{flex-basis:100%}.owner-scan-actions>*{flex:1 1 160px;text-align:center}.owner-member-links a{font-size:12px!important}}
+
+
+/* Gallery QR scan: clear, reachable buttons on mobile and no image uploads. */
+.owner-camera-placeholder{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:20px;color:#d9d7e3;font-size:14px;line-height:1.6;
+  background:#242336;
+}
+.owner-camera:not(.owner-camera-active) video{visibility:hidden}
+.owner-gallery-button{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-height:48px;padding:10px 16px;font-weight:700;cursor:pointer
+}
+.owner-gallery-button:disabled{opacity:.6;cursor:wait}
+.owner-gallery-hint{
+  margin:13px 0 0;color:#5e6b7c;font-size:13px;line-height:1.55;
+}
+.owner-scan-actions>.sr-only{flex:initial}
+@media(max-width:440px){
+  .owner-scan-actions>:not(input){flex:1 1 100%;min-height:48px}
+}
