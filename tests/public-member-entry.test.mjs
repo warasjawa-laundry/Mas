@@ -36,7 +36,8 @@ test("member holders can use camera or gallery locally, without login or searchi
 test("URL extraction rejects unknown host and never follows arbitrary QR destinations",()=>{
  assert.match(parser,/url\.protocol !== "https:"/);
  assert.match(parser,/url\.username \|\| url\.password \|\| url\.port \|\| url\.search \|\| url\.hash/);
- assert.match(parser,/masjawalaundry\.web\.id/);
+ assert.match(parser,/OFFICIAL_CARD_ORIGIN/);
+ assert.match(read("lib/laundry/card-origins.ts"),/masjawalaundry\.web\.id/);
  assert.match(parser,/const match = \/\^\\\/k\\\//);
  assert.doesNotMatch(scanner,/window\.location\.href|window\.open\(/);
  assert.match(progress,/laundry_public_card_progress/);
