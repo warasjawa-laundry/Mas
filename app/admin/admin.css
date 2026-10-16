@@ -120,3 +120,74 @@
  .owner-promo-actions>*{width:100%}
  .owner-promo-actions button{width:100%}
 }
+
+
+/* Stage 7: discoverable member promo actions and compact-screen safety */
+.member-list li>.owner-member-links{
+  display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;
+  align-items:center;gap:7px;min-width:0;flex:0 1 auto;
+}
+.member-list li>.owner-member-links a{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-height:44px!important;text-align:center!important;
+  border:1px solid #e1d6f2;background:#faf7ff;color:#552b91;
+  border-radius:9px;padding:8px 10px;
+  font-size:13px;font-weight:750;line-height:1.4;
+}
+.member-list li>.owner-member-links a:focus-visible,
+.owner-promo-whatsapp summary:focus-visible,
+.owner-wa-actions a:focus-visible,
+.owner-wa-actions button:focus-visible{outline:3px solid #ae8ce9;outline-offset:2px}
+.owner-promo-section{scroll-margin-top:20px}
+.owner-promo-item{min-width:0;position:relative;isolation:isolate}
+.owner-promo-title{min-width:0;display:block}
+.owner-promo-title strong{display:block;max-width:100%;overflow-wrap:anywhere}
+.owner-promo-status-row{display:flex;justify-content:flex-start;align-items:center;min-height:29px;max-width:100%}
+.owner-promo-status{display:inline-flex;align-items:center;max-width:100%;min-width:0;
+  width:max-content;overflow-wrap:anywhere;
+  border-radius:100px;background:#f3eefb;color:#552f85;
+  font-size:12px;font-weight:750;line-height:1.3;padding:6px 11px;
+}
+.owner-promo-whatsapp{border-top:1px solid #e9e5f0;padding-top:8px;margin-top:7px;min-width:0}
+.owner-promo-whatsapp>summary{
+  min-height:48px;display:flex;align-items:center;font-size:14px;
+  font-weight:750;color:#552b91;cursor:pointer;line-height:1.5;
+}
+.owner-wa-panel{display:grid;min-width:0;gap:9px;margin:12px 0 6px}
+.owner-wa-panel h3{font-size:17px;line-height:1.35;margin:0}
+.owner-wa-panel>p{font-size:13px;line-height:1.6;color:#5d6978;margin:0}
+.owner-wa-panel>label{font-size:13px;font-weight:750}
+.owner-wa-panel textarea{display:block;width:100%;min-width:0;box-sizing:border-box;
+  font:inherit;font-size:16px;line-height:1.6;resize:vertical;
+  border:1px solid #bcc6d6;border-radius:10px;background:#fff;color:#172337;padding:13px}
+.owner-wa-panel textarea:focus-visible{outline:3px solid #e4d7fa;border-color:#6d28d9}
+.owner-wa-actions{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
+.owner-wa-actions>*{flex:1 1 140px;min-height:48px!important;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  text-decoration:none;padding:10px 13px;margin:0}
+.owner-wa-actions button:disabled{cursor:not-allowed;opacity:.5}
+.owner-wa-panel .owner-wa-warning{color:#873b29;background:#fff7ed;
+  border:1px solid #f0d4b6;padding:12px;border-radius:10px}
+.owner-wa-panel .owner-wa-hint{color:#536576}
+.owner-wa-panel .owner-wa-feedback{font-weight:650;color:#3f2c6c}
+@media(max-width:600px){
+  .member-list li{display:flex;flex-direction:column;align-items:stretch;gap:13px}
+  .member-list li>div:first-child{min-width:0;width:100%}
+  .member-list li>.owner-member-links{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;width:100%;max-width:100%;flex:none;
+  }
+  .member-list li>.owner-member-links a{
+    min-width:0;width:100%;height:100%;box-sizing:border-box;
+    font-size:12px!important;padding:8px 5px;white-space:normal;overflow-wrap:anywhere;
+  }
+  .owner-promo-item{padding:16px}
+  .owner-promo-status-row{padding-right:52px}
+  .owner-wa-actions{flex-direction:column;align-items:stretch}
+  .owner-wa-actions>*{flex:initial;width:100%}
+}
+@media(max-width:350px){
+  .member-list li>.owner-member-links{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .member-list li>.owner-member-links a:first-child{grid-column:1/-1}
+  .owner-promo-item{padding:14px}
+}
