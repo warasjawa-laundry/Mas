@@ -54,7 +54,7 @@ begin
  if v_actor is null or not exists (
    select 1 from public.laundry_owner_accounts where auth_user_id=v_actor and is_active
  ) then raise exception 'not_authorized' using errcode='42501'; end if;
- if p_promotion_id is null or p_member_id is null or p_action not in ('USE','CANCEL')
+ if p_promotion_id is null or p_member_id is null or p_action is null or p_action not in ('USE','CANCEL')
  then raise exception 'invalid_request' using errcode='22023'; end if;
  if p_action='CANCEL' and char_length(v_note) not between 3 and 500
  then raise exception 'invalid_cancel_reason' using errcode='22023'; end if;
