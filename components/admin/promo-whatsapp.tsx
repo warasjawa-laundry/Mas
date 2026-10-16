@@ -41,7 +41,7 @@ export default function PromoWhatsapp(props:PromoWhatsappProps){
   const inputRef=useRef<HTMLTextAreaElement>(null);
   const validPhone=validE164(props.whatsappPhone);
   const allowed=props.memberActive && validPhone && props.whatsappConsent;
-  const digits=allowed ? props.whatsappPhone.slice(1) : null;
+  const digits=allowed && validE164(props.whatsappPhone) ? props.whatsappPhone.slice(1) : null;
   // This URL is only used for an owner-initiated click, never sent automatically.
   const waUrl=digits && message.trim()
     ? `https://wa.me/${digits}?text=${encodeURIComponent(message.trim())}`
