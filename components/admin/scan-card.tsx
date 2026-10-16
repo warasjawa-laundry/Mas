@@ -32,7 +32,6 @@ export default function ScanCard() {
   const [starting, setStarting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [manual, setManual] = useState("");
 
   useEffect(() => {
     aliveRef.current = true;
@@ -199,22 +198,7 @@ export default function ScanCard() {
         Pilih screenshot dari HP. Gambar diperiksa di perangkat, tidak diunggah ke server.
       </p>
 
-      <form
-        onSubmit={(event) => { event.preventDefault(); if (!workInProgress.current) void onDecoded(manual); }}
-        className="owner-qr-paste"
-      >
-        <label htmlFor="manual-qr">Atau tempel link QR</label>
-        <div>
-          <input
-            id="manual-qr" type="text" value={manual}
-            onChange={(event) => setManual(event.target.value)}
-            maxLength={500} placeholder="Tempel link kartu di sini" autoComplete="off"
-          />
-          <button type="submit" disabled={loading || !manual.trim()} className="admin-logout">
-            {loading ? "Memeriksa…" : "Cari"}
-          </button>
-        </div>
-      </form>
+
     </section>
   );
 }
