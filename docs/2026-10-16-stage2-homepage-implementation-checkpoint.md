@@ -1,3 +1,10 @@
+## Hasil verifikasi aktual Stage 2 — 16 Oktober 2026
+- GitHub Actions `Stage 2 Public Site` untuk commit terbaru sebelumnya `0719dde20`: [run 38860506010](https://github.com/warasjawa-laundry/Mas/actions/runs/38860506010) **SUCCESS**: `npm install`, `npm run test`, `npm run typecheck`, `npm run build` lulus. Hasil ini membuktikan build kode, BUKAN audit tampilan Android atau produksi.
+- UX refinement terakhir: panel lokasi memakai alamat terverifikasi dari konten kode lama dan tautan Google Maps; ilustrasi peta generik/fiktif dihilangkan agar tidak menyesatkan.
+- Vercel mengirim check otomatis terhadap commit pada project `ombotak-property-s-projects/masjawalaundry`, tetapi akun Vercel yang saat ini terhubung ke assistant hanya memperlihatkan team `KingdomHub`. Karena itu log deployment preview tersebut belum dapat diaudit atau dipastikan READY. Jangan klaim preview tersedia.
+- `main` masih tree SHA `46dcafb5f9a2f2c69b591e5e7c4a6c6e848ba1ef` pada pemeriksaan terakhir. Tidak ada merge atau promosi produksi.
+- Persetujuan foto/tarif, render UI langsung di browser, tes telepon Android, `package-lock.json`, dan pemeriksaan deployment Vercel tetap gate terbuka.
+
 # Stage 2 — Public Homepage Implementation Checkpoint
 Tanggal: 2026-10-16 WIB
 Branch: `feature/stage2-homepage-redesign` (stacked on `plan/unified-laundry-membership-uiux`)
