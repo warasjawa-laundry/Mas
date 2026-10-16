@@ -3,6 +3,7 @@
 import {useRef, useState} from "react";
 
 type PromoWhatsappProps={
+  promoId:string;
   memberName:string;
   title:string;
   terms:string|null;
@@ -62,12 +63,12 @@ export default function PromoWhatsapp(props:PromoWhatsappProps){
   return <div className="owner-wa-panel">
     <h3>Beritahu via WhatsApp</h3>
     <p>Pesan bisa diedit. Tidak akan terkirim otomatis.</p>
-    <label htmlFor={`wa-message-${props.title.replace(/[^a-zA-Z0-9]/g,"").slice(0,16)}-${props.memberName.replace(/[^a-zA-Z0-9]/g,"").slice(0,12)}`}>
+    <label htmlFor={`wa-message-${props.promoId}`}>
       Isi pesan untuk pelanggan
     </label>
     <textarea
       ref={inputRef}
-      id={`wa-message-${props.title.replace(/[^a-zA-Z0-9]/g,"").slice(0,16)}-${props.memberName.replace(/[^a-zA-Z0-9]/g,"").slice(0,12)}`}
+      id={`wa-message-${props.promoId}`}
       rows={9}
       maxLength={2200}
       value={message}
