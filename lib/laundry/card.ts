@@ -1,5 +1,6 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { cardOriginForEnvironment } from "@/lib/laundry/card-origins";
 
 function getCardKey() {
   const key = process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
@@ -45,7 +46,7 @@ export function memberNumber(value: number | string) {
   return "MJL-" + String(value).padStart(6, "0");
 }
 export function publicCardOrigin() {
-  // Preview cards are TEST CARDS: never print for real customers before production release.
-  const vercelHost = process.env.VERCEL_URL;
-  return vercelHost ? "https://" + vercelHost : "http://localhost:3000";
+  // Preview cards always point to a stable, reviewed test alias. Never encode
+  // the immutable VERCEL_URL deployment host in a physical card.
+  return cardOriginForEnvironment(process.env.VERCEL_ENV, process.env.NODE_ENV);
 }
