@@ -44,10 +44,6 @@
 .owner-camera video{width:100%;height:100%;object-fit:cover;display:block}
 .owner-scan-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
 .owner-scan-actions .admin-logout{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#1b2637}
-.owner-qr-paste{margin-top:26px;display:grid;gap:8px}
-.owner-qr-paste label{font-weight:700;font-size:14px}
-.owner-qr-paste>div{display:flex;gap:8px;align-items:center}
-.owner-qr-paste input{min-width:0;width:100%;min-height:48px;border-radius:10px;padding:12px;border:1px solid #bec7d5;background:white;font-size:16px}
 .owner-secondary-actions{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:26px 0}
 .owner-member-links{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:0 0 auto}
 .owner-member-links a{min-height:36px!important}
@@ -68,7 +64,7 @@
 .owner-void-box label{font-weight:650;font-size:13px}
 .owner-void-box input{min-height:46px;min-width:0;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px}
 .owner-void-box button{min-height:44px}
-@media(max-width:440px){.owner-scanner{padding:16px}.owner-qr-paste>div{flex-wrap:wrap}.owner-qr-paste>div input{flex-basis:100%}.owner-scan-actions>*{flex:1 1 160px;text-align:center}.owner-member-links a{font-size:12px!important}}
+@media(max-width:440px){.owner-scanner{padding:16px}.owner-scan-actions>*{flex:1 1 160px;text-align:center}.owner-member-links a{font-size:12px!important}}
 
 
 /* Gallery QR scan: clear, reachable buttons on mobile and no image uploads. */
