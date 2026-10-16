@@ -36,7 +36,8 @@ test("mobile menu reveals relevant navigation without requiring JS-only disclosu
   await menu.locator("summary").click();
   await expect(menu.getByRole("link", { name: "Kartu Member" })).toBeVisible();
   await menu.getByRole("link", { name: "Kartu Member" }).click();
-  await expect(page).toHaveURL(/#promo$/);
+  await expect(page).toHaveURL(/\/membership\/?$/);
+  await expect(page.getByRole("heading", { name: "Sudah punya kartu member?" })).toBeVisible();
 });
 
 test("membership info is honest before member backend launches", async ({ page }) => {
