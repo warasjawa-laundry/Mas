@@ -157,7 +157,7 @@ export default function HomePage() {
         </section>
       </main>
       <SiteFooter />
-      <div className="mobile-cta"><a href={whatsappService} target="_blank" rel="noopener noreferrer">Hubungi via WhatsApp <span aria-hidden="true">↗</span></a></div>
+
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
     </>
   );

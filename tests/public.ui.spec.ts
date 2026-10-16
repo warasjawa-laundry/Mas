@@ -56,3 +56,10 @@ test("reduced-motion preference removes smooth scrolling", async ({ page }) => {
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior))
     .toBe("auto");
 });
+
+test("mobile homepage does not duplicate or overlay the primary WhatsApp CTA", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 780 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".mobile-cta")).toHaveCount(0);
+  await expect(page.locator(".hero-actions").getByRole("link", { name: /Hubungi lewat WhatsApp/ })).toBeVisible();
+});

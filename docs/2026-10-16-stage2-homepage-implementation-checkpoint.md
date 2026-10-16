@@ -1,3 +1,9 @@
+## Visual Chromium QA — hasil 12 screenshot Stage 2 (2026-10-16)
+
+Workflow [run 38863719894](https://github.com/warasjawa-laundry/Mas/actions/runs/38863719894) lulus test, typecheck, build, dan Playwright pada viewports 320/360/390/768/1024/1440 untuk homepage serta /membership (12 screenshot). Screenshot artifact `mas-jawa-stage2-screenshots` diperiksa manual. Kedua halaman punya hierarki yang terbaca, tak ada horizontal overflow atau blank page. **Temuan nyata:** `.mobile-cta` yang menempel di bawah layar menutupi sebagian foto hero ketika pengunjung membuka homepage HP; CTA juga menduplikasi CTA hero. Tindakan: hapus sticky CTA duplikat dan pertahankan CTA hero + menu mobile, kemudian jalankan ulang screenshot suite.
+
+Batasan: Chromium di CI adalah simulasi viewport, bukan pemeriksaan perangkat Android nyata atau konfirmasi harga, materi gambar, dan klaim usaha. Jangan menyatakan "Stage 2 final certified" sebelum owner memvalidasi aset/harga dan perangkat diuji manual.
+
 ## Stage 2 aktual — SEO, dependency, dan preview rendering (2026-10-16 WIB)
 
 - Vercel preview build `f854907` merender `/` dan `/membership` dengan HTTP **200** melalui Vercel authenticated fetch; `robots.txt`, `sitemap.xml` dan URL optimasi hero image juga memberi HTTP **200**. Ini adalah request-level smoke, bukan sertifikasi visual.
