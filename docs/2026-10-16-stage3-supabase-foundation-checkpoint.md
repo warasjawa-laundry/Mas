@@ -1,3 +1,24 @@
+## Stage 3 owner ID/password UX and auth checkpoint (2026-10-16)
+
+**User decision LOCKED:** owner enters login ID `masjawalaundry` + password, never an email. Only owner needs credentials. Password change must be supported. Temporary/dummy password must not be hardcoded in the repo.
+
+**Code:** `/admin/login` (ID+password, show/hide), `/admin/scan` (protected placeholder, scanner NOT ACTIVE), `/admin/settings` (current password, new password, confirm, logout after change). Server actions use Supabase Auth `signInWithPassword` with private internal Auth email and `getUser()` plus verified `laundry_owner_accounts` active row. Next 16 SSR cookie refresh via `proxy.ts`; no owner email input and no public signup.
+
+**Package/version:** `@supabase/ssr@0.7.0`, `@supabase/supabase-js@2.118.0` pinned in `package-lock.json` after one-time GitHub bootstrap. Temporary write-privileged bootstrap workflow was removed; regular CI stays read-only.
+
+**Verification:** GitHub Actions Stage 3 [run 38866617523](https://github.com/warasjawa-laundry/Mas/actions/runs/38866617523) SUCCESS and [run 38866626009](https://github.com/warasjawa-laundry/Mas/actions/runs/38866626009) SUCCESS, test/typecheck/build and unauthorized access checks. Later screenshot QA [run 38866919660](https://github.com/warasjawa-laundry/Mas/actions/runs/38866919660) SUCCESS: both Chromium 360px and 1440px screenshots inspected, no horizontal overflow or artificial dashboard content, accessible error/toggle. Screenshots artifact name `mas-jawa-stage3-login-screenshots`. Vercel preview of login returned HTTP 200; accessing `/admin/scan` and `/admin/settings` without a verified session goes back to login. NO real login user yet, so positive (authenticated) flow not tested.
+
+**Pending activation/acceptance:**
+1. The owner/deliverer must decide an internal, privately controlled Auth identity. The owner-facing ID stays `masjawalaundry`. Pick a real recoverable mailbox if possible; never show it on login UI.
+2. Using Supabase Auth administrator UI, create exactly one confirmed Auth user with an individually generated temporary password. Do not paste credential into GitHub, public environment, logs or screenshots.
+3. Using the returned real Supabase Auth `auth.users.id`, explicitly add the active owner row to `public.laundry_owner_accounts`. An email string alone does not grant rights. This currently contains 0 rows.
+4. Configure `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `OWNER_AUTH_EMAIL`, `OWNER_LOGIN_ID` in preview runtime. Never use `NEXT_PUBLIC_` for the private mapping. Public membership flag stays false.
+5. Positive login and password change need controlled end-to-end tests with an actually provisioned owner, including new-password-only login after global sign out. Before release, add per-IP and per-ID login rate limiting, breach monitoring and account recovery process (admin-only if backing email inaccessible).
+
+**Status:** login UX + protected SSR path technically implemented and browser-tested; active credentials, server preview configuration and positive credential tests **NOT DONE**. Not production ready.
+
+---
+
 # Stage 3 — Supabase Foundation Checkpoint (2026-10-16)
 
 ## Verified environment
