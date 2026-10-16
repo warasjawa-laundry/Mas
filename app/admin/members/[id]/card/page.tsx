@@ -27,7 +27,7 @@ export default async function MemberCard({params}:Props) {
       <div className="mj-card" aria-label="Kartu member Mas Jawa Laundry">
         <div className="mj-card-info">
           <div className="mj-card-heading">MJ <strong>MAS JAWA LAUNDRY</strong></div>
-          <div className="mj-card-bottom"><small>KARTU MEMBER</small><strong>{card.display_name}</strong><span>{memberNumber(card.member_number)}</span></div>
+          <div className="mj-card-bottom"><small>KARTU UJI COBA — PREVIEW</small><strong>{card.display_name}</strong><span>{memberNumber(card.member_number)}</span></div>
         </div>
         <div className="mj-card-qr" dangerouslySetInnerHTML={{__html:svg}}/>
       </div>
