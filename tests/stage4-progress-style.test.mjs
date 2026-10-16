@@ -17,5 +17,5 @@ test("customer QR route imports its own progress styles, outside admin layout",(
 test("member page remains read-only and does not disclose phone or private names",()=>{
  assert.match(route,/laundry_public_card_progress/);
  assert.doesNotMatch(route,/whatsapp_e164|display_name|token_ciphertext/);
- assert.doesNotMatch(route,/laundry_checklist_events|insert\(|update\(/);
+ assert.doesNotMatch(route,/laundry_checklist_events|\.from\([^)]*\)\.(?:insert|update|upsert|delete)\(/);
 });
