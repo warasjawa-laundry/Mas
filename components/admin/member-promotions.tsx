@@ -80,7 +80,7 @@ export default function MemberPromotions({
         {p.status==="CANCELLED"&&<small>Dibatalkan{p.cancel_reason?": "+p.cancel_reason:""}</small>}
         {p.status==="AVAILABLE" && !expired && memberActive && <details className="owner-promo-whatsapp">
           <summary>Siapkan pesan WhatsApp</summary>
-          <PromoWhatsapp promoId={p.id} memberName={memberName} title={p.title} terms={p.terms}
+          <PromoWhatsapp memberId={memberId} promoId={p.id} memberName={memberName} title={p.title} terms={p.terms}
             expiresAt={p.expires_at} whatsappPhone={whatsappPhone}
             whatsappConsent={whatsappConsent} memberActive={memberActive}/>
         </details>}
