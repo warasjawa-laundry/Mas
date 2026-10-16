@@ -1,3 +1,4 @@
+import { mkdirSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 
 test("owner login asks for ID and password, never an email", async ({ page }) => {
@@ -9,6 +10,8 @@ test("owner login asks for ID and password, never an email", async ({ page }) =>
   await expect(page.locator('input[name="password"]')).toHaveAttribute("type", "password");
   await expect(page.locator('input[type="email"]')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  mkdirSync("artifacts/stage3", { recursive: true });
+  await page.screenshot({ path: "artifacts/stage3/login-360.png", fullPage: true });
 });
 
 test("owner can show and hide password without changing its value", async ({ page }) => {
@@ -37,4 +40,12 @@ test("no configured Auth identity means password cannot be accepted in demo prev
   await page.getByRole("button", { name: "Masuk" }).click();
   await expect(page.locator(".admin-error[role='alert']")).toContainText("belum diaktifkan");
   await expect(page).toHaveURL(/\/admin\/login/);
+});
+
+test("login page remains clean and readable on desktop", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/admin/login");
+  await expect(page.getByRole("heading", { name: "Masuk Pemilik" })).toBeVisible();
+  mkdirSync("artifacts/stage3", { recursive: true });
+  await page.screenshot({ path: "artifacts/stage3/login-1440.png", fullPage: true });
 });

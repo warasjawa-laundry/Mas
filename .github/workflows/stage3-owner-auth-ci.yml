@@ -37,3 +37,11 @@ jobs:
       # No live owner account or project service role key in GitHub Actions.
       - run: npx playwright test tests/admin.ui.spec.ts
       - run: npx playwright test tests/public.ui.spec.ts
+      - name: Preserve admin UI screenshots for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mas-jawa-stage3-login-screenshots
+          path: artifacts/stage3/
+          retention-days: 7
+          if-no-files-found: warn
