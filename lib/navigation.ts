@@ -8,7 +8,7 @@
  */
 const REVIEW_ALIAS_HOST = "mas-git-main-m8traders-projects-081d9dc2.vercel.app";
 
-export function siteHref(path: `/${string}`): string {
+export function siteHref(path: string): string {
   // The variable is configured only on the unyil project's Preview target.
   // Production is protected even if the variable is accidentally copied.
   if (process.env.VERCEL_ENV === "production") return path;
