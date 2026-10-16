@@ -24,7 +24,10 @@ export async function proxy(request: NextRequest) {
   });
 
   // Refresh the session without treating a cookie/JWT claim alone as authorization.
-  await supabase.auth.getUser();
+  // Verify signed session claims and refresh cookies without a full user lookup
+  // on every admin navigation. requireOwner() still checks the current Auth
+  // user and active owner row before any protected data is read or mutated.
+  await supabase.auth.getClaims();
   return response;
 }
 

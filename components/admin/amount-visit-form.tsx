@@ -1,11 +1,20 @@
 "use client";
 
 import {useState} from "react";
+import {useFormStatus} from "react-dom";
 import {recordAmountVisit} from "@/app/admin/points/actions";
 
 type Tier={minimum:number;points:number};
 type Props={memberId:string;requestId:string;memberActive:boolean;tiers:Tier[];year:number};
 const idr=(n:number)=>new Intl.NumberFormat("id-ID").format(n);
+
+function SaveTransactionButton({disabled}:{disabled:boolean}) {
+ const {pending}=useFormStatus();
+ return <button type="submit" className="admin-primary owner-record-button"
+   disabled={disabled||pending} aria-busy={pending}>
+   {pending?"Menyimpan transaksi…":"Simpan Transaksi & Poin"}
+ </button>;
+}
 
 export default function AmountVisitForm({memberId,requestId,memberActive,tiers,year}:Props){
  const [amount,setAmount]=useState("");
@@ -30,10 +39,7 @@ export default function AmountVisitForm({memberId,requestId,memberActive,tiers,y
      <strong>{pointEstimate===null?"—":pointEstimate+" poin"}</strong>
      <small>{validAmount?"Dari transaksi Rp"+idr(value)+". Nilai akhir disimpan saat dikonfirmasi.":"Masukkan nominal untuk melihat poin otomatis."}</small>
    </div>
-   <button type="submit" className="admin-primary owner-record-button"
-     disabled={!memberActive || !validAmount || !validDesc || tiers.length!==5}>
-     Simpan Transaksi & Poin
-   </button>
+   <SaveTransactionButton disabled={!memberActive || !validAmount || !validDesc || tiers.length!==5}/>
    <p className="member-note">Transaksi bertambah 1 kali hanya setelah tombol ditekan dan penyimpanan berhasil. QR scan tidak mencatat transaksi.</p>
  </form>;
 }

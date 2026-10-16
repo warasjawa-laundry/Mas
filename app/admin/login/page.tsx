@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getVerifiedOwner } from "@/lib/supabase/owner";
 import { loginOwner } from "@/app/admin/actions";
 import { OwnerPassword } from "@/components/admin/owner-password";
+import OwnerLoginSubmit from "@/components/admin/owner-login-submit";
 
 type Props = { searchParams: Promise<{ error?: string; notice?: string }> };
 export default async function OwnerLogin({ searchParams }: Props) {
@@ -25,7 +26,7 @@ export default async function OwnerLogin({ searchParams }: Props) {
         <input id="owner-id" name="loginId" type="text" autoComplete="username" defaultValue="masjawalaundry" required spellCheck={false} maxLength={64} />
         <label htmlFor="owner-password">Password</label>
         <OwnerPassword />
-        <button type="submit" className="admin-primary">Masuk</button>
+        <OwnerLoginSubmit />
       </form>
       <p className="admin-footnote">Khusus pemilik laundry. Pelanggan tidak perlu login.</p>
     </section>
