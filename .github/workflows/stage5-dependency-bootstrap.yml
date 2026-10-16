@@ -1,0 +1,42 @@
+name: Bootstrap Stage 5 QR Scanner Lockfile
+on:
+  push:
+    branches: [feature/stage5-owner-checklist]
+    paths: [.github/workflows/stage5-dependency-bootstrap.yml]
+permissions:
+  contents: write
+jobs:
+  pin:
+    if: github.repository == 'warasjawa-laundry/Mas' && github.ref == 'refs/heads/feature/stage5-owner-checklist'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/stage5-owner-checklist
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Pin installed scanner version
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+          const lock=JSON.parse(fs.readFileSync('package-lock.json','utf8'));
+          const name='@zxing/browser',version=lock.packages['node_modules/'+name]?.version;
+          if (!version) throw new Error('Scanner dependency did not resolve');
+          pkg.dependencies[name]=version;
+          fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n');
+          NODE
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit reproducible lockfile on stage5 only
+        run: |
+          if [ -n "$(git status --porcelain -- package.json package-lock.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json package-lock.json
+            git commit -m "build(stage5): pin QR decoder dependency"
+            git push origin HEAD:feature/stage5-owner-checklist
+          fi
