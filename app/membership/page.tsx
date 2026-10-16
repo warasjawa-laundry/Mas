@@ -37,7 +37,7 @@ export default function MembershipPage() {
             <p className="eyebrow">KARTU MEMBER MAS JAWA LAUNDRY</p>
             <h1>Simpan kartu, transaksi tercatat.</h1>
             <p>Pengganti kartu stempel kertas. Setiap kali laundry, petugas cukup memindai kartu lalu mencatat transaksi Anda.</p>
-            {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Kartu QR belum diterbitkan secara online. Silakan tanyakan kepada petugas untuk informasi terbaru.</div>}
+            {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program masih dalam tahap persiapan.</strong> Jika sudah menerima kartu QR uji coba dari petugas, Anda bisa membuka progresnya di bawah. Pendaftaran tetap dibantu petugas.</div>}
           </div>
           <CustomerCardScanner />
           <p className="member-owner-entry">Khusus pemilik laundry: <Link href="/admin/login">Masuk ke pengelolaan kartu member →</Link></p>
