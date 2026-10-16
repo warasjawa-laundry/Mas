@@ -228,3 +228,44 @@
  .owner-edit-actions{flex-direction:column;align-items:stretch}
  .owner-edit-actions>*{flex:auto;width:100%}
 }
+
+
+/* Stage 9 — amount-based transactions and year-isolated point rules */
+.owner-point-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:14px 0 6px}
+.owner-point-summary>div{min-width:0;background:#fff;border:1px solid #ded6ee;border-radius:14px;padding:16px;display:grid;gap:5px}
+.owner-point-summary span{font-size:12px;font-weight:700;color:#5c6380;line-height:1.5}
+.owner-point-summary strong{font-size:clamp(24px,5.6vw,34px);color:#51258e;font-variant-numeric:tabular-nums;line-height:1.15}
+.owner-point-settings-link{margin:6px 0 22px}
+.owner-point-settings-link a{color:#5a2e9a;font-size:14px;font-weight:750;min-height:44px;display:inline-flex;align-items:center}
+.owner-amount-form{background:#fff;border:1px solid #e2e5ec;border-radius:17px;padding:clamp(16px,4vw,25px);display:grid;gap:12px;margin:14px 0 24px}
+.owner-amount-form label{font-size:14px;font-weight:800;color:#202b3b}
+.owner-amount-form input,.owner-amount-form textarea{min-width:0;width:100%;border:1px solid #c1cbd8;border-radius:10px;padding:13px;font:inherit;font-size:16px;color:#1b2637;background:#fff;box-sizing:border-box}
+.owner-amount-form input{min-height:52px}
+.owner-amount-form textarea{min-height:88px;resize:vertical}
+.owner-amount-form input:focus-visible,.owner-amount-form textarea:focus-visible,
+.owner-point-rule-form input:focus-visible{outline:3px solid #dacef4;outline-offset:2px}
+.owner-point-estimate{background:#f6f1fd;border:1px solid #e6d9f8;border-radius:12px;padding:15px;display:grid;gap:5px}
+.owner-point-estimate>span{font-size:13px;font-weight:700}
+.owner-point-estimate>strong{font-size:24px;color:#57258e;font-variant-numeric:tabular-nums}
+.owner-point-estimate small{font-size:12px;color:#5c6c7d;line-height:1.5}
+.owner-amount-form .member-note{margin:0}
+.owner-point-rules{max-width:740px}
+.owner-point-year-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 18px}
+.owner-point-year-tabs a{display:flex;align-items:center;justify-content:center;min-height:46px;padding:10px 15px;border:1px solid #ded7ea;border-radius:11px;text-decoration:none;font-size:14px;font-weight:750;background:#fff;color:#4d3e68}
+.owner-point-year-tabs a[aria-current=page]{color:#fff;background:#5e29a4;border-color:#5e29a4}
+.owner-point-rule-form{display:grid;gap:12px;margin:20px 0 30px}
+.owner-point-rule-form>p{margin-bottom:6px}
+.owner-point-rule-form fieldset{min-width:0;background:#fff;border:1px solid #dfe3ea;border-radius:14px;padding:17px;margin:0}
+.owner-point-rule-form legend{font-size:15px;font-weight:800;color:#25213a;padding:0 5px}
+.owner-rule-inputs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.owner-rule-inputs label{display:grid;gap:7px;font-weight:750;font-size:13px}
+.owner-rule-inputs input{width:100%;min-width:0;min-height:47px;border:1px solid #bcc7d6;border-radius:9px;padding:11px 12px;font-size:16px;background:#fff}
+.owner-point-rule-form fieldset small{display:block;color:#6d7889;font-size:12px;margin:11px 0 0;line-height:1.5}
+.owner-point-rule-form>.admin-primary{width:100%;min-height:54px}
+@media(max-width:440px){
+ .owner-point-summary{grid-template-columns:1fr 1fr;gap:8px}
+ .owner-point-summary>div{padding:14px 11px}
+ .owner-point-summary strong{font-size:26px}
+ .owner-rule-inputs{gap:9px}
+ .owner-rule-inputs label{font-size:12px}
+}
