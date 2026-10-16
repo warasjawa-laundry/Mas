@@ -35,7 +35,7 @@ test("owner manually confirms amount, description and preview points before addi
 });
 test("amount transaction is atomic with legacy checklist, with immutable scoring",()=>{
  assert.match(sql,/laundry_private\.record_visit\(p_member_id,p_request_id\)/);
- assert.match(sql,/on conflict\(request_id\) do nothing/);
+ assert.match(read("supabase/migrations/20261016180000_stage5_owner_checklist.sql"),/on conflict\(request_id\) do nothing/);
  assert.match(sql,/laundry_amount_transactions/);
  assert.match(sql,/awarded_points integer not null/);
  assert.match(sql,/rule_revision integer not null/);
