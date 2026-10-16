@@ -1,8 +1,10 @@
 "use client";
 
 import {useRef, useState} from "react";
+import Link from "next/link";
 
 type PromoWhatsappProps={
+  memberId:string;
   promoId:string;
   memberName:string;
   title:string;
@@ -91,6 +93,8 @@ export default function PromoWhatsapp(props:PromoWhatsappProps){
       !props.whatsappConsent ?
       <p className="owner-wa-warning">Persetujuan menerima promo WhatsApp belum tercatat. Jangan kirim promo tanpa persetujuan pelanggan.</p> :
       <p className="owner-wa-hint">WhatsApp membuka percakapan dan mengisi draf. Periksa isi pesan sebelum menekan Kirim.</p>}
+    {(!validPhone || !props.whatsappConsent) && props.memberActive &&
+      <Link className="owner-wa-edit-link" href={`/admin/members/${props.memberId}/edit`}>Ubah nomor atau izin promo →</Link>}
     {feedback && <p className="owner-wa-feedback" role="status" aria-live="polite">{feedback}</p>}
   </div>;
 }
