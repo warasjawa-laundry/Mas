@@ -1,5 +1,4 @@
 "use server";
-import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/supabase/owner";
 import { cardIssuanceReady, newCardToken, encryptCardToken, tokenDigest } from "@/lib/laundry/card";
@@ -32,4 +31,3 @@ export async function registerLaundryMember(formData: FormData) {
   }
   redirect("/admin/members/" + data + "/card");
 }
-export function newRegistrationId() { return randomUUID(); }
