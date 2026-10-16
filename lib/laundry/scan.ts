@@ -1,4 +1,4 @@
-import { OFFICIAL_CARD_ORIGIN, REVIEW_CARD_ORIGIN } from "@/lib/laundry/card-origins";
+import { OFFICIAL_CARD_ORIGIN, REVIEW_CARD_ORIGIN } from "./card-origins.ts";
 
 const allowedHosts = new Set([
   new URL(OFFICIAL_CARD_ORIGIN).hostname,
