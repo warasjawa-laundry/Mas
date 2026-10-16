@@ -91,3 +91,21 @@ See `docs/2026-10-17-stage4-card-and-future-points-contract.md`. Production SQL 
 ### Stage 5 — VALIDATION IN PROGRESS (2026-10-17)
 
 GitHub CI 6/6 PASS at SHA `4729a62`: Integration `38957119789`, Stage 2 `38957119738`, Stage 3 `38957119930`, Stage 4 `38957119756`, Stage 5 `38957119765`, Stage 6 `38957119923`. Each job runs appropriate subset of source tests, typecheck/build and Playwright. Authenticated test and Preview UAT remain blocked/pending.
+
+### Stage 2 amendment — Main/feature Preview navigation isolation
+
+- `lib/navigation.ts` routes to fixed review-main alias ONLY for `VERCEL_ENV=preview` AND `VERCEL_GIT_COMMIT_REF=main`.
+- Feature previews, Netlify, and production retain relative links on their own hosts; prevents UAT silently switching to old main.
+- New executable tests: `tests/preview-navigation.test.mjs`; source contract updated.
+- This amendment and CI were validated on code SHA `7f89d3107e07e4bcc092af8170ac4529545ab88f`.
+
+### Stage 5 update — Preview created 2026-10-17
+
+- [x] Six GitHub CI suites PASS at `7f89d31`, including TypeScript, build and available browser tests.
+- [x] **One** manual unyil Vercel Preview deployment: `dpl_9g7wikotpv1VYT9ZGzTwnuPdKCKA` — READY, region `bom1`.
+- [x] Exact deployed Git SHA `7f89d31` and branch `feature/admin-operations-reliability-20261017` verified.
+- [x] Branch alias verified points to the deployment: `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app`.
+- [ ] Authenticated manual UAT on mobile and desktop. Deployment has Vercel Authentication; a READY build is not proof of login, successful transaction, or performance improvement.
+- [ ] QR public progress end-to-end on the *eventual main/stable domain*. Branch Preview deliberately embeds the stable main test origin, so public QR entry cannot yet certify the feature branch in isolation.
+- [ ] Stage 4 isolated database migration and regression tests before lifecycle release.
+- [ ] Separate release approval before merge to `main` or production promotion.

@@ -17,3 +17,9 @@
 - [ ] Compare dashboard response time and request totals against previous `/admin/scan`
 
 **No production deployment.**
+
+## Post-checkpoint Preview navigation fix
+
+- Corrected `lib/navigation.ts` so the stable review-main redirect is only active for Vercel Preview builds sourced from `main`. Feature-branch Preview navigation now remains on its own origin for proper UAT.
+- `tests/preview-navigation.test.mjs` executes real link generation under main, feature, production, Netlify, and hostile origin conditions.
+- CI: 6/6 PASS at code commit `7f89d31`.
