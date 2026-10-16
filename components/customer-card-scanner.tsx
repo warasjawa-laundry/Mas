@@ -54,6 +54,7 @@ export default function CustomerCardScanner(){
     // Only approved card URL hosts or a 43-char card token are accepted.
     const token=extractLaundryToken(raw);
     if(!token){
+      stopCamera();
       setError("QR tersebut bukan kartu Mas Jawa Laundry. Coba foto kartu yang benar.");
       return;
     }
