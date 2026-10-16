@@ -2,15 +2,22 @@ import Link from "next/link";
 import { requireOwner } from "@/lib/supabase/owner";
 import { memberNumber } from "@/lib/laundry/card";
 import { timeAdmin } from "@/lib/admin/timing";
-type Params = { searchParams: Promise<{ q?: string }> };
+type Params = { searchParams: Promise<{ q?: string; page?: string }> };
 export default async function MemberList({searchParams}: Params) {
   const { supabase } = await requireOwner();
-  const query = (await searchParams).q?.trim().replace(/[%_,]/g, "").slice(0,80) || "";
+  const input = await searchParams;
+  const query = input.q?.trim().replace(/[%_,]/g, "").slice(0,80) || "";
+  const rawPage = Number(input.page ?? "1");
+  const page = Number.isSafeInteger(rawPage) && rawPage >= 1 && rawPage <= 10000 ? rawPage : 1;
+  const perPage = 25;
+  const offset = (page - 1) * perPage;
+  const pageLink = (number: number) => "/admin/members?" + new URLSearchParams({...(query ? {q:query} : {}),page:String(number)}).toString();
   let request = supabase.from("laundry_members")
-    .select("id,member_number,display_name,is_active,created_at")
-    .order("created_at",{ascending:false}).limit(100);
+    .select("id,member_number,display_name,is_active,created_at",{count:"exact"})
+    .order("created_at",{ascending:false}).order("id",{ascending:false})
+    .range(offset,offset+perPage-1);
   if (query) request=request.ilike("display_name","%"+query+"%");
-  const { data, error } = await timeAdmin("members.list.query", () => request);
+  const { data, error, count } = await timeAdmin("members.list.query", () => request);
   return <main className="admin-workspace">
     <div className="admin-topbar"><Link href="/admin/scan" className="admin-brand">← Mas Jawa Laundry</Link><Link href="/admin/settings">Pengaturan</Link></div>
     <section className="admin-content">
@@ -29,7 +36,12 @@ export default async function MemberList({searchParams}: Params) {
           <div><strong>{m.display_name}</strong><span>{memberNumber(m.member_number)} · {m.is_active ? "Aktif" : "Nonaktif"}</span></div>
           <nav className="owner-member-links" aria-label={`Aksi untuk ${m.display_name}`}><Link prefetch={false} href={`/admin/members/${m.id}`}>Catat Transaksi</Link><Link prefetch={false} href={`/admin/members/${m.id}#promo-member`}>Promo</Link><Link prefetch={false} href={`/admin/members/${m.id}/card`}>Kartu QR</Link><Link prefetch={false} href={`/admin/members/${m.id}/edit`}>Ubah Data</Link></nav>
         </li>)}</ul>}
-      <p className="member-note">Data nomor WhatsApp tidak ditampilkan dalam daftar publik. Pencarian dibatasi pada 100 hasil terbaru.</p>
+      {!error && count !== null && count > perPage && <nav aria-label="Halaman daftar member" className="admin-member-pagination">
+        {page > 1 && <Link prefetch={false} href={pageLink(page - 1)}>← Sebelumnya</Link>}
+        <span>Halaman {page} · {count} member</span>
+        {offset + (data?.length ?? 0) < count && <Link prefetch={false} href={pageLink(page + 1)}>Berikutnya →</Link>}
+      </nav>}
+      <p className="member-note">Data nomor WhatsApp tidak ditampilkan dalam daftar publik. Daftar ditampilkan 25 member per halaman. Cari nama untuk menemukan member lain.</p>
     </section>
   </main>;
 }
