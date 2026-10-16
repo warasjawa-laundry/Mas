@@ -1,0 +1,39 @@
+name: Stage 3 Owner Auth (Safe Preview)
+
+on:
+  pull_request:
+    paths:
+      - "app/admin/**"
+      - "components/admin/**"
+      - "lib/supabase/**"
+      - "proxy.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "tests/*auth*"
+      - "tests/admin.ui.spec.ts"
+      - ".github/workflows/stage3-owner-auth-ci.yml"
+  push:
+    branches:
+      - feature/stage3-membership-auth-data
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      # No live owner account or project service role key in GitHub Actions.
+      - run: npx playwright test tests/admin.ui.spec.ts
+      - run: npx playwright test tests/public.ui.spec.ts
