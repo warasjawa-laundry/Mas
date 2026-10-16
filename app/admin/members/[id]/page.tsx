@@ -5,20 +5,24 @@ import {requireOwner} from "@/lib/supabase/owner";
 import {memberNumber} from "@/lib/laundry/card";
 import {recordOwnerVisit,correctOwnerVisit} from "@/app/admin/visits/actions";
 import VisitSubmitButton from "@/components/admin/visit-submit-button";
+import MemberPromotions from "@/components/admin/member-promotions";
 
-type Props={params:Promise<{id:string}>,searchParams:Promise<{error?:string;recorded?:string;corrected?:string;requestId?:string}>};
+type Props={params:Promise<{id:string}>,searchParams:Promise<{error?:string;recorded?:string;corrected?:string;requestId?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
 const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export default async function OwnerMember({params,searchParams}:Props){
  const {supabase}=await requireOwner();
  const {id}=await params,notice=await searchParams;
  if(!validId.test(id))notFound();
- const [memberR,addsR,voidsR,historyR]=await Promise.all([
+ const [memberR,addsR,voidsR,historyR,promosR]=await Promise.all([
   supabase.from("laundry_members").select("id,member_number,display_name,is_active").eq("id",id).maybeSingle(),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","ADD"),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","VOID"),
   supabase.from("laundry_checklist_events")
     .select("id,event_type,reverses_event_id,reason,occurred_at")
-    .eq("member_id",id).order("occurred_at",{ascending:false}).limit(30)
+    .eq("member_id",id).order("occurred_at",{ascending:false}).limit(30),
+  supabase.from("laundry_member_promotions")
+    .select("id,title,terms,status,expires_at,created_at,redeemed_at,cancelled_at,cancel_reason")
+    .eq("member_id",id).order("created_at",{ascending:false}).limit(100)
  ]);
  if(memberR.error || !memberR.data)notFound();
  const member=memberR.data;
@@ -27,6 +31,7 @@ export default async function OwnerMember({params,searchParams}:Props){
  const history=historyR.data||[];
  const corrected=new Set(history.filter(e=>e.event_type==="VOID").map(e=>e.reverses_event_id));
  const requestId=notice.requestId&&validId.test(notice.requestId)?notice.requestId:randomUUID();
+ const promoRequestId=notice.promoRequestId&&validId.test(notice.promoRequestId)?notice.promoRequestId:randomUUID();
  return <main className="admin-workspace">
   <div className="admin-topbar"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link><Link href="/admin/settings">Pengaturan</Link></div>
   <section className="admin-content owner-member-page">
@@ -68,6 +73,9 @@ export default async function OwnerMember({params,searchParams}:Props){
        </details>}
       </li>;
     })}</ul>}
+   <MemberPromotions memberId={id} memberName={member.display_name}
+     requestId={promoRequestId} promos={promosR.data||[]}
+     loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>
    <div className="admin-shortcuts"><Link href={`/admin/members/${id}/card`}>Lihat Kartu QR →</Link><Link href="/admin/scan">Scan Kartu Lain →</Link></div>
   </section>
  </main>;
