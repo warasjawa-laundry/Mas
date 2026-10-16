@@ -4,7 +4,7 @@
 **Branch:** `feature/admin-operations-reliability-20261017`  
 **Base:** `50d9bd922c57448d5316a1584e6fc26b14a2e1eb` (PR #10)  
 **Scope:** QR compatibility, owner dashboard/navigation, transaction UX, repeatable tests, security/performance reviews.  
-**Status:** IN PROGRESS — branch-only implementation; production release blocked.
+**Status:** Stage 0–3 implementation COMPLETE (CI 6/6 PASS on candidate `4729a62`); Stage 4 schema GATED; Stage 5 authenticated Preview UAT PENDING. `main` and production unchanged.
 
 ## Guardrails and invariants
 
@@ -32,9 +32,9 @@
 ## Checkpoint ledger (update after EVERY implementation stage)
 
 - [x] **Stage 0 — Audit and implementation contract**. Branch isolated from `main`; scope, invariants, release gates and findings documented. Evidence: branch and this plan.
-- [ ] **Stage 1 — QR origin/allowlist + regression tests**. Acceptance: generated QR on Preview uses stable alias, no unsafe host allowed, existing recognized legacy QR still decodes.
-- [ ] **Stage 2 — Owner dashboard and consistent admin shell**. Acceptance: authenticated `/admin`, scan/member/settings links, accessible 320–1440px layout, no extra Auth/db lookup from shell.
-- [ ] **Stage 3 — Faster member operations and compact responsive UX**. Acceptance: owner member detail keeps amount, points, void, promo, consent, QR routes intact; action-first on mobile.
+- [x] **Stage 1 — QR origin/allowlist + regression tests**. Acceptance: generated QR on Preview uses stable alias, no unsafe host allowed, existing recognized legacy QR still decodes.
+- [x] **Stage 2 — Owner dashboard and consistent admin shell**. Acceptance: authenticated `/admin`, scan/member/settings links, accessible 320–1440px layout, no extra Auth/db lookup from shell.
+- [x] **Stage 3 — Faster member operations and compact responsive UX**. Acceptance: owner member detail keeps amount, points, void, promo, consent, QR routes intact; action-first on mobile.
 - [ ] **Stage 4 — Card lifecycle and future-year points (schema-gated)**. Acceptance: migrations reviewable and tested on isolated database; never applied live as a side effect of merging.
 - [ ] **Stage 5 — Verification and release certification**. Acceptance: `npm test`, `tsc`, `next build`, Playwright CI, Vercel unyil Preview READY in `bom1`; security regression + authenticated UAT documented.
 
@@ -58,3 +58,36 @@
 ### Pending checkpoint updates
 
 Record actual files changed, test command and result, SHA, exceptions, and status after each stage. Do not mark a stage COMPLETE without its stated evidence.
+
+### Stage 1 — IMPLEMENTATION COMPLETE / QA browser pending (2026-10-17)
+
+- Stable canonical Preview origin and official production origin: `lib/laundry/card-origins.ts`.
+- `lib/laundry/card.ts` no longer embeds one-off Vercel deployment URL; `lib/laundry/scan.ts` accepts stable review and tightly-scoped historical preview hostnames while rejecting untrusted URL schemes, hosts and userinfo.
+- Executable positive/negative parser tests: `tests/qr-canonical-links.test.mjs`. Legacy source-contract test updated to follow the shared constant.
+- All 6 GitHub CI workflows passed for candidate `4729a6274e1e8424781094d8add4bf38cce376d8`.
+- **Residual gate:** physical QR scan AND opening `/k/<token>` in same authenticated review deployment; QR tokens are bearer credentials and must not appear in logs.
+
+### Stage 2 — IMPLEMENTATION COMPLETE / mobile QA pending (2026-10-17)
+
+- `app/admin/page.tsx`: owner-protected dashboard with three small count queries, scan-first action, quick links, safe fallback on read error.
+- `components/admin/admin-navigation.tsx` and `app/admin/layout.tsx`: shared desktop sidebar/mobile bottom nav; nav makes no database/Auth calls.
+- Successful login and signed-in login-page redirect now point to `/admin`.
+- `app/admin/admin.css`: adaptive layout, selected states, keyboard focus and reduced mobile scroll.
+- Tests: `tests/admin-operations.test.mjs`; CI 6/6 PASS on `4729a62`.
+- **Residual gate:** measure and visually inspect 320/360/390/768/1440 px with signed-in owner on Preview.
+
+### Stage 3 — IMPLEMENTATION COMPLETE / UAT pending (2026-10-17)
+
+- `app/admin/members/page.tsx`: server pagination 25/page, deterministic sort, bounded page number and preserved query in page links.
+- `app/admin/members/[id]/page.tsx`: move secondary links after amount-entry form, collapse transaction correction history, keep promo and points contracts.
+- `app/admin/admin.css`: compact summary cards and bounded pagination controls.
+- CI 6/6 PASS on `4729a62`. No migration, auth policy, transaction, point rules, or consent logic changed.
+- **Residual gate:** owner UAT on valid test member; compare latency, verify form submit, correction, promo, WhatsApp permissions and mobile overflow.
+
+### Stage 4 — DESIGN GATED (2026-10-17)
+
+See `docs/2026-10-17-stage4-card-and-future-points-contract.md`. Production SQL not executed. This is **not** marked complete.
+
+### Stage 5 — VALIDATION IN PROGRESS (2026-10-17)
+
+GitHub CI 6/6 PASS at SHA `4729a62`: Integration `38957119789`, Stage 2 `38957119738`, Stage 3 `38957119930`, Stage 4 `38957119756`, Stage 5 `38957119765`, Stage 6 `38957119923`. Each job runs appropriate subset of source tests, typecheck/build and Playwright. Authenticated test and Preview UAT remain blocked/pending.
