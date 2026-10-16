@@ -15,20 +15,20 @@ export async function loginOwner(formData: FormData) {
 
   const supabase = await createOwnerClient();
   if (!supabase) redirect("/admin/login?error=unavailable");
-  const { error } = await supabase.auth.signInWithPassword({
+  // The user in this response was just verified by Supabase Auth itself.
+  // Avoid a redundant getUser() network round-trip immediately after login.
+  const { data: { user }, error } = await supabase.auth.signInWithPassword({
     email: targetEmail,
     password,
   });
-  if (error) redirect("/admin/login?error=invalid");
-
-  const { data: { user } } = await supabase.auth.getUser();
+  if (error || !user || user.is_anonymous) redirect("/admin/login?error=invalid");
   const { data: owner } = await supabase
     .from("laundry_owner_accounts")
     .select("is_active")
     .eq("auth_user_id", user?.id || "")
     .maybeSingle();
 
-  if (!user || user.is_anonymous || owner?.is_active !== true) {
+  if (owner?.is_active !== true) {
     await supabase.auth.signOut();
     redirect("/admin/login?error=invalid");
   }
