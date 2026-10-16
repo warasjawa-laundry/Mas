@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Mas Jawa Laundry — Pratinjau Arah UI/UX (Bukan Aplikasi Aktif)</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--brand:#6d28d9;--brand2:#5b21b6;--tint:#f3e8ff;--ink:#172235;--muted:#566577;--line:#e1e7ee;--canvas:#f7f9fc;--success:#176b45;--danger:#a52828;--radius:16px;font-family:Outfit,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:white}
+*{box-sizing:border-box}body{margin:0}button,input,textarea{font:inherit}button{cursor:pointer}a{color:inherit}img{max-width:100%}.hidden{display:none!important}.container{max-width:1160px;margin:0 auto;padding:0 24px}.sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+:focus-visible{outline:3px solid #9a71ef;outline-offset:3px}p{line-height:1.62}.meta{font-size:.8rem;color:var(--muted)}.muted{color:var(--muted)}.eyebrow{font-size:.73rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--brand)}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.2rem,5vw,4.35rem);line-height:1.1;letter-spacing:-.045em}h2{font-size:clamp(1.5rem,3vw,2.4rem);line-height:1.18;letter-spacing:-.035em}h3{font-size:1.1rem;letter-spacing:-.02em}strong{font-weight:750}
+button,.btn{border:1px solid transparent;border-radius:12px;min-height:48px;padding:11px 19px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:700;background:var(--brand);color:#fff;transition:background .15s,transform .15s}button:hover,.btn:hover{background:var(--brand2)}button:active,.btn:active{transform:translateY(1px)}button:disabled{opacity:.5;cursor:not-allowed}.secondary{background:white;color:var(--ink);border-color:#bfc7d2}.secondary:hover{background:#f4f6fa}.quiet{background:transparent;color:var(--brand);border-color:transparent}.quiet:hover{background:var(--tint)}.full{width:100%}
+.review-bar{background:#211936;color:#eee6fb;padding:10px 0;font-size:12px}.review-bar .container{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}.review-nav{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}.review-nav .container{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:70px}.logo{display:flex;align-items:center;gap:11px;text-decoration:none;font-size:1rem;font-weight:850;letter-spacing:-.02em}.logo-mark{width:38px;height:38px;border-radius:10px;background:#211936;color:white;display:grid;place-items:center;font-weight:900}.logo img{max-width:42px;max-height:42px;object-fit:contain}.tabs{display:flex;align-items:center;gap:6px}.tabs button{font-size:.9rem;min-height:40px;padding:8px 13px;background:transparent;color:var(--muted);border:1px solid transparent}.tabs button.active{background:var(--tint);border-color:#e9dcff;color:var(--brand)}
+.preview-note{font-size:.8rem;color:#5e4a78;background:#f6f0ff;border-radius:9px;padding:10px 14px}.homepage-header{padding:22px 0;display:flex;justify-content:space-between;align-items:center;gap:15px}.home-links{display:flex;align-items:center;gap:22px;font-size:.9rem;color:#344256}.home-links a{text-decoration:none}.home-links a:hover{text-decoration:underline}
+.hero{padding:46px 0 78px;display:grid;grid-template-columns:1fr .86fr;align-items:center;gap:62px}.hero p{font-size:1.08rem;color:var(--muted);max-width:510px}.hero .actions{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 23px}.hero-media{min-height:395px;position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(135deg,#d9d1eb,#b8a7da)}.hero-media img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}.hero-media .photo-label{position:absolute;bottom:15px;left:15px;right:15px;padding:10px 13px;border-radius:9px;background:rgba(255,255,255,.93);color:#3a4251;font-size:.76rem}.mark-box{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--muted);margin-top:24px}.mark-box span{width:9px;height:9px;background:var(--brand);border-radius:50%}
+.section{padding:80px 0}.section.alt{background:var(--canvas)}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:25px}.section-heading p{max-width:450px;color:var(--muted);margin:0}.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.plan{border:1px solid var(--line);padding:23px;border-radius:16px;background:#fff}.plan-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:15px}.plan h3{margin:0}.pill{font-size:.72rem;font-weight:750;border-radius:100px;padding:6px 9px;background:#f0f1f4;color:#505d6e}.price-line{display:flex;justify-content:space-between;padding:10px 0;gap:12px;border-top:1px solid var(--line);font-size:.93rem}.price-line strong{white-space:nowrap}.price-foot{font-size:.75rem;color:#7b4a19;margin-top:15px}.member-strip{padding:37px;background:#211936;color:#fff;border-radius:22px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}.member-strip .eyebrow{color:#cbaafa}.member-strip p{color:#ded7e9;margin:0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:28px}.step{padding:23px 22px;background:#fff;border:1px solid var(--line);border-radius:15px}.step .num{width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--brand);font-weight:900;display:grid;place-items:center;margin-bottom:17px}.step p{font-size:.88rem;color:var(--muted);margin:0}.location{display:flex;align-items:center;justify-content:space-between;gap:25px;border-top:1px solid var(--line);padding:35px 0 55px}.location p{margin:5px 0 0;color:var(--muted)}
+.owner-surface,.member-surface{background:var(--canvas);min-height:calc(100vh - 116px);padding:28px 0 65px}.owner-shell{max-width:1080px;margin:0 auto;padding:0 22px;display:grid;grid-template-columns:205px minmax(0,1fr);gap:25px}.owner-sidebar{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px;height:max-content;position:sticky;top:100px}.owner-sidebar h3{font-size:.96rem;margin:0 0 14px}.owner-sidebar button{width:100%;justify-content:flex-start;text-align:left;margin-top:5px;background:transparent;color:#566477;font-weight:650;border:0;padding:12px 13px}.owner-sidebar button.selected{color:var(--brand);background:var(--tint)}.owner-sidebar button:hover{background:#f6f4fb}.owner-main{min-width:0}.owner-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px}.owner-title h1{font-size:clamp(1.65rem,3vw,2.2rem);margin:0 0 6px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;margin-bottom:16px}.panel p:last-child{margin-bottom:0}.scan-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.scan-box{border:1px dashed #b7a7d3;border-radius:14px;background:#fcfaff;min-height:292px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px}.scan-icon{width:88px;height:88px;display:grid;place-items:center;border:2px solid var(--brand);border-radius:18px;color:var(--brand);font-size:2.3rem;font-weight:500;margin-bottom:15px}.scan-box p{font-size:.9rem;color:var(--muted)}.detail{min-height:292px;display:flex;flex-direction:column;justify-content:space-between}.count{font-size:3.6rem;line-height:1;font-weight:800;letter-spacing:-.05em}.stats-row{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:15px 0 21px}.stats-row small{display:block;color:var(--muted);margin-bottom:5px}.empty{color:var(--muted);text-align:center;margin:auto 0}.success{padding:12px 14px;border-radius:11px;background:#ebf7f0;color:#155d3d;font-size:.91rem;font-weight:700;margin-bottom:13px}.field{display:flex;flex-direction:column;gap:7px;margin:0 0 17px}.field label{font-size:.9rem;font-weight:700}.field input,.field textarea{padding:12px 13px;border:1px solid #bdc7d3;border-radius:10px;min-height:47px;outline:none;width:100%;background:#fff}.field input:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px #ede2ff}.field textarea{resize:vertical;min-height:92px}.field small{color:var(--muted)}.form-wrap{max-width:580px}.form-buttons{display:flex;gap:9px;flex-wrap:wrap}.member-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 0;border-bottom:1px solid var(--line)}.member-row:last-child{border-bottom:0}.member-row strong,.member-row span{display:block}.member-row span{font-size:.8rem;color:var(--muted);margin-top:4px}.member-actions{display:flex;align-items:center;gap:10px}.toast{font-size:.87rem;color:#155d3d;margin-top:10px}.fake-card{margin:16px 0;max-width:365px;aspect-ratio:1.58;background:#211936;color:#fff;border-radius:15px;padding:21px;position:relative;display:flex;flex-direction:column;justify-content:space-between}.fake-card .card-top{display:flex;justify-content:space-between;gap:8px}.fake-card .card-top span{font-size:.7rem;letter-spacing:.14em}.card-middle{font-size:1.2rem;font-weight:800}.fake-qr{width:93px;height:93px;background:#fff;color:#38275c;border-radius:7px;font-size:.68rem;line-height:1.25;display:grid;place-items:center;text-align:center;padding:5px}.fake-card .card-bottom{display:flex;justify-content:space-between;align-items:end;gap:8px;font-size:.7rem}.mutedbox{background:#f5f7fb;padding:14px;border-radius:11px;color:#4b5969;font-size:.84rem}
+.member-wrap{max-width:430px;margin:0 auto;padding:0 17px}.member-banner{display:flex;align-items:center;gap:12px;margin-bottom:22px}.member-banner .logo-mark{width:45px;height:45px}.member-kicker{color:var(--muted);font-size:.78rem}.member-card{background:white;border:1px solid var(--line);border-radius:21px;padding:24px;margin-bottom:13px}.member-card h1{font-size:1.35rem;margin:5px 0 4px}.member-count{text-align:center;padding:22px;background:#f4f0fc;border-radius:13px;margin-top:20px}.member-count .count{font-size:4.75rem;margin:6px}.history{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line)}.history:last-child{border:0}.check{color:var(--success);font-weight:850}.reward{border:1px solid #d7c7fa;background:#faf7ff;border-radius:13px;padding:15px}.reward h3{margin:6px 0}.reward p{margin:0;color:var(--muted);font-size:.88rem}.badge{display:inline-block;color:#175c40;background:#e9f6ec;border-radius:100px;padding:5px 9px;font-weight:750;font-size:.73rem}.badge.used{color:#636b77;background:#e9edf2}
+.mobile-owner-nav{display:none}footer.demo-footer{background:#fff;border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:.79rem}
+@media(max-width:800px){.hero{grid-template-columns:1fr;gap:20px;padding:25px 0 54px}.hero-media{min-height:300px;max-height:380px}.home-links{gap:11px}.home-links a:not(.btn){display:none}.plans{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.member-strip{grid-template-columns:1fr}.scan-grid{grid-template-columns:1fr}.owner-shell{grid-template-columns:1fr}.owner-sidebar{display:none}.owner-surface{padding-bottom:93px}.mobile-owner-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:12;background:#fff;border-top:1px solid var(--line);padding:8px 9px max(8px,env(safe-area-inset-bottom));justify-content:space-around;gap:4px}.mobile-owner-nav button{flex:1;font-size:.75rem;min-height:51px;padding:6px 2px;background:white;color:var(--muted);border:0;border-radius:8px}.mobile-owner-nav button.selected{background:var(--tint);color:var(--brand)}.section{padding:58px 0}.section-heading{display:block}.owner-shell{padding:0 14px}.owner-title{align-items:start}.panel{padding:18px}.location{align-items:flex-start;flex-direction:column}}
+@media(max-width:470px){.container{padding:0 16px}.review-nav .container{min-height:66px;align-items:center}.tabs{gap:2px}.tabs button{font-size:.77rem;min-height:40px;padding:7px 8px}.review-nav .logo{font-size:.82rem}.review-nav .logo-mark{width:30px;height:30px}.hero-media{min-height:240px}.hero .actions>*{flex:1}.homepage-header{flex-wrap:wrap;padding:14px 0}.home-links .btn{font-size:.85rem}.member-strip{padding:25px}.owner-title h1{font-size:1.6rem}.owner-title .meta{max-width:170px}.count{font-size:3rem}.fake-card{padding:17px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media print{body>*:not(.print-area){display:none!important}.print-area{display:block!important;margin:0;padding:0}.fake-card{border-radius:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.review-bar,.review-nav,.demo-footer,.owner-sidebar,.mobile-owner-nav,button{display:none!important}}
+</style>
+</head>
+<body>
+<div class="review-bar"><div class="container"><strong>PRATINJAU UI/UX · Bukan website aktif</strong><span>Data contoh; QR dan scanner belum berfungsi. Harga menunggu konfirmasi owner.</span></div></div>
+<header class="review-nav"><div class="container">
+  <span class="logo"><span class="logo-mark" aria-hidden="true">MJ</span>Mas Jawa Laundry</span>
+  <nav class="tabs" aria-label="Mode pratinjau"><button data-screen="home" class="active" aria-pressed="true">Homepage</button><button data-screen="owner" aria-pressed="false">Owner</button><button data-screen="member" aria-pressed="false">Member</button></nav>
+</div></header>
+<main id="main">
+<section id="screen-home">
+ <div class="container">
+   <div class="homepage-header">
+     <span class="logo"><span class="logo-mark" aria-hidden="true">MJ</span>MAS JAWA <span class="muted">LAUNDRY</span></span>
+     <nav class="home-links" aria-label="Navigasi homepage"><a href="#prices">Layanan & Harga</a><a href="#membership">Kartu Member</a><a href="#address">Lokasi</a><a class="btn" href="https://wa.me/6282313359989" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></nav>
+   </div>
+   <div class="hero">
+     <div>
+       <span class="eyebrow">Mas Jawa Laundry · Kandang Jati Kulon</span>
+       <h1>Laundry kiloan dan satuan, dekat dari rumah.</h1>
+       <p>Pilih layanan yang sesuai kebutuhan, cek daftar harga, atau hubungi Mas Jawa Laundry langsung lewat WhatsApp.</p>
+       <div class="actions"><a class="btn" href="https://wa.me/6282313359989" target="_blank" rel="noopener noreferrer">Hubungi WhatsApp ↗</a><a class="btn secondary" href="#prices">Lihat Harga ↓</a></div>
+       <div class="mark-box"><span></span> Jl. Raya Kandang Jati Kulon · Informasi berdasarkan website sebelumnya</div>
+     </div>
+     <div class="hero-media" role="img" aria-label="Foto dokumentasi laundry dari aset website lama, perlu diverifikasi pemilik">
+       <img alt="Dokumentasi kegiatan laundry dari aset lama" src="https://wsrv.nl/?url=https://github.com/warasjawa-laundry/Web-asset/blob/2443b01c65d801e913a4af77fe1c153288c5fbac/IMG-20251228-WA0007.jpg?raw=true&amp;w=800&amp;q=80&amp;output=webp" onerror="this.style.display='none'">
+       <div class="photo-label">Dokumentasi dari repository lama · pemilihan foto final perlu persetujuan pemilik</div>
+     </div>
+   </div>
+ </div>
+ <section class="section alt" id="prices"><div class="container">
+   <div class="section-heading"><div><span class="eyebrow">Layanan</span><h2>Harga yang mudah dibandingkan.</h2></div><p>Daftar di bawah mengikuti source website lama dan belum disahkan ulang oleh pemilik. Harga final harus diperbarui sebelum rilis.</p></div>
+   <div class="plans">
+    <article class="plan"><div class="plan-head"><h3>Reguler</h3><span class="pill">1–3 hari</span></div><div class="price-line"><span>Cuci lipat</span><strong>Rp3.000/kg</strong></div><div class="price-line"><span>Cuci setrika</span><strong>Rp5.000/kg</strong></div></article>
+    <article class="plan"><div class="plan-head"><h3>Express</h3><span class="pill">1–2 hari</span></div><div class="price-line"><span>Cuci lipat</span><strong>Rp5.000/kg</strong></div><div class="price-line"><span>Cuci setrika</span><strong>Rp7.000/kg</strong></div></article>
+    <article class="plan"><div class="plan-head"><h3>Kilat</h3><span class="pill">6 jam</span></div><div class="price-line"><span>Cuci lipat</span><strong>Rp7.000/kg</strong></div><div class="price-line"><span>Cuci setrika</span><strong>Rp10.000/kg</strong></div></article>
+   </div><p class="price-foot">* Durasi dan harga adalah salinan kode lama, bukan konfirmasi harga terbaru. Harga layanan lain tetap harus dilengkapi berdasarkan data owner.</p>
+ </div></section>
+ <section class="section" id="membership"><div class="container">
+   <div class="member-strip"><div><span class="eyebrow">Kartu member</span><h2 style="margin:10px 0">Kartu stempel, sekarang tercatat digital.</h2><p>Daftar di kasir, bawa kartu saat laundry, lalu scan kode di kartu untuk melihat transaksi yang sudah tercatat.</p></div><button class="secondary" type="button" data-screen="member">Lihat contoh halaman member →</button></div>
+   <div class="steps"><div class="step"><div class="num">1</div><h3>Daftar di kasir</h3><p>Petugas membantu mendaftarkan nama dan mencetak kartu.</p></div><div class="step"><div class="num">2</div><h3>Bawa kartu</h3><p>Petugas memindai QR lalu mencatat transaksi yang selesai dikonfirmasi.</p></div><div class="step"><div class="num">3</div><h3>Cek jumlah laundry</h3><p>Member memindai QR dengan kamera HP. Promo hanya diberikan secara manual oleh pemilik.</p></div></div>
+ </div></section>
+ <div class="container"><div class="location" id="address"><div><strong>Mas Jawa Laundry</strong><p>Jl. Raya Kandang Jati Kulon RT.06 RW.01 · Depan Masjid Al-Hidayah</p></div><a class="btn secondary" href="https://wa.me/6282313359989" target="_blank" rel="noopener noreferrer">Tanya lokasi via WA ↗</a></div></div>
+</section>
+<section id="screen-owner" class="owner-surface hidden">
+ <div class="owner-shell">
+   <aside class="owner-sidebar" aria-label="Menu owner"><h3>Area Pemilik</h3><button type="button" data-owner="scan" class="selected">▣ &nbsp; Scan Kartu</button><button type="button" data-owner="create">＋ &nbsp; Tambah Member</button><button type="button" data-owner="list">▤ &nbsp; Daftar Member</button><button type="button" data-owner="promo">◇ &nbsp; Berikan Promo</button><div class="mutedbox" style="margin-top:20px">Mode demo tanpa login, kamera atau database. Hanya ilustrasi alur.</div></aside>
+   <div class="owner-main">
+    <div id="owner-view-scan">
+      <div class="owner-title"><div><span class="eyebrow">Area Pemilik / Scan</span><h1>Scan kartu member</h1><span class="meta">Arahkan kamera HP ke kartu. Konfirmasi sebelum mencatat transaksi.</span></div></div>
+      <div class="scan-grid">
+        <div class="panel scan-box"><div class="scan-icon" aria-hidden="true">⌗</div><h3 style="margin-bottom:8px">Siap memindai</h3><p>Pada aplikasi final kamera HP akan terbuka di sini setelah izin diberikan.</p><button id="demo-scan" type="button">Simulasikan Scan</button></div>
+        <div class="panel detail"><div><span class="eyebrow">Data Member</span><div id="scan-idle" class="empty"><p>Data member akan muncul setelah kartu dikenali.</p></div><div id="scan-found" class="hidden"><h2 id="scan-name" style="margin:18px 0 5px">Siti Aminah</h2><div class="meta" id="scan-code">MJL-00128</div><div class="stats-row"><div><small>Checklist tercatat</small><span class="count" id="scan-count">8</span></div><div class="meta" id="scan-last">Terakhir: 14 Okt 2026</div></div></div></div>
+          <div id="scan-controls" class="hidden"><div id="scan-success" class="success hidden" role="status">Berhasil dicatat</div><button id="add-visit" class="full">Catat 1 Transaksi</button><button id="next-scan" class="full secondary hidden" style="margin-top:10px">Scan Berikutnya</button></div>
+        </div>
+      </div>
+      <div class="mutedbox">Aturan penting: QR terbaca tidak sama dengan transaksi baru. Klik konfirmasi satu kali; di sistem final disimpan dengan pengaman idempotensi.</div>
+    </div>
+    <div id="owner-view-create" class="hidden">
+      <div class="owner-title"><div><span class="eyebrow">Area Pemilik / Member</span><h1>Tambah member</h1><span class="meta">Cukup nama dan nomor WhatsApp jika pelanggan bersedia.</span></div></div>
+      <div class="panel form-wrap">
+        <div class="field"><label for="new-name">Nama pelanggan <span aria-hidden="true">*</span></label><input id="new-name" autocomplete="off" placeholder="Contoh: Siti Aminah" maxlength="80" required></div>
+        <div class="field"><label for="new-phone">Nomor WhatsApp (opsional)</label><input id="new-phone" inputmode="tel" autocomplete="off" placeholder="08xxxxxxxxxx" maxlength="20"><small>Nomor disimpan hanya jika pelanggan mengizinkan. Promo tidak dikirim otomatis.</small></div>
+        <div class="field"><label><input id="consent" type="checkbox" style="min-height:auto;width:auto;margin-right:6px"> Pelanggan bersedia menerima pesan promo WhatsApp</label></div>
+        <button id="save-member" type="button">Simpan & Buat Kartu</button>
+        <div id="created" class="hidden" role="status">
+          <div class="success" style="margin-top:22px">Member demo berhasil dibuat. Data tidak disimpan ke server.</div>
+          <div class="fake-card"><div class="card-top"><strong>MAS JAWA LAUNDRY</strong><span>MEMBER</span></div><div class="card-middle" id="card-name">Nama Member</div><div class="card-bottom"><span id="card-code">MJL-DEMO</span><div class="fake-qr">QR DEMO<br>BUKAN KODE AKTIF</div></div></div>
+          <p class="meta">Kartu ini hanya pratinjau gaya visual, QR belum dapat dipindai untuk transaksi. Sistem final akan memakai QR asli.</p>
+          <button class="secondary" id="preview-print" type="button">Lihat Cetak (Demo)</button><button class="quiet" id="another" type="button">Daftar Lagi</button>
+        </div>
+      </div>
+    </div>
+    <div id="owner-view-list" class="hidden">
+      <div class="owner-title"><div><span class="eyebrow">Area Pemilik / Data</span><h1>Daftar member</h1><span class="meta">Cari nama atau nomor member, tanpa membuka tabel panjang.</span></div></div>
+      <div class="panel"><div class="field"><label for="search-members">Cari member</label><input id="search-members" type="search" placeholder="Nama atau ID member"></div><div id="members-list"></div></div>
+    </div>
+    <div id="owner-view-promo" class="hidden">
+      <div class="owner-title"><div><span class="eyebrow">Area Pemilik / Promo</span><h1>Berikan promo</h1><span class="meta">Semua promo dipilih owner secara manual, tanpa syarat otomatis.</span></div></div>
+      <div class="panel form-wrap">
+        <p><strong id="promo-member">Siti Aminah</strong> · <span id="promo-count">8</span> checklist tercatat</p>
+        <div class="field"><label for="promo-title">Nama promo</label><input id="promo-title" placeholder="Contoh: Gratis cuci 2 kg" maxlength="100"></div>
+        <div class="field"><label for="promo-terms">Ketentuan promo</label><textarea id="promo-terms" placeholder="Contoh: Satu kali penggunaan"></textarea></div>
+        <button id="save-promo" type="button">Simpan Promo & Siapkan Pesan</button>
+        <div id="message-block" class="hidden"><div class="success" style="margin-top:20px">Promo demo disimpan hanya selama pratinjau dibuka.</div><div class="field"><label for="wa-message">Pratinjau pesan WhatsApp</label><textarea id="wa-message" readonly rows="9"></textarea></div><button id="copy-promo" type="button" class="secondary">Salin Pesan</button><p class="meta" id="copy-status">Menyalin tidak berarti WhatsApp sudah terkirim.</p></div>
+      </div>
+    </div>
+   </div>
+ </div>
+ <nav class="mobile-owner-nav" aria-label="Navigasi admin mobile"><button class="selected" data-owner="scan">▣<br>Scan</button><button data-owner="create">＋<br>Tambah</button><button data-owner="list">▤<br>Member</button><button data-owner="promo">◇<br>Promo</button></nav>
+</section>
+<section id="screen-member" class="member-surface hidden">
+ <div class="member-wrap">
+   <div class="member-banner"><span class="logo-mark" aria-hidden="true">MJ</span><div><strong>Mas Jawa Laundry</strong><div class="member-kicker">Informasi kartu member · Pratinjau</div></div></div>
+   <article class="member-card">
+     <div class="eyebrow">Kartu Member</div><h1 id="public-name">Siti A.</h1><div class="meta" id="public-code">MJL-00128</div>
+     <div class="member-count"><div class="meta">Jumlah transaksi laundry tercatat</div><div class="count" id="public-count">8</div><strong>kali laundry</strong></div>
+   </article>
+   <article class="member-card"><h3>Riwayat terakhir</h3><div id="public-history"><div class="history"><span>14 Oktober 2026</span><strong class="check">+1 ✓</strong></div><div class="history"><span>11 Oktober 2026</span><strong class="check">+1 ✓</strong></div></div></article>
+   <article class="member-card"><h3>Promo dari Laundry</h3><div id="public-reward"><p class="muted">Belum ada promo dari laundry.</p></div></article>
+   <p class="meta" style="text-align:center">Jika ada kekeliruan, silakan hubungi petugas Mas Jawa Laundry. Halaman final tidak perlu login.</p>
+ </div>
+</section>
+</main>
+<footer class="demo-footer"><div class="container">UI/UX review · Mas Jawa Laundry · Prototype statis, data contoh, tanpa backend dan tanpa autentikasi. Jangan dipakai untuk transaksi nyata.</div></footer>
+<div class="sr-only" id="announcer" aria-live="polite"></div>
+<script>
+(function(){
+'use strict';
+var data={name:'Siti Aminah',code:'MJL-00128',count:8,dates:['14 Oktober 2026','11 Oktober 2026'],promo:null,recognized:false,savedVisit:false};
+var $=function(id){return document.getElementById(id);};
+function speak(msg){$('announcer').textContent=msg;}
+function showScreen(mode){
+  ['home','owner','member'].forEach(function(v){$('screen-'+v).classList.toggle('hidden',v!==mode);});
+  document.querySelectorAll('[data-screen]').forEach(function(el){var active=el.dataset.screen===mode;el.classList.toggle('active',active);el.setAttribute('aria-pressed',active?'true':'false');});
+  if(mode==='member')renderMember();
+  window.scrollTo(0,0);
+  speak('Pratinjau '+mode+' dibuka');
+}
+function ownerView(v){
+  ['scan','create','list','promo'].forEach(function(k){$('owner-view-'+k).classList.toggle('hidden',k!==v);});
+  document.querySelectorAll('[data-owner]').forEach(function(el){el.classList.toggle('selected',el.dataset.owner===v);});
+  if(v==='list')renderList();
+  if(v==='promo'){$('promo-member').textContent=data.name;$('promo-count').textContent=data.count;}
+  window.scrollTo(0,0);
+  speak('Halaman '+v+' dibuka');
+}
+function renderScan(){
+  $('scan-idle').classList.toggle('hidden',data.recognized);
+  $('scan-found').classList.toggle('hidden',!data.recognized);
+  $('scan-controls').classList.toggle('hidden',!data.recognized);
+  $('scan-name').textContent=data.name;$('scan-code').textContent=data.code;$('scan-count').textContent=data.count;
+  $('scan-last').textContent='Terakhir: '+(data.dates[0]||'Belum ada');
+  $('scan-success').classList.toggle('hidden',!data.savedVisit);
+  if(data.savedVisit)$('scan-success').textContent='Berhasil dicatat · Total '+data.count+' transaksi';
+  $('add-visit').classList.toggle('hidden',data.savedVisit);
+  $('next-scan').classList.toggle('hidden',!data.savedVisit);
+}
+function renderMember(){
+  $('public-name').textContent=data.name.split(' ')[0]+' '+((data.name.split(' ')[1]||'').slice(0,1))+'.';
+  $('public-code').textContent=data.code;$('public-count').textContent=data.count;
+  var box=$('public-history');box.replaceChildren();
+  data.dates.slice(0,4).forEach(function(day){var row=document.createElement('div');row.className='history';var a=document.createElement('span');a.textContent=day;var b=document.createElement('strong');b.className='check';b.textContent='+1 ✓';row.append(a,b);box.append(row);});
+  var r=$('public-reward');r.replaceChildren();
+  if(!data.promo){var empty=document.createElement('p');empty.className='muted';empty.textContent='Belum ada promo dari laundry.';r.append(empty);return;}
+  var wrap=document.createElement('div');wrap.className='reward';
+  var status=document.createElement('span');status.className='badge';status.textContent='Tersedia';
+  var title=document.createElement('h3');title.textContent=data.promo.title;
+  var desc=document.createElement('p');desc.textContent=data.promo.terms||'Tanyakan ketentuan pada petugas laundry.';
+  wrap.append(status,title,desc);r.append(wrap);
+}
+function renderList(){
+ var box=$('members-list');box.replaceChildren();
+ var search=($('search-members').value||'').toLowerCase();
+ if(data.name.toLowerCase().indexOf(search)<0&&data.code.toLowerCase().indexOf(search)<0){box.textContent='Tidak ada member yang cocok.';return;}
+ var row=document.createElement('div');row.className='member-row';
+ var left=document.createElement('div'),strong=document.createElement('strong'),label=document.createElement('span');
+ strong.textContent=data.name;label.textContent=data.code+' · '+data.count+' checklist';left.append(strong,label);
+ var right=document.createElement('button');right.type='button';right.className='secondary';right.textContent='Berikan Promo';right.addEventListener('click',function(){ownerView('promo');});
+ row.append(left,right);box.append(row);
+}
+document.querySelectorAll('[data-screen]').forEach(function(btn){btn.addEventListener('click',function(e){if(btn.tagName==='BUTTON')e.preventDefault();showScreen(btn.dataset.screen);});});
+document.querySelectorAll('[data-owner]').forEach(function(btn){btn.addEventListener('click',function(){ownerView(btn.dataset.owner);});});
+$('demo-scan').addEventListener('click',function(){data.recognized=true;data.savedVisit=false;renderScan();speak('Kartu demo dikenali: '+data.name);});
+$('add-visit').addEventListener('click',function(){if(!data.recognized||data.savedVisit)return;data.count++;data.dates.unshift('Transaksi baru (simulasi)');data.savedVisit=true;renderScan();speak('Demo transaksi berhasil dicatat. Total '+data.count);});
+$('next-scan').addEventListener('click',function(){data.recognized=false;data.savedVisit=false;renderScan();speak('Siap scan berikutnya');});
+$('save-member').addEventListener('click',function(){var name=$('new-name').value.trim();if(name.length<2){$('new-name').focus();speak('Nama perlu diisi paling sedikit 2 huruf');return;}data.name=name;data.code='MJL-DEMO-001';data.count=0;data.dates=[];data.promo=null;data.recognized=false;data.savedVisit=false;$('created').classList.remove('hidden');$('card-name').textContent=name;$('card-code').textContent=data.code;renderScan();speak('Member demo dibuat dan kartu pratinjau tampil');});
+$('another').addEventListener('click',function(){$('new-name').value='';$('new-phone').value='';$('consent').checked=false;$('created').classList.add('hidden');$('new-name').focus();});
+$('preview-print').addEventListener('click',function(){window.alert('Ini hanya pratinjau desain. QR belum aktif dan tidak boleh dicetak untuk dipakai sebagai kartu sebenarnya.');});
+$('search-members').addEventListener('input',renderList);
+$('save-promo').addEventListener('click',function(){
+ var title=$('promo-title').value.trim();if(!title){$('promo-title').focus();speak('Nama promo belum diisi');return;}
+ var terms=$('promo-terms').value.trim();data.promo={title:title,terms:terms};$('message-block').classList.remove('hidden');
+ $('wa-message').value='Halo '+data.name+',\n\nTerima kasih sudah menjadi pelanggan Mas Jawa Laundry.\n\nAnda mendapatkan promo khusus dari kami:\nPromo: '+title+'\n'+(terms?'Ketentuan: '+terms+'\n':'')+'\nSilakan tunjukkan kartu member saat menggunakan promo ini.\n\nTerima kasih, Mas Jawa Laundry.';
+ speak('Promo demo tersimpan dan pesan WhatsApp tersedia untuk disalin');
+});
+$('copy-promo').addEventListener('click',function(){
+ var value=$('wa-message').value;
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(value).then(function(){$('copy-status').textContent='Pesan disalin. Buka WhatsApp dan kirim sendiri.';},function(){$('copy-status').textContent='Tidak dapat menyalin otomatis. Pilih teks lalu salin manual.';});}else{$('wa-message').focus();$('wa-message').select();$('copy-status').textContent='Teks dipilih. Salin secara manual pada perangkat ini.';}
+});
+renderScan();renderMember();renderList();
+})();
+</script>
+</body>
+</html>
