@@ -25,7 +25,7 @@ export async function loginOwner(formData: FormData) {
   const { data: owner } = await supabase
     .from("laundry_owner_accounts")
     .select("is_active")
-    .eq("auth_user_id", user?.id || "")
+    .eq("auth_user_id", user.id)
     .maybeSingle();
 
   if (owner?.is_active !== true) {
