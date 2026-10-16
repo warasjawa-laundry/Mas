@@ -41,8 +41,8 @@ export default async function OwnerMember({params,searchParams}:Props){
  const promoRequestId=notice.promoRequestId&&validId.test(notice.promoRequestId)?notice.promoRequestId:randomUUID();
  const amountRequestId=notice.amountRequestId&&validId.test(notice.amountRequestId)?notice.amountRequestId:randomUUID();
  const amountMap=new Map((amountsR.data||[]).map(row=>[row.visit_event_id,row]));
- const currentPoints=(balancesR.data||[]).find(r=>r.program_year===pointYear);
- const futurePoints=(balancesR.data||[]).find(r=>r.program_year===2027);
+ const currentPoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===pointYear);
+ const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===2027);
  const pointRules=Array.isArray(rulesR.data?.tiers)?rulesR.data.tiers as {minimum:number;points:number}[]:[];
  const idr=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
 
