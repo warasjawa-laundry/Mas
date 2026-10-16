@@ -1,7 +1,7 @@
-name: Stage 7 Promo Links and WhatsApp Manual
+name: Mas Jawa Laundry Integration CI
 on:
   push:
-    branches: [feature/stage7-manual-whatsapp]
+    branches: [integration/mas-jawa-laundry]
   pull_request:
     paths:
       - "app/admin/**"
