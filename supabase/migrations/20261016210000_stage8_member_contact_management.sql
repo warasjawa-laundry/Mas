@@ -2,6 +2,8 @@
 -- Existing member ID/card, visits and promotions remain unchanged.
 -- Never persist phone/name contents in audit history.
 
+alter table public.laundry_members add column if not exists member_edit_revision bigint not null default 0;
+
 create table if not exists public.laundry_member_contact_events (
   id bigint generated always as identity primary key,
   member_id uuid not null references public.laundry_members(id) on delete restrict,
@@ -27,7 +29,7 @@ create policy laundry_owner_read_contact_events on public.laundry_member_contact
 
 create or replace function laundry_private.update_member_contact(
   p_member_id uuid,p_name text,p_whatsapp_e164 text,p_consent_action text,
-  p_customer_confirmed boolean,p_expected_updated_at timestamptz,p_request_id uuid
+  p_customer_confirmed boolean,p_expected_revision bigint,p_request_id uuid
 ) returns text language plpgsql security definer set search_path=''
 as $$
 declare
@@ -49,7 +51,7 @@ begin
    where auth_user_id=v_owner and is_active
  ) then raise exception 'not_authorized' using errcode='42501'; end if;
 
- if p_member_id is null or p_request_id is null or p_expected_updated_at is null
+ if p_member_id is null or p_request_id is null or p_expected_revision is null
     or char_length(v_name) not between 2 and 100
     or v_name ~ '[[:cntrl:]]'
     or (v_phone is not null and v_phone !~ '^\+[1-9][0-9]{7,14}$')
@@ -78,7 +80,7 @@ begin
    return v_history.action;
  end if;
 
- if v_member.updated_at is distinct from p_expected_updated_at
+ if v_member.member_edit_revision is distinct from p_expected_revision
  then raise exception 'member_modified_reload' using errcode='22023'; end if;
 
  v_phone_changed:=v_member.whatsapp_e164 is distinct from v_phone;
@@ -101,6 +103,7 @@ begin
  then
     update public.laundry_members
       set display_name=v_name,whatsapp_e164=v_phone,
+        member_edit_revision=member_edit_revision+1,
         whatsapp_promo_consent=v_new,whatsapp_consent_at=v_consent_at
     where id=p_member_id;
     v_result:='UPDATED';
@@ -117,19 +120,19 @@ begin
  return v_result;
 end;
 $$;
-revoke all on function laundry_private.update_member_contact(uuid,text,text,text,boolean,timestamptz,uuid) from public,anon,authenticated;
-grant execute on function laundry_private.update_member_contact(uuid,text,text,text,boolean,timestamptz,uuid) to authenticated;
+revoke all on function laundry_private.update_member_contact(uuid,text,text,text,boolean,bigint,uuid) from public,anon,authenticated;
+grant execute on function laundry_private.update_member_contact(uuid,text,text,text,boolean,bigint,uuid) to authenticated;
 
 create or replace function public.laundry_update_member_contact(
   p_member_id uuid,p_name text,p_whatsapp_e164 text,p_consent_action text,
-  p_customer_confirmed boolean,p_expected_updated_at timestamptz,p_request_id uuid
+  p_customer_confirmed boolean,p_expected_revision bigint,p_request_id uuid
 ) returns text language sql security invoker set search_path=''
 as $$ select laundry_private.update_member_contact(
  p_member_id,p_name,p_whatsapp_e164,p_consent_action,p_customer_confirmed,
- p_expected_updated_at,p_request_id
+ p_expected_revision,p_request_id
 ); $$;
-revoke all on function public.laundry_update_member_contact(uuid,text,text,text,boolean,timestamptz,uuid) from public,anon,authenticated;
-grant execute on function public.laundry_update_member_contact(uuid,text,text,text,boolean,timestamptz,uuid) to authenticated;
+revoke all on function public.laundry_update_member_contact(uuid,text,text,text,boolean,bigint,uuid) from public,anon,authenticated;
+grant execute on function public.laundry_update_member_contact(uuid,text,text,text,boolean,bigint,uuid) to authenticated;
 
-comment on function public.laundry_update_member_contact(uuid,text,text,text,boolean,timestamptz,uuid) is
+comment on function public.laundry_update_member_contact(uuid,text,text,text,boolean,bigint,uuid) is
  'Owner-only, optimistic and idempotent member editing; consent requires explicit customer confirmation and resets on phone changes.';
