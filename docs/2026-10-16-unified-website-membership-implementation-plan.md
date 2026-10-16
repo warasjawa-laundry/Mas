@@ -1,3 +1,15 @@
+## Checkpoint aktual — 2026-10-16 (WIB), branch-only
+
+**Stage 0:** audit baseline SOURCE CODE dan inventaris file/aset/konten SELESAI. Tidak boleh disebut FULL PASS: halaman live tidak bisa diperiksa dari lingkungan audit; screenshot/Lighthouse real, status DNS/hosting aktif, konfirmasi tarif/klaim/foto/testimonial, dan printer fisik masih PENDING. Lihat `docs/2026-10-16-stage0-baseline-audit.md`.
+
+**Stage 1:** design direction, token, wireflow, pesan/error/loading dan prototype review HTML dibuat. Prototype hanya simulasi statis (tidak ada kamera, akun owner, database, QR aktif, cetak final, pengiriman WA). Pemeriksaan struktur sumber dan ID DOM dilakukan; belum ada browser visual QA atau persetujuan owner. Lihat `docs/2026-10-16-stage1-design-system-ux-blueprint.md` dan `prototypes/mas-jawa-ux-review.html`.
+
+**Stage 2–8:** BELUM DIMULAI. Tidak ada refactor aplikasi, migrasi, PR merge, ataupun deployment. Main dan domain produksi harus tetap tidak berubah.
+
+**Kriteria sebelum lanjut implementasi Stage 2:** review prototype bersama pemilik usaha di Android serta desktop; cocokkan semua foto/logo/harga/garansi/program tas dengan kenyataan; verifikasi domain/hosting dan cara rollback; lakukan visual QA yang benar. Jangan menganggap prototype statis sebagai fitur selesai.
+
+---
+
 # Mas Jawa Laundry — Unified Website + Membership Implementation Plan
 
 Date: 2026-10-16 (WIB)
