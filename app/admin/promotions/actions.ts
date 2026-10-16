@@ -24,8 +24,8 @@ export async function grantManualPromo(formData: FormData) {
   if(expires) {
     // End of the chosen calendar date in Indonesian Western Time (WIB).
     const date=new Date(expires+"T23:59:59+07:00");
-    if(Number.isNaN(date.getTime())||date.toISOString().slice(0,10)!==
-       new Date(date.getTime()+7*3600000).toISOString().slice(0,10)) {
+    if(Number.isNaN(date.getTime()) ||
+       new Date(date.getTime()+7*3600000).toISOString().slice(0,10)!==expires) {
       // Safeguard against malformed dates and timezone rollover.
       redirect("/admin/members/"+memberId+"?promoError=invalid&promoRequestId="+requestId);
     }
