@@ -6,7 +6,7 @@ import OwnerLoginSubmit from "@/components/admin/owner-login-submit";
 
 type Props = { searchParams: Promise<{ error?: string; notice?: string }> };
 export default async function OwnerLogin({ searchParams }: Props) {
-  if (await getVerifiedOwner()) redirect("/admin/scan");
+  if (await getVerifiedOwner()) redirect("/admin");
   const { error, notice } = await searchParams;
   const message = error === "invalid" ? "ID atau password tidak cocok." :
     error === "unavailable" ? "Akses pemilik belum diaktifkan. Silakan hubungi pengelola." : null;
