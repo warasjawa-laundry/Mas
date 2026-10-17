@@ -45,7 +45,9 @@ export async function proxy(request:NextRequest){
  const reenter=isPublicToAdminRouterEntry(request);
  const incomingEntry=request.cookies.get(ADMIN_ENTRY_COOKIE)?.value;
  const entryAllowed=!leave&&!login&&document&&validAdminEntry(incomingEntry);
- const reset=leave||document||reenter;
+ // The login screen itself always clears an existing grant, including an RSC
+ // navigation from within admin. A login URL never serves as a backdoor.
+ const reset=leave||document||reenter||(login&&request.method==="GET");
  let response=leave
    ?NextResponse.redirect(new URL("/",request.url),303)
    :!login&&reset&&!entryAllowed
