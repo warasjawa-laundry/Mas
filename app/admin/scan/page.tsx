@@ -11,7 +11,7 @@ export default async function OwnerScan() {
       <h1>Scan Kartu & Transaksi</h1>
       <p className="admin-hint">Scan kartu pelanggan atau cari namanya. Pilih member lalu tekan Catat 1 Transaksi untuk menambah checklist.</p>
       <ScanCard/>
-      <div className="admin-shortcuts"><Link href="/">Kembali ke Beranda →</Link></div>
+      <div className="admin-shortcuts"><a href="/admin/leave">Kembali ke Beranda →</a></div>
     </div>
   </main>;
 }

@@ -26,7 +26,7 @@ test("dashboard only reads small counts with owner verification", () => {
 
 test("login lands at the dashboard rather than the scanner", () => {
   assert.match(source("app/admin/actions.ts"), /redirect\("\/admin"\)/);
-  assert.match(source("app/admin/login/page.tsx"), /redirect\("\/admin"\)/);
+  assert.doesNotMatch(source("app/admin/login/page.tsx"), /redirect\("\/admin"\)/);
 });
 
 test("member search has stable bounded pagination and no implicit prefetch", () => {

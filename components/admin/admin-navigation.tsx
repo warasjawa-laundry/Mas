@@ -38,7 +38,7 @@ export default function AdminNavigation() {
       </Link>
       <nav aria-label="Navigasi utama admin" className="admin-shell-links">{navItems}</nav>
       <div className="admin-shell-footer">
-        <Link href="/" prefetch={false}>Lihat situs publik</Link>
+        <a href="/admin/leave">Lihat situs publik</a>
         <form action={logoutOwner}><button type="submit">Keluar akun</button></form>
       </div>
     </aside>
