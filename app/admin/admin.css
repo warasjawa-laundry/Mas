@@ -337,3 +337,21 @@
 .admin-member-pagination a{min-height:44px;display:inline-flex;align-items:center;padding:10px 15px;border:1px solid #dcd9e4;border-radius:9px;background:white;color:#542a8d;font-weight:750;font-size:13px}
 .admin-member-pagination span{font-size:13px;color:#58647b}
 @media(max-width:440px){.owner-member-page .owner-count-box strong{font-size:30px}.owner-member-page .owner-point-summary>div{padding:11px}.admin-member-pagination{gap:6px}.admin-member-pagination a{padding:9px}}
+
+/* Stage 4 features remain server-flag gated until isolated DB QA passes. */
+.owner-card-reissue{margin:30px 0 8px;border:1px solid #e3c8c8;background:#fff;border-radius:14px;padding:14px 17px}
+.owner-card-reissue>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#873b3b;font-weight:750}
+.owner-card-reissue>p{line-height:1.55}
+.owner-card-reissue form{display:grid;gap:11px;max-width:540px}
+.owner-card-reissue form>label:not(.owner-reissue-confirm){font-size:14px;font-weight:750}
+.owner-card-reissue form>input{min-height:48px;width:100%;box-sizing:border-box;border:1px solid #bfc8d3;border-radius:10px;padding:12px;font-size:16px}
+.owner-reissue-confirm{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.55;padding:13px;border:1px solid #e5d9d9;border-radius:10px}
+.owner-reissue-confirm input{width:20px;height:20px;flex:0 0 20px}
+.owner-card-reissue .admin-primary{margin-top:3px}
+.owner-year-setup{padding:20px;border:1px solid #dfd6eb;border-radius:14px;background:#fff;margin:20px 0}
+.owner-year-setup>p{margin:0 0 15px;color:#505b6e;line-height:1.5}
+.owner-year-setup form{display:grid;gap:14px}
+.owner-year-setup form>label{display:flex;align-items:flex-start;gap:12px;line-height:1.55;font-size:14px}
+.owner-year-setup form>label input{flex:0 0 20px;height:20px;width:20px}
+.owner-year-setup form>.admin-primary{margin:0}
+@media(max-width:440px){.owner-card-reissue{padding:13px}.owner-card-reissue .admin-primary{width:100%;font-size:14px}}
