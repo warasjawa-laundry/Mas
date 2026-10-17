@@ -28,7 +28,15 @@
 ## Pekerjaan lanjutan
 - [x] Revisi copy halaman dan pesan scanner.
 - [x] Perbarui tes judul halaman.
-- [ ] CI dan pengujian copy hingga PASS.
-- [ ] Deploy commit lulus CI ke Preview QA yang sama.
+- [x] Semua **7/7 GitHub Actions PASS** pada SHA kode `72deca824e39a1bcf9f5dfe480b4f519bb63ea56`, termasuk regression test isi halaman, SEO, alur QR dan tata letak.
+- [x] Deployment **READY** di Preview QA Vercel yang sama, `dpl_5owefDQAzfZbH9nnj5J9YWsuVq3E` (Mumbai `bom1`), commit `72deca8`. Alias QA menuju deployment baru; alias Preview `main` tetap menunjuk deployment sebelumnya.
 - [ ] Lakukan review tampilan dan verifikasi faktual oleh pemilik.
 - [ ] Main dan situs produksi tetap tidak diubah.
+
+## Validasi akhir
+- [x] GitHub Actions 7/7 PASS pada SHA sumber yang dipasang.
+- [x] Preview QA terlindungi, READY di region Mumbai (`bom1`).
+- [x] Alias QA: `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app`.
+- [x] Alias Preview `main` tetap pada `dpl_3qF3NBniMjH9ka1LCY9jAFuJyM2z`. GitHub `main` tetap `f742b8a`.
+- [ ] Persetujuan akhir copy di HP oleh pemilik; revisi bahasa adalah preferensi editorial, bukan sesuatu yang bisa dijamin lewat tes otomatis.
+- [ ] PR #12 belum di-merge, SQL pelanggan dan production tidak diubah.

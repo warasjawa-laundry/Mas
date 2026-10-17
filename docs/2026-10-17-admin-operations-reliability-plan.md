@@ -236,3 +236,14 @@ Details: `docs/2026-10-17-stage12-admin-fresh-auth-boundary.md`.
 - [ ] User mobile device visual confirmation; PR #12 remains DRAFT, no production release.
 
 Full checkpoint: `docs/2026-10-17-stage13-membership-landing-navigation.md`.
+
+### Stage 14 — Bahasa homepage dan Kartu Member (2026-10-17)
+- [x] Audit 8 berkas copy UI/SEO/pesan QR; **em dash tidak ditemukan**. En dash pada durasi dan jam dipertahankan.
+- [x] 55 penggantian copy dibuat untuk menghapus slogan abstrak, pengulangan dan campuran istilah.
+- [x] Fakta paket, status member, izin promo WhatsApp, sifat QR read-only dan aturan poin tidak berubah.
+- [x] Tes regresi editorial ditambahkan; **7/7 CI PASS** pada code SHA `72deca8`.
+- [x] Preview QA READY, deployment `dpl_5owefDQAzfZbH9nnj5J9YWsuVq3E`, region `bom1`, alias QA terverifikasi; Preview `main` tidak berubah.
+- [ ] Verifikasi kalimat dan tampilan pada perangkat Android oleh pemilik.
+- [ ] Rilis/merge belum disetujui. Tidak ada perubahan di production.
+
+Dokumentasi: `docs/2026-10-17-stage14-public-copy-antislop.md`.
