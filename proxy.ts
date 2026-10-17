@@ -63,7 +63,9 @@ export async function proxy(request:NextRequest){
      return response;
    }
    clearAdminCookies(request,response);
-   if(url&&key){
+   const hasAuthSession=request.cookies.getAll().some(c=>
+     /^sb-[a-z0-9]+-auth-token(?:\.\d+)?$/.test(c.name));
+   if(url&&key&&hasAuthSession){
      const supabase=createServerClient(url,key,{cookies:{
        getAll:()=>request.cookies.getAll(),
        setAll:(items)=>{
