@@ -14,7 +14,7 @@
 ## 4B. 2028+ points rules
 - Preserve 2026 trial and 2027 official historical ledgers; do not silently merge or backfill or re-evaluate old awarded points.
 - Add owner-only, validated, idempotent creation of a new year's five-tier rule (current year and next year only), seeded from previous-year rules with deliberate owner confirmation and revision concurrency checks.
-- Existing `laundry_point_rules` accepts years 2026–2100, but `laundry_private.set_point_rules` requires a pre-existing row; current UI/actions hard-code 2026/2027.
+- Existing `laundry_point_rules` accepts years 2026–2100, but `laundry_private.set_point_rules` requires a pre-existing row; the old UI/actions hard-coded 2026/2027. Stage 4 adds year initialization and dynamically generated year tabs.
 - Test WIB year rollover (Dec 31–Jan 1), missing year error, concurrent edits, and ledger year isolation in a dedicated test database.
 
 ## Security and performance follow-up
@@ -26,8 +26,10 @@
 - [x] Documented transaction/identity/locking/idempotency invariants
 - [x] Verified live schema includes partial unique active-card index (read-only)
 - [ ] Provision/authorize isolated QA database and apply migrations there
-- [x] Implement card-rotation migration and feature-gated owner UI in source\n- [ ] Run isolated PostgreSQL integration tests for card rotation
-- [x] Implement dynamic year initialization and point-rule UI in source\n- [ ] Test year-setup RPC in QA, including concurrent initialization and invalid years
+- [x] Implement card-rotation migration and feature-gated owner UI in source
+- [ ] Run isolated PostgreSQL integration tests for card rotation
+- [x] Implement dynamic year initialization and point-rule UI in source
+- [ ] Test year-setup RPC in QA, including concurrent initialization and invalid years
 - [ ] Receive explicit authorization before any production SQL or credential-setting change
 
 ## Implementation evidence (2026-10-17 WIB)
