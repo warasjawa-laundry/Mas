@@ -107,7 +107,7 @@ h3 { font-size: 1.22rem; }
 .member-feature { background: #211a33; color: white; border-radius: 22px; padding: clamp(28px, 5vw, 60px); display: grid; grid-template-columns: 1.1fr .85fr; align-items: center; gap: 60px; }
 .eyebrow-light { color: #cfb5fa; }
 .member-feature h2 { max-width: 620px; }
-.member-feature-copy>p:not(.eyebrow) { color: #ded7e9; max-width: 515px; }
+.member-feature-copy>p:not(.eyebrow) { color: var(--muted); max-width: 640px; }
 .member-feature .button { margin-top: 11px; }
 .member-feature-steps { display: grid; gap: 0; }
 .member-feature-steps>div { display: flex; gap: 20px; align-items: start; padding: 20px 0; border-bottom: 1px solid rgb(255 255 255 / .16); }
