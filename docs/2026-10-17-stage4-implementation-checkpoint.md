@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-17 WIB  
 **Branch:** `feature/admin-operations-reliability-20261017`  
-**Status:** SOURCE CODE IMPLEMENTED (6/6 CI PASS on code SHA `0798e10`); DATABASE QA + AUTHENTICATED UAT PENDING. **Stage 4 NOT fully certified.**  
+**Status:** SOURCE CODE IMPLEMENTED (6/6 CI PASS on code SHA `0798e10`); ISOLATED DATABASE QA SQL PASS; CONCURRENCY + AUTHENTICATED UAT PENDING. **Stage 4 NOT fully certified.**  
 **PR:** https://github.com/warasjawa-laundry/Mas/pull/11
 
 ## Completed source work
@@ -20,12 +20,15 @@
 
 ## Required next gates
 
-- [ ] Confirm creation organization (one visible: `warasjawa-laundry's Org`) and any nonzero quoted cost **before** provisioning Supabase QA.
-- [ ] Create **isolated** Supabase QA project in Mumbai (`ap-south-1`); never copy customer records or production credential values.
-- [ ] Apply original repository migrations in order to QA, then Stage 10 SQL. Confirm owner privileges, no public journal grants and RLS.
-- [ ] Create isolated synthetic QA owner/member/QR fixture. Test initial card, reissue, old token rejection, new token acceptance, preserved counts/promos/points, concurrent attempts and duplicate UUID across actors/members; roll back fixture where possible.
-- [ ] Prove no extra card on a retry with same UUID; check active card partial unique index and audit. Test bad digest, reason, inactive member, anonymous requester.
-- [ ] Exercise points next-year initialization, concurrent duplicate setup, revision/tiers, invalid year and historical isolation. WIB rollover logic is unit-tested, but DB boundary behavior needs QA fixtures or controlled time simulation.
+- [x] Approved organization `warasjawa-laundry's Org`; project `tnadzytuamdxfypoeggy` created in Mumbai, quote US$0/month.
+- [x] Isolated Supabase QA project created and verified ACTIVE_HEALTHY; no customer records or production credentials copied.
+- [x] Exact recovered Stage 3 original DDL plus Stage 4–10 applied in chronological order (8/8). Ten business tables RLS enabled; anon cannot execute owner RPC or read the audit table.
+- [x] Rollback-only QA synthetic owner/member/card tests: old/new token, replacement, request idempotency, conflicting actor/reason, absence of leakage; no fixtures persisted.
+- [ ] Extend integration to two independent concurrent sessions and populated QA histories to verify preserved visits/promos/points under real race conditions.
+- [x] Proved no extra active card or audit on same-UUID retry, conflicting reason/actor denied, anonymous denied, via QA SQL test.
+- [ ] Add dedicated SQL cases for malformed digest, inactive members and concurrent double-submit.
+- [x] Tested 2027 setup, duplicate setup, copying tiers from 2026, refusal of 2028 while in 2026; WIB rollover tested via JS unit tests.
+- [ ] Real multi-session simultaneous setup, rule revision conflict and future WIB-year DB behavior need further QA.
 - [ ] Point **isolated Preview**, not public/production, at QA; enable the two server flags **only** there and run authenticated owner browser UAT.
 - [ ] Re-run CI, migrations/parity and QA security/performance advisors after the database change. Validate preview console/network latency and no QR bearer leakage.
 - [ ] Obtain separate promotion approval; DO NOT deploy Stage 10 SQL to customer Supabase or release to `main` until signed off.
@@ -46,3 +49,10 @@ The **older** branch Preview `dpl_9g7wikotpv1VYT9ZGzTwnuPdKCKA` in `bom1` is pre
 - Six workflow runs successful on commit `0798e10e2613500f3ecded78764f2e461984dfc9`: Stage 2 Public Site, Stage 3 Owner Auth, Stage 4 Member/QR, Stage 5 Owner Checklist/Scan, Stage 6 Manual Promotions, Mas Jawa Laundry Integration CI.
 - This green result covers source/unit contracts, TypeScript and Next.js build plus unauthenticated browser fixtures, **not** running Stage 10 migration in PostgreSQL or actual owner-card replacement in Preview.
 - Documentation update itself is a subsequent commit and may generate another CI run.
+
+## Verified isolated SQL QA outcome
+- QA project: `tnadzytuamdxfypoeggy`, region `ap-south-1`; production still `hncfyfvqtlnvqyfrydzb`.
+- Eight migrations applied and listed by Supabase; foundational SQL sources checked into this branch.
+- PostgreSQL integration + role/RLS tests both PASS via `BEGIN; DO...; ROLLBACK`. No fixtures remain; 0 auth users, owners, members, cards, reissues.
+- Next steps and advisor findings: `docs/2026-10-17-stage4-supabase-qa-checkpoint.md`.
+- No manual Vercel Preview, Netlify, production SQL or `main` mutation occurred while provisioning and testing QA.

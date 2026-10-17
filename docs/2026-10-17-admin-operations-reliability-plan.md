@@ -4,7 +4,7 @@
 **Branch:** `feature/admin-operations-reliability-20261017`  
 **Base:** `50d9bd922c57448d5316a1584e6fc26b14a2e1eb` (PR #10)  
 **Scope:** QR compatibility, owner dashboard/navigation, transaction UX, repeatable tests, security/performance reviews.  
-**Status:** Stage 0–3 implementation COMPLETE (CI 6/6 PASS on candidate `4729a62`); Stage 4 SOURCE IMPLEMENTED, QA SCHEMA VALIDATION GATED; Stage 5 authenticated Preview UAT PENDING. `main` and production unchanged.
+**Status:** Stage 0–3 implementation COMPLETE (CI 6/6 PASS on candidate `4729a62`); Stage 4 SOURCE + ISOLATED SQL QA TESTS PASS; concurrent SQL and authenticated browser UAT GATED; Stage 5 authenticated Preview UAT PENDING. `main` and production unchanged.
 
 ## Guardrails and invariants
 
@@ -119,8 +119,24 @@ GitHub CI 6/6 PASS at SHA `4729a62`: Integration `38957119789`, Stage 2 `3895711
 - [x] Added current/next WIB program-year logic and owner UI. Flag `OWNER_POINT_YEAR_SETUP_ENABLED` absent/off by default.
 - [x] Updated public customer balance display and owner member detail for future WIB years; 2026 trial remains separate.
 - [x] Wrote `tests/stage10-contract.test.mjs`: executable time-boundary tests and security/source contracts. Current CI includes all six workflow gates with successful TypeScript, build and browser tests.
-- [ ] Create isolated QA database, replay migrations, and run real PostgreSQL integration/security/concurrency test.
+- [x] Create isolated Supabase QA project (`tnadzytuamdxfypoeggy`, Mumbai); cost quoted US$0/month.
+- [x] Replay 8 migrations (including exact recovered Stage 3 sources) in QA.
+- [x] Run rollback-only PostgreSQL integration, idempotency, owner/anon privilege and RLS tests in QA; synthetic data removed.
+- [ ] Run **true concurrent-session** card rotation and points setup integration tests with an isolated QA fixture.
 - [ ] Authenticated owner UAT against QA-only Preview after isolated env wiring.
 - [ ] Production SQL authorization and independent rollout approval.
 
 Details: `docs/2026-10-17-stage4-implementation-checkpoint.md`. Previous unyil Preview READY build is **pre-Stage-4**. No production deployment or customer record mutation.
+
+### Stage 4 — ISOLATED SQL QA CHECKPOINT (2026-10-17 WIB)
+- [x] Supabase `mas-jawa-laundry-qa` ref `tnadzytuamdxfypoeggy` created in `warasjawa-laundry's Org`, Mumbai `ap-south-1`. Supabase quoted **US$0/month** for the project creation.
+- [x] Retrieved the *exact* two Stage 3 DDL sources from original production migration history (no customer records or credentials); checked in under `supabase/migrations/20261016070822_*.sql` and `20261016070905_*.sql`.
+- [x] Applied 8 of 8 migrations on **QA ID only**: Stage 3 foundation, Stage 3 indexes, Stage 4, 5, 6, 8, 9, 10.
+- [x] `supabase/tests/20261017_stage10_sql_integration_rollback.sql`: **PASS** for old QR revocation, new token success, reissue UUID idempotency, conflicting reason/owner refusal, unauthenticated denial, and year setup guards.
+- [x] `supabase/tests/20261017_stage10_role_isolation_rollback.sql`: **PASS** as real PostgreSQL `authenticated` and `anon` roles with RLS.
+- [x] QA post-ROLLBACK: **0 auth users, 0 owners, 0 members, 0 cards, 0 reissues**; two preset point-rule rows (2026 and 2027), 5 tiers each. RLS on all ten QA business tables.
+- [x] Security advisor: only two `rls_enabled_no_policy` informational notes for token/audit tables intentionally not directly exposed. Performance advisor: seven informational unindexed foreign keys and nine unused-index notices; no automatic schema churn.
+- [ ] True multi-session concurrency, isolated QA authenticated browser UAT, before/after timing, and approval for customer rollout.
+- [ ] Production migration & promotion: **not authorized**.
+
+Evidence: `docs/2026-10-17-stage4-supabase-qa-checkpoint.md`. Neither customer database nor main/prod hosting modified.
