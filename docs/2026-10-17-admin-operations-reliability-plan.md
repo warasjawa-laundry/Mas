@@ -4,7 +4,7 @@
 **Branch:** `feature/admin-operations-reliability-20261017`  
 **Base:** `50d9bd922c57448d5316a1584e6fc26b14a2e1eb` (PR #10)  
 **Scope:** QR compatibility, owner dashboard/navigation, transaction UX, repeatable tests, security/performance reviews.  
-**Status:** Stage 0–3 implementation COMPLETE (CI 6/6 PASS on candidate `4729a62`); Stage 4 schema GATED; Stage 5 authenticated Preview UAT PENDING. `main` and production unchanged.
+**Status:** Stage 0–3 implementation COMPLETE (CI 6/6 PASS on candidate `4729a62`); Stage 4 SOURCE IMPLEMENTED, QA SCHEMA VALIDATION GATED; Stage 5 authenticated Preview UAT PENDING. `main` and production unchanged.
 
 ## Guardrails and invariants
 
@@ -109,3 +109,18 @@ GitHub CI 6/6 PASS at SHA `4729a62`: Integration `38957119789`, Stage 2 `3895711
 - [ ] QR public progress end-to-end on the *eventual main/stable domain*. Branch Preview deliberately embeds the stable main test origin, so public QR entry cannot yet certify the feature branch in isolation.
 - [ ] Stage 4 isolated database migration and regression tests before lifecycle release.
 - [ ] Separate release approval before merge to `main` or production promotion.
+
+### Stage 4 — SOURCE IMPLEMENTATION CHECKPOINT (2026-10-17 WIB)
+
+**Code PASS, not DB-certified:** `0798e10e2613500f3ecded78764f2e461984dfc9` — six out of six GitHub Actions workflows SUCCESS. Historical `main` still `50d9bd9`.
+
+- [x] Added migration `20261017090000_stage10_card_reissue_and_next_year.sql`: atomic/idempotent owner card reissue; audit journal with RLS, explicit rule-year initialization preserving snapshots.
+- [x] Added owner-only feature-gated card reissue action and confirmation panel. Feature flag `OWNER_CARD_REISSUE_ENABLED` absent/off by default.
+- [x] Added current/next WIB program-year logic and owner UI. Flag `OWNER_POINT_YEAR_SETUP_ENABLED` absent/off by default.
+- [x] Updated public customer balance display and owner member detail for future WIB years; 2026 trial remains separate.
+- [x] Wrote `tests/stage10-contract.test.mjs`: executable time-boundary tests and security/source contracts. Current CI includes all six workflow gates with successful TypeScript, build and browser tests.
+- [ ] Create isolated QA database, replay migrations, and run real PostgreSQL integration/security/concurrency test.
+- [ ] Authenticated owner UAT against QA-only Preview after isolated env wiring.
+- [ ] Production SQL authorization and independent rollout approval.
+
+Details: `docs/2026-10-17-stage4-implementation-checkpoint.md`. Previous unyil Preview READY build is **pre-Stage-4**. No production deployment or customer record mutation.

@@ -1,5 +1,5 @@
 # Stage 4 — Database-Gated Card Lifecycle & Future Points
-**Status: DESIGN-ONLY — NOT IMPLEMENTED.** `main`, live Supabase schema and data untouched.
+**Status: SOURCE IMPLEMENTED / CI PASS; QA SQL AND AUTHENTICATED UAT PENDING.** `main`, live Supabase schema and data untouched.
 
 ## 4A. Replace a lost/stolen card atomically
 1. Dedicated test Supabase project/schema: replay all current `supabase/migrations` before writing any production SQL.
@@ -26,6 +26,13 @@
 - [x] Documented transaction/identity/locking/idempotency invariants
 - [x] Verified live schema includes partial unique active-card index (read-only)
 - [ ] Provision/authorize isolated QA database and apply migrations there
-- [ ] Implement/test card-rotation migration and feature-gated owner UI
-- [ ] Implement/test dynamic year initialization and point-rule UI
+- [x] Implement card-rotation migration and feature-gated owner UI in source\n- [ ] Run isolated PostgreSQL integration tests for card rotation
+- [x] Implement dynamic year initialization and point-rule UI in source\n- [ ] Test year-setup RPC in QA, including concurrent initialization and invalid years
 - [ ] Receive explicit authorization before any production SQL or credential-setting change
+
+## Implementation evidence (2026-10-17 WIB)
+- Migration: `supabase/migrations/20261017090000_stage10_card_reissue_and_next_year.sql`.
+- App: `app/admin/members/card/actions.ts`, `app/admin/members/[id]/card/page.tsx`, `app/admin/points/actions.ts`, `app/admin/points/rules/page.tsx`, `lib/laundry/program-years.ts`.
+- Customer read model year presentation: `app/k/[token]/page.tsx`, `app/admin/members/[id]/page.tsx`.
+- Regression: `tests/stage10-contract.test.mjs` — GitHub six CI suites PASS for source SHA `0798e10`.
+- Full checkpoint: `docs/2026-10-17-stage4-implementation-checkpoint.md`. No QA DB has yet been created; remaining database cases must NOT be marked complete.
