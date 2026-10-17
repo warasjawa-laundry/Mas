@@ -1,7 +1,7 @@
 import {test,expect} from "@playwright/test";
-test("point rules are owner-only",async ({page})=>{
- await page.goto("/admin/points/rules?year=2027");
- await expect(page).toHaveURL(/\/admin\/login/);
+test("point-rule editor is unavailable even via its former direct URL",async ({page})=>{
+ const response=await page.goto("/admin/points/rules?year=2027");
+ expect(response?.status()).toBe(404);
  await expect(page.getByRole("button",{name:/Simpan Aturan Poin/})).toHaveCount(0);
 });
 test("unauthenticated member route never exposes amounts or point history",async ({page})=>{
