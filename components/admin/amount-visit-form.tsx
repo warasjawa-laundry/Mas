@@ -12,7 +12,7 @@ function SaveTransactionButton({disabled}:{disabled:boolean}) {
  const {pending}=useFormStatus();
  return <button type="submit" className="admin-primary owner-record-button"
    disabled={disabled||pending} aria-busy={pending}>
-   {pending?"Menyimpan transaksi…":"Simpan Transaksi & Poin"}
+   {pending?"Menyimpan transaksi…":"Simpan transaksi"}
  </button>;
 }
 
@@ -26,13 +26,14 @@ export default function AmountVisitForm({memberId,requestId,memberActive,tiers,y
  return <form action={recordAmountVisit} className="owner-amount-form">
    <input type="hidden" name="memberId" value={memberId}/>
    <input type="hidden" name="requestId" value={requestId}/>
+   <h2>Transaksi baru</h2>
    <label htmlFor="amount-visit-idr">Nominal transaksi (Rp) *</label>
    <input id="amount-visit-idr" name="amountIdr" type="number" inputMode="numeric"
      min={1} max={1000000000} step={1} required placeholder="Contoh: 75000"
      value={amount} onChange={e=>setAmount(e.target.value)} disabled={!memberActive}/>
    <label htmlFor="amount-visit-note">Keterangan transaksi *</label>
    <textarea id="amount-visit-note" name="description" required minLength={3} maxLength={240}
-     placeholder="Contoh: Cuci setrika 15 kg" rows={3} value={description}
+     placeholder="Contoh: Cuci setrika 15 kg" rows={2} value={description}
      onChange={e=>setDescription(e.target.value)} disabled={!memberActive}/>
    <div className="owner-point-estimate" role="status">
      <span>Perkiraan poin · {year}{year===2026?" (uji coba)":""}</span>
@@ -40,6 +41,6 @@ export default function AmountVisitForm({memberId,requestId,memberActive,tiers,y
      <small>{validAmount?"Dari transaksi Rp"+idr(value)+". Nilai akhir disimpan saat dikonfirmasi.":"Masukkan nominal untuk melihat poin otomatis."}</small>
    </div>
    <SaveTransactionButton disabled={!memberActive || !validAmount || !validDesc || tiers.length!==5}/>
-   <p className="member-note">Transaksi bertambah 1 kali hanya setelah tombol ditekan dan penyimpanan berhasil. QR scan tidak mencatat transaksi.</p>
+   <p className="member-note">Poin dihitung otomatis. Transaksi dicatat setelah penyimpanan berhasil.</p>
  </form>;
 }

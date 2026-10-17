@@ -6,7 +6,7 @@ type Props = { searchParams: Promise<{ error?: string }> };
 export default async function OwnerSettings({ searchParams }: Props) {
   await requireOwner();
   const { error } = await searchParams;
-  return <main className="admin-workspace"><header className="admin-topbar"><Link href="/admin/scan" className="admin-brand">← Mas Jawa Laundry</Link><span>Pengaturan</span></header>
+  return <main className="admin-workspace">
     <div className="admin-content admin-settings">
       <p className="admin-kicker">KEAMANAN AKUN</p>
       <h1>Ubah Password</h1>
@@ -19,7 +19,7 @@ export default async function OwnerSettings({ searchParams }: Props) {
         <label htmlFor="confirm">Ulangi password baru</label><input id="confirm" type="password" name="confirmPassword" autoComplete="new-password" required minLength={12} maxLength={128} />
         <button type="submit" className="admin-primary">Simpan Password Baru</button>
       </form>
-      <div className="admin-shortcuts"><Link href="/admin/scan">← Kembali ke Scan</Link></div>
+      <div className="admin-shortcuts"><Link href="/admin">← Kembali ke Ringkasan</Link></div>
     </div>
   </main>;
 }

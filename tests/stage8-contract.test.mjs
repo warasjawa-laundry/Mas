@@ -15,7 +15,7 @@ test("member edit is a dedicated owner-only path and never reissues cards or mut
  assert.match(action,/requireOwner\(\)/);
  assert.match(edit,/action=\{updateMemberContact\}/);
  assert.match(list,/\/edit\`}>Ubah Data/);
- assert.match(detail,/Ubah Data & WhatsApp/);
+ assert.match(detail,/Ubah Data/);
  assert.doesNotMatch(action,/laundry_record_visit|laundry_register_member|laundry_grant_manual_promotion|newCardToken|encryptCardToken/);
  assert.match(action,/normalizeWhatsapp/);
  assert.match(action,/validateMemberName/);

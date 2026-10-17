@@ -1,8 +1,10 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 import { cardOriginForEnvironment } from "@/lib/laundry/card-origins";
+import { assertQaPreviewIsolation } from "@/lib/supabase/qa-preview-isolation";
 
 function getCardKey() {
+  assertQaPreviewIsolation();
   const key = process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
   if (!key) throw new Error("Card encryption is not configured");
   const material = Buffer.from(key, "base64");

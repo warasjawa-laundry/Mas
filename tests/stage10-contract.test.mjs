@@ -68,12 +68,8 @@ test("future-year setup is explicit, owner-only, idempotent, and never backfills
   assert.match(sql,/on conflict\(program_year\) do nothing/);
   assert.doesNotMatch(sql,/update public\.laundry_amount_transactions|delete from public\.laundry_amount_transactions/);
   assert.match(originalPoints,/rule_revision integer not null/);
-  assert.match(points,/OWNER_POINT_YEAR_SETUP_ENABLED/);
-  assert.match(points,/confirmSetup/);
-  assert.match(points,/laundry_initialize_point_year/);
-  assert.match(points,/canEditProgramYear\(year\)/);
-  assert.match(rules,/availableProgramYears\(\)/);
-  assert.match(rules,/editable && <button/);
+  assert.doesNotMatch(points,/initializePointYear|laundry_initialize_point_year|savePointRules/);
+  assert.match(rules,/notFound\(\)/);
 });
 
 test("public progress follows the WIB program year and does not mix historical points",()=>{

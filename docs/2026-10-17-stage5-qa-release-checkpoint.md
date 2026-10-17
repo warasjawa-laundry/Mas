@@ -32,3 +32,6 @@
 4. No merge or production promotion authorized at this checkpoint; custom domain, Netlify official site and ristkyx Vercel untouched.
 
 **Next decision:** provision a dedicated protected Vercel QA project with independent Supabase QA credentials, or safely connect the source repository to Vercel for branch-scoped variables. Current `mas` project has no Git link; provider rejected the attempted branch-scoped env settings. Do NOT change global Preview, run QA browser actions against customer DB, or enable Stage 10 flags until isolation is verified.
+
+## Latest Preview isolation checkpoint
+Existing unyil Vercel `mas` supports branch-specific QA variables after the linked repository's branch name was created. Eight branch-scoped variables have been configured, including QA-only Supabase, encryption material and flags OFF; no common Preview variables were changed. The application guard `assertQaPreviewIsolation()` throws if the feature-branch deployment attempts to use customer Supabase settings. CI, Preview redeploy and QA Auth-backed browser E2E are next. See `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.

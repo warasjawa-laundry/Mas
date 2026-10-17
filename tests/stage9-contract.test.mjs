@@ -10,23 +10,23 @@ const member=read("app/admin/members/[id]/page.tsx");
 const publicCard=read("app/k/[token]/page.tsx");
 const scanner=read("components/admin/scan-card.tsx");
 
-test("owner-defined five nominal bands with year-isolated default rules",()=>{
+test("five database-managed nominal bands with year-isolated default rules",()=>{
  assert.match(sql,/program_year integer primary key/);
  assert.match(sql,/insert into public\.laundry_point_rules/);
  for (const n of [10000,25000,50000,100000,200000])assert.match(sql,new RegExp('"minimum":'+n));
  assert.match(sql,/jsonb_array_length\(p_tiers\)<>5/);
  assert.match(sql,/v_amount<=v_previous/);
  assert.match(sql,/v_current<>p_expected_revision/);
- assert.match(rules,/2026 · Uji coba/);
- assert.match(rules,/2027 · Program/);
- assert.match(rules,/action=\{savePointRules\}/);
+ assert.match(rules,/notFound\(\)/);
+ assert.doesNotMatch(actions,/savePointRules|initializePointYear|laundry_set_point_rules/);
+ assert.doesNotMatch(member,/Atur nominal & poin/);
 });
 test("owner manually confirms amount, description and preview points before adding a visit",()=>{
  assert.match(form,/action=\{recordAmountVisit\}/);
  assert.match(form,/name="amountIdr"/);
  assert.match(form,/name="description"/);
  assert.match(form,/Perkiraan poin/);
- assert.match(form,/Simpan Transaksi & Poin/);
+ assert.match(form,/Simpan transaksi/);
  assert.match(form,/type="submit"/);
  assert.match(actions,/requireOwner\(\)/);
  assert.match(actions,/laundry_record_amount_visit/);
@@ -44,7 +44,7 @@ test("amount transaction is atomic with legacy checklist, with immutable scoring
  assert.doesNotMatch(form,/resolveOwnerScannedCard|decodeFromVideoDevice|fetch\(/);
  assert.doesNotMatch(scanner,/recordAmountVisit|laundry_record_amount_visit/);
 });
-test("only owner can write rules or amount transactions, and no table write grant to web roles",()=>{
+test("operator-only rules with owner-verified transactions and no direct table update grants",()=>{
  assert.match(sql,/security definer set search_path=''/);
  assert.match(sql,/security invoker set search_path=''/);
  assert.match(sql,/laundry_owner_accounts/);

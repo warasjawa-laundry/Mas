@@ -10,7 +10,7 @@ test("all admin routes share mobile and desktop navigation with no extra auth ca
   assert.match(layout, /<AdminNavigation\s*\/>/);
   assert.match(nav, /admin-shell-sidebar/);
   assert.match(nav, /admin-shell-mobile/);
-  for (const href of ["/admin", "/admin/scan", "/admin/members", "/admin/settings", "/admin/points/rules"]) {
+  for (const href of ["/admin", "/admin/scan", "/admin/members", "/admin/settings"]) {
     assert.ok(nav.includes(href), href);
   }
   assert.doesNotMatch(nav, /getUser\(|getClaims\(|requireOwner\(|\.from\(/);
@@ -26,7 +26,7 @@ test("dashboard only reads small counts with owner verification", () => {
 
 test("login lands at the dashboard rather than the scanner", () => {
   assert.match(source("app/admin/actions.ts"), /redirect\("\/admin"\)/);
-  assert.match(source("app/admin/login/page.tsx"), /redirect\("\/admin"\)/);
+  assert.doesNotMatch(source("app/admin/login/page.tsx"), /redirect\("\/admin"\)/);
 });
 
 test("member search has stable bounded pagination and no implicit prefetch", () => {
@@ -41,7 +41,7 @@ test("member detail prioritizes one explicit amount/points write over secondary 
   const page = source("app/admin/members/[id]/page.tsx");
   assert.ok(page.indexOf("<AmountVisitForm") > -1);
   assert.ok(page.indexOf("<AmountVisitForm") < page.indexOf('className="owner-detail-jump-links"'));
-  assert.match(page, /<details className="owner-history-details">/);
+  assert.match(page, /<details className="owner-history-details" open>/);
   assert.match(page, /action=\{correctOwnerVisit\}/);
   assert.match(page, /<MemberPromotions/);
 });

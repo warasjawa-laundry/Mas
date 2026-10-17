@@ -49,3 +49,14 @@ test("login page remains clean and readable on desktop", async ({ page }) => {
   mkdirSync("artifacts/stage3", { recursive: true });
   await page.screenshot({ path: "artifacts/stage3/login-1440.png", fullPage: true });
 });
+
+test("restoring login from browser page cache blanks password but preserves ID",async ({page})=>{
+ await page.goto("/admin/login");
+ const pwd=page.locator('input[name="password"]');
+ await pwd.fill("TransientUserInputOnly!");
+ await page.evaluate(()=>{
+   window.dispatchEvent(new PageTransitionEvent("pageshow",{persisted:true}));
+ });
+ await expect(pwd).toBeEmpty();
+ await expect(page.getByLabel("ID Pengguna")).toHaveValue("masjawalaundry");
+});

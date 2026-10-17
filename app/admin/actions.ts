@@ -1,6 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies, headers } from "next/headers";
+import { ADMIN_ACCESS_COOKIE, ADMIN_ENTRY_COOKIE, adminSessionCookieOptions, issueAdminAccess, issueAdminEntry } from "@/lib/admin/entry-pass";
 import { createOwnerClient, ownerAuthReady } from "@/lib/supabase/server";
 import { getVerifiedOwner } from "@/lib/supabase/owner";
 
@@ -32,12 +34,27 @@ export async function loginOwner(formData: FormData) {
     await supabase.auth.signOut();
     redirect("/admin/login?error=invalid");
   }
+  const jar=await cookies();
+  jar.set(ADMIN_ACCESS_COOKIE,issueAdminAccess(user.id),adminSessionCookieOptions);
+  // When JavaScript is unavailable a native form submission redirects with
+  // a document GET. Only that first GET is permitted without another prompt.
+  const h=await headers();
+  if(!h.has("next-action")){
+    jar.set(ADMIN_ENTRY_COOKIE,issueAdminEntry(user.id),{
+      ...adminSessionCookieOptions,maxAge:60
+    });
+  } else {
+    jar.delete(ADMIN_ENTRY_COOKIE);
+  }
   redirect("/admin");
 }
 
 export async function logoutOwner() {
   const supabase = await createOwnerClient();
-  if (supabase) await supabase.auth.signOut();
+  if (supabase) await supabase.auth.signOut({scope:"local"});
+  const jar=await cookies();
+  jar.set(ADMIN_ACCESS_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
+  jar.set(ADMIN_ENTRY_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
   redirect("/admin/login?notice=logout");
 }
 
@@ -66,5 +83,8 @@ export async function changeOwnerPassword(formData: FormData) {
   if (changeError) redirect("/admin/settings?error=failed");
 
   await owner.supabase.auth.signOut({ scope: "global" });
+  const jar=await cookies();
+  jar.set(ADMIN_ACCESS_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
+  jar.set(ADMIN_ENTRY_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
   redirect("/admin/login?notice=password-changed");
 }
