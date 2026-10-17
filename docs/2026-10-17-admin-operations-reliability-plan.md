@@ -200,3 +200,15 @@ Details: `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.
 - [ ] In Vercel project `mas`, Settings → Environment Variables, edit ONLY the `OWNER_AUTH_EMAIL` entry with `Preview` and Git Branch `feature/admin-operations-reliability-20261017`. Set to the same confirmed email as the new QA Auth user. Never edit the shared Preview entry; never put the password into Vercel.
 - [ ] Manually redeploy from the current PR #12 source branch to existing Vercel Preview after user confirms the branch-specific email is updated. Verify deployment metadata, `/api/qa-readiness` and owner login before any data-writing UAT.
 - [ ] Finish authenticated UAT with a synthetic QA member; leave Stage 10 flags disabled until ready.
+
+### Stage 11 — Hide rule editor and make point policy database-managed (2026-10-17)
+- [x] Removed all edit entry points from member page, sidebar and dashboard; old `/admin/points/rules` direct link returns 404.
+- [x] Removed rule editing/year-setup Server Actions, preserved explicit transaction entry, read-only point estimate and balances.
+- [x] Added SQL migration to revoke public/private policy RPC execution and point-table writes from browser/API roles; **applied only to QA**.
+- [x] Supabase QA regression: anonymous, authenticated and service roles denied editing/initialization; authenticated still can read thresholds and record transactions.
+- [x] Seven GitHub workflows PASS at code SHA `18a2441` including ephemeral PostgreSQL privilege and concurrency gate.
+- [x] Protected branch-only Vercel Preview READY `dpl_AJE5PpTScpG83N8UNX4yU8fUJ1Wc`, region `bom1`; main alias unchanged.
+- [ ] Mobile screenshot verification by operator; test owner login and actual recording with isolated fixture.
+- [ ] Production rollout remains blocked pending explicit authorization for customer database Stage 11 migration.
+
+Documentation: `docs/2026-10-17-stage11-db-only-point-rules-checkpoint.md`.
