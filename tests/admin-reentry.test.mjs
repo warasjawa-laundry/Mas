@@ -38,7 +38,7 @@ test("valid owner token alone is insufficient without an admin session grant",()
  assert.match(owner,/user\.id/);
  assert.match(actions,/jar\.set\(ADMIN_ACCESS_COOKIE,issueAdminAccess\(user\.id\)/);
  assert.match(actions,/h\.has\("next-action"\)/);
- assert.match(actions,/jar\.delete\(ADMIN_ACCESS_COOKIE\)/);
+ assert.match(actions,/jar\.set\(ADMIN_ACCESS_COOKIE,"",\{\.\.\.adminSessionCookieOptions,maxAge:0\}\)/);
  assert.match(actions,/scope: "global"/);
 });
 test("login always prompts for password, keeps ID prefilled, and uses no cached password",()=>{
