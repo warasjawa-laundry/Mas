@@ -25,8 +25,8 @@ The previous admin login page redirected any existing Supabase owner session str
 - [x] Added admin `Cache-Control: private, no-store` response headers.
 - [x] Kept login ID prefilled and blanked password on mount; no stored-password UI.
 - [x] Added regression coverage for signed cookie grants, session reset paths, client-history boundary and login field defaults.
-- [ ] Run all GitHub CI workflows to SUCCESS on a single SHA; historical stage9 UI test adjusted to expect reauthentication before denying old editor.
-- [ ] Deploy passing SHA to the **existing QA Preview**, verify READY in Mumbai and QA branch alias, main alias unchanged.
+- [x] GitHub CI **7/7 SUCCESS** at source SHA `91ca7ec8d3036e053d89837da56228cd1ea9fc46`; historical stage9 UI test updated to require login on document navigation.
+- [x] Deployed exact SHA `91ca7ec8` to the **existing protected QA Preview**, deployment `dpl_9zzq3jBNW4CZdHsEqMm2B8e7ivdL` **READY**, functions Mumbai (`bom1`). QA alias moved to this deployment and `main` Preview alias remains at `dpl_3qF3NBniMjH9ka1LCY9jAFuJyM2z`.
 - [ ] Manual authenticated Android QA: login → navigate admin tabs → refresh → login prompt with blank password; login → public homepage → return admin → login prompt; browser Back/Forward → no cached sensitive screen; invalid password rejected; successful login restores dashboard; logout and change-password effects.
 - [ ] Production release and customer migration require independent approval.
 
@@ -38,3 +38,16 @@ The previous admin login page redirected any existing Supabase owner session str
 
 ## Release boundary
 No production SQL, production Auth or live domain change. Source stays on draft PR #12 pending QA review.
+
+## CI / deployment certification
+
+- [x] Seven workflows PASS on code SHA `91ca7ec8` (Stage 2, Stage 3, Stage 4, Stage 5, Stage 6, Stage 10 PostgreSQL, Integration CI).
+- [x] Login password cleared on initial mount and `pageshow` (including browser BFCache restore), with dedicated browser regression test.
+- [x] Proxy avoids Supabase signOut network calls when no session cookie is present.
+- [x] Existing Vercel project `mas`, protected **QA Preview**, deployment `dpl_9zzq3jBNW4CZdHsEqMm2B8e7ivdL`, READY, region `bom1`.
+- [x] Stable QA alias: `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app`.
+- [x] Branch preview `main` unchanged; code `main` remains merge `f742b8a`. No production SQL applied.
+- [ ] **Actual verified owner QA login/UAT**. Operator must test (a) enter password and reach dashboard; (b) navigate admin tabs without prompt; (c) refresh any admin tab and see login with ID prefilled and password blank; (d) leave to homepage then re-enter and see login; (e) browser Back/Forward must not show accessible cached admin content; (f) after another password login dashboard works.
+- [ ] Post-login server requests and revocation behavior cannot be independently certified by synthetic CI without owner credentials. Do not mark Stage 12 fully certified until tester confirms.
+
+Release boundary: draft PR #12 remains OPEN. This checkpoint does NOT authorize merge or production deployment.

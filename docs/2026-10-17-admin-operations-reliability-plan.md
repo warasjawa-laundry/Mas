@@ -212,3 +212,15 @@ Details: `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.
 - [ ] Production rollout remains blocked pending explicit authorization for customer database Stage 11 migration.
 
 Documentation: `docs/2026-10-17-stage11-db-only-point-rules-checkpoint.md`.
+
+### Stage 12 — Fresh admin login on refresh and public reentry (2026-10-17)
+- [x] Audit source: Supabase SSR cookies were persistent and login page auto-skipped when `getVerifiedOwner()` succeeded.
+- [x] Require new password to enter admin via full document navigation/refresh, public-side client transition or restored browser history, while internal admin tab changes remain available.
+- [x] Session-specific HMAC cookie bound to verified owner, explicit local signout and cookie expiry; login ID prefilled, password empty.
+- [x] Browser-history guard, root navigation boundary, no-store admin headers, and login password clearing on BFCache restore.
+- [x] Unit/security and Playwright regression coverage; seven GitHub workflows PASS on exact code `91ca7ec8`.
+- [x] Existing QA Vercel Preview READY: `dpl_9zzq3jBNW4CZdHsEqMm2B8e7ivdL`, Mumbai; main Preview unchanged.
+- [ ] Operator login/refresh/homepage/back navigation real authenticated Android UAT.
+- [ ] PR #12 merge and production rollout blocked until separate approval.
+
+Details: `docs/2026-10-17-stage12-admin-fresh-auth-boundary.md`.
