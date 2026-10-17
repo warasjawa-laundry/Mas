@@ -55,3 +55,14 @@ test("DB boundary is enforced before protected and public Supabase requests", ()
   assert.ok(read("proxy.ts").indexOf("  assertQaPreviewIsolation();") < read("proxy.ts").indexOf("  const url = process.env.SUPABASE_URL;"));
   assert.ok(read("app/k/[token]/page.tsx").indexOf("  assertQaPreviewIsolation();") < read("app/k/[token]/page.tsx").indexOf("  const url=process.env.SUPABASE_URL;"));
 });
+
+test("QA readiness endpoint is preview-only, non-sensitive and uncached", () => {
+  const route=readFileSync("app/api/qa-readiness/route.ts","utf8");
+  assert.match(route, /qaPreviewIsolation: "configured"/);
+  assert.match(route, /qaPreviewIsolation: "blocked"/);
+  assert.match(route, /VERCEL_GIT_COMMIT_REF !== QA_PREVIEW_REF/);
+  assert.match(route, /status: 404/);
+  assert.match(route, /status: 503/);
+  assert.match(route, /no-store/);
+  assert.doesNotMatch(route, /service_role|createClient\(|laundry_members|token_ciphertext/);
+});
