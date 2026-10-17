@@ -26,9 +26,9 @@
 - [ ] Check Vercel server logs for errors AFTER a test request has actually run; preserve only non-sensitive timings.
 
 ## Release blockers
-1. Dedicated QA database and staged migration tests for card rotation and 2028+ rules: NOT DONE.
+1. Dedicated QA database and migrations: **DONE** (QA project `tnadzytuamdxfypoeggy`); SQL functional/role checks and PostgreSQL 17 two-session concurrency PASS. Remaining UAT is independent of this SQL gate.
 2. Authenticated business-flow E2E tests with QA fixtures: NOT DONE.
-3. Feature QR points to reviewed main alias for stability; validate full public flow when matching main build is approved.
+3. QA feature cards now use the fixed QA feature-branch alias (code only). This branch must never be deployed using customer-linked Preview variables; QA-only Vercel environment wiring remains blocked by missing linked Git repository.
 4. No merge or production promotion authorized at this checkpoint; custom domain, Netlify official site and ristkyx Vercel untouched.
 
-**Next decision:** approve/provision isolated QA database or execute authenticated operator UAT on this safe Preview. No live DB changes should be performed by guesswork.
+**Next decision:** provision a dedicated protected Vercel QA project with independent Supabase QA credentials, or safely connect the source repository to Vercel for branch-scoped variables. Current `mas` project has no Git link; provider rejected the attempted branch-scoped env settings. Do NOT change global Preview, run QA browser actions against customer DB, or enable Stage 10 flags until isolation is verified.

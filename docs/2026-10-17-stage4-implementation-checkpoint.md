@@ -56,3 +56,10 @@ The **older** branch Preview `dpl_9g7wikotpv1VYT9ZGzTwnuPdKCKA` in `bom1` is pre
 - PostgreSQL integration + role/RLS tests both PASS via `BEGIN; DO...; ROLLBACK`. No fixtures remain; 0 auth users, owners, members, cards, reissues.
 - Next steps and advisor findings: `docs/2026-10-17-stage4-supabase-qa-checkpoint.md`.
 - No manual Vercel Preview, Netlify, production SQL or `main` mutation occurred while provisioning and testing QA.
+
+## SQL contention evidence (2026-10-17)
+- [x] Added ephemeral PostgreSQL 17 GitHub Actions gate `Stage 10 PostgreSQL Concurrency QA`.
+- [x] Two concurrent client connections serialize on the member lock: identical request UUID returns same card; one active card, one reissue journal row.
+- [x] Two concurrent client connections initialize year 2027: exactly one row created; the other no-ops, source tiers preserved and no historic transaction backfill.
+- [x] All 7 workflow checks green on exact code SHA `61957576a25fc73b34996e8c3017b4f47fc77a82`.
+- [ ] QA-only browser login, protected Preview, and full owner workflow remain untested; Vercel branch env is blocked because project Git link is absent.

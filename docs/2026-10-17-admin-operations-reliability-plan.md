@@ -136,7 +136,18 @@ Details: `docs/2026-10-17-stage4-implementation-checkpoint.md`. Previous unyil P
 - [x] `supabase/tests/20261017_stage10_role_isolation_rollback.sql`: **PASS** as real PostgreSQL `authenticated` and `anon` roles with RLS.
 - [x] QA post-ROLLBACK: **0 auth users, 0 owners, 0 members, 0 cards, 0 reissues**; two preset point-rule rows (2026 and 2027), 5 tiers each. RLS on all ten QA business tables.
 - [x] Security advisor: only two `rls_enabled_no_policy` informational notes for token/audit tables intentionally not directly exposed. Performance advisor: seven informational unindexed foreign keys and nine unused-index notices; no automatic schema churn.
-- [ ] True multi-session concurrency, isolated QA authenticated browser UAT, before/after timing, and approval for customer rollout.
+- [x] True independent two-session concurrency on ephemeral PostgreSQL 17 (`supabase/tests/stage10-postgres-parallel-race.sh`) — Stage 10 workflow PASS; same-key replacement produces one new card/audit, simultaneous year creation produces one insert.
+- [ ] Isolated QA authenticated browser UAT, response timings and separate release approval.
 - [ ] Production migration & promotion: **not authorized**.
 
 Evidence: `docs/2026-10-17-stage4-supabase-qa-checkpoint.md`. Neither customer database nor main/prod hosting modified.
+
+### Stage 5 — CONCURRENCY AND QA PREVIEW ISOLATION CHECKPOINT (2026-10-17)
+- [x] New dedicated `.github/workflows/stage10-postgres-concurrency.yml`: PostgreSQL 17 service container, eight source migrations, independent concurrent PostgreSQL client processes. True parallel card-reissue and next-year setup tests **PASS** (run `39004521560`; all **7/7** workflows PASS on SHA `61957576a25fc73b34996e8c3017b4f47fc77a82`).
+- [x] Supabase QA synthetic fixture used for initial API concurrency check was removed after verifying counts; `0` auth users, owners, members, cards, reissues and audit rows.
+- [x] Card-origin code now recognizes *exact* feature QA branch alias, preserving the production/main Preview origin and strict QR host allowlist.
+- [!] Vercel unyil project `mas` has no linked Git repository (`link:null`); Vercel rejected branch-scoped QA environment variables with `Branch ... not found in connected Git repository`. No variables were applied; existing Preview still uses its unchanged settings.
+- [ ] Owner QA Auth identity must be provisioned via supported Supabase Auth admin flow (not raw manual `auth.users` password edits), with unique QA-only credentials and key.
+- [ ] Dedicated isolated Vercel QA project or safely linked branch-specific Preview must be configured, protected by Vercel Auth, using **only** `tnadzytuamdxfypoeggy`; user approval required for any new Vercel project.
+- [ ] Authenticated cross-page browser UAT and production release sign-off.
+Evidence: `docs/2026-10-17-stage5-concurrency-preview-blocker.md`.

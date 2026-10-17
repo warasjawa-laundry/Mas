@@ -19,7 +19,8 @@
 - [x] Seeded **only** 2026 and 2027 initial point rules (five tiers, revision 1), as migrations require.
 - [x] All **ten** `laundry_*` tables have RLS enabled. `anon` cannot execute `laundry_reissue_card` or `laundry_initialize_point_year`, and authenticated users cannot directly SELECT/INSERT into the reissue audit journal.
 - [x] Supabase QA security advisor: 2 informational `rls_enabled_no_policy` notes (card token table and reissue audit, intentionally private); performance advisor: 7 informational unindexed foreign keys and 9 unused-index notices with near-empty QA tables.
-- [ ] True two-connection concurrent rotation and year initialization, including lock contention and revision conflicts.
+- [x] True two-connection concurrent rotation and year initialization verified against ephemeral PostgreSQL 17 in GitHub Actions, replaying all 8 source migrations. Same request UUID yields one replacement; concurrent year initialization yields one insert and one no-op.
+- [ ] Further contention tests for different request IDs and concurrent rule revision edits.
 - [ ] Full authenticated browser E2E with **QA-only** Auth user and Preview env isolated from customer DB.
 - [ ] Real QR camera/gallery scan and measured mobile/desktop latency.
 - [ ] Separate approval for live schema migration, enabling feature flags and promotion.
@@ -50,4 +51,10 @@ Both tests use synthetic UUIDs and `BEGIN; ... ROLLBACK;`, with no production cr
 
 `PR #11` remains OPEN; `main` remains `50d9bd9`. The existing manually created protected Vercel Preview (Mumbai) is **pre-Stage-4** and still uses its original environment. **No Stage 10 SQL was applied to customer Supabase.** No feature flag activated, Netlify or live domain changed.
 
-Next gate: isolated QA Preview and synthetic Auth credentials delivered only through secret management, then authenticated end-to-end and concurrency test. Do not reuse, copy, or expose the customer's owner login/password or QR encryption material.
+Next gate: isolated QA Preview and synthetic Auth credentials via supported admin/secret management, then authenticated browser end-to-end tests. Database concurrency is now proven independently in CI. Do not reuse, copy, or expose the customer's owner login/password or QR encryption material.
+
+## 2026-10-17 concurrency follow-up and cleanup
+- [x] Gate `Stage 10 PostgreSQL Concurrency QA` PASS on code SHA `6195757`; CI run `39004521560`; all seven workflows PASS.
+- [x] Fixture cleanup after Supabase QA sequential API tests: `auth.users=0`, owners `0`, members `0`, cards `0`, reissues `0`, audit `0`. Retained only default rules for 2026/2027. Cleanup guarded by exact counts and synthetic record labels.
+- [x] Fixed QA card origin for exact Vercel feature-branch alias and added regression test. No new QA deployment.
+- [ ] Browser Auth UAT remains blocked on QA-only Vercel environment and supported QA Auth user provisioning. Existing `mas` Vercel project is **not** Git linked; branch-scoped env change was rejected by provider; global Preview variables were not touched.
