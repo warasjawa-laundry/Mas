@@ -55,7 +55,7 @@ export default async function MemberCard({params,searchParams}:Props) {
            <span>Saya memahami bahwa QR lama langsung tidak berlaku setelah kartu baru diterbitkan.</span></label>
           <button className="admin-primary" type="submit">Nonaktifkan QR Lama & Terbitkan Kartu Baru</button>
         </form>
-      </details>
+      </details>}
     </section>
   </main>;
 }
