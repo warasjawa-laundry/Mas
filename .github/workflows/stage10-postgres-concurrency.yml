@@ -42,5 +42,7 @@ jobs:
             echo "Applying $(basename "$migration")"
             psql -X -v ON_ERROR_STOP=1 -f "$migration" >/dev/null
           done
+      - name: Database-only point policy ACL regression
+        run: psql -X -v ON_ERROR_STOP=1 -f supabase/tests/stage11-point-policy-privileges.sql
       - name: Two independent connection concurrency tests
         run: bash supabase/tests/stage10-postgres-parallel-race.sh
