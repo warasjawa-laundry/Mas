@@ -24,7 +24,7 @@ export default async function MemberCard({params,searchParams}:Props) {
   const link=publicCardOrigin()+path;
   const svg=await QRCode.toString(link,{type:"svg",errorCorrectionLevel:"M",margin:4,width:256,color:{dark:"#111827",light:"#ffffff"}});
   return <main className="admin-workspace">
-    <div className="admin-topbar no-print"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link><Link href="/admin/settings">Pengaturan</Link></div>
+    <nav className="admin-breadcrumb no-print" aria-label="Kembali"><Link href={"/admin/members/"+id}>← Kembali ke Member</Link></nav>
     <section className="admin-content print-card-page">
       <div className="no-print">
         <p className="admin-kicker">KARTU MEMBER</p><h1>Kartu Siap Cetak</h1>
@@ -41,7 +41,7 @@ export default async function MemberCard({params,searchParams}:Props) {
         <div className="mj-card-qr" dangerouslySetInnerHTML={{__html:svg}}/>
       </div>
       <p className="mj-card-watermark">CONTOH KARTU — PREVIEW</p>
-      <div className="admin-shortcuts no-print"><PrintCardButton/><Link href="/admin/members">Kembali ke Daftar</Link></div>
+      <div className="admin-shortcuts no-print"><PrintCardButton/><Link href={"/admin/members/"+id}>Catat transaksi</Link><Link href="/admin/members">Kembali ke Daftar</Link></div>
       <p className="member-note no-print">Cetak menggunakan ukuran asli 100%. Foto kartu yang berisi QR dapat digunakan orang lain untuk melihat progress terbatas. Jika hilang, hubungi pemilik untuk pembatalan.</p>
       {allowReissue && <details className="owner-card-reissue no-print">
         <summary>Ganti kartu yang hilang atau bocor</summary>

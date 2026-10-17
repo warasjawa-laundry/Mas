@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MemberSearch from "@/components/admin/member-search";
 import { requireOwner } from "@/lib/supabase/owner";
 import { timeAdmin } from "@/lib/admin/timing";
 
@@ -16,22 +17,18 @@ export default async function AdminHome() {
 
   return <main className="admin-workspace">
     <section className="admin-content admin-home" aria-labelledby="dashboard-title">
-      <p className="admin-kicker">AREA PEMILIK</p>
-      <h1 id="dashboard-title">Ringkasan operasional</h1>
-      <p className="admin-hint">Pilih pekerjaan yang ingin diselesaikan. Scan kartu tidak otomatis mencatat transaksi.</p>
-      <div className="admin-home-stats" aria-label="Ringkasan usaha">
+      <p className="admin-kicker">ADMIN</p>
+      <h1 id="dashboard-title">Ringkasan</h1>
+      <p className="admin-hint">Kelola transaksi dan kartu member Mas Jawa Laundry.</p>
+      <section className="admin-transaction-entry" aria-labelledby="transaction-entry-title">
+        <h2 id="transaction-entry-title">Catat transaksi</h2>
+        <p>Cari nama pelanggan untuk membuka formulir transaksi.</p>
+        <MemberSearch id="dashboard-member-search" />
+        <div className="admin-scan-alternative"><span>Atau gunakan kartu member</span><Link href="/admin/scan" prefetch={false}>Scan QR <span aria-hidden="true">→</span></Link></div>
+      </section>
+      <div className="admin-home-stats" aria-label="Ringkasan seluruh data">
         <div><span>Member aktif</span><strong>{memberCount}</strong></div>
-        <div><span>Transaksi tercatat</span><strong>{visitCount}</strong></div>
-      </div>
-      <Link href="/admin/scan" className="admin-home-primary" prefetch={false}>
-        <span><strong>Scan kartu member</strong><small>Buka kamera atau gunakan galeri HP</small></span>
-        <span aria-hidden="true">→</span>
-      </Link>
-      <h2 className="admin-home-heading">Akses cepat</h2>
-      <div className="admin-home-actions">
-        <Link href="/admin/members" prefetch={false}><strong>Cari member</strong><small>Cari nama dan catat transaksi</small></Link>
-        <Link href="/admin/members/new" prefetch={false}><strong>Tambah member</strong><small>Daftarkan pelanggan baru</small></Link>
-        <Link href="/admin/settings" prefetch={false}><strong>Keamanan akun</strong><small>Ubah password pemilik</small></Link>
+        <div><span>Total transaksi</span><strong>{visitCount}</strong><small>Seluruh periode, setelah pembatalan</small></div>
       </div>
       {(membersR.error||addedR.error||voidR.error) &&
         <p role="status" className="admin-error">Sebagian ringkasan belum berhasil dimuat. Scan dan pencarian member tetap dapat digunakan.</p>}

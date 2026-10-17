@@ -31,17 +31,18 @@ export default function AdminNavigation() {
 
   return <>
     <a href="#admin-main" className="admin-skip-link">Lewati navigasi</a>
-    <aside className="admin-shell-sidebar" aria-label="Menu pemilik">
+    <aside className="admin-shell-sidebar" aria-label="Menu admin">
       <Link href="/admin" className="admin-shell-brand" prefetch={false}>
         <span className="admin-shell-monogram" aria-hidden="true">MJ</span>
-        <span>Mas Jawa Laundry<small>Area Pemilik</small></span>
+        <span>Mas Jawa Laundry<small>Admin</small></span>
       </Link>
       <nav aria-label="Navigasi utama admin" className="admin-shell-links">{navItems}</nav>
       <div className="admin-shell-footer">
-        <a href="/admin/leave">Lihat situs publik</a>
+        <a href="/admin/leave">Situs publik (keluar admin)</a>
         <form action={logoutOwner}><button type="submit">Keluar akun</button></form>
       </div>
     </aside>
+    <header className="admin-mobile-header"><Link href="/admin" prefetch={false}>Mas Jawa Laundry <span>Admin</span></Link><form action={logoutOwner}><button type="submit">Keluar</button></form></header>
     <nav aria-label="Navigasi utama admin di HP" className="admin-shell-mobile">
       {sections.map(({ href, label }) => (
         <Link key={href} href={href} prefetch={false}

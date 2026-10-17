@@ -38,19 +38,17 @@ export default function MembershipPage() {
           <div className="breadcrumb"><Link href={siteHref("/")}>Beranda</Link><span aria-hidden="true">/</span><span>Kartu Member</span></div>
           <div className="member-page-heading">
             <p className="eyebrow">KARTU MEMBER MAS JAWA LAUNDRY</p>
-            <h1>Cara memakai kartu member</h1>
+            <h1>Kartu member</h1>
             <nav className="member-entry-actions" aria-label="Akses kartu member">
               <a className="member-entry-action member-entry-action-primary" href="#scan-kartu">
-                <span>SUDAH JADI MEMBER</span>
                 <strong>Scan QR Kartu <span aria-hidden="true">→</span></strong>
               </a>
-              <Link className="member-entry-action" href={siteHref("/admin/login")} prefetch={false}>
-                <span>KHUSUS PENGELOLA</span>
-                <strong>Masuk Admin <span aria-hidden="true">→</span></strong>
+              <Link className="member-admin-entry" href={siteHref("/admin/login")} prefetch={false}>
+                <span>Untuk petugas: <strong>Masuk Admin <span aria-hidden="true">→</span></strong></span>
               </Link>
             </nav>
-            <p>Tunjukkan kartu kepada petugas saat transaksi. Untuk melihat catatan yang sudah masuk, pindai QR pada kartu dengan HP.</p>
-            {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Jika petugas sudah memberikan kartu uji coba, Anda bisa memindai QR untuk melihat catatan transaksi. Pendaftaran tetap melalui petugas.</div>}
+            <p>Scan QR untuk melihat catatan transaksi. Pendaftaran dan pencatatan transaksi dilakukan oleh petugas.</p>
+            {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Kartu uji coba dari petugas tetap dapat dipindai.</div>}
           </div>
           <div id="scan-kartu" className="member-scan-target">
             <CustomerCardScanner />

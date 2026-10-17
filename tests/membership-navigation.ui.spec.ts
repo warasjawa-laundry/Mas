@@ -7,7 +7,7 @@ test("mobile menu opens member page at the top, not at a previous scroll positio
   await page.locator(".mobile-nav summary").click();
   await page.locator(".mobile-nav-list a").filter({hasText:"Kartu Member"}).click();
   await expect(page).toHaveURL(/\/membership$/);
-  await expect(page.getByRole("heading",{name:"Cara memakai kartu member"})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Kartu member",exact:true})).toBeVisible();
   await expect(page.locator(".member-entry-actions").getByRole("link",{name:/Scan QR Kartu/})).toBeVisible();
   await expect(page.locator(".member-entry-actions").getByRole("link",{name:/Masuk Admin/})).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeLessThanOrEqual(5);

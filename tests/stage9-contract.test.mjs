@@ -26,7 +26,7 @@ test("owner manually confirms amount, description and preview points before addi
  assert.match(form,/name="amountIdr"/);
  assert.match(form,/name="description"/);
  assert.match(form,/Perkiraan poin/);
- assert.match(form,/Simpan Transaksi & Poin/);
+ assert.match(form,/Simpan transaksi/);
  assert.match(form,/type="submit"/);
  assert.match(actions,/requireOwner\(\)/);
  assert.match(actions,/laundry_record_amount_visit/);

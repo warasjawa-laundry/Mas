@@ -355,3 +355,94 @@
 .owner-year-setup form>label input{flex:0 0 20px;height:20px;width:20px}
 .owner-year-setup form>.admin-primary{margin:0}
 @media(max-width:440px){.owner-card-reissue{padding:13px}.owner-card-reissue .admin-primary{width:100%;font-size:14px}}
+
+/* Task-first workspace: one navigation, compact summaries, readable forms. */
+.admin-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f7fa}
+.admin-root h1{font-size:clamp(25px,3vw,30px);font-weight:650;letter-spacing:-.025em;line-height:1.25}
+.admin-root h2{font-weight:650;letter-spacing:-.015em;line-height:1.3}
+.admin-root button,.admin-root input,.admin-root textarea{font:inherit}
+.admin-root .admin-content{max-width:1120px;margin-inline:auto;padding:32px clamp(20px,4vw,48px) 48px}
+.admin-root .admin-content.admin-settings{max-width:680px;margin-left:0}
+.admin-root .admin-home{max-width:1050px}
+.admin-kicker{font-size:11px;letter-spacing:.08em;font-weight:700;margin-bottom:8px}
+.admin-hint{font-size:14px;margin:0 0 24px;color:#536274}
+.admin-primary,.member-add{background:#6032b0!important;border-radius:8px;font-weight:600}
+.admin-primary:hover,.member-add:hover{background:#4b258e!important}
+.admin-logout{border-radius:8px;font-size:14px;font-weight:500}
+.admin-breadcrumb{max-width:1120px;margin-inline:auto;padding:24px clamp(20px,4vw,48px) 0;font-size:14px}
+.admin-breadcrumb+.admin-content{padding-top:20px}
+.admin-shell-sidebar{width:224px;padding-top:22px}
+.admin-shell-brand{font-weight:650}
+.admin-shell-links a{border-radius:7px;font-weight:500}
+.admin-shell-links a[aria-current=page]{font-weight:650}
+.admin-shell-footer a,.admin-shell-footer button{font-weight:500}
+.admin-mobile-header{display:none}
+.admin-transaction-entry{margin-top:28px;background:#fff;border:1px solid #dfe3eb;border-radius:10px;padding:26px}
+.admin-transaction-entry h2{font-size:20px;margin:0 0 8px}
+.admin-transaction-entry>p{font-size:14px;color:#536274;margin:0 0 20px}
+.member-search input{border-radius:7px;min-height:48px}
+.member-search button{background:#6032b0;color:#fff;border-color:#6032b0;border-radius:7px;cursor:pointer;padding-inline:22px}
+.admin-scan-alternative{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #e5e7ed;font-size:14px;color:#536274}
+.admin-scan-alternative a{display:inline-flex;gap:16px;align-items:center;min-height:44px;font-weight:600;color:#542a8d}
+.admin-home-stats{gap:16px;margin-top:20px}
+.admin-home-stats>div{border-radius:9px;padding:20px;gap:8px;background:transparent}
+.admin-home-stats strong{font-size:30px;color:#263246}
+.admin-home-stats small{font-size:12px;color:#536274}
+.member-toolbar{margin-top:24px}
+.member-list{border-radius:9px}
+.member-list li{padding:16px 20px}
+.member-list li>.owner-member-links{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;align-items:center}
+.member-list .owner-member-links a{font-weight:500;font-size:13px;padding:8px 12px;min-height:44px!important;border-radius:7px;background:transparent;border:1px solid transparent}
+.member-list .owner-member-links .member-transaction-link{border-color:#ddd4ec;background:#f5f1fb;color:#4f2588;font-weight:600}
+.member-list .owner-member-links a:hover{background:#f0edf5}
+.admin-root .owner-member-page{max-width:1000px}
+.owner-member-summary{display:flex;flex-wrap:wrap;gap:16px 24px;padding:16px 0;margin-bottom:20px;border-block:1px solid #e0e4eb}
+.owner-member-page .owner-count-box{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:6px;border:0;background:transparent;padding:0;margin:0;min-width:140px}
+.owner-member-page .owner-count-box span{font-size:12px;color:#536274;font-weight:500}
+.owner-member-page .owner-count-box strong{font-size:24px;color:#263246}
+.owner-member-page .owner-point-summary{display:flex;flex-wrap:wrap;gap:24px;margin:0}
+.owner-member-page .owner-point-summary>div{background:transparent;padding:0;border:0;min-width:130px;gap:6px}
+.owner-member-page .owner-point-summary span{font-size:12px;font-weight:500;color:#536274}
+.owner-member-page .owner-point-summary strong{font-size:24px;color:#263246}
+.owner-member-page .owner-amount-form{margin:0 0 20px;padding:24px;border-radius:10px;gap:10px}
+.owner-amount-form h2{font-size:20px;margin:0 0 10px}
+.owner-amount-form label{font-weight:600}
+.owner-amount-form input,.owner-amount-form textarea{border-radius:7px}
+.owner-point-estimate{border-radius:8px;padding:14px 16px}
+.owner-point-estimate>strong{font-size:22px}
+.owner-record-button{font-size:16px;min-height:48px}
+.owner-member-page .owner-detail-jump-links{margin:12px 0 28px;gap:8px}
+.owner-detail-jump-links .admin-logout{padding:8px 14px}
+.owner-history-details{border-radius:9px}
+.owner-history-details>summary::after,.owner-promo-create>summary::after{content:"+";margin-left:auto;font-size:20px;font-weight:400}
+.owner-history-details[open]>summary::after,.owner-promo-create[open]>summary::after{content:"−"}
+.owner-visit-history{margin-bottom:16px}
+.owner-visit-history li{border-radius:7px;padding:14px}
+.owner-visit-history li span,.owner-visit-history li small{font-size:13px;color:#536274}
+.owner-scanner{margin-top:24px;padding:24px;border-radius:10px}
+.owner-camera{margin:16px 0;max-width:460px;border-radius:8px}
+.owner-scanner-heading h2{font-size:18px}
+.admin-helper,.member-note,.owner-gallery-hint{font-size:13px;color:#536274}
+.admin-settings .admin-form{border-radius:10px}
+@media(max-width:860px){
+ .admin-mobile-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-bottom:1px solid #e0e4eb}
+ .admin-mobile-header>a{font-weight:650;font-size:14px;color:#263246}
+ .admin-mobile-header span{display:block;font-size:11px;font-weight:500;color:#647084;margin-top:2px}
+ .admin-mobile-header button{min-height:44px;padding:8px 14px;background:#fff;border:1px solid #d7dce5;border-radius:7px;color:#364152;font-size:14px;cursor:pointer}
+ .admin-root:has(.admin-auth) .admin-mobile-header{display:none}
+ .admin-root .admin-content,.admin-root .admin-content.admin-settings{max-width:100%;padding:24px 16px 36px}
+ .admin-breadcrumb{padding:20px 16px 0}
+ .admin-breadcrumb+.admin-content{padding-top:16px}
+ .admin-transaction-entry{padding:20px;margin-top:24px}
+ .admin-shell-mobile a{font-size:12px;font-weight:500;border-radius:7px}
+ .admin-shell-mobile a[aria-current=page]{font-weight:650}
+ .admin-home-stats>div{padding:16px}
+ .owner-member-page .owner-amount-form{padding:18px}
+ .owner-member-summary{gap:16px}
+}
+@media(max-width:600px){
+ .member-list li>.owner-member-links{display:flex;flex-wrap:wrap;width:100%;gap:6px}
+ .member-list .owner-member-links a{width:auto;flex:0 1 auto;font-size:13px!important;padding:8px 10px}
+ .owner-member-page .owner-point-summary{gap:16px}
+ .owner-member-page .owner-count-box,.owner-member-page .owner-point-summary>div{min-width:110px}
+}

@@ -36,10 +36,7 @@ export default async function EditMember({params,searchParams}:Props) {
     new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(new Date(member.whatsapp_consent_at))+" WIB":null;
 
   return <main className="admin-workspace">
-    <header className="admin-topbar">
-      <Link href={"/admin/members/"+id} className="admin-brand">← Kembali ke Member</Link>
-      <Link href="/admin/members">Daftar Member</Link>
-    </header>
+    <nav className="admin-breadcrumb" aria-label="Kembali"><Link href={"/admin/members/"+id}>← Kembali ke Member</Link></nav>
     <section className="admin-content owner-member-edit">
       <p className="admin-kicker">DATA MEMBER</p>
       <h1>Ubah Data Member</h1>

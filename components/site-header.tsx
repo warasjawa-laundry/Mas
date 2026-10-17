@@ -5,7 +5,7 @@ import { siteHref } from "@/lib/navigation";
 
 const nav = [
   { href: "/#layanan", text: "Layanan & Harga" },
-  { href: "/#keunggulan", text: "Tentang Kami" },
+  { href: "/#keunggulan", text: "Cara Laundry" },
   { href: "/membership", text: "Kartu Member" },
   { href: "/#kontak", text: "Lokasi" },
 ];

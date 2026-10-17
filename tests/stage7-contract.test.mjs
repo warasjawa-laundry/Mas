@@ -10,8 +10,8 @@ const whatsapp=read("components/admin/promo-whatsapp.tsx");
 const css=read("app/admin/admin.css");
 const publicCard=read("app/k/[token]/page.tsx");
 
-test("list shows one-tap Promo alongside visit and QR without querying phone data",()=>{
-  assert.match(list,/href=\{`\/admin\/members\/\$\{m\.id\}#promo-member`\}>Promo/);
+test("list prioritizes transaction entry and keeps promo in member detail without querying phone data",()=>{
+  assert.match(detail,/href="#promo-member"/);
   assert.match(list,/Catat Transaksi/);
   assert.match(list,/Kartu QR/);
   assert.doesNotMatch(list,/\.select\([^\n]*whatsapp_e164/);

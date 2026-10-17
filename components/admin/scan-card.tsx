@@ -158,14 +158,8 @@ export default function ScanCard() {
     <section className="owner-scanner" aria-labelledby="scan-title">
       <div className="owner-scanner-heading">
         <h2 id="scan-title">Scan Kartu</h2>
-        <p>Gunakan kamera atau pilih screenshot QR dari galeri. Scan hanya membuka data member, bukan mencatat transaksi.</p>
+        <p>Arahkan kamera ke QR atau pilih foto kartu dari galeri. Scan hanya membuka data member, bukan mencatat transaksi.</p>
       </div>
-      <div className={"owner-camera" + (running || starting ? " owner-camera-active" : "")}>
-        <video ref={videoRef} autoPlay muted playsInline aria-label="Pratinjau kamera untuk scan kartu" />
-        {!running && !starting && <span className="owner-camera-placeholder">Pilih kamera atau foto QR dari galeri</span>}
-        {starting && <span className="owner-camera-placeholder">Membuka kamera…</span>}
-      </div>
-
       {error && <p className="admin-error" role="alert">{error}</p>}
       <div className="owner-scan-actions">
         {running ? (
@@ -194,6 +188,12 @@ export default function ScanCard() {
         </button>
         <Link href="/admin/members" className="admin-logout">Cari Member Manual</Link>
       </div>
+      <div className={"owner-camera" + (running || starting ? " owner-camera-active" : "")}>
+        <video ref={videoRef} autoPlay muted playsInline aria-label="Pratinjau kamera untuk scan kartu" />
+        {!running && !starting && <span className="owner-camera-placeholder">Pilih kamera atau foto QR dari galeri</span>}
+        {starting && <span className="owner-camera-placeholder">Membuka kamera…</span>}
+      </div>
+
       <p className="owner-gallery-hint" role="status">
         Pilih screenshot dari HP. Gambar diperiksa di perangkat, tidak diunggah ke server.
       </p>

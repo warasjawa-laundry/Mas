@@ -46,7 +46,7 @@ export default async function OwnerMember({params,searchParams}:Props){
  const idr=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
 
  return <main className="admin-workspace">
-  <div className="admin-topbar"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link><Link href="/admin/settings">Pengaturan</Link></div>
+  <nav className="admin-breadcrumb" aria-label="Kembali"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link></nav>
   <section className="admin-content owner-member-page">
    <p className="admin-kicker">CATAT TRANSAKSI</p><h1>{member.display_name}</h1>
    <p className="admin-hint">{memberNumber(member.member_number)} · {member.is_active?"Member aktif":"Member nonaktif"}</p>
@@ -56,19 +56,20 @@ export default async function OwnerMember({params,searchParams}:Props){
    {notice.error && <p className="admin-error" role="alert">
       {notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi pengelola database untuk memeriksa aturan poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
     </p>}
-   <div className="owner-count-box"><span>Total transaksi tercatat</span><strong>{failed?"—":total}</strong>
+   <div className="owner-member-summary"><div className="owner-count-box"><span>Total transaksi tercatat</span><strong>{failed?"—":total}</strong>
     <small>Hanya berubah saat pemilik menekan tombol dan penyimpanan berhasil.</small></div>
    <div className="owner-point-summary">
      <div><span>Saldo poin {pointYear}{pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
      {nextPointYear<=2100 && futurePoints && <div><span>Saldo program {nextPointYear}</span><strong>{balancesR.error?"—":futurePoints.points_total??0}</strong></div>}
    </div>
+   </div>
    {rulesR.error||!rulesR.data?
      <p className="admin-error">Aturan poin belum dimuat. Transaksi bernominal tidak dapat disimpan untuk sementara.</p>:
      <AmountVisitForm memberId={id} requestId={amountRequestId} memberActive={member.is_active}
        tiers={pointRules} year={pointYear}/>}
-   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data & WhatsApp</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
+   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data</Link><Link href="#transaction-history" className="admin-logout">Riwayat</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
    <h2 id="transaction-history">Riwayat transaksi</h2>
-   <details className="owner-history-details" open={notice.historyPage!==undefined}>
+   <details className="owner-history-details" open>
     <summary>Lihat riwayat dan pembatalan</summary>
    {historyR.amountsFailed&&<p className="admin-error" role="alert">Nominal dan poin transaksi belum dapat dimuat. Coba lagi.</p>}
    {historyR.reversalsFailed&&<p className="admin-error" role="alert">Status pembatalan belum dapat dimuat. Muat ulang riwayat sebelum membatalkan transaksi.</p>}
@@ -109,7 +110,7 @@ export default async function OwnerMember({params,searchParams}:Props){
      requestId={promoRequestId} promos={promosR.data||[]}
      whatsappPhone={member.whatsapp_e164} whatsappConsent={member.whatsapp_promo_consent===true} memberActive={member.is_active}
      loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>
-   <div className="admin-shortcuts"><Link href={`/admin/members/${id}/card`}>Lihat Kartu QR →</Link><Link href="/admin/scan">Scan Kartu Lain →</Link></div>
+   <div className="admin-shortcuts"><Link href="/admin/members">← Pilih member lain</Link><Link href="/admin/scan">Scan kartu lain →</Link></div>
   </section>
  </main>;
 }

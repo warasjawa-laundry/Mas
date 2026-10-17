@@ -17,7 +17,7 @@ export default async function CreateMember({searchParams}:Props) {
     save:"Member belum tersimpan. Periksa koneksi lalu coba lagi."
   };
   return <main className="admin-workspace">
-    <div className="admin-topbar"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link><span>Mas Jawa Laundry</span></div>
+    <nav className="admin-breadcrumb" aria-label="Kembali"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link></nav>
     <section className="admin-content admin-settings">
       <p className="admin-kicker">PENDAFTARAN</p><h1>Tambah Member</h1>
       <p className="admin-hint">Cukup isi nama. Nomor WhatsApp tidak wajib.</p>
