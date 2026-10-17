@@ -269,3 +269,89 @@
  .owner-rule-inputs{gap:9px}
  .owner-rule-inputs label{font-size:12px}
 }
+
+/* Operational dashboard shell — shared navigation, with zero auth or data queries. */
+.admin-skip-link{position:absolute;left:12px;top:-80px;z-index:120;background:#fff;color:#332050;padding:12px 16px;border:2px solid #5d2aa9;border-radius:8px}
+.admin-skip-link:focus{top:12px}
+.admin-shell-sidebar{position:fixed;inset:0 auto 0 0;width:224px;box-sizing:border-box;background:#fff;border-right:1px solid #e5e5eb;display:flex;flex-direction:column;padding:25px 15px 20px;z-index:40}
+.admin-shell-brand{display:flex;align-items:center;gap:12px;color:#231a32;font-size:14px;font-weight:800;line-height:1.25;padding:3px 8px 21px;border-bottom:1px solid #e9e7ed}
+.admin-shell-brand small{display:block;color:#6d6579;font-size:12px;font-weight:600;margin-top:4px}
+.admin-shell-monogram{height:38px;width:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:10px;background:#382450;color:#fff;font-size:15px}
+.admin-shell-links{display:grid;gap:5px;padding:24px 0}
+.admin-shell-links a{display:flex;align-items:center;border-radius:10px;min-height:46px;padding:11px 13px;box-sizing:border-box;color:#4e4860;font-size:14px;font-weight:650}
+.admin-shell-links a:hover,.admin-shell-footer a:hover{background:#f5f2f9}
+.admin-shell-links a[aria-current=page]{background:#f1ebf9;color:#57248f;font-weight:850}
+.admin-shell-footer{margin-top:auto;padding:15px 4px 0;border-top:1px solid #e9e7ed;display:grid;gap:8px}
+.admin-shell-footer a,.admin-shell-footer button{min-height:44px;display:flex;align-items:center;text-align:left;padding:10px 12px;color:#5a5662;border:0;border-radius:9px;background:transparent;font:inherit;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+.admin-shell-mobile{display:none}
+.admin-root .admin-workspace{margin-left:224px}
+.admin-root .admin-workspace>.admin-topbar{padding-left:24px;padding-right:24px}
+.admin-root .admin-content{max-width:930px;padding-top:35px}
+.admin-root .admin-home{max-width:790px}
+.admin-home-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}
+.admin-home-stats>div{border:1px solid #e2e5ed;border-radius:15px;background:#fff;padding:22px;display:grid;gap:6px}
+.admin-home-stats span{font-size:13px;color:#697488;font-weight:650}
+.admin-home-stats strong{font-size:clamp(32px,5vw,43px);font-variant-numeric:tabular-nums;line-height:1.05;color:#302041}
+.admin-home-primary{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#4f228b;color:#fff!important;padding:23px 24px;border-radius:15px;min-height:110px;box-sizing:border-box;margin:20px 0 28px}
+.admin-home-primary>span:first-child{display:grid;gap:6px}
+.admin-home-primary strong{font-size:20px}
+.admin-home-primary small{font-size:13px;color:#ece3f6;line-height:1.4}
+.admin-home-primary>span:last-child{font-size:28px}
+.admin-home-heading{font-size:20px;margin:0 0 13px}
+.admin-home-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.admin-home-actions a{border:1px solid #e1e5ed;background:#fff;border-radius:13px;display:grid;gap:7px;padding:19px;min-height:95px;box-sizing:border-box;color:#25243b}
+.admin-home-actions a:hover{border-color:#8e65bd}
+.admin-home-actions strong{font-size:15px}
+.admin-home-actions small{color:#687486;font-size:13px;line-height:1.5}
+.admin-shell-sidebar a:focus-visible,.admin-shell-mobile a:focus-visible,.admin-home a:focus-visible,.admin-shell-footer button:focus-visible{outline:3px solid #a37ace;outline-offset:2px}
+@media(max-width:860px){
+  .admin-shell-sidebar{display:none}
+  .admin-root .admin-workspace{margin-left:0;padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+  .admin-root .admin-content{padding:24px 16px 36px}
+  .admin-shell-mobile{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;padding:7px max(6px,env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right));box-sizing:border-box;gap:4px;border-top:1px solid #dedfe8;background:#fff;box-shadow:0 -6px 18px #1810220d;z-index:60}
+  .admin-shell-mobile a{display:grid;place-items:center;min-height:50px;padding:9px 4px;border-radius:10px;color:#5b6070;font-size:12px;font-weight:700;text-align:center}
+  .admin-shell-mobile a[aria-current=page]{color:#592790;background:#f3edfb;font-weight:850}
+  .admin-home-primary{min-height:98px}
+  .admin-home-primary strong{font-size:18px}
+}
+@media(max-width:390px){
+  .admin-home-actions{grid-template-columns:1fr}
+  .admin-home-stats>div{padding:15px}
+  .admin-shell-mobile a{font-size:11px}
+}
+
+/* Stage 3: keep transaction entry ahead of the heavier secondary tasks. */
+.owner-member-page .owner-count-box{flex-direction:row;text-align:left;justify-content:space-between;align-items:center;gap:18px;margin:15px 0 12px;padding:13px 17px}
+.owner-member-page .owner-count-box span{font-size:13px}
+.owner-member-page .owner-count-box strong{font-size:34px;flex:0 0 auto}
+.owner-member-page .owner-count-box small{display:none}
+.owner-member-page .owner-point-summary{margin:10px 0 4px}
+.owner-member-page .owner-point-summary>div{padding:12px}
+.owner-member-page .owner-point-summary strong{font-size:26px}
+.owner-member-page .owner-amount-form{margin-top:8px}
+.owner-member-page .owner-detail-jump-links{margin:20px 0 26px}
+.owner-history-details{border:1px solid #dfe4ec;background:#fff;border-radius:13px;padding:0 14px;margin:14px 0 28px}
+.owner-history-details>summary{cursor:pointer;min-height:50px;display:flex;align-items:center;font-size:14px;font-weight:750;color:#532a8a}
+.owner-history-details[open]>summary{border-bottom:1px solid #e8e5ed}
+.admin-member-pagination{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:18px 0}
+.admin-member-pagination a{min-height:44px;display:inline-flex;align-items:center;padding:10px 15px;border:1px solid #dcd9e4;border-radius:9px;background:white;color:#542a8d;font-weight:750;font-size:13px}
+.admin-member-pagination span{font-size:13px;color:#58647b}
+@media(max-width:440px){.owner-member-page .owner-count-box strong{font-size:30px}.owner-member-page .owner-point-summary>div{padding:11px}.admin-member-pagination{gap:6px}.admin-member-pagination a{padding:9px}}
+
+/* Stage 4 features remain server-flag gated until isolated DB QA passes. */
+.owner-card-reissue{margin:30px 0 8px;border:1px solid #e3c8c8;background:#fff;border-radius:14px;padding:14px 17px}
+.owner-card-reissue>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#873b3b;font-weight:750}
+.owner-card-reissue>p{line-height:1.55}
+.owner-card-reissue form{display:grid;gap:11px;max-width:540px}
+.owner-card-reissue form>label:not(.owner-reissue-confirm){font-size:14px;font-weight:750}
+.owner-card-reissue form>input{min-height:48px;width:100%;box-sizing:border-box;border:1px solid #bfc8d3;border-radius:10px;padding:12px;font-size:16px}
+.owner-reissue-confirm{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.55;padding:13px;border:1px solid #e5d9d9;border-radius:10px}
+.owner-reissue-confirm input{width:20px;height:20px;flex:0 0 20px}
+.owner-card-reissue .admin-primary{margin-top:3px}
+.owner-year-setup{padding:20px;border:1px solid #dfd6eb;border-radius:14px;background:#fff;margin:20px 0}
+.owner-year-setup>p{margin:0 0 15px;color:#505b6e;line-height:1.5}
+.owner-year-setup form{display:grid;gap:14px}
+.owner-year-setup form>label{display:flex;align-items:flex-start;gap:12px;line-height:1.55;font-size:14px}
+.owner-year-setup form>label input{flex:0 0 20px;height:20px;width:20px}
+.owner-year-setup form>.admin-primary{margin:0}
+@media(max-width:440px){.owner-card-reissue{padding:13px}.owner-card-reissue .admin-primary{width:100%;font-size:14px}}

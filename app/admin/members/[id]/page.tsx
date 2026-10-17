@@ -43,7 +43,8 @@ export default async function OwnerMember({params,searchParams}:Props){
  const amountRequestId=notice.amountRequestId&&validId.test(notice.amountRequestId)?notice.amountRequestId:randomUUID();
  const amountMap=new Map((amountsR.data||[]).map(row=>[row.visit_event_id,row]));
  const currentPoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===pointYear);
- const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===2027);
+ const nextPointYear=pointYear===2026?2027:pointYear+1;
+ const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===nextPointYear);
  const pointRules=Array.isArray(rulesR.data?.tiers)?rulesR.data.tiers as {minimum:number;points:number}[]:[];
  const idr=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
 
@@ -52,7 +53,6 @@ export default async function OwnerMember({params,searchParams}:Props){
   <section className="admin-content owner-member-page">
    <p className="admin-kicker">CATAT TRANSAKSI</p><h1>{member.display_name}</h1>
    <p className="admin-hint">{memberNumber(member.member_number)} · {member.is_active?"Member aktif":"Member nonaktif"}</p>
-   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data & WhatsApp</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
    {notice.recorded==="1" && <p className="admin-success" role="status">1 transaksi berhasil dicatat.</p>}
    {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}.</p>}
    {notice.corrected==="1" && <p className="admin-success" role="status">Transaksi berhasil dibatalkan dengan riwayat tetap tersimpan.</p>}
@@ -63,14 +63,17 @@ export default async function OwnerMember({params,searchParams}:Props){
     <small>Hanya berubah saat pemilik menekan tombol dan penyimpanan berhasil.</small></div>
    <div className="owner-point-summary">
      <div><span>Saldo poin {pointYear}{pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
-     {pointYear!==2027&&<div><span>Saldo program 2027</span><strong>{balancesR.error?"—":futurePoints?.points_total??0}</strong></div>}
+     {nextPointYear<=2100 && futurePoints && <div><span>Saldo program {nextPointYear}</span><strong>{balancesR.error?"—":futurePoints.points_total??0}</strong></div>}
    </div>
    <div className="owner-point-settings-link"><Link href={"/admin/points/rules?year="+pointYear}>Atur nominal & poin →</Link></div>
    {rulesR.error||!rulesR.data?
      <p className="admin-error">Aturan poin belum dimuat. Transaksi bernominal tidak dapat disimpan untuk sementara.</p>:
      <AmountVisitForm memberId={id} requestId={amountRequestId} memberActive={member.is_active}
        tiers={pointRules} year={pointYear}/>}
+   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data & WhatsApp</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
    <h2>Riwayat transaksi</h2>
+   <details className="owner-history-details">
+    <summary>Lihat riwayat dan pembatalan</summary>
    {failed?<p className="admin-error">Riwayat belum dapat dimuat. Coba lagi.</p>:history.length===0?
     <div className="member-empty">Belum ada transaksi untuk member ini.</div>:
     <ul className="owner-visit-history">{history.map((event)=>{
@@ -96,6 +99,7 @@ export default async function OwnerMember({params,searchParams}:Props){
        </details>}
       </li>;
     })}</ul>}
+   </details>
    <MemberPromotions memberId={id} memberName={member.display_name}
      requestId={promoRequestId} promos={promosR.data||[]}
      whatsappPhone={member.whatsapp_e164} whatsappConsent={member.whatsapp_promo_consent===true} memberActive={member.is_active}

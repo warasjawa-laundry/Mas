@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/admin/admin.css";
+import AdminNavigation from "@/components/admin/admin-navigation";
 
 export const metadata: Metadata = {
   title: "Area Pemilik",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <div className="admin-root">{children}</div>;
+  return <div className="admin-root"><AdminNavigation /><div id="admin-main" tabIndex={-1}>{children}</div></div>;
 }

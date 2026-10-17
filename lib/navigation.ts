@@ -10,8 +10,11 @@ const REVIEW_ALIAS_HOST = "mas-git-main-m8traders-projects-081d9dc2.vercel.app";
 
 export function siteHref(path: string): string {
   // The variable is configured only on the unyil project's Preview target.
-  // Production is protected even if the variable is accidentally copied.
-  if (process.env.VERCEL_ENV === "production") return path;
+  // Only the review deployment from main uses the stable main alias.
+  // Feature-branch previews must stay on their own deployment for UAT.
+  // Netlify and official production must never inherit the preview override.
+  if (process.env.VERCEL_ENV !== "preview" ||
+      process.env.VERCEL_GIT_COMMIT_REF !== "main") return path;
 
   const configuredOrigin = process.env.REVIEW_NAV_ORIGIN;
   if (!configuredOrigin || !path.startsWith("/") || path.startsWith("//")) {

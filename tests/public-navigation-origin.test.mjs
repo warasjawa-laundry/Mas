@@ -23,7 +23,8 @@ test("all public first-party navigation uses one stable preview-aware helper", (
 
 test("preview links use a stable alias only with explicit Preview configuration", () => {
   assert.match(nav, /REVIEW_NAV_ORIGIN/);
-  assert.match(nav, /VERCEL_ENV === "production"/);
+  assert.match(nav, /VERCEL_ENV !== "preview"/);
+  assert.match(nav, /VERCEL_GIT_COMMIT_REF !== "main"/);
   assert.match(nav, /url\.protocol !== "https:"/);
   assert.match(nav, /url\.hostname !== REVIEW_ALIAS_HOST/);
   assert.match(nav, /mas-git-main-m8traders-projects-081d9dc2\.vercel\.app/);

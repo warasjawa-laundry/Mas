@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { validCardToken, memberNumber } from "@/lib/laundry/card";
+import {currentProgramYear} from "@/lib/laundry/program-years";
 type Props={params:Promise<{token:string}>};
 export const metadata:Metadata={
   title:"Progress Member",robots:{index:false,follow:false,nocache:true},
@@ -29,7 +30,9 @@ export default async function MemberProgress({params}:Props) {
   const total=Number(item.visit_count)||0;
   const promos=Array.isArray(item.promos)?item.promos:[];
   const pointYears=Array.isArray(balancesR.data)?balancesR.data:[];
-  const official=pointYears.find((row:{program_year:number})=>row.program_year===2027);
+  const year=Math.max(2027,currentProgramYear());
+  const official=pointYears.find((row:{program_year:number})=>row.program_year===year);
+  const previous=year>2027?pointYears.find((row:{program_year:number})=>row.program_year===year-1):null;
   const trial=pointYears.find((row:{program_year:number})=>row.program_year===2026);
   return <main className="member-public">
     <div className="member-public-shell">
@@ -40,7 +43,12 @@ export default async function MemberProgress({params}:Props) {
       <section className="member-point-progress" aria-labelledby="member-point-heading">
         <h2 id="member-point-heading">Poin transaksi</h2>
         {balancesR.error?<p className="member-note">Poin belum dapat dimuat. Coba lagi nanti.</p>:
-        <><div className="member-point-primary"><span>Saldo program 2027</span><strong>{Number(official?.points_total)||0} poin</strong><small>Poin dihitung dari nominal transaksi yang dicatat petugas pada tahun 2027.</small></div>
+        <>{official?<div className="member-point-primary">
+          <span>{year===2027?"Saldo program 2027":"Saldo program "+year}</span>
+          <strong>{Number(official.points_total)||0} poin</strong>
+          <small>Poin dihitung dari nominal transaksi yang dicatat petugas pada tahun {year}.</small>
+        </div>:<p className="member-note">Aturan poin tahun {year} belum tersedia. Saldo tahun ini belum dapat ditampilkan.</p>}
+        {previous && <p className="member-point-trial">Catatan poin {year-1} (tahun sebelumnya): <strong>{Number(previous.points_total)||0} poin</strong></p>}
         {trial && <p className="member-point-trial">Catatan poin 2026 (uji coba, terpisah): <strong>{Number(trial.points_total)||0} poin</strong></p>}</>}
         <p className="member-note">Memindai QR hanya menampilkan progres. Poin bertambah setelah petugas menyimpan nominal transaksi, dan dikoreksi jika transaksi dibatalkan.</p>
       </section>

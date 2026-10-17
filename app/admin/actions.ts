@@ -32,7 +32,7 @@ export async function loginOwner(formData: FormData) {
     await supabase.auth.signOut();
     redirect("/admin/login?error=invalid");
   }
-  redirect("/admin/scan");
+  redirect("/admin");
 }
 
 export async function logoutOwner() {
