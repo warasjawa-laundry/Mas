@@ -23,7 +23,7 @@ export function SiteHeader() {
             ? <a key={item.href} href={siteHref(item.href)}>{item.text}</a>
             : <Link key={item.href} href={siteHref(item.href)}>{item.text}</Link>)}
         </nav>
-        <a className="header-contact" href={whatsappLink("Halo Mas Jawa Laundry, saya mau tanya layanan laundry.")} target="_blank" rel="noopener noreferrer">Hubungi WhatsApp <span aria-hidden="true">↗</span></a>
+        <a className="header-contact" href={whatsappLink("Halo, saya ingin tanya tentang layanan Mas Jawa Laundry.")} target="_blank" rel="noopener noreferrer">Hubungi WhatsApp <span aria-hidden="true">↗</span></a>
         <details className="mobile-nav">
           <summary aria-label="Buka menu navigasi">Menu <span aria-hidden="true">☰</span></summary>
           <nav aria-label="Navigasi mobile" className="mobile-nav-list">

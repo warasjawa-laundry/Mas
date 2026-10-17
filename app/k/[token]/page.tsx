@@ -8,7 +8,7 @@ import {currentProgramYear} from "@/lib/laundry/program-years";
 import { assertQaPreviewIsolation } from "@/lib/supabase/qa-preview-isolation";
 type Props={params:Promise<{token:string}>};
 export const metadata:Metadata={
-  title:"Progress Member",robots:{index:false,follow:false,nocache:true},
+  title:"Catatan Kartu Member",robots:{index:false,follow:false,nocache:true},
   referrer:"no-referrer"
 };
 export const dynamic="force-dynamic";
@@ -39,9 +39,9 @@ export default async function MemberProgress({params}:Props) {
   return <main className="member-public">
     <div className="member-public-shell">
       <p className="admin-kicker">MAS JAWA LAUNDRY</p>
-      <h1>Progress Member</h1>
+      <h1>Catatan Kartu Member</h1>
       <p className="member-public-id">{memberNumber(item.member_number)}</p>
-      <div className="member-count"><span>Transaksi tercatat</span><strong>{total}</strong><small>Transaksi akan bertambah setelah dicatat oleh petugas laundry.</small></div>
+      <div className="member-count"><span>Transaksi tercatat</span><strong>{total}</strong><small>Jumlah diperbarui setelah petugas mencatat transaksi.</small></div>
       <section className="member-point-progress" aria-labelledby="member-point-heading">
         <h2 id="member-point-heading">Poin transaksi</h2>
         {balancesR.error?<p className="member-note">Poin belum dapat dimuat. Coba lagi nanti.</p>:
@@ -52,11 +52,11 @@ export default async function MemberProgress({params}:Props) {
         </div>:<p className="member-note">Aturan poin tahun {year} belum tersedia. Saldo tahun ini belum dapat ditampilkan.</p>}
         {previous && <p className="member-point-trial">Catatan poin {year-1} (tahun sebelumnya): <strong>{Number(previous.points_total)||0} poin</strong></p>}
         {trial && <p className="member-point-trial">Catatan poin 2026 (uji coba, terpisah): <strong>{Number(trial.points_total)||0} poin</strong></p>}</>}
-        <p className="member-note">Memindai QR hanya menampilkan progres. Poin bertambah setelah petugas menyimpan nominal transaksi, dan dikoreksi jika transaksi dibatalkan.</p>
+        <p className="member-note">Pindai QR hanya untuk melihat catatan. Poin diperbarui setelah petugas menyimpan nominal transaksi dan disesuaikan jika transaksi dibatalkan.</p>
       </section>
-      <h2>Promo untuk Anda</h2>
+      <h2>Promo pada kartu ini</h2>
       {promos.length ? <ul className="member-public-promos">{promos.slice(0,20).map((p:{title:string},i:number)=><li key={i}>{p.title}</li>)}</ul> : <p className="member-note">Belum ada promo khusus untuk kartu ini.</p>}
-      <p className="member-note">Halaman ini hanya menampilkan informasi. Tunjukkan kartu ke pemilik laundry untuk mencatat transaksi.</p>
+      <p className="member-note">Untuk mencatat transaksi baru, tunjukkan kartu kepada petugas saat laundry.</p>
       <small className="member-public-foot">Mas Jawa Laundry · Tanpa login pelanggan</small>
     </div>
   </main>;

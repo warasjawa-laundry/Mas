@@ -7,7 +7,7 @@ import MembershipScrollEntry from "@/components/membership-scroll-entry";
 import { siteHref } from "@/lib/navigation";
 import { memberProgramLaunched, whatsappLink } from "@/lib/site";
 
-const memberDescription = "Kenali kartu member Mas Jawa Laundry: daftar melalui petugas, bawa kartu QR, cek catatan transaksi tanpa login. Promo diberikan langsung oleh pemilik laundry.";
+const memberDescription = "Cara memakai kartu member Mas Jawa Laundry, mulai dari pendaftaran melalui petugas hingga melihat catatan transaksi lewat QR. Promo ditentukan oleh pemilik laundry.";
 
 export const metadata: Metadata = {
   title: "Kartu Member",
@@ -38,7 +38,7 @@ export default function MembershipPage() {
           <div className="breadcrumb"><Link href={siteHref("/")}>Beranda</Link><span aria-hidden="true">/</span><span>Kartu Member</span></div>
           <div className="member-page-heading">
             <p className="eyebrow">KARTU MEMBER MAS JAWA LAUNDRY</p>
-            <h1>Simpan kartu, transaksi tercatat.</h1>
+            <h1>Cara memakai kartu member</h1>
             <nav className="member-entry-actions" aria-label="Akses kartu member">
               <a className="member-entry-action member-entry-action-primary" href="#scan-kartu">
                 <span>SUDAH JADI MEMBER</span>
@@ -49,27 +49,27 @@ export default function MembershipPage() {
                 <strong>Masuk Admin <span aria-hidden="true">→</span></strong>
               </Link>
             </nav>
-            <p>Pengganti kartu stempel kertas. Setiap kali laundry, petugas cukup memindai kartu lalu mencatat transaksi Anda.</p>
-            {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Jika sudah menerima kartu QR uji coba dari petugas, Anda bisa membuka progresnya di bawah. Pendaftaran tetap dibantu petugas.</div>}
+            <p>Tunjukkan kartu kepada petugas saat transaksi. Untuk melihat catatan yang sudah masuk, pindai QR pada kartu dengan HP.</p>
+            {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Jika petugas sudah memberikan kartu uji coba, Anda bisa memindai QR untuk melihat catatan transaksi. Pendaftaran tetap melalui petugas.</div>}
           </div>
           <div id="scan-kartu" className="member-scan-target">
             <CustomerCardScanner />
           </div>
           <div className="how-grid">
-            <article className="how-card"><span>01</span><h2>Daftar ke petugas</h2><p>Anda cukup memberikan nama. Nomor WhatsApp bersifat opsional untuk menerima informasi promo jika Anda setuju.</p></article>
-            <article className="how-card"><span>02</span><h2>Bawa kartu saat laundry</h2><p>Petugas memindai QR di kartu dan mengonfirmasi satu catatan transaksi. Tidak perlu memasang aplikasi.</p></article>
-            <article className="how-card"><span>03</span><h2>Cek jumlah transaksi</h2><p>Scan QR dengan kamera HP. Halaman ringkas akan menampilkan transaksi yang tercatat dan promo yang Anda terima.</p></article>
+            <article className="how-card"><span>01</span><h2>Daftar melalui petugas</h2><p>Cukup berikan nama. Nomor WhatsApp boleh dikosongkan dan hanya digunakan untuk informasi promo jika Anda setuju.</p></article>
+            <article className="how-card"><span>02</span><h2>Tunjukkan kartu saat transaksi</h2><p>Petugas memindai QR dan mencatat nominal transaksi. Anda tidak perlu memasang aplikasi.</p></article>
+            <article className="how-card"><span>03</span><h2>Lihat catatan transaksi</h2><p>Pindai QR dengan kamera HP atau pilih foto QR dari galeri untuk melihat catatan kartu.</p></article>
           </div>
           <div className="member-policy">
             <div>
-              <h2>Bagaimana dengan promo?</h2>
-              <p>Promo tidak diberikan otomatis berdasarkan jumlah transaksi. Pemilik laundry menentukan promo secara langsung. Jika Anda mendapatkannya, informasi promo bisa ditampilkan pada halaman kartu member, dan petugas dapat mengirim pemberitahuan melalui WhatsApp setelah Anda bersedia.</p>
-              <p>QR Code pada kartu dapat membuka informasi terbatas tanpa login. Simpan kartu Anda dengan baik dan jangan menyebarkan foto QR Code. Bila kartu hilang, hubungi petugas untuk menggantinya.</p>
+              <h2>Cara pemberian promo</h2>
+              <p>Promo tidak diberikan otomatis berdasarkan jumlah transaksi. Pemilik laundry menentukan promo untuk setiap member. Jika ada promo untuk kartu Anda, informasinya bisa dilihat lewat QR. Pesan promo melalui WhatsApp hanya dikirim jika Anda setuju.</p>
+              <p>QR pada kartu dapat dibuka tanpa login dan menampilkan informasi terbatas. Jangan bagikan foto QR kepada orang lain. Jika kartu hilang, hubungi petugas untuk meminta penggantian.</p>
             </div>
             <div className="member-policy-action">
-              <strong>Ada yang ingin ditanyakan?</strong>
-              <p>Hubungi Mas Jawa Laundry. Petugas akan membantu menjelaskan cara menggunakan kartu.</p>
-              <a href={whatsappLink("Halo Mas Jawa Laundry, saya ingin tanya tentang kartu member.")} className="button button-primary" target="_blank" rel="noopener noreferrer">Tanya lewat WhatsApp <span aria-hidden="true">↗</span></a>
+              <strong>Perlu bantuan kartu member?</strong>
+              <p>Hubungi petugas jika QR sulit dipindai atau ada catatan transaksi yang ingin ditanyakan.</p>
+              <a href={whatsappLink("Halo, saya ingin tanya tentang kartu member Mas Jawa Laundry.")} className="button button-primary" target="_blank" rel="noopener noreferrer">Tanya lewat WhatsApp <span aria-hidden="true">↗</span></a>
             </div>
           </div>
         </div>
