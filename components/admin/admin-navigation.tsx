@@ -8,13 +8,11 @@ const sections = [
   { href: "/admin", label: "Ringkasan" },
   { href: "/admin/scan", label: "Scan QR" },
   { href: "/admin/members", label: "Member" },
-  { href: "/admin/points/rules", label: "Atur Poin" },
   { href: "/admin/settings", label: "Pengaturan" },
 ] as const;
 
 function currentSection(pathname: string, href: string) {
   if (href === "/admin") return pathname === "/admin";
-  if (href === "/admin/points/rules") return pathname.startsWith("/admin/points/");
   return pathname === href || pathname.startsWith(href + "/");
 }
 
@@ -45,7 +43,7 @@ export default function AdminNavigation() {
       </div>
     </aside>
     <nav aria-label="Navigasi utama admin di HP" className="admin-shell-mobile">
-      {sections.filter(x=>x.href!=="/admin/points/rules").map(({ href, label }) => (
+      {sections.map(({ href, label }) => (
         <Link key={href} href={href} prefetch={false}
           aria-current={currentSection(pathname, href) ? "page" : undefined}>
           {label}

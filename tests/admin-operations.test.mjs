@@ -10,7 +10,7 @@ test("all admin routes share mobile and desktop navigation with no extra auth ca
   assert.match(layout, /<AdminNavigation\s*\/>/);
   assert.match(nav, /admin-shell-sidebar/);
   assert.match(nav, /admin-shell-mobile/);
-  for (const href of ["/admin", "/admin/scan", "/admin/members", "/admin/settings", "/admin/points/rules"]) {
+  for (const href of ["/admin", "/admin/scan", "/admin/members", "/admin/settings"]) {
     assert.ok(nav.includes(href), href);
   }
   assert.doesNotMatch(nav, /getUser\(|getClaims\(|requireOwner\(|\.from\(/);

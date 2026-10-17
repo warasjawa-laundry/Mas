@@ -57,7 +57,7 @@ export default async function OwnerMember({params,searchParams}:Props){
    {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}.</p>}
    {notice.corrected==="1" && <p className="admin-success" role="status">Transaksi berhasil dibatalkan dengan riwayat tetap tersimpan.</p>}
    {notice.error && <p className="admin-error" role="alert">
-      {notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi owner untuk mengatur poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
+      {notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi pengelola database untuk memeriksa aturan poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
     </p>}
    <div className="owner-count-box"><span>Total transaksi tercatat</span><strong>{failed?"—":total}</strong>
     <small>Hanya berubah saat pemilik menekan tombol dan penyimpanan berhasil.</small></div>
@@ -65,7 +65,6 @@ export default async function OwnerMember({params,searchParams}:Props){
      <div><span>Saldo poin {pointYear}{pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
      {nextPointYear<=2100 && futurePoints && <div><span>Saldo program {nextPointYear}</span><strong>{balancesR.error?"—":futurePoints.points_total??0}</strong></div>}
    </div>
-   <div className="owner-point-settings-link"><Link href={"/admin/points/rules?year="+pointYear}>Atur nominal & poin →</Link></div>
    {rulesR.error||!rulesR.data?
      <p className="admin-error">Aturan poin belum dimuat. Transaksi bernominal tidak dapat disimpan untuk sementara.</p>:
      <AmountVisitForm memberId={id} requestId={amountRequestId} memberActive={member.is_active}

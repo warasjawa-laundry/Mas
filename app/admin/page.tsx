@@ -31,7 +31,6 @@ export default async function AdminHome() {
       <div className="admin-home-actions">
         <Link href="/admin/members" prefetch={false}><strong>Cari member</strong><small>Cari nama dan catat transaksi</small></Link>
         <Link href="/admin/members/new" prefetch={false}><strong>Tambah member</strong><small>Daftarkan pelanggan baru</small></Link>
-        <Link href="/admin/points/rules" prefetch={false}><strong>Atur poin</strong><small>Periksa aturan nominal dan poin</small></Link>
         <Link href="/admin/settings" prefetch={false}><strong>Keamanan akun</strong><small>Ubah password pemilik</small></Link>
       </div>
       {(membersR.error||addedR.error||voidR.error) &&
