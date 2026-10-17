@@ -41,7 +41,7 @@ test("member detail prioritizes one explicit amount/points write over secondary 
   const page = source("app/admin/members/[id]/page.tsx");
   assert.ok(page.indexOf("<AmountVisitForm") > -1);
   assert.ok(page.indexOf("<AmountVisitForm") < page.indexOf('className="owner-detail-jump-links"'));
-  assert.match(page, /<details className="owner-history-details">/);
+  assert.match(page, /<details className="owner-history-details" open=\{notice.historyPage!==undefined\}>/);
   assert.match(page, /action=\{correctOwnerVisit\}/);
   assert.match(page, /<MemberPromotions/);
 });

@@ -7,41 +7,38 @@ import {correctOwnerVisit} from "@/app/admin/visits/actions";
 import AmountVisitForm from "@/components/admin/amount-visit-form";
 import MemberPromotions from "@/components/admin/member-promotions";
 import {timeAdmin} from "@/lib/admin/timing";
+import {historyPageNumber,historyPageHref,loadMemberHistory} from "@/lib/laundry/member-history";
 
-type Props={params:Promise<{id:string}>,searchParams:Promise<{error?:string;recorded?:string;corrected?:string;requestId?:string;amountRequestId?:string;amountRecorded?:string;pointsEarned?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
+type Props={params:Promise<{id:string}>,searchParams:Promise<{historyPage?:string;error?:string;recorded?:string;corrected?:string;requestId?:string;amountRequestId?:string;amountRecorded?:string;pointsEarned?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
 const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export default async function OwnerMember({params,searchParams}:Props){
  const {supabase}=await requireOwner();
  const {id}=await params,notice=await searchParams;
  if(!validId.test(id))notFound();
+ const historyPage=historyPageNumber(notice.historyPage);
  const pointYear=Number(new Intl.DateTimeFormat("en-US",{year:"numeric",timeZone:"Asia/Jakarta"}).format(new Date()));
- const [memberR,addsR,voidsR,historyR,promosR,amountsR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
+ const [memberR,addsR,voidsR,historyR,promosR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
   supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent").eq("id",id).maybeSingle(),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","ADD"),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","VOID"),
-  supabase.from("laundry_checklist_events")
-    .select("id,event_type,reverses_event_id,reason,occurred_at")
-    .eq("member_id",id).order("occurred_at",{ascending:false}).limit(30),
+  loadMemberHistory(supabase,id,historyPage),
   supabase.from("laundry_member_promotions")
     .select("id,title,terms,status,expires_at,created_at,redeemed_at,cancelled_at,cancel_reason")
     .eq("member_id",id).order("created_at",{ascending:false}).limit(100),
-  supabase.from("laundry_amount_transactions")
-    .select("visit_event_id,amount_idr,description,awarded_points,program_year")
-    .eq("member_id",id).order("occurred_at",{ascending:false}).limit(100),
   supabase.rpc("laundry_owner_point_balances",{p_member_id:id}),
   supabase.from("laundry_point_rules").select("tiers,program_year,revision")
     .eq("program_year",pointYear).maybeSingle()
  ]));
  if(memberR.error || !memberR.data)notFound();
  const member=memberR.data;
- const failed=!!(addsR.error||voidsR.error||historyR.error);
+ const failed=!!(addsR.error||voidsR.error);
  const total=(addsR.count??0)-(voidsR.count??0);
- const history=historyR.data||[];
- const corrected=new Set(history.filter(e=>e.event_type==="VOID").map(e=>e.reverses_event_id));
+ const history=historyR.events;
+ const corrected=historyR.corrected;
  const requestId=notice.requestId&&validId.test(notice.requestId)?notice.requestId:randomUUID();
  const promoRequestId=notice.promoRequestId&&validId.test(notice.promoRequestId)?notice.promoRequestId:randomUUID();
  const amountRequestId=notice.amountRequestId&&validId.test(notice.amountRequestId)?notice.amountRequestId:randomUUID();
- const amountMap=new Map((amountsR.data||[]).map(row=>[row.visit_event_id,row]));
+ const amountMap=historyR.amounts;
  const currentPoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===pointYear);
  const nextPointYear=pointYear===2026?2027:pointYear+1;
  const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===nextPointYear);
@@ -70,23 +67,26 @@ export default async function OwnerMember({params,searchParams}:Props){
      <AmountVisitForm memberId={id} requestId={amountRequestId} memberActive={member.is_active}
        tiers={pointRules} year={pointYear}/>}
    <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data & WhatsApp</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
-   <h2>Riwayat transaksi</h2>
-   <details className="owner-history-details">
+   <h2 id="transaction-history">Riwayat transaksi</h2>
+   <details className="owner-history-details" open={notice.historyPage!==undefined}>
     <summary>Lihat riwayat dan pembatalan</summary>
-   {failed?<p className="admin-error">Riwayat belum dapat dimuat. Coba lagi.</p>:history.length===0?
-    <div className="member-empty">Belum ada transaksi untuk member ini.</div>:
+   {historyR.amountsFailed&&<p className="admin-error" role="alert">Nominal dan poin transaksi belum dapat dimuat. Coba lagi.</p>}
+   {historyR.reversalsFailed&&<p className="admin-error" role="alert">Status pembatalan belum dapat dimuat. Muat ulang riwayat sebelum membatalkan transaksi.</p>}
+   {historyR.failed?<p className="admin-error">Riwayat belum dapat dimuat. Coba lagi.</p>:history.length===0?
+    <div className="member-empty">{historyPage===1?"Belum ada transaksi untuk member ini.":"Tidak ada transaksi di halaman ini."}</div>:
     <ul className="owner-visit-history">{history.map((event)=>{
       const isVoid=event.event_type==="VOID";
       const wasCorrected=corrected.has(event.id);
       return <li key={event.id}>
-       <div><strong>{isVoid?"Pembatalan":wasCorrected?"Transaksi dibatalkan":"+1 Transaksi"}</strong>
+       <div><strong>{isVoid?"Pembatalan":historyR.reversalsFailed?"Transaksi · status belum dimuat":wasCorrected?"Transaksi dibatalkan":"+1 Transaksi"}</strong>
         <span>{new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(new Date(event.occurred_at))} WIB</span>
         {!isVoid&&amountMap.has(event.id)&&<><small>{idr(Number(amountMap.get(event.id)!.amount_idr))} · {amountMap.get(event.id)!.description}</small>
         <small>+{amountMap.get(event.id)!.awarded_points} poin ({amountMap.get(event.id)!.program_year}) {wasCorrected?"· dibatalkan":""}</small></>}
-        {!isVoid&&!amountMap.has(event.id)&&<small>Catatan lama tanpa nominal · 0 poin</small>}
+        {!isVoid&&historyR.amountsFailed&&<small>Nominal dan poin belum dapat dimuat.</small>}
+        {!isVoid&&!historyR.amountsFailed&&!amountMap.has(event.id)&&<small>Catatan lama tanpa nominal · 0 poin</small>}
         {isVoid&&<small>Alasan: {event.reason}</small>}
        </div>
-       {!isVoid&&!wasCorrected&&<details className="owner-void-box"><summary>Batalkan</summary>
+       {!isVoid&&!historyR.reversalsFailed&&!wasCorrected&&<details className="owner-void-box"><summary>Batalkan</summary>
          <form action={correctOwnerVisit}>
            <input type="hidden" name="memberId" value={id}/>
            <input type="hidden" name="eventId" value={event.id}/>
@@ -98,6 +98,12 @@ export default async function OwnerMember({params,searchParams}:Props){
        </details>}
       </li>;
     })}</ul>}
+   {!historyR.failed&&(historyPage>1||historyR.hasOlder)&&<nav aria-label="Halaman riwayat transaksi" className="admin-member-pagination">
+    {historyPage>1&&<Link prefetch={false} href={historyPageHref(id,historyPage-1)}>← Lebih baru</Link>}
+    <span>Halaman {historyPage}{historyR.count!==null?` · ${historyR.count} catatan`:""}</span>
+    {historyR.hasOlder&&<Link prefetch={false} href={historyPageHref(id,historyPage+1)}>Lebih lama →</Link>}
+    {historyPage>1&&<Link prefetch={false} href={historyPageHref(id,1)}>Riwayat terbaru</Link>}
+   </nav>}
    </details>
    <MemberPromotions memberId={id} memberName={member.display_name}
      requestId={promoRequestId} promos={promosR.data||[]}
