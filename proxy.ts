@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { assertQaPreviewIsolation } from "@/lib/supabase/qa-preview-isolation";
 
 export async function proxy(request: NextRequest) {
+  assertQaPreviewIsolation();
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY;
   let response = NextResponse.next({ request });
