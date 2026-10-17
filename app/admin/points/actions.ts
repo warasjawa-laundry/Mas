@@ -2,6 +2,7 @@
 
 import {redirect} from "next/navigation";
 import {requireOwner} from "@/lib/supabase/owner";
+import {canEditProgramYear,canInitializeProgramYear} from "@/lib/laundry/program-years";
 
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const whole=/^(0|[1-9][0-9]{0,9})$/;
@@ -35,7 +36,7 @@ export async function savePointRules(formData:FormData){
   const {supabase}=await requireOwner();
   const year=Number(String(formData.get("year")??""));
   const revision=Number(String(formData.get("revision")??""));
-  if(![2026,2027].includes(year) || !Number.isSafeInteger(revision) || revision<1)
+  if(!canEditProgramYear(year) || !Number.isSafeInteger(revision) || revision<1)
     redirect("/admin/points/rules");
 
   const tiers:{minimum:number,points:number}[]=[];
@@ -62,4 +63,25 @@ export async function savePointRules(formData:FormData){
     redirect("/admin/points/rules?year="+year+"&error="+code);
   }
   redirect("/admin/points/rules?year="+year+"&saved=1");
+}
+
+/** Explicit initialization, disabled until the Stage 10 SQL contract passes QA. */
+export async function initializePointYear(formData:FormData){
+  const {supabase}=await requireOwner();
+  const raw=String(formData.get("year")??"");
+  const year=Number(raw);
+  if(!/^20[0-9]{2}$/.test(raw)||!canInitializeProgramYear(year)){
+    redirect("/admin/points/rules?error=invalid");
+  }
+  if(process.env.OWNER_POINT_YEAR_SETUP_ENABLED!=="1"){
+    redirect("/admin/points/rules?year="+year+"&error=unavailable");
+  }
+  if(formData.get("confirmSetup")!=="yes"){
+    redirect("/admin/points/rules?year="+year+"&error=confirm");
+  }
+  const {data,error}=await supabase.rpc("laundry_initialize_point_year",{p_year:year});
+  if(error||typeof data!=="boolean"){
+    redirect("/admin/points/rules?year="+year+"&error=save");
+  }
+  redirect("/admin/points/rules?year="+year+"&initialized="+(data?"1":"existing"));
 }
