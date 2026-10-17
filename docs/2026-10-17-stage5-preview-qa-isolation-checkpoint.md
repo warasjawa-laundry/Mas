@@ -46,8 +46,22 @@ The existing old branch Preview is not automatically considered QA-safe merely b
 - [x] Verified source Git branch `feature/admin-operations-reliability-20261017`, SHA `6bb3d43`, and stable QA alias `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app`.
 - [x] Verified main Preview alias still points to `dpl_3qF3NBniMjH9ka1LCY9jAFuJyM2z`, not the QA deployment; main shared Preview configuration untouched.
 - [x] QA Supabase remains empty of auth users, owners, members and cards; original two seed year rules remain.
-- [ ] **Runtime isolation attestation**: after signing into Vercel team session, open `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app/api/qa-readiness`; must return HTTP 200 `{"qaPreviewIsolation":"configured"}`. External unauthenticated retrieval is blocked by Vercel protection and cannot be treated as verified.
+- [x] **QA runtime configuration attestation (user-verified)**: screenshot from authenticated browser shows `{"qaPreviewIsolation":"configured"}` at the protected Preview QA readiness page. The content proves that the guard accepted the QA branch marker, exact Supabase QA URL and a non-empty publishable key at runtime. Screenshot does not expose HTTP status directly and the endpoint does **not** validate an actual database connection or credentials.
 - [ ] Provision a real QA Auth owner in Supabase `tnadzytuamdxfypoeggy` via supported Auth management, set matching branch-only email and owner account row, then authenticated browser UAT.
 - [ ] QA feature flags remain OFF; source guard in draft PR #12 is not merged to production `main`. No production DB migrations executed.
 
 **Important:** READY/6 green CI workflows validate the deployment, not a successful authenticated browser transaction. Never test against the Vercel main alias or production database.
+
+## 2026-10-17 user verification & next gate
+
+- [x] Owner supplied a screenshot of the branch QA readiness endpoint displaying exactly `{"qaPreviewIsolation":"configured"}`. The screenshot is evidence shared in the conversation, not a file copied into this repository.
+- [x] QA schema read-only inspection: `auth.users=0`, `laundry_owner_accounts=0`, `laundry_members=0`. No production customer identities were copied.
+- [x] Owner table shape checked: `auth_user_id uuid`, `is_active boolean`, `created_at timestamptz`, `created_note text`.
+- [ ] Create one real QA Auth user using Supabase Auth administration; use an email controlled by the tester. Do not submit the QA password to GitHub, ChatGPT messages, or Vercel environment values.
+- [ ] Set branch-specific `OWNER_AUTH_EMAIL` equal to the QA Auth email and keep `OWNER_LOGIN_ID` configured for tester login.
+- [ ] Insert one matching active owner row **only** in `tnadzytuamdxfypoeggy`, referencing existing `auth.users.id`, after verifying the intended QA identity. No manually invented auth.users row/password.
+- [ ] Redeploy the branch Preview after updating the email; perform actual Auth login and `requireOwner()` verification.
+- [ ] Complete member/QR/transaction/void/promotions flow using synthetic QA member only, flags initially OFF; record timings and Vercel errors.
+- [ ] Validate QA publishable key and real database RPC through the browser application; readiness JSON alone does not prove connectivity.
+
+**Release status:** PR #12 remains DRAFT. No production schema deployment or activation.
