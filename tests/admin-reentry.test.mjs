@@ -51,3 +51,14 @@ test("login always prompts for password, keeps ID prefilled, and uses no cached 
  assert.match(read("components/admin/admin-navigation.tsx"),/href="\/admin\/leave"/);
  assert.match(read("app/admin/scan/page.tsx"),/href="\/admin\/leave"/);
 });
+
+test("soft navigation crossing the homepage/admin boundary is not reusable authorization",()=>{
+ const source=read("components/admin/site-admin-boundary.tsx");
+ assert.match(read("app/layout.tsx"),/<SiteAdminBoundary \/>/);
+ assert.match(source,/before\.startsWith\("\/admin"\)/);
+ assert.match(source,/!path\.startsWith\("\/admin"\)/);
+ assert.match(source,/window\.location\.replace\("\/admin\/leave"\)/);
+ assert.match(source,/window\.location\.replace\("\/admin\/login"\)/);
+ assert.match(read("components/admin/admin-history-guard.tsx"),/event\.persisted/);
+ assert.match(read("next.config.ts"),/private, no-store, max-age=0/);
+});
