@@ -180,3 +180,13 @@ Details: `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.
 - [ ] QA feature flags remain OFF; source guard in draft PR #12 is not merged to production `main`. No production DB migrations executed.
 
 **Important:** READY/6 green CI workflows validate the deployment, not a successful authenticated browser transaction. Never test against the Vercel main alias or production database.
+
+### Stage 5 checkpoint — screenshot confirms QA runtime configuration (2026-10-17)
+
+- [x] User opened protected Vercel branch QA readiness endpoint and shared screenshot showing `{"qaPreviewIsolation":"configured"}`.
+- [x] Branch runtime isolation check recognized expected QA project URL and marker. This does **not** certify Supabase Auth credentials, database operations or browser UAT.
+- [x] Isolated QA database remains free of Auth users, owner grants and member records on read-only inspection.
+- [x] QA Auth enrollment procedure and outstanding gate recorded in `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.
+- [ ] Create real QA-only Auth user with controlled email through Supabase Authentication dashboard; do not share password.
+- [ ] Set QA branch email, grant only that user owner status in QA, redeploy branch and complete Auth/transaction UAT.
+- [ ] Keep customer database and official hosting unchanged; do not merge QA guard PR #12 until browser UAT is certified.
