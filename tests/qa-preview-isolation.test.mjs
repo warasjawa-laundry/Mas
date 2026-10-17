@@ -52,7 +52,7 @@ test("DB boundary is enforced before protected and public Supabase requests", ()
   for(const file of ["proxy.ts","lib/supabase/server.ts","app/k/[token]/page.tsx","lib/laundry/card.ts"]){
     assert.match(read(file),/assertQaPreviewIsolation\(\)/,file);
   }
-  assert.ok(read("proxy.ts").indexOf("  assertQaPreviewIsolation();") < read("proxy.ts").indexOf("  const url = process.env.SUPABASE_URL;"));
+  assert.ok(read("proxy.ts").indexOf(" assertQaPreviewIsolation();") < read("proxy.ts").indexOf(" const url=process.env.SUPABASE_URL"));
   assert.ok(read("app/k/[token]/page.tsx").indexOf("  assertQaPreviewIsolation();") < read("app/k/[token]/page.tsx").indexOf("  const url=process.env.SUPABASE_URL;"));
 });
 
