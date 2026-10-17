@@ -151,3 +151,18 @@ Evidence: `docs/2026-10-17-stage4-supabase-qa-checkpoint.md`. Neither customer d
 - [ ] Dedicated isolated Vercel QA project or safely linked branch-specific Preview must be configured, protected by Vercel Auth, using **only** `tnadzytuamdxfypoeggy`; user approval required for any new Vercel project.
 - [ ] Authenticated cross-page browser UAT and production release sign-off.
 Evidence: `docs/2026-10-17-stage5-concurrency-preview-blocker.md`.
+
+### Stage 5 update — Existing Preview QA branch isolation RESOLVED (2026-10-17 WIB)
+
+- [x] User confirmed: **use existing Vercel Preview**, no new project.
+- [x] Confirmed existing Vercel `mas` project is linked to `unyilhm1-hue/mas`, not the application code repo `warasjawa-laundry/Mas`.
+- [x] Created **branch name only** `feature/admin-operations-reliability-20261017` from the existing commit of linked repository `unyilhm1-hue/mas`; no source or `main` changes there.
+- [x] Created 8 Preview-only environment variables scoped to that branch. Supabase URL, publishable key and distinct AES key belong to QA `tnadzytuamdxfypoeggy`. No global Preview or production variable overwritten. Feature flags remain `0`.
+- [x] Implemented `assertQaPreviewIsolation()` before Auth, scan progress, and card encryption operations. Feature branch fails closed if it inherits shared Preview (possibly customer-connected) settings.
+- [x] Added `tests/qa-preview-isolation.test.mjs` with negative and positive cases. QR generation already points feature QA cards to feature-specific alias.
+- [ ] Run all CI checks on the guard+docs candidate and deploy only the exact passing SHA to same existing Vercel Preview alias; verify `bom1`, branch and environment isolation.
+- [ ] Create a genuine Auth user in **Supabase QA** using the official Auth admin UI/API, not direct SQL password mutation. Set the QA-only email to match `OWNER_AUTH_EMAIL` scoped variable; activate QA owner row separately.
+- [ ] Authenticated QA browser E2E (login → member → QR → transaction/point → void/promo). Do not run against customer preview/main.
+- [ ] Obtain explicit authorization for any customer SQL migration, feature activation or production publication.
+
+Details: `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.

@@ -38,3 +38,6 @@
 - [ ] Decide on merge/production migrations only after evidence and separate explicit release approval.
 
 **Release gate: BLOCKED.** `main`, Netlify, official domains, and customer Supabase remain untouched.
+
+## Later checkpoint — Blocker resolved for branch env configuration
+The previously reported provider rejection has been resolved by creating a *branch name only* in the Vercel-connected `unyilhm1-hue/mas` repository. Vercel accepted branch-scoped QA variables, leaving common Preview and production variables unchanged. Runtime guard requires exact QA origin and marker before any Auth or card access. See `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`. Authenticated UAT and actual Preview runtime verification remain pending. This appendix supersedes the previous "provider blocker" status.
