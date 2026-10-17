@@ -53,8 +53,8 @@ export async function logoutOwner() {
   const supabase = await createOwnerClient();
   if (supabase) await supabase.auth.signOut({scope:"local"});
   const jar=await cookies();
-  jar.delete(ADMIN_ACCESS_COOKIE);
-  jar.delete(ADMIN_ENTRY_COOKIE);
+  jar.set(ADMIN_ACCESS_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
+  jar.set(ADMIN_ENTRY_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
   redirect("/admin/login?notice=logout");
 }
 
@@ -84,7 +84,7 @@ export async function changeOwnerPassword(formData: FormData) {
 
   await owner.supabase.auth.signOut({ scope: "global" });
   const jar=await cookies();
-  jar.delete(ADMIN_ACCESS_COOKIE);
-  jar.delete(ADMIN_ENTRY_COOKIE);
+  jar.set(ADMIN_ACCESS_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
+  jar.set(ADMIN_ENTRY_COOKIE,"",{...adminSessionCookieOptions,maxAge:0});
   redirect("/admin/login?notice=password-changed");
 }
