@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { requireOwner } from "@/lib/supabase/owner";
 import { decryptCardToken, memberNumber, publicCardOrigin } from "@/lib/laundry/card";
+import MemberPrintCard from "@/components/admin/member-print-card";
+import { assets } from "@/lib/site";
 import PrintCardButton from "@/components/admin/print-card-button";
 import { reissueOwnerCard } from "@/app/admin/members/card/actions";
 import { cardIssuanceReady } from "@/lib/laundry/card";
@@ -22,27 +24,19 @@ export default async function MemberCard({params,searchParams}:Props) {
   const token=decryptCardToken(card.token_ciphertext_hex);
   const path="/k/"+token;
   const link=publicCardOrigin()+path;
-  const svg=await QRCode.toString(link,{type:"svg",errorCorrectionLevel:"M",margin:4,width:256,color:{dark:"#111827",light:"#ffffff"}});
+  const svg=await QRCode.toString(link,{type:"svg",errorCorrectionLevel:"M",margin:4,width:512,color:{dark:"#111111",light:"#ffffff"}});
   return <main className="admin-workspace">
     <nav className="admin-breadcrumb no-print" aria-label="Kembali"><Link href={"/admin/members/"+id}>← Kembali ke Member</Link></nav>
     <section className="admin-content print-card-page">
       <div className="no-print">
         <p className="admin-kicker">KARTU MEMBER</p><h1>Kartu Siap Cetak</h1>
-        <p className="admin-hint">Periksa data lalu cetak melalui HP atau printer. Kartu tahap ini hanya untuk pengujian preview.</p>
-        <p className="admin-error">KARTU UJI COBA — Jangan diberikan ke pelanggan sebelum halaman member dirilis di domain resmi.</p>
+        <p className="admin-hint">Periksa nama dan nomor member sebelum mencetak. Ukuran kartu 85,6 × 54 mm.</p>
       </div>
       {notice.reissued==="1" && <p className="admin-success no-print" role="status">Kartu berhasil diganti. Kartu QR sebelumnya tidak dapat digunakan lagi.</p>}
       {notice.reissueError && <p className="admin-error no-print" role="alert">Penggantian kartu belum berhasil. Periksa alasan, izin fitur dan koneksi, lalu coba lagi.</p>}
-      <div className="mj-card" aria-label="Kartu member Mas Jawa Laundry">
-        <div className="mj-card-info">
-          <div className="mj-card-heading">MJ <strong>MAS JAWA LAUNDRY</strong></div>
-          <div className="mj-card-bottom"><small>KARTU UJI COBA — PREVIEW</small><strong>{card.display_name}</strong><span>{memberNumber(card.member_number)}</span></div>
-        </div>
-        <div className="mj-card-qr" dangerouslySetInnerHTML={{__html:svg}}/>
-      </div>
-      <p className="mj-card-watermark">CONTOH KARTU — PREVIEW</p>
+      <MemberPrintCard name={card.display_name} number={memberNumber(card.member_number)} qrSvg={svg} logoUrl={assets.logo} />
       <div className="admin-shortcuts no-print"><PrintCardButton/><Link href={"/admin/members/"+id}>Catat transaksi</Link><Link href="/admin/members">Kembali ke Daftar</Link></div>
-      <p className="member-note no-print">Cetak menggunakan ukuran asli 100%. Foto kartu yang berisi QR dapat digunakan orang lain untuk melihat progress terbatas. Jika hilang, hubungi pemilik untuk pembatalan.</p>
+      <p className="member-note no-print">Cetak pada skala 100% atau ukuran asli, lalu nonaktifkan header dan footer pada dialog cetak. Simpan QR untuk penggunaan pribadi. Jika kartu hilang, minta penggantian kepada petugas.</p>
       {allowReissue && <details className="owner-card-reissue no-print">
         <summary>Ganti kartu yang hilang atau bocor</summary>
         <p className="admin-error">Tindakan ini langsung menonaktifkan QR lama. Riwayat transaksi, poin dan promo member tidak berubah. Pastikan pemilik kartu telah meminta penggantian.</p>
