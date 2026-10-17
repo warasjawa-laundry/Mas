@@ -43,7 +43,8 @@ export default async function OwnerMember({params,searchParams}:Props){
  const amountRequestId=notice.amountRequestId&&validId.test(notice.amountRequestId)?notice.amountRequestId:randomUUID();
  const amountMap=new Map((amountsR.data||[]).map(row=>[row.visit_event_id,row]));
  const currentPoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===pointYear);
- const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===2027);
+ const nextPointYear=pointYear===2026?2027:pointYear+1;
+ const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===nextPointYear);
  const pointRules=Array.isArray(rulesR.data?.tiers)?rulesR.data.tiers as {minimum:number;points:number}[]:[];
  const idr=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
 
@@ -62,7 +63,7 @@ export default async function OwnerMember({params,searchParams}:Props){
     <small>Hanya berubah saat pemilik menekan tombol dan penyimpanan berhasil.</small></div>
    <div className="owner-point-summary">
      <div><span>Saldo poin {pointYear}{pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
-     {pointYear!==2027&&<div><span>Saldo program 2027</span><strong>{balancesR.error?"—":futurePoints?.points_total??0}</strong></div>}
+     {nextPointYear<=2100 && futurePoints && <div><span>Saldo program {nextPointYear}</span><strong>{balancesR.error?"—":futurePoints.points_total??0}</strong></div>}
    </div>
    <div className="owner-point-settings-link"><Link href={"/admin/points/rules?year="+pointYear}>Atur nominal & poin →</Link></div>
    {rulesR.error||!rulesR.data?
