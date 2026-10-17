@@ -75,3 +75,16 @@ The existing old branch Preview is not automatically considered QA-safe merely b
 - [ ] In Vercel project `mas`, Settings → Environment Variables, edit ONLY the `OWNER_AUTH_EMAIL` entry with `Preview` and Git Branch `feature/admin-operations-reliability-20261017`. Set to the same confirmed email as the new QA Auth user. Never edit the shared Preview entry; never put the password into Vercel.
 - [ ] Manually redeploy from the current PR #12 source branch to existing Vercel Preview after user confirms the branch-specific email is updated. Verify deployment metadata, `/api/qa-readiness` and owner login before any data-writing UAT.
 - [ ] Finish authenticated UAT with a synthetic QA member; leave Stage 10 flags disabled until ready.
+
+### Mobile scanner cleanup — 2026-10-17
+
+- [x] User screenshot reviewed: mobile Scan QR page repeated member and settings actions below the scanner while persistent bottom navigation already provides those destinations.
+- [x] Removed exactly four redundant scan-page links: "Tambah Member", "Lihat Daftar Member", "Kelola Member", and "Ubah Password".
+- [x] Kept "Kembali ke Beranda" (public site) and in-scanner "Cari Member Manual", since neither is one of the four requested removals.
+- [x] Retained Scan QR camera/gallery actions and shared "Member" / "Pengaturan" tabs unchanged.
+- [x] Added regression test to `tests/stage5-contract.test.mjs` asserting four links remain absent and essential scanner navigation remains.
+- [ ] Six GitHub CI workflows PASS for exact code SHA.
+- [ ] QA protected Preview redeployed and mobile screenshot rechecked for whitespace and scan focus.
+- [ ] Customer production and `main` untouched; draft PR #12 is the source branch.
+
+Scope: responsive scan-page link cleanup only. No database or runtime changes.
