@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import CustomerCardScanner from "@/components/customer-card-scanner";
+import MembershipScrollEntry from "@/components/membership-scroll-entry";
 import { siteHref } from "@/lib/navigation";
 import { memberProgramLaunched, whatsappLink } from "@/lib/site";
 
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
 export default function MembershipPage() {
   return (
     <>
+      <MembershipScrollEntry />
       <SiteHeader />
       <main className="member-information">
         <div className="shell">

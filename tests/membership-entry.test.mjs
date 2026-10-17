@@ -19,4 +19,9 @@ test("the first member screen visibly offers scanner and admin entry",()=>{
  assert.match(content,/href=\{siteHref\("\/admin\/login"\)\}/);
  assert.match(styles,/\.member-scan-target\{scroll-margin-top:102px\}/);
  assert.doesNotMatch(content,/member-owner-entry/);
+ assert.match(content,/<MembershipScrollEntry \/>/);
+ const scroll=read("components/membership-scroll-entry.tsx");
+ assert.match(scroll,/window\.scrollTo\(\{ top: 0, behavior: "instant" \}\)/);
+ assert.match(scroll,/window\.location\.hash/);
+ assert.match(scroll,/pageshow/);
 });

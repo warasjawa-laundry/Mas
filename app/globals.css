@@ -234,8 +234,6 @@ h3 { font-size: 1.22rem; }
 .customer-image-input{position:absolute!important;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .customer-scan-error{color:#8f242b;background:#fff0f1;border:1px solid #f1cacc;border-radius:10px;padding:12px 14px;margin:13px 0 0;font-size:.9rem;line-height:1.5}
 .customer-scan-note{font-size:.78rem;color:var(--muted);line-height:1.6;margin:13px 0 0}
-.member-owner-entry{margin:12px 0 30px;color:var(--muted);font-size:.85rem;line-height:1.6}
-.member-owner-entry a{color:var(--brand);font-weight:750;text-underline-offset:3px}
 @media(max-width:480px){
  .customer-card-scanner{padding:18px;margin-top:20px}
  .customer-camera{height:185px}
