@@ -31,3 +31,11 @@ The branch-scoped QA `OWNER_AUTH_EMAIL` is currently a placeholder, so **login c
 The existing old branch Preview is not automatically considered QA-safe merely because settings have been added. It must be redeployed and verified.
 
 **Release:** CLOSED. PR #11 already merged; any follow-up QA-only guard must pass CI and review separately.
+
+## Readiness route and PR (latest checkpoint)
+- [x] Opened draft PR [#12](https://github.com/warasjawa-laundry/Mas/pull/12) for QA-only runtime guard; **not merged**.
+- [x] Added `GET /api/qa-readiness` on the feature branch. It returns HTTP `200` with `qaPreviewIsolation:"configured"` when the exact QA marker, URL and key are present; HTTP `503` and `"blocked"` if the settings do not match; HTTP `404` outside the QA preview branch. No credentials, tokens, account info or customer data are returned, and response caching is disabled.
+- [x] Added static regression coverage for preview-only handling and failure responses.
+- [ ] Verify the route against the *new* Vercel branch Preview via an authenticated Vercel team session, confirming `200 configured` before any owner login/transaction test.
+- [ ] Obtain genuine QA Supabase Auth account and map its UUID to `laundry_owner_accounts`; placeholder QA `OWNER_AUTH_EMAIL` must be replaced with the matching account email without changing shared Preview config.
+- [ ] Activate flags for **QA branch only** after owner browser UAT and explicit test readiness, not on customer hosting.
