@@ -166,3 +166,17 @@ Evidence: `docs/2026-10-17-stage5-concurrency-preview-blocker.md`.
 - [ ] Obtain explicit authorization for any customer SQL migration, feature activation or production publication.
 
 Details: `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.
+
+### Stage 5 — QA Preview deployment READY; UAT gate pending (2026-10-17)
+
+## Deployment certification checkpoint — 2026-10-17
+- [x] Six PR #12 GitHub Actions workflows **SUCCESS** for exact deployment source SHA `6bb3d436f7d98ab717f8d6822b9bbf54d1081c65`.
+- [x] Manual existing-project Preview deployment `dpl_A9vYE1PD5wNKTNH4iQ1Eym829zNu` **READY** with functions in Mumbai `bom1`.
+- [x] Verified source Git branch `feature/admin-operations-reliability-20261017`, SHA `6bb3d43`, and stable QA alias `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app`.
+- [x] Verified main Preview alias still points to `dpl_3qF3NBniMjH9ka1LCY9jAFuJyM2z`, not the QA deployment; main shared Preview configuration untouched.
+- [x] QA Supabase remains empty of auth users, owners, members and cards; original two seed year rules remain.
+- [ ] **Runtime isolation attestation**: after signing into Vercel team session, open `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app/api/qa-readiness`; must return HTTP 200 `{"qaPreviewIsolation":"configured"}`. External unauthenticated retrieval is blocked by Vercel protection and cannot be treated as verified.
+- [ ] Provision a real QA Auth owner in Supabase `tnadzytuamdxfypoeggy` via supported Auth management, set matching branch-only email and owner account row, then authenticated browser UAT.
+- [ ] QA feature flags remain OFF; source guard in draft PR #12 is not merged to production `main`. No production DB migrations executed.
+
+**Important:** READY/6 green CI workflows validate the deployment, not a successful authenticated browser transaction. Never test against the Vercel main alias or production database.

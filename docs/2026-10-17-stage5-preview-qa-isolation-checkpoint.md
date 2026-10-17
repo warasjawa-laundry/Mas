@@ -39,3 +39,15 @@ The existing old branch Preview is not automatically considered QA-safe merely b
 - [ ] Verify the route against the *new* Vercel branch Preview via an authenticated Vercel team session, confirming `200 configured` before any owner login/transaction test.
 - [ ] Obtain genuine QA Supabase Auth account and map its UUID to `laundry_owner_accounts`; placeholder QA `OWNER_AUTH_EMAIL` must be replaced with the matching account email without changing shared Preview config.
 - [ ] Activate flags for **QA branch only** after owner browser UAT and explicit test readiness, not on customer hosting.
+
+## Deployment certification checkpoint — 2026-10-17
+- [x] Six PR #12 GitHub Actions workflows **SUCCESS** for exact deployment source SHA `6bb3d436f7d98ab717f8d6822b9bbf54d1081c65`.
+- [x] Manual existing-project Preview deployment `dpl_A9vYE1PD5wNKTNH4iQ1Eym829zNu` **READY** with functions in Mumbai `bom1`.
+- [x] Verified source Git branch `feature/admin-operations-reliability-20261017`, SHA `6bb3d43`, and stable QA alias `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app`.
+- [x] Verified main Preview alias still points to `dpl_3qF3NBniMjH9ka1LCY9jAFuJyM2z`, not the QA deployment; main shared Preview configuration untouched.
+- [x] QA Supabase remains empty of auth users, owners, members and cards; original two seed year rules remain.
+- [ ] **Runtime isolation attestation**: after signing into Vercel team session, open `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app/api/qa-readiness`; must return HTTP 200 `{"qaPreviewIsolation":"configured"}`. External unauthenticated retrieval is blocked by Vercel protection and cannot be treated as verified.
+- [ ] Provision a real QA Auth owner in Supabase `tnadzytuamdxfypoeggy` via supported Auth management, set matching branch-only email and owner account row, then authenticated browser UAT.
+- [ ] QA feature flags remain OFF; source guard in draft PR #12 is not merged to production `main`. No production DB migrations executed.
+
+**Important:** READY/6 green CI workflows validate the deployment, not a successful authenticated browser transaction. Never test against the Vercel main alias or production database.
