@@ -88,3 +88,17 @@ The existing old branch Preview is not automatically considered QA-safe merely b
 - [ ] Customer production and `main` untouched; draft PR #12 is the source branch.
 
 Scope: responsive scan-page link cleanup only. No database or runtime changes.
+
+### Scan QR mobile link deduplication — release checkpoint (2026-10-17)
+
+- [x] Four duplicate scan-page shortcuts removed: Add Member, Member List, Manage Member and Change Password.
+- [x] Scan camera/gallery and in-scanner manual member lookup preserved.
+- [x] The public-home link retained; bottom tab destinations Member and Settings unchanged.
+- [x] Regression test added in `tests/stage5-contract.test.mjs` to prevent the four shortcuts returning.
+- [x] **6/6** GitHub Actions PASS for code SHA `6b71d1067de8f57f2d3e6b4523cf0aa3841ed4da`.
+- [x] Same protected Vercel QA Preview deployment `dpl_12DysrTZ38h8bcvmkrxFJkJshf31` **READY**, functions region `bom1`.
+- [x] Stable QA alias points to this new deployment; separate Preview main alias still points to `dpl_3qF3NBniMjH9ka1LCY9jAFuJyM2z`.
+- [ ] User to confirm visual spacing on physical Android after refreshing Scan QR Preview.
+- [ ] Authenticated data-flow UAT remains separate and pending. No production or customer SQL modifications made.
+
+Verification is code/CI + deployment metadata; authenticated visual screenshot of this exact build not yet supplied.
