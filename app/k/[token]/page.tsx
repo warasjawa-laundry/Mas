@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { validCardToken, memberNumber } from "@/lib/laundry/card";
 import {currentProgramYear} from "@/lib/laundry/program-years";
+import { assertQaPreviewIsolation } from "@/lib/supabase/qa-preview-isolation";
 type Props={params:Promise<{token:string}>};
 export const metadata:Metadata={
   title:"Progress Member",robots:{index:false,follow:false,nocache:true},
@@ -12,6 +13,7 @@ export const metadata:Metadata={
 };
 export const dynamic="force-dynamic";
 export default async function MemberProgress({params}:Props) {
+  assertQaPreviewIsolation();
   const {token}=await params;
   if(!validCardToken(token)) notFound();
   const url=process.env.SUPABASE_URL;
