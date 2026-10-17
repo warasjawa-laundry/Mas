@@ -1,8 +1,9 @@
-import { OFFICIAL_CARD_ORIGIN, REVIEW_CARD_ORIGIN } from "./card-origins.ts";
+import { OFFICIAL_CARD_ORIGIN, REVIEW_CARD_ORIGIN, QA_CARD_ORIGIN } from "./card-origins.ts";
 
 const allowedHosts = new Set([
   new URL(OFFICIAL_CARD_ORIGIN).hostname,
   new URL(REVIEW_CARD_ORIGIN).hostname,
+  new URL(QA_CARD_ORIGIN).hostname,
   "masjawalaundry.vercel.app",
 ]);
 
