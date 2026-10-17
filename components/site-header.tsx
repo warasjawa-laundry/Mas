@@ -19,7 +19,9 @@ export function SiteHeader() {
           <span className="brand-copy"><strong>Mas Jawa</strong><small>LAUNDRY</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Navigasi utama">
-          {nav.map((item) => <Link key={item.href} href={siteHref(item.href)}>{item.text}</Link>)}
+          {nav.map((item) => item.href === "/membership"
+            ? <a key={item.href} href={siteHref(item.href)}>{item.text}</a>
+            : <Link key={item.href} href={siteHref(item.href)}>{item.text}</Link>)}
         </nav>
         <a className="header-contact" href={whatsappLink("Halo Mas Jawa Laundry, saya mau tanya layanan laundry.")} target="_blank" rel="noopener noreferrer">Hubungi WhatsApp <span aria-hidden="true">↗</span></a>
         <details className="mobile-nav">

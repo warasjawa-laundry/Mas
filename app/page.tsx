@@ -119,7 +119,7 @@ export default function HomePage() {
                 <p>{memberProgramLaunched
                   ? "Daftar di laundry, bawa kartu saat bertransaksi, dan lihat jumlah transaksi lewat QR Code pada kartu."
                   : "Kami sedang menyiapkan kartu member dengan pencatatan transaksi digital. Pendaftaran dan pengecekan akan dibantu oleh petugas ketika program mulai tersedia."}</p>
-                <Link className="button button-white" href={siteHref("/membership")}>Pelajari kartu member <span aria-hidden="true">→</span></Link>
+                <a className="button button-white" href={siteHref("/membership")}>Pelajari kartu member <span aria-hidden="true">→</span></a>
               </div>
               <div className="member-feature-steps" aria-label="Cara kerja kartu member">
                 <div><span className="feature-step-number">01</span><span><strong>Daftar di laundry</strong><small>Petugas membantu membuat kartu member.</small></span></div>

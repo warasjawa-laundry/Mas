@@ -242,3 +242,31 @@ h3 { font-size: 1.22rem; }
  .customer-scan-actions{grid-template-columns:1fr}
  .customer-scan-actions .button{width:100%}
 }
+
+/* Member page: immediate customer/admin choices, accessible on narrow phones.
+   Native top-level membership links avoid restoring an old homepage scroll. */
+.member-entry-actions{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+  margin:22px 0 24px;
+}
+.member-entry-action{
+  display:flex;flex-direction:column;justify-content:center;gap:7px;
+  min-width:0;min-height:86px;padding:16px 18px;background:#fff;
+  border:1px solid #d8dce7;border-radius:14px;color:var(--ink);
+  text-decoration:none;box-shadow:0 5px 15px rgb(25 28 40 / .025);
+}
+.member-entry-action-primary{background:#6d28d9;border-color:#6d28d9;color:#fff}
+.member-entry-action>span{font-size:.69rem;letter-spacing:.085em;font-weight:800;opacity:.77}
+.member-entry-action strong{font-size:clamp(.88rem,2.8vw,1.06rem);line-height:1.35;font-weight:750}
+.member-entry-action strong span{white-space:nowrap}
+.member-entry-action:focus-visible{outline:3px solid #9c72ee;outline-offset:3px}
+.member-entry-action:hover{text-decoration:none;border-color:#9b77d9}
+.member-entry-action-primary:hover{background:#5920b8;border-color:#5920b8}
+.member-scan-target{scroll-margin-top:102px}
+.member-scan-target .customer-card-scanner{margin-top:0}
+@media(max-width:480px){
+  .member-entry-actions{gap:10px;margin:18px 0 20px}
+  .member-entry-action{min-height:82px;padding:13px 12px}
+  .member-entry-action>span{font-size:.6rem;letter-spacing:.055em}
+  .member-entry-action strong{font-size:.92rem}
+}
