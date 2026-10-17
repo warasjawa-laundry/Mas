@@ -224,3 +224,15 @@ Documentation: `docs/2026-10-17-stage11-db-only-point-rules-checkpoint.md`.
 - [ ] PR #12 merge and production rollout blocked until separate approval.
 
 Details: `docs/2026-10-17-stage12-admin-fresh-auth-boundary.md`.
+
+### Stage 13 — Mobile Kartu Member entry/scroll restoration (2026-10-17)
+- [x] Screenshot and code audit: public member entry could retain a deep scroll position with menu overlay, hiding the QR scanner and admin entry.
+- [x] Native document navigation on all homepage/header/footer member-entry links; all other public links unchanged.
+- [x] Explicit membership scroll reset on entry and browser page restore (but respect the `#scan-kartu` anchor).
+- [x] Show **Scan QR Kartu** and **Masuk Admin** compactly near the top; remove duplicate lower admin entry.
+- [x] Mobile Playwright reproduction and regression tests plus source-level contracts.
+- [x] All seven GitHub workflows PASS at code SHA `52c7f00`.
+- [x] Protected existing Vercel QA Preview READY `dpl_8Xej8XTcYd5XsRavkVK99rd6n1MR`; preview main alias unchanged.
+- [ ] User mobile device visual confirmation; PR #12 remains DRAFT, no production release.
+
+Full checkpoint: `docs/2026-10-17-stage13-membership-landing-navigation.md`.
