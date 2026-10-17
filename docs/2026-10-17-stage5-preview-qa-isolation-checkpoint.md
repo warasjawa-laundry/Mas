@@ -65,3 +65,13 @@ The existing old branch Preview is not automatically considered QA-safe merely b
 - [ ] Validate QA publishable key and real database RPC through the browser application; readiness JSON alone does not prove connectivity.
 
 **Release status:** PR #12 remains DRAFT. No production schema deployment or activation.
+
+### 2026-10-17 QA owner provisioning checkpoint
+
+- [x] User created **one real Supabase Auth user** in project `tnadzytuamdxfypoeggy` using the Auth administration interface.
+- [x] Verified the only user is non-anonymous and email-confirmed; one corresponding active `public.laundry_owner_accounts` record provisioned **in QA only** with strict identity and zero-existing-owner guards.
+- [x] Verified QA counts by read-only SQL: Auth users `1`, active owner rows `1`, confirmed active owners `1`, members `0`, cards `0`. No production or customer data touched.
+- [!] Branch-specific Vercel variable `OWNER_AUTH_EMAIL` **still contains the placeholder**. Attempt to change it via connected management API was blocked by tool safety validation; the user must update this variable in Vercel Settings. No successful change or redeployment may be claimed.
+- [ ] In Vercel project `mas`, Settings → Environment Variables, edit ONLY the `OWNER_AUTH_EMAIL` entry with `Preview` and Git Branch `feature/admin-operations-reliability-20261017`. Set to the same confirmed email as the new QA Auth user. Never edit the shared Preview entry; never put the password into Vercel.
+- [ ] Manually redeploy from the current PR #12 source branch to existing Vercel Preview after user confirms the branch-specific email is updated. Verify deployment metadata, `/api/qa-readiness` and owner login before any data-writing UAT.
+- [ ] Finish authenticated UAT with a synthetic QA member; leave Stage 10 flags disabled until ready.
