@@ -48,5 +48,5 @@ export function memberNumber(value: number | string) {
 export function publicCardOrigin() {
   // Preview cards always point to a stable, reviewed test alias. Never encode
   // the immutable VERCEL_URL deployment host in a physical card.
-  return cardOriginForEnvironment(process.env.VERCEL_ENV, process.env.NODE_ENV);
+  return cardOriginForEnvironment(process.env.VERCEL_ENV, process.env.NODE_ENV, process.env.VERCEL_GIT_COMMIT_REF);
 }
