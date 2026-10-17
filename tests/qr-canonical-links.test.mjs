@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { extractLaundryToken } from "../lib/laundry/scan.ts";
 import {
   REVIEW_CARD_ORIGIN,
+  QA_CARD_ORIGIN,
+  QA_REVIEW_BRANCH,
   OFFICIAL_CARD_ORIGIN,
   cardOriginForEnvironment,
 } from "../lib/laundry/card-origins.ts";
@@ -53,4 +55,12 @@ test("Reject hostile links rather than following or accepting arbitrary URLs", (
   }
   assert.equal(extractLaundryToken("https://evil.example/k/" + token), null);
   assert.equal(extractLaundryToken(token), token);
+});
+
+test("QA feature Preview QR remains inside isolated branch instead of production-connected main",()=>{
+  assert.equal(cardOriginForEnvironment("preview","production",QA_REVIEW_BRANCH), QA_CARD_ORIGIN);
+  assert.equal(cardOriginForEnvironment("preview","production","main"), REVIEW_CARD_ORIGIN);
+  assert.equal(cardOriginForEnvironment("production","production",QA_REVIEW_BRANCH), OFFICIAL_CARD_ORIGIN);
+  assert.equal(extractLaundryToken(url(QA_CARD_ORIGIN)),token);
+  assert.notEqual(QA_CARD_ORIGIN,REVIEW_CARD_ORIGIN);
 });
