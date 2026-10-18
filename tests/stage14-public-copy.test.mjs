@@ -10,7 +10,7 @@ test("public text avoids em dashes, while valid time ranges remain",()=>{
 });
 test("headlines name the service instead of generic promises",()=>{
  const h=read("app/page.tsx"),m=read("app/membership/page.tsx");
- for(const expected of ["Daftar harga laundry","Cara menggunakan layanan","Kartu member"])assert.ok(h.includes(expected));
+ for(const expected of ["Daftar layanan dan harga","Cara menggunakan layanan","Kartu member"])assert.ok(h.includes(expected));
  assert.match(m,/Kartu member/);
  assert.match(read("app/k/[token]/page.tsx"),/Catatan Kartu Member/);
  for(const old of ["Pilih yang sesuai kebutuhan.","Informasi jelas, jadi lebih mudah menentukan layanan.","Kartu langganan, tanpa harus mengingat jumlah transaksi."])assert.ok(!h.includes(old));

@@ -4,8 +4,10 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
-  assets, curtainPrices, kiloPackages, site, whatsappLink,
+  assets, site, whatsappLink,
 } from "@/lib/site";
+import ServicePrices from "@/components/service-prices";
+import {readPublishedServices,catalogRealtimeConfig} from "@/lib/services/server";
 import { siteHref } from "@/lib/navigation";
 
 export const metadata: Metadata = {
@@ -14,7 +16,10 @@ export const metadata: Metadata = {
 
 const whatsappService = whatsappLink("Halo Mas Jawa Laundry, saya ingin tanya layanan dan harga laundry.");
 
-export default function HomePage() {
+export const revalidate=60;
+
+export default async function HomePage() {
+  const catalog=await readPublishedServices();
   const schema = {
     "@context": "https://schema.org",
     "@type": "LaundryService",
@@ -56,35 +61,10 @@ export default function HomePage() {
         <section id="layanan" className="section section-alt" aria-labelledby="services-title">
           <div className="shell">
             <div className="section-top">
-              <div><p className="eyebrow">LAYANAN & HARGA</p><h2 id="services-title">Daftar harga laundry</h2></div>
-              <p className="section-intro">Harga kiloan berbeda menurut jenis layanan dan waktu pengerjaan. Untuk cucian lain, tanyakan dulu kepada petugas.</p>
+              <div><p className="eyebrow">LAYANAN & HARGA</p><h2 id="services-title">Daftar layanan dan harga</h2></div>
+              <p className="section-intro">Lihat harga, satuan, dan perkiraan waktu pengerjaan untuk setiap layanan.</p>
             </div>
-            <div className="price-grid">
-              {kiloPackages.map((pack) => (
-                <article className="price-card" key={pack.name}>
-                  <div className="price-card-top">
-                    <h3>{pack.name}</h3>
-                    <span className="duration">{pack.duration}</span>
-                  </div>
-                  <div className="price-rows">
-                    {pack.items.map((item) => (
-                      <div key={item.label} className="price-row"><span>{item.label}</span><strong>{item.price}</strong></div>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-            <div className="special-service">
-              <div>
-                <p className="eyebrow">LAYANAN SATUAN</p>
-                <h3>Cuci gorden</h3>
-                <p>Tarif gorden dihitung per meter. Untuk jenis cucian satuan lainnya, hubungi petugas lebih dulu.</p>
-              </div>
-              <div className="special-service-prices">
-                {curtainPrices.map((item) => <div className="special-row" key={item.label}><span>{item.label}</span><strong>{item.price}</strong></div>)}
-                <a className="inline-link" href={whatsappService} target="_blank" rel="noopener noreferrer">Tanya cucian lainnya <span aria-hidden="true">↗</span></a>
-              </div>
-            </div>
+            <ServicePrices initial={catalog.services} initialFailed={catalog.failed} realtime={catalogRealtimeConfig()}/>
             <details className="price-disclaimer"><summary>Konfirmasi tarif dan estimasi sebelum memesan</summary><p>Konfirmasi biaya dan perkiraan waktu pengerjaan kepada petugas saat menyerahkan cucian.</p></details>
           </div>
         </section>

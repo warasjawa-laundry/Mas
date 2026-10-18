@@ -8,8 +8,10 @@ export default async function OwnerSettings({ searchParams }: Props) {
   const { error } = await searchParams;
   return <main className="admin-workspace">
     <div className="admin-content admin-settings">
-      <p className="admin-kicker">KEAMANAN AKUN</p>
-      <h1>Ubah Password</h1>
+      <p className="admin-kicker">ADMIN</p>
+      <h1>Pengaturan</h1>
+      <section className="settings-service-entry"><h2>Layanan dan harga</h2><p>Tambah layanan, ubah tarif dan satuan, atau sembunyikan layanan dari homepage.</p><Link href="/admin/settings/services" prefetch={false} className="admin-primary">Kelola layanan dan harga →</Link></section>
+      <h2>Ubah Password</h2>
       <p className="admin-hint">Untuk keamanan, masukkan password saat ini sebelum menggantinya. Setelah berhasil, Anda diminta login kembali.</p>
       {error && <p className="admin-error" role="alert">{error === "failed" ? "Password belum berhasil diganti. Silakan coba lagi." : "Periksa password lama dan pastikan password baru memenuhi syarat."}</p>}
       <form className="admin-form" action={changeOwnerPassword}>
