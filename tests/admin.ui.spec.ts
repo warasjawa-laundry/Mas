@@ -32,13 +32,13 @@ test("admin scan and password settings are inaccessible without verified owner",
   await expect(page).toHaveURL(/\/admin\/login/);
 });
 
-test("no configured Auth identity means password cannot be accepted in demo preview", async ({ page }) => {
+test("missing Auth configuration refuses sign-in and shows an operational error", async ({ page }) => {
   // CI deliberately has no owner account or Supabase credentials.
   await page.goto("/admin/login");
   await page.getByLabel("ID Pengguna").fill("masjawalaundry");
   await page.locator('input[name="password"]').fill("NotARealLivePassword!");
   await page.getByRole("button", { name: "Masuk" }).click();
-  await expect(page.locator(".admin-error[role='alert']")).toContainText("belum diaktifkan");
+  await expect(page.locator(".admin-error[role='alert']")).toContainText("Akses admin belum tersedia. Hubungi pengelola.");
   await expect(page).toHaveURL(/\/admin\/login/);
 });
 
