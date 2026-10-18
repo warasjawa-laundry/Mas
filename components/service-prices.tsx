@@ -9,7 +9,7 @@ export default function ServicePrices({initial,initialFailed,realtime}:Props){
  useEffect(()=>{
   let active=true,busy=false,again=false;
   const controller=new AbortController();
-  let socket:{disconnect:()=>void}|undefined;
+  let socket:{removeAllChannels:()=>Promise<unknown>;disconnect:()=>Promise<unknown>}|undefined;
   async function refresh(){
    if(!active||document.hidden||!navigator.onLine)return;
    if(busy){again=true;return}busy=true;
@@ -36,7 +36,7 @@ export default function ServicePrices({initial,initialFailed,realtime}:Props){
   const timer=setInterval(()=>void refresh(),30000);
   const resume=()=>void refresh();
   document.addEventListener("visibilitychange",resume);window.addEventListener("focus",resume);window.addEventListener("online",resume);
-  return ()=>{active=false;controller.abort();clearInterval(timer);socket?.disconnect();document.removeEventListener("visibilitychange",resume);window.removeEventListener("focus",resume);window.removeEventListener("online",resume)};
+  return ()=>{active=false;controller.abort();clearInterval(timer);void socket?.removeAllChannels().catch(()=>socket?.disconnect());document.removeEventListener("visibilitychange",resume);window.removeEventListener("focus",resume);window.removeEventListener("online",resume)};
  },[realtime?.url,realtime?.key]);
  return <div aria-live="polite" aria-atomic="false">
   {failed&&<p className="catalog-feedback" role="status">Daftar harga belum dapat diperbarui. Hubungi petugas untuk memastikan harga.</p>}

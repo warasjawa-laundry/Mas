@@ -42,3 +42,14 @@ test('Realtime browser configuration excludes service-role and secret credential
  env.SUPABASE_PUBLISHABLE_KEY='a.'+Buffer.from(JSON.stringify({role:'service_role'})).toString('base64url')+'.b';assert.equal(out.exports.catalogRealtimeConfig(),null);
  env.SUPABASE_PUBLISHABLE_KEY='sb_publishable_synthetic';assert.equal(out.exports.catalogRealtimeConfig().key,'sb_publishable_synthetic');
 });
+test('catalogue unmount tears down subscriptions and periodic work',async()=>{
+ let effect,removed=0,cleared=0;const listeners=new Map();
+ const socket={channel(){return {on(){return this},subscribe(){return this}}},removeAllChannels:async()=>{removed++},disconnect:async()=>{}};
+ const out={exports:{}};
+ const mocks={'react':{useEffect:f=>effect=f,useRef:()=>({current:''}),useState:v=>[v,()=>{}]},'react/jsx-runtime':{jsx:()=>null,jsxs:()=>null},'@/components/service-prices-view':()=>null,'@supabase/realtime-js':{RealtimeClient:class{constructor(){return socket}}}};
+ const surface={addEventListener:(n,fn)=>listeners.set(n,fn),removeEventListener:n=>listeners.delete(n)};
+ runInNewContext(compiled('components/service-prices.tsx'),{exports:out.exports,module:out,require:n=>mocks[n],document:{...surface,hidden:false},window:surface,navigator:{onLine:true},AbortController,fetch:async()=>({status:200,ok:true,json:async()=>({services:[]}),headers:{get:()=>null}}),setInterval:()=>1,clearInterval:()=>cleared++});
+ out.exports.default({initial:[],initialFailed:false,realtime:{url:'https://example.supabase.co',key:'sb_publishable_synthetic'}});
+ const cleanup=effect();await new Promise(setImmediate);cleanup();await new Promise(setImmediate);
+ assert.equal(removed,1);assert.equal(cleared,1);assert.equal(listeners.size,0);
+});

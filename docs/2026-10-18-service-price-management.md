@@ -10,7 +10,7 @@ Saving publishes the change. Hiding is reversible; there is no destructive delet
 
 The server renders published services for SEO and first paint. Categories/packages are grouped automatically and arbitrary units such as kg, pasang, meter and m² are supported. The client lazily loads the pinned Realtime-only package and subscribes to a public version counter. Service rows and all member tables are excluded from this new publication change. Committed writes bump the counter, including hiding a row, so open visitors re-fetch the published catalogue without a page reload.
 
-A no-store public endpoint exposes only published service fields. ETags avoid unchanged response bodies. A visible/online tab revalidates on focus, reconnect and at 30-second intervals as a fallback; failures show an explicit warning rather than silently advertising stale data as current. Realtime delivery depends on the network; there is no guarantee of zero latency. No images or Google Drive integration is part of this change.
+A no-store public endpoint exposes only published service fields. ETags avoid unchanged response bodies. A visible/online tab revalidates on focus, reconnect and at 30-second intervals as a fallback; failures show an explicit warning rather than silently advertising stale data as current. Subscriptions and their timers are removed when the component unmounts. A live QA probe subscribed successfully and received a committed version-counter event without changing advertised prices. Realtime delivery depends on the network; there is no guarantee of zero latency. No images or Google Drive integration is part of this change.
 
 ## Access and data
 
