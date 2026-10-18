@@ -78,7 +78,7 @@ export default function ScanCard() {
         scanLock.current = false;
       }
     } finally {
-      if (aliveRef.current) setLoading(false);
+      if (aliveRef.current && !scanLock.current) setLoading(false);
     }
   };
 
@@ -93,7 +93,7 @@ export default function ScanCard() {
     const attempt = ++cameraAttemptRef.current;
     setStarting(true);
     try {
-      const { BrowserQRCodeReader } = await import("@zxing/browser");
+      const { BrowserQRCodeReader } = await import("@zxing/browser/esm/readers/BrowserQRCodeReader");
       if (!videoRef.current || !aliveRef.current || cameraAttemptRef.current !== attempt) return;
 
       const reader = new BrowserQRCodeReader();
@@ -186,6 +186,7 @@ export default function ScanCard() {
         </button>
         <Link href="/admin/members" className="admin-logout">Cari Member Manual</Link>
       </div>
+      {loading && <p className="member-note" role="status">Memeriksa kartu dan membuka transaksi member…</p>}
       <div className={"owner-camera" + (running || starting ? " owner-camera-active" : "")}>
         <video ref={videoRef} autoPlay muted playsInline aria-label="Pratinjau kamera untuk scan kartu" />
         {!running && !starting && <span className="owner-camera-placeholder">Pilih kamera atau foto QR dari galeri</span>}

@@ -77,7 +77,7 @@ export default function CustomerCardScanner(){
     const attempt=++cameraAttempt.current;
     setStarting(true);
     try {
-      const {BrowserQRCodeReader}=await import("@zxing/browser");
+      const {BrowserQRCodeReader}=await import("@zxing/browser/esm/readers/BrowserQRCodeReader");
       if(!mounted.current || cameraAttempt.current!==attempt || !cameraVideo.current)return;
       const scanner=new BrowserQRCodeReader();
       const controls=await scanner.decodeFromVideoDevice(undefined,cameraVideo.current,(result,_error,control)=>{

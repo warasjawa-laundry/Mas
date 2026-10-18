@@ -18,7 +18,7 @@ export function qrImageRegions(width:number,height:number):Rect[]{
 
 /** Local-only decode; no image or QR is uploaded, and unapproved URLs are ignored. */
 export async function decodeLaundryQrImage(file:File,signal?:AbortSignal):Promise<string>{
- const [{BrowserQRCodeReader},{DecodeHintType}]=await Promise.all([import("@zxing/browser"),import("@zxing/library")]);
+ const [{BrowserQRCodeReader},{default:DecodeHintType}]=await Promise.all([import("@zxing/browser/esm/readers/BrowserQRCodeReader"),import("@zxing/library/esm/core/DecodeHintType")]);
  const url=URL.createObjectURL(file);const image=new Image();
  const check=()=>{if(signal?.aborted)throw new DOMException("Cancelled","AbortError")};
  try{

@@ -78,6 +78,6 @@ test("public progress follows the WIB program year and does not mix historical p
   assert.match(progress,/memberHistoryYear\(input.year,currentYear\)/);
   assert.match(progress,/r.program_year===year/);
   assert.match(progress,/laundry_public_transaction_history/);
-  assert.match(ownerDetail,/nextPointYear=pointYear===2026\?2027:pointYear\+1/);
+  assert.match(ownerDetail,/timeZone:"Asia\/Jakarta"/);
   assert.doesNotMatch(progress,/whatsapp_e164|description|amount_idr|token_ciphertext/);
 });

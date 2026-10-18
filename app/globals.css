@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
-
 :root {
   color-scheme: light;
   --ink: #172235;
@@ -13,7 +11,7 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 100px; }
-body { margin: 0; background: white; color: var(--ink); font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; line-height: 1.55; }
+body { margin: 0; background: white; color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; line-height: 1.55; }
 a { color: inherit; }
 a:hover { text-decoration-thickness: 2px; }
 img { max-width: 100%; }

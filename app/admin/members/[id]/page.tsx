@@ -23,13 +23,13 @@ export default async function OwnerMember({params,searchParams}:Props){
   supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent").eq("id",id).maybeSingle(),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","ADD"),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","VOID"),
-  loadMemberHistory(supabase,id,historyPage),
-  supabase.from("laundry_member_promotions")
+  view==="history" ? loadMemberHistory(supabase,id,historyPage) : Promise.resolve({events:[],count:0,failed:false,amountsFailed:false,reversalsFailed:false,amounts:new Map(),corrected:new Set<string>(),hasOlder:false}),
+  view==="promo" ? supabase.from("laundry_member_promotions")
     .select("id,title,terms,status,expires_at,created_at,redeemed_at,cancelled_at,cancel_reason")
-    .eq("member_id",id).order("created_at",{ascending:false}).limit(100),
+    .eq("member_id",id).order("created_at",{ascending:false}).limit(100) : Promise.resolve({data:[],error:null}),
   supabase.rpc("laundry_owner_point_balances",{p_member_id:id}),
-  supabase.from("laundry_point_rules").select("tiers,program_year,revision")
-    .eq("program_year",pointYear).maybeSingle()
+  view==="transaction" ? supabase.from("laundry_point_rules").select("tiers,program_year,revision")
+    .eq("program_year",pointYear).maybeSingle() : Promise.resolve({data:null,error:null})
  ]));
  if(memberR.error || !memberR.data)notFound();
  const member=memberR.data;
@@ -37,13 +37,10 @@ export default async function OwnerMember({params,searchParams}:Props){
  const total=(addsR.count??0)-(voidsR.count??0);
  const history=historyR.events;
  const corrected=historyR.corrected;
- const requestId=notice.requestId&&validId.test(notice.requestId)?notice.requestId:randomUUID();
  const promoRequestId=notice.promoRequestId&&validId.test(notice.promoRequestId)?notice.promoRequestId:randomUUID();
  const amountRequestId=notice.amountRequestId&&validId.test(notice.amountRequestId)?notice.amountRequestId:randomUUID();
  const amountMap=historyR.amounts;
  const currentPoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===pointYear);
- const nextPointYear=pointYear===2026?2027:pointYear+1;
- const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===nextPointYear);
  const pointRules=Array.isArray(rulesR.data?.tiers)?rulesR.data.tiers as {minimum:number;points:number}[]:[];
  const idr=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
 
