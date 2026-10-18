@@ -16,10 +16,10 @@ const Directory=component("components/admin/member-directory-list.tsx");
 const Nav=component("components/admin/member-task-nav.tsx");
 const Promos=component("components/admin/member-promotions.tsx",{
  "@/app/admin/promotions/actions":{grantManualPromo:()=>{},finishManualPromo:()=>{}},
- "@/components/admin/pending-submit":{default:({label,className}:Record<string,string>)=>createElement("button",{className,type:"submit"},label)},
+ "@/components/admin/pending-submit":{default:({label,className="admin-primary"}:Record<string,string>)=>createElement("button",{className,type:"submit"},label)},
  "@/components/admin/promo-whatsapp":{default:()=>null},
 });
-const css=readFileSync("app/admin/admin.css","utf8");
+const css=readFileSync("app/globals.css","utf8").replace(/^@import[^\n]*\n/,"")+"\n"+readFileSync("app/admin/admin.css","utf8");
 const memberId="00000000-0000-4000-8000-000000000012";
 const members=[{id:memberId,member_number:6,display_name:"Nama Contoh",is_active:true},{id:memberId+"x",member_number:5,display_name:"Member dengan nama sangat panjang untuk pengujian",is_active:false}];
 for(const width of [320,390,1440])test(`compact member directory and explicit promo actions at ${width}px`,async({page})=>{

@@ -26,7 +26,7 @@ for(const fixture of [
 test("gallery refuses a foreign QR and can retry with a valid cropped card",async({page})=>{
  test.setTimeout(45000);await page.goto("/membership");
  await page.locator(".customer-image-input").setInputFiles({name:"foreign.png",mimeType:"image/png",buffer:await qr.toBuffer("https://example.org/k/"+token,{width:280})});
- await expect(page.getByRole("alert")).toContainText("QR belum terbaca",{timeout:20000});
+ await expect(page.locator(".customer-card-scanner").getByRole("alert")).toContainText("QR belum terbaca",{timeout:20000});
  await expect(page).toHaveURL(/\/membership$/);
  await page.locator(".customer-image-input").setInputFiles({name:"card.png",mimeType:"image/png",buffer:await qr.toBuffer(cardUrl,{width:320,margin:4})});
  await expect(page).toHaveURL(new RegExp(`/k/${token}$`),{timeout:20000});
