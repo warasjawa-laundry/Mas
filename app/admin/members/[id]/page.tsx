@@ -4,18 +4,20 @@ import {notFound} from "next/navigation";
 import {requireOwner} from "@/lib/supabase/owner";
 import {memberNumber} from "@/lib/laundry/card";
 import {correctOwnerVisit} from "@/app/admin/visits/actions";
+import MemberTaskNav from "@/components/admin/member-task-nav";
 import AmountVisitForm from "@/components/admin/amount-visit-form";
 import MemberPromotions from "@/components/admin/member-promotions";
 import {timeAdmin} from "@/lib/admin/timing";
 import {historyPageNumber,historyPageHref,loadMemberHistory} from "@/lib/laundry/member-history";
 
-type Props={params:Promise<{id:string}>,searchParams:Promise<{historyPage?:string;error?:string;recorded?:string;corrected?:string;requestId?:string;amountRequestId?:string;amountRecorded?:string;pointsEarned?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
+type Props={params:Promise<{id:string}>,searchParams:Promise<{view?:string;historyPage?:string;error?:string;recorded?:string;corrected?:string;requestId?:string;amountRequestId?:string;amountRecorded?:string;pointsEarned?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
 const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export default async function OwnerMember({params,searchParams}:Props){
  const {supabase}=await requireOwner();
  const {id}=await params,notice=await searchParams;
  if(!validId.test(id))notFound();
  const historyPage=historyPageNumber(notice.historyPage);
+ const view=notice.promo||notice.promoError?"promo":notice.historyPage||notice.corrected||notice.error==="reason"||notice.error==="void"?"history":notice.view==="promo"||notice.view==="history"?notice.view:"transaction";
  const pointYear=Number(new Intl.DateTimeFormat("en-US",{year:"numeric",timeZone:"Asia/Jakarta"}).format(new Date()));
  const [memberR,addsR,voidsR,historyR,promosR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
   supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent").eq("id",id).maybeSingle(),
@@ -48,26 +50,24 @@ export default async function OwnerMember({params,searchParams}:Props){
  return <main className="admin-workspace">
   <nav className="admin-breadcrumb" aria-label="Kembali"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link></nav>
   <section className="admin-content owner-member-page">
-   <p className="admin-kicker">CATAT TRANSAKSI</p><h1>{member.display_name}</h1>
+   <p className="admin-kicker">MEMBER</p><h1>{member.display_name}</h1>
    <p className="admin-hint">{memberNumber(member.member_number)} · {member.is_active?"Member aktif":"Member nonaktif"}</p>
    {notice.recorded==="1" && <p className="admin-success" role="status">1 transaksi berhasil dicatat.</p>}
-   {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}.</p>}
+   {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}. <Link href={`/admin/members/${id}?view=history`}>Lihat riwayat →</Link></p>}
    {notice.corrected==="1" && <p className="admin-success" role="status">Transaksi berhasil dibatalkan dengan riwayat tetap tersimpan.</p>}
    {notice.error && <p className="admin-error" role="alert">
       {notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi pengelola database untuk memeriksa aturan poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
     </p>}
-   <div className="owner-member-summary"><div className="owner-count-box"><span>Total transaksi tercatat</span><strong>{failed?"—":total}</strong>
-    <small>Hanya berubah saat pemilik menekan tombol dan penyimpanan berhasil.</small></div>
-   <div className="owner-point-summary">
-     <div><span>Saldo poin {pointYear}{pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
-     {nextPointYear<=2100 && futurePoints && <div><span>Saldo program {nextPointYear}</span><strong>{balancesR.error?"—":futurePoints.points_total??0}</strong></div>}
-   </div>
-   </div>
+   <p className="member-context-line">{balancesR.error?"Poin belum dimuat":`${currentPoints?.points_total??0} poin (${pointYear})`} · {failed?"Total transaksi belum dimuat":`${total} transaksi seluruh periode`}</p>
+   <MemberTaskNav memberId={id} view={view}/>
+   {view==="transaction"&&<section aria-label="Catat transaksi">
    {rulesR.error||!rulesR.data?
      <p className="admin-error">Aturan poin belum dimuat. Transaksi bernominal tidak dapat disimpan untuk sementara.</p>:
-     <AmountVisitForm memberId={id} requestId={amountRequestId} memberActive={member.is_active}
+     <AmountVisitForm key={amountRequestId} memberName={member.display_name} memberId={id} requestId={amountRequestId} memberActive={member.is_active}
        tiers={pointRules} year={pointYear}/>}
-   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data</Link><Link href="#transaction-history" className="admin-logout">Riwayat</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
+   </section>}
+   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
+   {view==="history"&&<section aria-label="Riwayat member">
    <h2 id="transaction-history">Riwayat transaksi</h2>
    <details className="owner-history-details" open>
     <summary>Lihat riwayat dan pembatalan</summary>
@@ -106,10 +106,11 @@ export default async function OwnerMember({params,searchParams}:Props){
     {historyPage>1&&<Link prefetch={false} href={historyPageHref(id,1)}>Riwayat terbaru</Link>}
    </nav>}
    </details>
-   <MemberPromotions memberId={id} memberName={member.display_name}
+   </section>}
+   {view==="promo"&&<MemberPromotions memberId={id} memberName={member.display_name}
      requestId={promoRequestId} promos={promosR.data||[]}
      whatsappPhone={member.whatsapp_e164} whatsappConsent={member.whatsapp_promo_consent===true} memberActive={member.is_active}
-     loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>
+     loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>}
    <div className="admin-shortcuts"><Link href="/admin/members">← Pilih member lain</Link><Link href="/admin/scan">Scan kartu lain →</Link></div>
   </section>
  </main>;

@@ -30,7 +30,7 @@ test("admin loading states and pending buttons provide feedback", () => {
 });
 
 test("member list avoids hundreds of speculative authenticated prefetch requests", () => {
-  const list = source("app/admin/members/page.tsx");
+  const list = source("app/admin/members/page.tsx")+source("components/admin/member-directory-list.tsx");
   assert.match(list, /prefetch=\{false\} href=\{\x60\/admin\/members\/\$\{m\.id\}/);
   assert.match(source("app/admin/members/[id]/page.tsx"), /timeAdmin\("member\.detail\.queries"/);
 });

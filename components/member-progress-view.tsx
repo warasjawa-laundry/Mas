@@ -1,7 +1,7 @@
 import Link from "next/link";
 import MemberProgressRefresh from "@/components/member-progress-refresh";
 import type {PublicTransaction} from "@/lib/laundry/public-history";
-type Props={number:string;total:number;year:number;points:number|null;balancesFailed:boolean;
+type Props={name?:string|null;number:string;total:number;year:number;points:number|null;balancesFailed:boolean;
  years:{year:number;href:string}[];transactions:PublicTransaction[];historyFailed:boolean;
  page:number;previousHref?:string;nextHref?:string;promos:{title:string}[]};
 const money=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
@@ -9,7 +9,7 @@ const date=(s:string)=>new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeS
 export default function MemberProgressView(p:Props){
  return <main className="member-public"><div className="member-public-shell">
   <header className="member-progress-header"><p className="admin-kicker">MAS JAWA LAUNDRY</p>
-   <h1>Poin dan transaksi</h1><p className="member-public-id">{p.number}</p>
+   <h1>Poin dan transaksi</h1>{p.name&&<p className="member-public-name">{p.name}</p>}<p className="member-public-id">{p.number}</p>
   </header>
   <nav className="member-year-nav" aria-label="Tahun catatan">
    {p.years.map(y=><Link key={y.year} href={y.href} prefetch={false} aria-current={y.year===p.year?"page":undefined}>{y.year}</Link>)}

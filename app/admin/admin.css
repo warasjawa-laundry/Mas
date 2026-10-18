@@ -476,3 +476,58 @@
  .mj-card-preview{width:85.6mm!important;max-width:none!important;margin:0!important;break-inside:avoid}
  .mj-card{width:85.6mm!important;height:53.98mm!important;aspect-ratio:auto;print-color-adjust:exact;-webkit-print-color-adjust:exact;box-shadow:none}
 }
+
+/* Separate member tasks and remove the inherited full-width action cascade. */
+.member-context-line{font-size:13px;color:#536274;margin:0 0 18px;line-height:1.6}
+.owner-member-page>.admin-hint{margin-bottom:8px}
+.member-task-nav{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:6px;margin:0 0 20px;border-bottom:1px solid #dfe3eb;padding-bottom:10px}
+.member-task-nav a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px 8px;border-radius:7px;color:#536274;font-size:14px;text-align:center;font-weight:500}
+.member-task-nav a[aria-current=page]{background:#eee8f8;color:#51278b;font-weight:650}
+.transaction-entry-fields{display:grid;gap:10px}
+.transaction-entry-fields[hidden]{display:none}
+.transaction-entry-fields label{margin-top:5px}
+.transaction-entry-fields textarea{min-height:72px}
+.transaction-review{display:grid;grid-template-columns:100px 1fr;gap:12px;font-size:14px;line-height:1.6}
+.transaction-review>span{color:#536274}
+.transaction-review>strong{font-weight:650;overflow-wrap:anywhere}
+.transaction-review>p{white-space:pre-wrap;margin:0;overflow-wrap:anywhere}
+.transaction-review-actions{display:flex;gap:10px}
+.transaction-review-actions>button{flex:1 1 auto;margin:0;font-size:14px;min-height:48px}
+.owner-promo-section{margin-top:12px;padding-top:0;border-top:0}
+.promo-fields{display:grid;gap:10px;border:0;padding:0;margin:0;min-width:0}
+.promo-fields:disabled{opacity:.6}
+.owner-promo-use{max-width:100%;flex:1 1 180px}
+.owner-promo-use>summary{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border:1px solid #ccd3df;border-radius:7px;color:#4f2a87;cursor:pointer;font-size:14px}
+.owner-promo-use>p{font-size:13px;color:#536274;line-height:1.6;margin:12px 0}
+.owner-promo-use button{width:100%}
+.member-directory-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.member-directory-heading h1{margin:0}
+.member-directory-add{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 14px;border:1px solid #d8cce8;background:#f3eef9;color:#51278b;border-radius:7px;font-size:14px;font-weight:600;flex:0 0 auto}
+.member-directory>.admin-hint{margin:12px 0 18px}
+.member-directory .member-toolbar{margin:18px 0 12px}
+.member-directory-count{color:#536274;font-size:13px;margin:0 0 12px}
+.member-directory-list{padding:0;margin:0;list-style:none;background:#fff;border:1px solid #dfe3eb;border-radius:9px}
+.member-directory-list>li{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #e3e7ee}
+.member-directory-list>li:last-child{border-bottom:0}
+.member-directory-identity{min-width:0}
+.member-directory-name{display:inline-flex;min-height:36px;align-items:center;font-weight:650;color:#263246;font-size:15px;overflow-wrap:anywhere}
+.member-directory-identity p{font-size:12px;color:#536274;margin:2px 0 0;line-height:1.6}
+.member-directory-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.member-directory-record{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 14px;background:#6032b0;color:#fff!important;border-radius:7px;font-size:13px;font-weight:600}
+.member-directory-more{position:relative}
+.member-directory-more>summary{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 10px;border:1px solid #d7dce6;border-radius:7px;font-size:13px;color:#4d596c;cursor:pointer;list-style:none}
+.member-directory-more>nav{position:absolute;right:0;top:calc(100% + 6px);min-width:160px;padding:6px;background:#fff;border:1px solid #d7dce6;border-radius:8px;box-shadow:0 8px 24px #17223515;z-index:20;display:grid}
+.member-directory-more>nav a{display:flex;align-items:center;min-height:44px;padding:9px 12px;font-size:14px;color:#4f2a87;border-radius:5px}
+.member-directory-more>nav a:hover{background:#f3eff9}
+@media(max-width:480px){
+ .member-directory-list>li{padding:12px;gap:8px}
+ .member-directory-actions{gap:6px}
+ .member-directory-record{padding:8px 11px}
+ .member-directory-more>summary{padding:8px}
+ .member-directory-name{font-size:14px}
+ .member-directory-identity p span{display:block}
+ .member-task-nav a{font-size:12px}
+ .transaction-review{grid-template-columns:80px 1fr}
+ .owner-member-page .owner-detail-jump-links{display:flex;gap:10px}
+ .owner-member-page .owner-detail-jump-links>a{width:auto;min-height:44px;flex:0 1 auto;font-weight:500}
+}

@@ -2,6 +2,7 @@
 
 import {useEffect, useRef, useState, type ChangeEvent} from "react";
 import {useRouter} from "next/navigation";
+import {decodeLaundryQrImage} from "@/lib/laundry/qr-image";
 import {extractLaundryToken} from "@/lib/laundry/scan";
 
 type CameraControls = {stop:()=>void};
@@ -20,6 +21,7 @@ export default function CustomerCardScanner(){
   const imagePicker=useRef<HTMLInputElement>(null);
   const cameraControls=useRef<CameraControls|null>(null);
   const cameraAttempt=useRef(0);
+  const imageAttempt=useRef<AbortController|null>(null);
   const mounted=useRef(true);
   const decoding=useRef(false);
   const navigated=useRef(false);
@@ -32,6 +34,7 @@ export default function CustomerCardScanner(){
     mounted.current=true;
     return ()=>{
       mounted.current=false;
+      imageAttempt.current?.abort();
       cameraAttempt.current++;
       cameraControls.current?.stop();
       cameraControls.current=null;
@@ -110,20 +113,16 @@ export default function CustomerCardScanner(){
     setError("");
     decoding.current=true;
     setReading(true);
-    let objectUrl:string|null=null;
+    const attempt=new AbortController();imageAttempt.current=attempt;
     try{
-      const {BrowserQRCodeReader}=await import("@zxing/browser");
-      if(!mounted.current)return;
-      objectUrl=URL.createObjectURL(file);
-      // Image contents are decoded locally; the photo is never uploaded.
-      const qr=await new BrowserQRCodeReader().decodeFromImageUrl(objectUrl);
-      if(mounted.current)openCard(qr.getText());
+      const text=await decodeLaundryQrImage(file,attempt.signal);
+      if(mounted.current)openCard(text);
     }catch{
       if(mounted.current && !navigated.current){
-        setError("QR tidak terbaca. Coba screenshot lebih jelas atau gunakan kamera.");
+        setError("QR belum terbaca. Pastikan QR terlihat utuh dan gambar tidak buram, lalu pilih foto lagi.");
       }
     }finally{
-      if(objectUrl)URL.revokeObjectURL(objectUrl);
+      if(imageAttempt.current===attempt)imageAttempt.current=null;
       decoding.current=false;
       if(mounted.current && !navigated.current)setReading(false);
     }

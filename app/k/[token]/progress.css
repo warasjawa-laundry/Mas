@@ -50,3 +50,5 @@
 .member-public :focus-visible{outline:3px solid #a080d1;outline-offset:3px}
 @media(max-width:480px){.member-public{padding:16px 12px 32px}.member-public-shell{padding:20px 16px}.member-point-primary,.member-count{padding:14px;gap:8px}.member-point-primary>strong,.member-count>strong{font-size:28px}.member-history-list li{padding:14px}.member-transaction-values{gap:8px}.member-transaction-points{font-size:13px}.member-transaction-top{font-size:11px;gap:8px}}
 @media(prefers-reduced-motion:reduce){.member-public *,.member-public *::before,.member-public *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.member-public-name{font-size:18px;font-weight:600;margin:12px 0 4px;overflow-wrap:anywhere}

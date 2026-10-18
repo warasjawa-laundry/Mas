@@ -1,4 +1,5 @@
 import { grantManualPromo, finishManualPromo } from "@/app/admin/promotions/actions";
+import PendingSubmit from "@/components/admin/pending-submit";
 import PromoWhatsapp from "@/components/admin/promo-whatsapp";
 
 type Promotion = {
@@ -41,19 +42,20 @@ export default function MemberPromotions({
  return <section id="promo-member" className="owner-promo-section" aria-labelledby="promo-owner-heading">
    <div className="owner-promo-header">
      <div>
-       <p className="admin-kicker">DIPILIH PEMILIK</p>
        <h2 id="promo-owner-heading">Promo Member</h2>
-       <p className="member-note">Promo diberikan manual, tidak otomatis mengikuti jumlah transaksi.</p>
+       <p className="member-note">Buat promo khusus untuk member ini. Poin tidak otomatis ditukar menjadi promo.</p>
      </div>
    </div>
+   {!memberActive&&<p className="admin-error">Member nonaktif. Promo tidak dapat diberikan atau digunakan.</p>}
    {result && results[result] && <p className="admin-success" role="status">{results[result]}</p>}
    {error && <p className="admin-error" role="alert">{descriptions[error]??descriptions.save}</p>}
-   <details className="owner-promo-create">
+   <details className="owner-promo-create" open={!!error||promos.length===0}>
      <summary>+ Berikan Promo</summary>
      <form action={grantManualPromo} className="owner-promo-form">
        <input type="hidden" name="memberId" value={memberId}/>
        <input type="hidden" name="requestId" value={requestId}/>
-       <p>Untuk <strong>{memberName}</strong>. Owner bebas menentukan promonya.</p>
+       <p>Promo untuk <strong>{memberName}</strong>.</p>
+       <fieldset className="promo-fields" disabled={!memberActive}>
        <label htmlFor="promo-title">Nama promo *</label>
        <input id="promo-title" name="title" minLength={3} maxLength={120} required
          placeholder="Contoh: Diskon cuci 10%"/>
@@ -63,7 +65,8 @@ export default function MemberPromotions({
        <label htmlFor="promo-date">Berlaku sampai (opsional)</label>
        <input id="promo-date" name="expires" type="date"/>
        <p className="member-note">Tanggal berakhir pada pukul 23.59 WIB. Tidak ada pemberitahuan WhatsApp otomatis.</p>
-       <button className="admin-primary" type="submit">Simpan Promo untuk Member</button>
+       <PendingSubmit label="Simpan Promo untuk Member"/>
+       </fieldset>
      </form>
    </details>
    {loadFailed ? <p className="admin-error" role="alert">Daftar promo belum dapat dimuat. Coba lagi.</p>
@@ -84,13 +87,13 @@ export default function MemberPromotions({
             expiresAt={p.expires_at} whatsappPhone={whatsappPhone}
             whatsappConsent={whatsappConsent} memberActive={memberActive}/>
         </details>}
-        {p.status==="AVAILABLE" && <div className="owner-promo-actions">
-          {!expired&&<form action={finishManualPromo}>
+        {p.status==="AVAILABLE" && memberActive && <div className="owner-promo-actions">
+          {!expired&&<details className="owner-promo-use"><summary>Tandai Digunakan</summary><p>Pastikan member sudah menggunakan promo ini. Status akan berubah menjadi Digunakan.</p><form action={finishManualPromo}>
             <input type="hidden" name="memberId" value={memberId}/>
             <input type="hidden" name="promoId" value={p.id}/>
             <input type="hidden" name="action" value="USE"/>
-            <button type="submit" className="admin-logout">Tandai Digunakan</button>
-          </form>}
+            <PendingSubmit className="admin-logout" label="Konfirmasi penggunaan"/>
+          </form></details>}
           <details className="owner-promo-cancel">
             <summary>Batalkan Promo</summary>
             <form action={finishManualPromo}>
@@ -100,7 +103,7 @@ export default function MemberPromotions({
               <label htmlFor={"promo-reason-"+p.id}>Alasan pembatalan</label>
               <input id={"promo-reason-"+p.id} name="reason" minLength={3} maxLength={500}
                 placeholder="Contoh: promo salah diberikan" required/>
-              <button type="submit" className="admin-logout">Konfirmasi Pembatalan</button>
+              <PendingSubmit className="admin-logout" label="Konfirmasi Pembatalan"/>
             </form>
           </details>
         </div>}

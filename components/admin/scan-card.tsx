@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import Link from "next/link";
+import { decodeLaundryQrImage } from "@/lib/laundry/qr-image";
 import { useRouter } from "next/navigation";
 import { resolveOwnerScannedCard } from "@/app/admin/visits/actions";
 
@@ -26,6 +27,7 @@ export default function ScanCard() {
   const cameraAttemptRef = useRef(0);
   const scanLock = useRef(false);
   const workInProgress = useRef(false);
+  const imageAttempt = useRef<AbortController | null>(null);
   const aliveRef = useRef(true);
   const router = useRouter();
   const [running, setRunning] = useState(false);
@@ -37,6 +39,7 @@ export default function ScanCard() {
     aliveRef.current = true;
     return () => {
       aliveRef.current = false;
+      imageAttempt.current?.abort();
       cameraAttemptRef.current += 1;
       controlsRef.current?.stop();
       controlsRef.current = null;
@@ -133,22 +136,17 @@ export default function ScanCard() {
     setError("");
     setLoading(true);
     workInProgress.current = true;
-    let objectUrl: string | null = null;
+    const attempt = new AbortController(); imageAttempt.current = attempt;
     try {
-      const { BrowserQRCodeReader } = await import("@zxing/browser");
+      const text = await decodeLaundryQrImage(file, attempt.signal);
       if (!aliveRef.current) return;
-
-      objectUrl = URL.createObjectURL(file);
-      const reader = new BrowserQRCodeReader();
-      const result = await reader.decodeFromImageUrl(objectUrl);
-      if (!aliveRef.current) return;
-      await onDecoded(result.getText());
+      await onDecoded(text);
     } catch {
       if (aliveRef.current) {
         setError("QR tidak terbaca dari gambar. Coba screenshot lebih jelas, scan dengan kamera, atau cari member manual.");
       }
     } finally {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      if (imageAttempt.current === attempt) imageAttempt.current = null;
       workInProgress.current = false;
       if (aliveRef.current && !scanLock.current) setLoading(false);
     }

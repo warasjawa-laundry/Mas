@@ -45,6 +45,8 @@ do $verify$
 declare c record; first_page jsonb; second_page jsonb; future_page jsonb; earned bigint; balance bigint; denied boolean:=false;
 begin
  select * into c from public_history_test_context;
+ if public.laundry_public_member_name(c.active_digest)<>'Synthetic public history' or public.laundry_public_member_name(c.other_digest)<>'Other synthetic member' then raise exception 'card name isolation failed';end if;
+ if public.laundry_public_member_name(c.revoked_digest) is not null or public.laundry_public_member_name(c.inactive_digest) is not null or public.laundry_public_member_name(repeat('0',64)) is not null then raise exception 'invalid card disclosed name';end if;
  first_page:=public.laundry_public_transaction_history(c.active_digest,2026,1);
  second_page:=public.laundry_public_transaction_history(c.active_digest,2026,2);
  future_page:=public.laundry_public_transaction_history(c.active_digest,2027,1);

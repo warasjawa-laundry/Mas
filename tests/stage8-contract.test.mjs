@@ -5,7 +5,7 @@ const read=path=>readFileSync(path,"utf8");
 const sql=read("supabase/migrations/20261016210000_stage8_member_contact_management.sql");
 const action=read("app/admin/members/contact/actions.ts");
 const edit=read("app/admin/members/[id]/edit/page.tsx");
-const list=read("app/admin/members/page.tsx");
+const list=read("app/admin/members/page.tsx")+read("components/admin/member-directory-list.tsx");
 const detail=read("app/admin/members/[id]/page.tsx");
 const whatsapp=read("components/admin/promo-whatsapp.tsx");
 const css=read("app/admin/admin.css");

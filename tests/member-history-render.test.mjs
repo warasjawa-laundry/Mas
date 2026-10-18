@@ -18,7 +18,7 @@ async function render({ amountsFailed=false,reversalsFailed=false,hasOlder=false
     "@/lib/supabase/owner":{requireOwner:async()=>({supabase:{from:()=>q,rpc:async()=>({data:[],error:null})}})},
     "@/lib/laundry/card":{memberNumber:()=>"MJL-000001"},
     "@/app/admin/visits/actions":{correctOwnerVisit:()=>{}},
-    "@/components/admin/amount-visit-form":()=>null,"@/components/admin/member-promotions":()=>null,
+    "@/components/admin/member-task-nav":()=>null,"@/components/admin/amount-visit-form":()=>null,"@/components/admin/member-promotions":()=>null,
     "@/lib/admin/timing":{timeAdmin:(_name,fn)=>fn()},
     "@/lib/laundry/member-history":{...history,loadMemberHistory:async()=>({
       events:[{id:"event-1",event_type:"ADD",occurred_at:"2026-10-17T01:00:00Z"}],

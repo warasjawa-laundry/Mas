@@ -8,7 +8,7 @@ import {memberHistoryPage,memberHistoryYear,memberHistoryHref} from "../lib/laun
 const compiled=ts.transpileModule(readFileSync("app/k/[token]/page.tsx","utf8"),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText;
 async function render({search={},historyError=false,balancesError=false,unknown=false}={}){
  const calls=[];const token="A".repeat(43);
- const results={laundry_public_card_progress:{data:unknown?[]:[{member_number:4,visit_count:2,promos:[]}],error:null},
+ const results={laundry_public_member_name:{data:"Nama Contoh",error:null},laundry_public_card_progress:{data:unknown?[]:[{member_number:4,visit_count:2,promos:[]}],error:null},
   laundry_public_point_balances:{data:[{program_year:2026,points_total:5},{program_year:2027,points_total:0}],error:balancesError?{}:null},
   laundry_public_transaction_history:{data:{transactions:[],has_older:true,page:1},error:historyError?{}:null}};
  const mocks={"./progress.css":{},"node:crypto":{createHash},"next/navigation":{notFound(){throw Error("NOT_FOUND")}},
@@ -23,7 +23,7 @@ async function render({search={},historyError=false,balancesError=false,unknown=
  return {props:await out.exports.default({params:Promise.resolve({token}),searchParams:Promise.resolve(search)}),calls};
 }
 test("customer defaults to the current WIB year instead of prioritizing empty future points",async()=>{
- const {props,calls}=await render();assert.equal(props.year,2026);assert.equal(props.points,5);assert.equal(props.years[0].year,2026);
+ const {props,calls}=await render();assert.equal(props.name,"Nama Contoh");assert.equal(props.year,2026);assert.equal(props.points,5);assert.equal(props.years[0].year,2026);
  const [,args]=calls.find(([name])=>name==="laundry_public_transaction_history");
  assert.equal(args.p_year,2026);assert.equal(args.p_page,1);assert.match(args.p_digest_hex,/^[a-f0-9]{64}$/);assert.ok(!JSON.stringify(args).includes("A".repeat(43)));
 });

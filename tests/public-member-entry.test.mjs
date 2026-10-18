@@ -7,6 +7,7 @@ const header=read("components/site-header.tsx");
 const home=read("app/page.tsx");
 const membership=read("app/membership/page.tsx");
 const scanner=read("components/customer-card-scanner.tsx");
+const decoder=read("lib/laundry/qr-image.ts");
 const parser=read("lib/laundry/scan.ts");
 const progress=read("app/k/[token]/page.tsx");
 const style=read("app/globals.css");
@@ -21,9 +22,9 @@ test("public header points to actual member page, not inactive homepage section"
 
 test("member holders can use camera or gallery locally, without login or searching names",()=>{
  assert.match(scanner,/decodeFromVideoDevice/);
- assert.match(scanner,/decodeFromImageUrl\(objectUrl\)/);
- assert.match(scanner,/URL\.createObjectURL\(file\)/);
- assert.match(scanner,/URL\.revokeObjectURL\(objectUrl\)/);
+ assert.match(decoder,/decodeFromCanvas\(canvas\)/);
+ assert.match(decoder,/URL\.createObjectURL\(file\)/);
+ assert.match(decoder,/URL\.revokeObjectURL\(url\)/);
  assert.match(scanner,/MAX_IMAGE_SIZE=12\*1024\*1024/);
  assert.match(scanner,/Pilih Foto QR/);
  assert.match(scanner,/Buka Kamera/);

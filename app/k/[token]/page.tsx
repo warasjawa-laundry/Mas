@@ -21,10 +21,11 @@ export default async function MemberProgress({params,searchParams}:Props){
  const digest=createHash("sha256").update(token).digest("hex");
  const currentYear=currentProgramYear();
  const year=memberHistoryYear(input.year,currentYear),page=memberHistoryPage(input.page);
- const [progressR,balancesR,historyR]=await Promise.all([
+ const [progressR,balancesR,historyR,nameR]=await Promise.all([
   supabase.rpc("laundry_public_card_progress",{p_digest_hex:digest}),
   supabase.rpc("laundry_public_point_balances",{p_digest_hex:digest}),
-  supabase.rpc("laundry_public_transaction_history",{p_digest_hex:digest,p_year:year,p_page:page})
+  supabase.rpc("laundry_public_transaction_history",{p_digest_hex:digest,p_year:year,p_page:page}),
+  supabase.rpc("laundry_public_member_name",{p_digest_hex:digest})
  ]);
  const item=Array.isArray(progressR.data)?progressR.data[0]:null;
  if(progressR.error)throw new Error("Unable to load member card");
@@ -35,7 +36,7 @@ export default async function MemberProgress({params,searchParams}:Props){
  const history=historyR.data as PublicHistory|null;
  const historyFailed=!!historyR.error||!history||!Array.isArray(history.transactions);
  const base="/k/"+token;
- return <MemberProgressView number={memberNumber(item.member_number)} total={Number(item.visit_count)||0}
+ return <MemberProgressView name={typeof nameR.data==="string"&&!nameR.error?nameR.data:null} number={memberNumber(item.member_number)} total={Number(item.visit_count)||0}
   year={year} points={selected?Number(selected.points_total)||0:null} balancesFailed={!!balancesR.error}
   years={years.map(y=>({year:y,href:memberHistoryHref(base,y,1)}))}
   transactions={historyFailed?[]:history!.transactions} historyFailed={historyFailed} page={page}
