@@ -149,7 +149,7 @@ export default function CustomerCardScanner(){
       </button>
     </div>
     <div className={"customer-camera"+(cameraOpen||starting?" customer-camera-active":"")}>
-      <video ref={cameraVideo} muted playsInline autoPlay aria-label="Pratinjau kamera untuk memindai kartu member"/>
+      <video ref={cameraVideo} muted playsInline autoPlay aria-label="Kamera untuk memindai kartu member"/>
       {!cameraOpen && <span>{starting?"Membuka kamera…":"Pilih kamera atau foto QR dari galeri"}</span>}
     </div>
     <p className="customer-scan-note">Foto diperiksa di HP dan tidak dikirim ke server. Pemindaian QR hanya menampilkan catatan kartu, bukan mencatat transaksi baru.</p>

@@ -17,9 +17,9 @@ test("headlines name the service instead of generic promises",()=>{
 });
 test("copy keeps correct privacy, status and operational policies",()=>{
  const h=read("app/page.tsx"),m=read("app/membership/page.tsx"),sc=read("components/customer-card-scanner.tsx"),p=read("app/k/[token]/page.tsx");
- assert.match(h,/sedang menyiapkan kartu member/);
- assert.match(h,/berasal dari situs Mas Jawa Laundry sebelumnya/);
- assert.match(m,/Program sedang disiapkan/);
+ assert.match(h,/poin dan riwayat transaksi/);
+ assert.match(h,/Konfirmasi biaya dan perkiraan waktu/);
+ assert.doesNotMatch(h+m,/uji coba|sedang disiapkan|sedang menyiapkan|informasi sebelumnya|preview/i);
  assert.match(m,/Promo tidak diberikan otomatis/);
  assert.match(m,/hanya dikirim jika Anda setuju/);
  assert.match(m,/Nomor WhatsApp boleh dikosongkan/);

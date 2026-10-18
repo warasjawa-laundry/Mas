@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import CustomerCardScanner from "@/components/customer-card-scanner";
 import MembershipScrollEntry from "@/components/membership-scroll-entry";
 import { siteHref } from "@/lib/navigation";
-import { memberProgramLaunched, whatsappLink } from "@/lib/site";
+import { whatsappLink } from "@/lib/site";
 
 const memberDescription = "Cara memakai kartu member Mas Jawa Laundry, mulai dari pendaftaran melalui petugas hingga melihat catatan transaksi lewat QR. Promo ditentukan oleh pemilik laundry.";
 
@@ -47,8 +47,7 @@ export default function MembershipPage() {
                 <span>Untuk petugas: <strong>Masuk Admin <span aria-hidden="true">→</span></strong></span>
               </Link>
             </nav>
-            <p>Scan QR untuk melihat catatan transaksi. Pendaftaran dan pencatatan transaksi dilakukan oleh petugas.</p>
-            {!memberProgramLaunched && <div className="program-status" role="status"><strong>Program sedang disiapkan.</strong> Kartu uji coba dari petugas tetap dapat dipindai.</div>}
+            <p>Scan QR untuk melihat poin, riwayat transaksi, dan promo member. Pendaftaran dan pencatatan transaksi dilakukan oleh petugas.</p>
           </div>
           <div id="scan-kartu" className="member-scan-target">
             <CustomerCardScanner />

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
-  assets, curtainPrices, kiloPackages, memberProgramLaunched, site, whatsappLink,
+  assets, curtainPrices, kiloPackages, site, whatsappLink,
 } from "@/lib/site";
 import { siteHref } from "@/lib/navigation";
 
@@ -85,7 +85,7 @@ export default function HomePage() {
                 <a className="inline-link" href={whatsappService} target="_blank" rel="noopener noreferrer">Tanya cucian lainnya <span aria-hidden="true">↗</span></a>
               </div>
             </div>
-            <details className="price-disclaimer"><summary>Konfirmasi tarif dan estimasi sebelum memesan</summary><p>Harga dan perkiraan waktu berasal dari situs Mas Jawa Laundry sebelumnya. Konfirmasi tarif dan waktu pengerjaan terbaru kepada petugas sebelum memesan.</p></details>
+            <details className="price-disclaimer"><summary>Konfirmasi tarif dan estimasi sebelum memesan</summary><p>Konfirmasi biaya dan perkiraan waktu pengerjaan kepada petugas saat menyerahkan cucian.</p></details>
           </div>
         </section>
 
@@ -107,9 +107,7 @@ export default function HomePage() {
               <div className="member-feature-copy">
                 <p className="eyebrow eyebrow-light">KARTU MEMBER</p>
                 <h2 id="member-title">Kartu member</h2>
-                <p>{memberProgramLaunched
-                  ? "Daftar melalui petugas, tunjukkan kartu saat laundry, lalu pindai QR untuk melihat transaksi yang sudah dicatat."
-                  : "Kami sedang menyiapkan kartu member. Saat program dibuka, pendaftaran dilakukan melalui petugas. Catatan transaksi dapat dilihat lewat QR pada kartu."}</p>
+                <p>Daftar melalui petugas, tunjukkan kartu saat transaksi, lalu pindai QR untuk melihat poin dan riwayat transaksi.</p>
                 <a className="button button-white" href={siteHref("/membership")}>Buka kartu member <span aria-hidden="true">→</span></a>
               </div>
             </div>
@@ -132,7 +130,7 @@ export default function HomePage() {
 
               <h3>{site.shortAddress}</h3>
               <p>{site.address}<br />{site.landmark}</p>
-              <p className="location-hours">Jam pada informasi sebelumnya: {site.hours}. Konfirmasi jam buka melalui WhatsApp sebelum datang.</p>
+              <p className="location-hours">Jam buka: {site.hours}.</p>
               <a className="inline-link" href="https://www.google.com/maps/search/?api=1&query=Mas%20Jawa%20Laundry%20Kandang%20Jati%20Kulon" target="_blank" rel="noopener noreferrer">Buka Google Maps <span aria-hidden="true">↗</span></a>
             </aside>
           </div>

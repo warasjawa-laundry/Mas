@@ -6,7 +6,7 @@ type Props = { searchParams: Promise<{ error?: string; notice?: string }> };
 export default async function OwnerLogin({ searchParams }: Props) {
   const { error, notice } = await searchParams;
   const message = error === "invalid" ? "ID atau password tidak cocok." :
-    error === "unavailable" ? "Akses pemilik belum diaktifkan. Silakan hubungi pengelola." : null;
+    error === "unavailable" ? "Akses admin belum tersedia. Hubungi pengelola." : null;
   const success = notice === "password-changed" ? "Password berhasil diubah. Silakan masuk kembali." :
     notice === "logout" ? "Anda telah keluar dari akun pemilik." :
     notice === "reauth" ? "Untuk keamanan, masukkan kembali password sebelum membuka area admin." : null;

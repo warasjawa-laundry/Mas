@@ -50,5 +50,5 @@ test("public scanner has mobile-friendly buttons and accessible error messaging"
  assert.match(style,/@media\(max-width:480px\)/);
  assert.match(style,/\.customer-scan-actions\{grid-template-columns:1fr\}/);
  assert.match(scanner,/role="alert"/);
- assert.match(scanner,/aria-label="Pratinjau kamera untuk memindai kartu member"/);
+ assert.match(scanner,/aria-label="Kamera untuk memindai kartu member"/);
 });
