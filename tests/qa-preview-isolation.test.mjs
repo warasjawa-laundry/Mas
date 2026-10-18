@@ -53,7 +53,7 @@ test("DB boundary is enforced before protected and public Supabase requests", ()
     assert.match(read(file),/assertQaPreviewIsolation\(\)/,file);
   }
   assert.ok(read("proxy.ts").indexOf(" assertQaPreviewIsolation();") < read("proxy.ts").indexOf(" const url=process.env.SUPABASE_URL"));
-  assert.ok(read("app/k/[token]/page.tsx").indexOf("  assertQaPreviewIsolation();") < read("app/k/[token]/page.tsx").indexOf("  const url=process.env.SUPABASE_URL;"));
+  assert.ok(read("app/k/[token]/page.tsx").indexOf("assertQaPreviewIsolation();") < read("app/k/[token]/page.tsx").indexOf("const url=process.env.SUPABASE_URL"));
 });
 
 test("QA readiness endpoint is preview-only, non-sensitive and uncached", () => {

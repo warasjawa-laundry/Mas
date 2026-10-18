@@ -53,9 +53,9 @@ test("operator-only rules with owner-verified transactions and no direct table u
  assert.match(sql,/grant execute on function public\.laundry_record_amount_visit.*to authenticated/);
  assert.doesNotMatch(sql,/grant execute on function public\.laundry_record_amount_visit.*to anon/);
 });
-test("customer receives only sums per year, not raw details or private member fields",()=>{
+test("customer receives balances and a card-scoped ledger without private notes",()=>{
  assert.match(publicCard,/laundry_public_point_balances/);
- assert.match(publicCard,/Saldo program 2027/);
+ assert.match(publicCard,/laundry_public_transaction_history/);
  assert.doesNotMatch(publicCard,/description|amount_idr|whatsapp_e164|p_member_id/);
  assert.match(sql,/if p_digest_hex is null or p_digest_hex !~ '\^\[0-9a-f\]\{64\}\$'/);
  assert.match(sql,/where c\.token_digest=decode\(p_digest_hex,'hex'\)/);

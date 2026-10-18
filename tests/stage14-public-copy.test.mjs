@@ -25,7 +25,7 @@ test("copy keeps correct privacy, status and operational policies",()=>{
  assert.match(m,/Nomor WhatsApp boleh dikosongkan/);
  assert.match(sc,/tidak dikirim ke server/);
  assert.match(sc,/bukan mencatat transaksi baru/);
- assert.match(p,/disesuaikan jika transaksi dibatalkan/);
+ assert.match(read("components/member-progress-view.tsx"),/disesuaikan jika transaksi dibatalkan/);
  assert.match(m,/href="#scan-kartu"/);
  assert.match(m,/siteHref\("\/admin\/login"\)/);
 });
