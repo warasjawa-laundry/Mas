@@ -20,7 +20,7 @@ export default async function OwnerMember({params,searchParams}:Props){
  const view=notice.promo||notice.promoError?"promo":notice.historyPage||notice.corrected||notice.error==="reason"||notice.error==="void"?"history":notice.view==="promo"||notice.view==="history"?notice.view:"transaction";
  const pointYear=Number(new Intl.DateTimeFormat("en-US",{year:"numeric",timeZone:"Asia/Jakarta"}).format(new Date()));
  const [memberR,addsR,voidsR,historyR,promosR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
-  supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent").eq("id",id).maybeSingle(),
+  supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent,address").eq("id",id).maybeSingle(),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","ADD"),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","VOID"),
   view==="history" ? loadMemberHistory(supabase,id,historyPage) : Promise.resolve({events:[],count:0,failed:false,amountsFailed:false,reversalsFailed:false,amounts:new Map(),corrected:new Set<string>(),hasOlder:false}),
@@ -49,6 +49,7 @@ export default async function OwnerMember({params,searchParams}:Props){
   <section className="admin-content owner-member-page">
    <p className="admin-kicker">MEMBER</p><h1>{member.display_name}</h1>
    <p className="admin-hint">{memberNumber(member.member_number)} · {member.is_active?"Member aktif":"Member nonaktif"}</p>
+   {member.address&&<p className="member-note">Alamat: {member.address}</p>}
    {notice.recorded==="1" && <p className="admin-success" role="status">1 transaksi berhasil dicatat.</p>}
    {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}. <Link href={`/admin/members/${id}?view=history`}>Lihat riwayat →</Link></p>}
    {notice.corrected==="1" && <p className="admin-success" role="status">Transaksi berhasil dibatalkan dengan riwayat tetap tersimpan.</p>}

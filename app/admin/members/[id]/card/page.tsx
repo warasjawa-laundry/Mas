@@ -7,9 +7,9 @@ import { decryptCardToken, memberNumber, publicCardOrigin } from "@/lib/laundry/
 import MemberPrintCard from "@/components/admin/member-print-card";
 import { assets } from "@/lib/site";
 import PrintCardButton from "@/components/admin/print-card-button";
-import { reissueOwnerCard } from "@/app/admin/members/card/actions";
+import { reissueOwnerCard, issueImportedMemberCard } from "@/app/admin/members/card/actions";
 import { cardIssuanceReady } from "@/lib/laundry/card";
-type Props={params:Promise<{id:string}>;searchParams:Promise<{reissueError?:string;reissued?:string;reissueRequestId?:string}>};
+type Props={params:Promise<{id:string}>;searchParams:Promise<{reissueError?:string;reissued?:string;reissueRequestId?:string;issueError?:string}>};
 const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export default async function MemberCard({params,searchParams}:Props) {
   const {supabase}=await requireOwner();
@@ -20,7 +20,24 @@ export default async function MemberCard({params,searchParams}:Props) {
   const requestId=notice.reissueRequestId&&validId.test(notice.reissueRequestId)?notice.reissueRequestId:randomUUID();
   const {data,error}=await supabase.rpc("laundry_owner_card_material",{p_member_id:id});
   const card=Array.isArray(data)?data[0]:null;
-  if(error || !card) notFound();
+  if(error) return <main className="admin-workspace"><section className="admin-content"><h1>Kartu belum dapat dimuat</h1><p className="admin-error" role="alert">Periksa koneksi lalu muat ulang halaman ini.</p><Link href={`/admin/members/${id}`}>Kembali ke Member</Link></section></main>;
+  if(!card) {
+    const [memberR,importR]=await Promise.all([
+      supabase.from("laundry_members").select("display_name,member_number,is_active").eq("id",id).maybeSingle(),
+      supabase.from("laundry_member_import_rows").select("member_id").eq("member_id",id).limit(1)
+    ]);
+    if(memberR.error||importR.error) return <main className="admin-workspace"><section className="admin-content"><h1>Kartu belum dapat dimuat</h1><p className="admin-error" role="alert">Periksa koneksi lalu muat ulang halaman ini.</p><Link href={`/admin/members/${id}`}>Kembali ke Member</Link></section></main>;
+    if(!memberR.data)notFound();
+    const ready=memberR.data.is_active&&!!importR.data?.length&&cardIssuanceReady();
+    return <main className="admin-workspace"><section className="admin-content">
+      <Link href={`/admin/members/${id}`} className="admin-brand">← Kembali ke Member</Link>
+      <p className="admin-kicker">KARTU MEMBER</p><h1>{memberR.data.display_name}</h1>
+      <p className="admin-hint">{memberNumber(memberR.data.member_number)}</p>
+      <p className="member-note">Member ini belum memiliki kartu aktif. Terbitkan kartu untuk membuat QR, lalu cetak atau simpan kartunya.</p>
+      {notice.issueError&&<p className="admin-error" role="alert">Kartu belum berhasil diterbitkan. Periksa koneksi lalu coba lagi. Jika pernah memiliki kartu yang dinonaktifkan, hubungi pengelola.</p>}
+      {ready?<form action={issueImportedMemberCard}><input type="hidden" name="memberId" value={id}/><button type="submit" className="admin-primary">Terbitkan Kartu</button></form>:<p className="admin-error">Kartu belum dapat diterbitkan. Hubungi pengelola untuk memeriksa status member dan kartu.</p>}
+    </section></main>;
+  }
   const token=decryptCardToken(card.token_ciphertext_hex);
   const path="/k/"+token;
   const link=publicCardOrigin()+path;

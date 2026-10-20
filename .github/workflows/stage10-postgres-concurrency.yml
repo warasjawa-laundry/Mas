@@ -51,5 +51,6 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/stage15-foreign-key-indexes.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/stage16-public-member-history.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/stage18-service-catalog.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/stage19-customer-import.sql
       - name: Two independent connection concurrency tests
         run: bash supabase/tests/stage10-postgres-parallel-race.sh
