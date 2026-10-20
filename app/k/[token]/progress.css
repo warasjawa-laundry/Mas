@@ -1,124 +1,54 @@
-/* Public customer progress. Imported only by /k/[token] (never by the admin layout). */
-.member-public {
-  min-height: 100svh;
-  padding: clamp(20px, 5vw, 54px) 16px;
-  background: #f6f7fa;
-  color: #192437;
-  font-family: "Outfit", system-ui, -apple-system, sans-serif;
-}
-.member-public * { box-sizing: border-box; }
-.member-public-shell {
-  width: min(100%, 460px);
-  margin-inline: auto;
-  padding: clamp(22px, 6vw, 36px);
-  background: #fff;
-  border: 1px solid #e2e6ef;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgb(24 33 52 / 4%);
-}
-.member-public .admin-kicker {
-  margin: 0 0 12px;
-  color: #5c2ba3;
-  font-size: 11px;
-  line-height: 1.5;
-  font-weight: 800;
-  letter-spacing: .13em;
-}
-.member-public h1 {
-  margin: 0 0 8px;
-  font-size: clamp(28px, 7vw, 35px);
-  font-weight: 750;
-  letter-spacing: -.035em;
-  line-height: 1.14;
-  overflow-wrap: break-word;
-}
-.member-public-id {
-  margin: 0;
-  color: #556276;
-  font-weight: 650;
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-}
-.member-count {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 25px 18px;
-  margin: 26px 0;
-  background: #f3effb;
-  border: 1px solid #ebe2fa;
-  border-radius: 15px;
-  text-align: center;
-}
-.member-count > span {
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.4;
-}
-.member-count > strong {
-  display: block;
-  font-size: clamp(56px, 14vw, 72px);
-  line-height: 1.05;
-  color: #51258e;
-  font-variant-numeric: tabular-nums;
-  font-weight: 800;
-}
-.member-count > small {
-  display: block;
-  max-width: 260px;
-  color: #546179;
-  font-size: 12px;
-  line-height: 1.55;
-}
-.member-public h2 {
-  margin: 0 0 12px;
-  font-size: 19px;
-  line-height: 1.3;
-  font-weight: 750;
-  letter-spacing: -.02em;
-}
-.member-public .member-note {
-  margin: 0 0 18px;
-  color: #5c6b7b;
-  font-size: 14px;
-  line-height: 1.65;
-}
-.member-public-promos {
-  padding-left: 20px;
-  margin: 0 0 18px;
-}
-.member-public-promos li {
-  margin-bottom: 8px;
-  overflow-wrap: anywhere;
-}
-.member-public-foot {
-  display: block;
-  border-top: 1px solid #e4e7ef;
-  padding-top: 18px;
-  margin-top: 24px;
-  color: #657185;
-  font-size: 12px;
-  line-height: 1.5;
-}
-@media(max-width:360px) {
-  .member-public { padding: 16px 12px; }
-  .member-public-shell { padding: 22px 20px; }
-  .member-count { padding: 22px 14px; }
-}
-@media(prefers-reduced-motion:reduce) {
-  .member-public *, .member-public *::before, .member-public *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-  }
-}
+/* Customer card portal. No admin styles or customer identity fields. */
+.member-public{min-height:100svh;padding:32px 16px 48px;background:#f6f7fa;color:#202b3b;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.member-public *{box-sizing:border-box}
+.member-public-shell {width:min(100%,760px);margin-inline:auto;background:#fff;padding:32px;border:1px solid #e0e4eb;border-radius:12px}
+.member-public .admin-kicker{margin:0 0 10px;color:#6032b0;font-size:11px;font-weight:700;letter-spacing:.08em}
+.member-public h1{font-size:clamp(24px,5vw,30px);line-height:1.25;font-weight:650;letter-spacing:-.025em;margin:0 0 8px}
+.member-public h2{font-size:19px;line-height:1.3;font-weight:650;letter-spacing:-.015em;margin:0}
+.member-public-id{font-size:14px;color:#536274;margin:0;font-variant-numeric:tabular-nums}
+.member-year-nav{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 16px}
+.member-year-nav a{min-height:44px;display:flex;align-items:center;padding:8px 16px;border:1px solid #dfe3eb;border-radius:7px;text-decoration:none;font-size:14px;color:#4c586b}
+.member-year-nav a[aria-current=page]{background:#f2edf9;border-color:#cdbde6;color:#542b91;font-weight:650}
+.member-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.member-point-primary,.member-count {background:#f8f6fc;border:1px solid #e4ddef;border-radius:9px;padding:18px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0;text-align:left;min-width:0}
+.member-count{background:#fafbfc;border-color:#e1e5eb}
+.member-point-primary>span,.member-count>span {font-size:13px;font-weight:600;color:#4b586c;line-height:1.5}
+.member-point-primary>strong,.member-count > strong {font-size:32px;font-weight:650;line-height:1.15;color:#4f2a87;font-variant-numeric:tabular-nums}
+.member-count>strong{color:#263246}
+.member-point-primary strong small{font-size:14px;font-weight:500}
+.member-point-primary>small,.member-count>small {font-size:12px;line-height:1.5;color:#536274}
+.member-point-primary>p{margin:0;font-size:14px;line-height:1.5}
+.member-refresh-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin:16px 0 28px}
+.member-public .member-note{font-size:13px;line-height:1.65;color:#536274;margin:0}
+.member-refresh-row .member-note{flex:1 1 260px}
+.member-refresh{font:inherit;font-size:13px;font-weight:600;background:#fff;border:1px solid #cdd3df;border-radius:7px;min-height:44px;padding:10px 12px;color:#4f2a87;cursor:pointer}
+.member-refresh:disabled{opacity:.65;cursor:wait}
+.member-section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;scroll-margin-top:24px}
+.member-section-heading>span{font-size:14px;color:#536274}
+.member-history-list{list-style:none;padding:0;margin:0;border:1px solid #dfe4eb;border-radius:9px;overflow:hidden}
+.member-history-list li{padding:18px;border-bottom:1px solid #e4e7ed;min-width:0}
+.member-history-list li:last-child{border-bottom:0}
+.member-transaction-top,.member-transaction-values{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.member-transaction-top{font-size:12px;color:#536274;margin-bottom:12px}
+.member-transaction-status{background:#edf6f0;color:#256143;padding:4px 8px;border-radius:5px;font-size:11px;font-weight:600}
+.member-transaction-values>strong{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums}
+.member-transaction-points{font-size:14px;font-weight:600;color:#542b91}
+.member-history-list li>p{font-size:12px;color:#536274;line-height:1.6;margin:8px 0 0}
+.member-transaction-cancelled{background:#fafafa}
+.member-transaction-cancelled .member-transaction-status{color:#794338;background:#f8eeeb}
+.member-transaction-cancelled .member-transaction-points{color:#794338;font-weight:500}
+.member-history-pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:16px;font-size:13px}
+.member-history-pagination a{min-height:44px;display:flex;align-items:center;padding:8px 12px;border:1px solid #d9dfea;border-radius:7px;color:#542b91;text-decoration:none}
+.member-history-pagination>span{color:#536274}
+.member-feedback{font-size:14px;line-height:1.65;background:#f8f9fb;border:1px solid #e0e5ed;border-radius:8px;padding:18px;margin:0}
+.member-public .member-history-note{margin-top:16px}
+.member-promos{border-top:1px solid #e0e4eb;padding-top:24px;margin-top:28px}
+.member-promos h2{margin-bottom:12px}
+.member-public-promos {padding-left:20px;margin:0;font-size:14px}
+.member-public-promos li{margin:8px 0;overflow-wrap:anywhere}
+.member-public-foot {font-size:12px;line-height:1.65;color:#536274;border-top:1px solid #e0e4eb;padding-top:20px;margin-top:28px}
+.member-public :focus-visible{outline:3px solid #a080d1;outline-offset:3px}
+@media(max-width:480px){.member-public{padding:16px 12px 32px}.member-public-shell{padding:20px 16px}.member-point-primary,.member-count{padding:14px;gap:8px}.member-point-primary>strong,.member-count>strong{font-size:28px}.member-history-list li{padding:14px}.member-transaction-values{gap:8px}.member-transaction-points{font-size:13px}.member-transaction-top{font-size:11px;gap:8px}}
+@media(prefers-reduced-motion:reduce){.member-public *,.member-public *::before,.member-public *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-
-/* Stage 9: customer sees balances only; no customer name, transaction notes or phone. */
-.member-point-progress{margin:12px 0 27px}
-.member-point-primary{display:grid;gap:7px;background:#f6f1fd;border:1px solid #e9dff9;border-radius:13px;padding:22px 18px;margin-bottom:11px}
-.member-point-primary span{font-size:13px;color:#4f5a72;font-weight:750}
-.member-point-primary strong{font-size:clamp(29px,8vw,38px);line-height:1.1;color:#53278d;font-variant-numeric:tabular-nums}
-.member-point-primary small{font-size:12px;line-height:1.55;color:#607084}
-.member-point-trial{font-size:13px;line-height:1.6;color:#536377;background:#f7f8fb;padding:12px;border-radius:10px}
-.member-point-trial strong{font-variant-numeric:tabular-nums;color:#4c2a7d}
+.member-public-name{font-size:18px;font-weight:600;margin:12px 0 4px;overflow-wrap:anywhere}

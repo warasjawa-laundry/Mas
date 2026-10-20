@@ -1,12 +1,15 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { assertQaPreviewIsolation } from "@/lib/supabase/qa-preview-isolation";
 
 export function ownerAuthReady(): boolean {
+  assertQaPreviewIsolation();
   return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY && process.env.OWNER_AUTH_EMAIL);
 }
 
 export async function createOwnerClient() {
+  assertQaPreviewIsolation();
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) return null;

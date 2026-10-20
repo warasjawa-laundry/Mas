@@ -17,9 +17,6 @@ export const assets = {
   og: "https://raw.githubusercontent.com/warasjawa-laundry/Web-asset/f259a9e48d3a52552e97d5540546f359ca16631f/IMG-20251228-WA0011.jpg",
 } as const;
 
-export const memberProgramLaunched =
-  process.env.NEXT_PUBLIC_MEMBERSHIP_LAUNCHED === "true";
-
 export function whatsappLink(message?: string): string {
   return "https://wa.me/" + site.whatsappNumber + (message ? "?text=" + encodeURIComponent(message) : "");
 }
@@ -39,7 +36,7 @@ export const kiloPackages = [
   ] },
 ] as const;
 
-// Business content transcribed from the legacy site. Require owner confirmation before releasing.
+// Published curtain-service tariffs.
 export const curtainPrices = [
   { label: "Gorden tebal", price: "Rp4.500/meter" },
   { label: "Gorden tipis", price: "Rp3.500/meter" },

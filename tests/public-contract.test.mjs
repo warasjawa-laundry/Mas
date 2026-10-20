@@ -20,13 +20,12 @@ test("homepage keeps legacy public anchors for old links", () => {
 
 test("homepage does not inject a public owner dashboard or imaginary claims", () => {
   assert.doesNotMatch(page, /admin\/login|Beri Promo Otomatis|AI[- ]powered|Gratis untuk semua/i);
-  assert.match(page, /memberProgramLaunched/);
-  assert.match(page, /sedang menyiapkan kartu member/);
+  assert.match(page, /poin dan riwayat transaksi/);
 });
 
-test("member program informational copy does not claim launched by default", () => {
-  assert.match(site, /NEXT_PUBLIC_MEMBERSHIP_LAUNCHED === "true"/);
-  assert.match(member, /Program sedang disiapkan/);
+test("approved member copy presents the final program without trial labels", () => {
+  assert.doesNotMatch(site, /NEXT_PUBLIC_MEMBERSHIP_LAUNCHED/);
+  assert.doesNotMatch(page+member, /uji coba|sedang disiapkan|sedang menyiapkan|preview/i);
   assert.match(member, /Promo tidak diberikan otomatis/);
 });
 

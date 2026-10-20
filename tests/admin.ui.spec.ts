@@ -32,13 +32,13 @@ test("admin scan and password settings are inaccessible without verified owner",
   await expect(page).toHaveURL(/\/admin\/login/);
 });
 
-test("no configured Auth identity means password cannot be accepted in demo preview", async ({ page }) => {
+test("missing Auth configuration refuses sign-in and shows an operational error", async ({ page }) => {
   // CI deliberately has no owner account or Supabase credentials.
   await page.goto("/admin/login");
   await page.getByLabel("ID Pengguna").fill("masjawalaundry");
   await page.locator('input[name="password"]').fill("NotARealLivePassword!");
   await page.getByRole("button", { name: "Masuk" }).click();
-  await expect(page.locator(".admin-error[role='alert']")).toContainText("belum diaktifkan");
+  await expect(page.locator(".admin-error[role='alert']")).toContainText("Akses admin belum tersedia. Hubungi pengelola.");
   await expect(page).toHaveURL(/\/admin\/login/);
 });
 
@@ -48,4 +48,15 @@ test("login page remains clean and readable on desktop", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Masuk Pemilik" })).toBeVisible();
   mkdirSync("artifacts/stage3", { recursive: true });
   await page.screenshot({ path: "artifacts/stage3/login-1440.png", fullPage: true });
+});
+
+test("restoring login from browser page cache blanks password but preserves ID",async ({page})=>{
+ await page.goto("/admin/login");
+ const pwd=page.locator('input[name="password"]');
+ await pwd.fill("TransientUserInputOnly!");
+ await page.evaluate(()=>{
+   window.dispatchEvent(new PageTransitionEvent("pageshow",{persisted:true}));
+ });
+ await expect(pwd).toBeEmpty();
+ await expect(page.getByLabel("ID Pengguna")).toHaveValue("masjawalaundry");
 });

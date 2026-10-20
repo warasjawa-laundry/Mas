@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import Link from "next/link";
+import { decodeLaundryQrImage } from "@/lib/laundry/qr-image";
 import { useRouter } from "next/navigation";
 import { resolveOwnerScannedCard } from "@/app/admin/visits/actions";
 
@@ -26,6 +27,7 @@ export default function ScanCard() {
   const cameraAttemptRef = useRef(0);
   const scanLock = useRef(false);
   const workInProgress = useRef(false);
+  const imageAttempt = useRef<AbortController | null>(null);
   const aliveRef = useRef(true);
   const router = useRouter();
   const [running, setRunning] = useState(false);
@@ -37,6 +39,7 @@ export default function ScanCard() {
     aliveRef.current = true;
     return () => {
       aliveRef.current = false;
+      imageAttempt.current?.abort();
       cameraAttemptRef.current += 1;
       controlsRef.current?.stop();
       controlsRef.current = null;
@@ -75,7 +78,7 @@ export default function ScanCard() {
         scanLock.current = false;
       }
     } finally {
-      if (aliveRef.current) setLoading(false);
+      if (aliveRef.current && !scanLock.current) setLoading(false);
     }
   };
 
@@ -90,7 +93,7 @@ export default function ScanCard() {
     const attempt = ++cameraAttemptRef.current;
     setStarting(true);
     try {
-      const { BrowserQRCodeReader } = await import("@zxing/browser");
+      const { BrowserQRCodeReader } = await import("@zxing/browser/esm/readers/BrowserQRCodeReader");
       if (!videoRef.current || !aliveRef.current || cameraAttemptRef.current !== attempt) return;
 
       const reader = new BrowserQRCodeReader();
@@ -133,22 +136,17 @@ export default function ScanCard() {
     setError("");
     setLoading(true);
     workInProgress.current = true;
-    let objectUrl: string | null = null;
+    const attempt = new AbortController(); imageAttempt.current = attempt;
     try {
-      const { BrowserQRCodeReader } = await import("@zxing/browser");
+      const text = await decodeLaundryQrImage(file, attempt.signal);
       if (!aliveRef.current) return;
-
-      objectUrl = URL.createObjectURL(file);
-      const reader = new BrowserQRCodeReader();
-      const result = await reader.decodeFromImageUrl(objectUrl);
-      if (!aliveRef.current) return;
-      await onDecoded(result.getText());
+      await onDecoded(text);
     } catch {
       if (aliveRef.current) {
         setError("QR tidak terbaca dari gambar. Coba screenshot lebih jelas, scan dengan kamera, atau cari member manual.");
       }
     } finally {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      if (imageAttempt.current === attempt) imageAttempt.current = null;
       workInProgress.current = false;
       if (aliveRef.current && !scanLock.current) setLoading(false);
     }
@@ -158,14 +156,8 @@ export default function ScanCard() {
     <section className="owner-scanner" aria-labelledby="scan-title">
       <div className="owner-scanner-heading">
         <h2 id="scan-title">Scan Kartu</h2>
-        <p>Gunakan kamera atau pilih screenshot QR dari galeri. Scan hanya membuka data member, bukan mencatat transaksi.</p>
+        <p>Arahkan kamera ke QR atau pilih foto kartu dari galeri. Scan hanya membuka data member, bukan mencatat transaksi.</p>
       </div>
-      <div className={"owner-camera" + (running || starting ? " owner-camera-active" : "")}>
-        <video ref={videoRef} autoPlay muted playsInline aria-label="Pratinjau kamera untuk scan kartu" />
-        {!running && !starting && <span className="owner-camera-placeholder">Pilih kamera atau foto QR dari galeri</span>}
-        {starting && <span className="owner-camera-placeholder">Membuka kamera…</span>}
-      </div>
-
       {error && <p className="admin-error" role="alert">{error}</p>}
       <div className="owner-scan-actions">
         {running ? (
@@ -194,6 +186,13 @@ export default function ScanCard() {
         </button>
         <Link href="/admin/members" className="admin-logout">Cari Member Manual</Link>
       </div>
+      {loading && <p className="member-note" role="status">Memeriksa kartu dan membuka transaksi member…</p>}
+      <div className={"owner-camera" + (running || starting ? " owner-camera-active" : "")}>
+        <video ref={videoRef} autoPlay muted playsInline aria-label="Kamera untuk scan kartu" />
+        {!running && !starting && <span className="owner-camera-placeholder">Pilih kamera atau foto QR dari galeri</span>}
+        {starting && <span className="owner-camera-placeholder">Membuka kamera…</span>}
+      </div>
+
       <p className="owner-gallery-hint" role="status">
         Pilih screenshot dari HP. Gambar diperiksa di perangkat, tidak diunggah ke server.
       </p>

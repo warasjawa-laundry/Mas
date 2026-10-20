@@ -3,16 +3,16 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const read=path=>readFileSync(path,"utf8");
-const list=read("app/admin/members/page.tsx");
+const list=read("app/admin/members/page.tsx")+read("components/admin/member-directory-list.tsx");
 const detail=read("app/admin/members/[id]/page.tsx");
 const promos=read("components/admin/member-promotions.tsx");
 const whatsapp=read("components/admin/promo-whatsapp.tsx");
 const css=read("app/admin/admin.css");
 const publicCard=read("app/k/[token]/page.tsx");
 
-test("list shows one-tap Promo alongside visit and QR without querying phone data",()=>{
-  assert.match(list,/href=\{`\/admin\/members\/\$\{m\.id\}#promo-member`\}>Promo/);
-  assert.match(list,/Catat Transaksi/);
+test("list prioritizes transaction entry and keeps promo in member detail without querying phone data",()=>{
+  assert.match(detail,/view===\"promo\"/);
+  assert.match(list,/Catat/);
   assert.match(list,/Kartu QR/);
   assert.doesNotMatch(list,/\.select\([^\n]*whatsapp_e164/);
   assert.match(promos,/id="promo-member"/);

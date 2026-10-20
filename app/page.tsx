@@ -4,8 +4,10 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
-  assets, curtainPrices, kiloPackages, memberProgramLaunched, site, whatsappLink,
+  assets, site, whatsappLink,
 } from "@/lib/site";
+import ServicePrices from "@/components/service-prices";
+import {readPublishedServices,catalogRealtimeConfig} from "@/lib/services/server";
 import { siteHref } from "@/lib/navigation";
 
 export const metadata: Metadata = {
@@ -14,7 +16,10 @@ export const metadata: Metadata = {
 
 const whatsappService = whatsappLink("Halo Mas Jawa Laundry, saya ingin tanya layanan dan harga laundry.");
 
-export default function HomePage() {
+export const revalidate=60;
+
+export default async function HomePage() {
+  const catalog=await readPublishedServices();
   const schema = {
     "@context": "https://schema.org",
     "@type": "LaundryService",
@@ -36,77 +41,43 @@ export default function HomePage() {
       <main id="home">
         <section className="hero shell" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow"><span className="eyebrow-rule" /> MAS JAWA LAUNDRY · KANDANG JATI KULON</p>
-            <h1 id="hero-title">Cuci kiloan dan satuan <em>di dekat rumah.</em></h1>
-            <p className="hero-description">Cari layanan laundry dan harga yang sesuai kebutuhan. Kalau ingin tanya dulu, langsung hubungi kami lewat WhatsApp.</p>
+            <p className="eyebrow">MAS JAWA LAUNDRY</p>
+            <h1 id="hero-title">Laundry kiloan dan satuan</h1>
+            <p className="hero-description">Cuci lipat, cuci setrika, dan gorden di Kandang Jati Kulon, Probolinggo. Lihat pilihan layanan atau tanyakan kebutuhan cucian Anda.</p>
             <div className="hero-actions">
-              <a className="button button-primary" href={whatsappService} target="_blank" rel="noopener noreferrer">Hubungi lewat WhatsApp <span aria-hidden="true">↗</span></a>
-              <a className="button button-secondary" href={siteHref("/#layanan")}>Lihat daftar harga <span aria-hidden="true">↓</span></a>
+              <a className="button button-primary" href={siteHref("/#layanan")}>Lihat daftar harga <span aria-hidden="true">↓</span></a>
+              <a className="button button-secondary" href={whatsappService} target="_blank" rel="noopener noreferrer">Hubungi lewat WhatsApp <span aria-hidden="true">↗</span></a>
             </div>
-            <p className="hero-location"><span className="location-mark" aria-hidden="true" /> {site.shortAddress} <span aria-hidden="true">·</span> {site.landmark}</p>
+            <p className="hero-location"><span className="location-mark" aria-hidden="true" /> {site.landmark}</p>
           </div>
           <div className="hero-visual">
             <div className="hero-photo-frame">
-              <Image src={assets.packing} alt="Dokumentasi aktivitas penyiapan laundry Mas Jawa dari situs sebelumnya" fill priority sizes="(max-width: 800px) 92vw, 44vw" className="cover-image" />
+              <Image src={assets.packing} alt="Area penyiapan cucian Mas Jawa Laundry" fill priority sizes="(max-width: 800px) 92vw, 44vw" className="cover-image" />
             </div>
-            <div className="hero-visual-note"><strong>Mas Jawa Laundry</strong><span>Informasi layanan dan harga dalam satu tempat.</span></div>
+
           </div>
         </section>
 
         <section id="layanan" className="section section-alt" aria-labelledby="services-title">
           <div className="shell">
             <div className="section-top">
-              <div><p className="eyebrow">LAYANAN & HARGA</p><h2 id="services-title">Pilih yang sesuai kebutuhan.</h2></div>
-              <p className="section-intro">Layanan kiloan dengan beberapa pilihan waktu pengerjaan. Untuk cucian khusus, tanyakan langsung kepada petugas.</p>
+              <div><p className="eyebrow">LAYANAN & HARGA</p><h2 id="services-title">Daftar layanan dan harga</h2></div>
+              <p className="section-intro">Lihat harga, satuan, dan perkiraan waktu pengerjaan untuk setiap layanan.</p>
             </div>
-            <div className="price-grid">
-              {kiloPackages.map((pack) => (
-                <article className="price-card" key={pack.name}>
-                  <div className="price-card-top">
-                    <h3>{pack.name}</h3>
-                    <span className="duration">{pack.duration}</span>
-                  </div>
-                  <div className="price-rows">
-                    {pack.items.map((item) => (
-                      <div key={item.label} className="price-row"><span>{item.label}</span><strong>{item.price}</strong></div>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-            <div className="special-service">
-              <div>
-                <p className="eyebrow">LAYANAN SATUAN</p>
-                <h3>Gorden dan cucian khusus</h3>
-                <p>Butuh pencucian selain kiloan? Hubungi laundry untuk memastikan layanan dan perkiraan pengerjaan.</p>
-              </div>
-              <div className="special-service-prices">
-                {curtainPrices.map((item) => <div className="special-row" key={item.label}><span>{item.label}</span><strong>{item.price}</strong></div>)}
-                <a className="inline-link" href={whatsappService} target="_blank" rel="noopener noreferrer">Tanyakan layanan lain <span aria-hidden="true">↗</span></a>
-              </div>
-            </div>
-            <p className="price-disclaimer">Harga dan estimasi di atas mengikuti informasi pada website Mas Jawa Laundry sebelumnya. Pastikan kembali layanan, tarif, dan estimasi terbaru kepada petugas sebelum memesan.</p>
+            <ServicePrices initial={catalog.services} initialFailed={catalog.failed} realtime={catalogRealtimeConfig()}/>
+            <details className="price-disclaimer"><summary>Konfirmasi tarif dan estimasi sebelum memesan</summary><p>Konfirmasi biaya dan perkiraan waktu pengerjaan kepada petugas saat menyerahkan cucian.</p></details>
           </div>
         </section>
 
         <section id="keunggulan" className="section" aria-labelledby="about-title">
-          <div className="shell about-grid">
-            <div className="about-image-group" id="testimoni">
-              <div className="about-image-main">
-                <Image src={assets.workspace} alt="Foto dokumentasi area kerja laundry dari website Mas Jawa sebelumnya" fill sizes="(max-width: 800px) 88vw, 38vw" className="cover-image" />
-              </div>
-              <p>Dokumentasi dari arsip website Mas Jawa Laundry</p>
-            </div>
-            <div className="about-copy">
-              <p className="eyebrow">MAS JAWA LAUNDRY</p>
-              <h2 id="about-title">Informasi jelas, jadi lebih mudah menentukan layanan.</h2>
-              <p>Kebutuhan cucian setiap orang berbeda. Mas Jawa Laundry menyediakan pilihan cuci lipat dan cuci setrika, dengan beberapa opsi waktu pengerjaan.</p>
-              <div className="about-points">
-                <div><span className="point-index">01</span><span><strong>Layanan bisa dipilih</strong><small>Lihat paket reguler, express, dan kilat beserta tarifnya.</small></span></div>
-                <div><span className="point-index">02</span><span><strong>Bisa bertanya dulu</strong><small>Tanyakan jenis cucian, harga, dan ketersediaan layanan melalui WhatsApp.</small></span></div>
-                <div><span className="point-index">03</span><span><strong>Lokasi mudah dicari</strong><small>{site.address}, {site.landmark}.</small></span></div>
-              </div>
-            </div>
+          <div className="shell">
+            <span id="testimoni" aria-hidden="true" />
+            <div className="section-top"><div><p className="eyebrow">CARA LAUNDRY</p><h2 id="about-title">Cara menggunakan layanan</h2></div></div>
+            <ol className="service-steps">
+              <li><span aria-hidden="true">01</span><h3>Pilih layanan</h3><p>Lihat jenis cucian, tarif, dan estimasi waktu. Tanyakan kepada petugas jika cucian Anda belum tercantum.</p></li>
+              <li><span aria-hidden="true">02</span><h3>Bawa cucian ke laundry</h3><p>Konfirmasi layanan, biaya, dan perkiraan selesai saat menyerahkan cucian.</p></li>
+              <li><span aria-hidden="true">03</span><h3>Konfirmasi pengambilan</h3><p>Hubungi petugas melalui WhatsApp untuk menanyakan cucian sebelum datang mengambil.</p></li>
+            </ol>
           </div>
         </section>
 
@@ -115,16 +86,9 @@ export default function HomePage() {
             <div className="member-feature">
               <div className="member-feature-copy">
                 <p className="eyebrow eyebrow-light">KARTU MEMBER</p>
-                <h2 id="member-title">Kartu langganan, tanpa harus mengingat jumlah transaksi.</h2>
-                <p>{memberProgramLaunched
-                  ? "Daftar di laundry, bawa kartu saat bertransaksi, dan lihat jumlah transaksi lewat QR Code pada kartu."
-                  : "Kami sedang menyiapkan kartu member dengan pencatatan transaksi digital. Pendaftaran dan pengecekan akan dibantu oleh petugas ketika program mulai tersedia."}</p>
-                <Link className="button button-white" href={siteHref("/membership")}>Pelajari kartu member <span aria-hidden="true">→</span></Link>
-              </div>
-              <div className="member-feature-steps" aria-label="Cara kerja kartu member">
-                <div><span className="feature-step-number">01</span><span><strong>Daftar di laundry</strong><small>Petugas membantu membuat kartu member.</small></span></div>
-                <div><span className="feature-step-number">02</span><span><strong>Bawa kartu</strong><small>Petugas memindai QR saat transaksi dan mencatatnya.</small></span></div>
-                <div><span className="feature-step-number">03</span><span><strong>Cek transaksi</strong><small>Scan QR kartu memakai kamera HP untuk melihat catatan pribadi.</small></span></div>
+                <h2 id="member-title">Kartu member</h2>
+                <p>Daftar melalui petugas, tunjukkan kartu saat transaksi, lalu pindai QR untuk melihat poin dan riwayat transaksi.</p>
+                <a className="button button-white" href={siteHref("/membership")}>Buka kartu member <span aria-hidden="true">→</span></a>
               </div>
             </div>
           </div>
@@ -134,24 +98,19 @@ export default function HomePage() {
           <div className="shell contact-grid">
             <div className="contact-copy">
               <p className="eyebrow">LOKASI & KONTAK</p>
-              <h2 id="contact-title">Mau tanya dulu? Hubungi langsung.</h2>
-              <p>Untuk pertanyaan tentang harga, jenis cucian, maupun layanan antar jemput yang tersedia, silakan menghubungi Mas Jawa Laundry.</p>
-              <div className="contact-address">
-                <strong>Mas Jawa Laundry</strong>
-                <span>{site.address}</span>
-                <span>{site.landmark}</span>
-                <span>Informasi jam pada situs sebelumnya: {site.hours}</span>
-              </div>
+              <h2 id="contact-title">Lokasi dan kontak</h2>
+              <p>Tanyakan harga, jenis cucian, atau ketersediaan layanan antar jemput melalui WhatsApp.</p>
               <div className="contact-actions">
                 <a className="button button-primary" href={whatsappService} target="_blank" rel="noopener noreferrer">Chat WhatsApp <span aria-hidden="true">↗</span></a>
-                <a className="button button-secondary" href="https://www.google.com/maps/search/?api=1&query=Mas%20Jawa%20Laundry%20Kandang%20Jati%20Kulon" target="_blank" rel="noopener noreferrer">Petunjuk lokasi <span aria-hidden="true">↗</span></a>
+
               </div>
             </div>
             <aside className="contact-location-card" aria-label="Alamat Mas Jawa Laundry">
               <span className="location-label">ALAMAT LAUNDRY</span>
-              <span className="location-monogram" aria-hidden="true">MJ</span>
-              <h3>Mas Jawa Laundry</h3>
-              <p>{site.address}<br />{site.landmark}<br />{site.shortAddress}</p>
+
+              <h3>{site.shortAddress}</h3>
+              <p>{site.address}<br />{site.landmark}</p>
+              <p className="location-hours">Jam buka: {site.hours}.</p>
               <a className="inline-link" href="https://www.google.com/maps/search/?api=1&query=Mas%20Jawa%20Laundry%20Kandang%20Jati%20Kulon" target="_blank" rel="noopener noreferrer">Buka Google Maps <span aria-hidden="true">↗</span></a>
             </aside>
           </div>

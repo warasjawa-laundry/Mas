@@ -11,17 +11,17 @@ export default async function CreateMember({searchParams}:Props) {
   const err=q.error;
   const requestId=q.requestId && /^[0-9a-f-]{36}$/i.test(q.requestId) ? q.requestId : randomUUID();
   const messages:Record<string,string>={
-    unavailable:"Pendaftaran belum aktif. Hubungi pengelola situs.",
+    unavailable:"Pendaftaran belum dapat diproses. Hubungi pengelola.",
     invalid:"Periksa nama dan nomor WhatsApp yang dimasukkan.",
     consent:"Persetujuan promo memerlukan nomor WhatsApp.",
     save:"Member belum tersimpan. Periksa koneksi lalu coba lagi."
   };
   return <main className="admin-workspace">
-    <div className="admin-topbar"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link><span>Mas Jawa Laundry</span></div>
+    <nav className="admin-breadcrumb" aria-label="Kembali"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link></nav>
     <section className="admin-content admin-settings">
       <p className="admin-kicker">PENDAFTARAN</p><h1>Tambah Member</h1>
       <p className="admin-hint">Cukup isi nama. Nomor WhatsApp tidak wajib.</p>
-      {!ready && <p className="admin-error" role="alert">Penerbitan kartu sedang disiapkan. Data belum dapat disimpan.</p>}
+      {!ready && <p className="admin-error" role="alert">Kartu belum dapat diterbitkan. Hubungi pengelola sebelum menyimpan data.</p>}
       {err && <p className="admin-error" role="alert">{messages[err] || messages.save}</p>}
       <form className="admin-form member-form" action={registerLaundryMember}>
         <input type="hidden" name="requestId" value={requestId}/>

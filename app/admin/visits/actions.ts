@@ -2,6 +2,7 @@
 
 import { createHash } from "node:crypto";
 import { redirect } from "next/navigation";
+import { timeAdmin } from "@/lib/admin/timing";
 import { requireOwner } from "@/lib/supabase/owner";
 import { validCardToken } from "@/lib/laundry/card";
 import { extractLaundryToken } from "@/lib/laundry/scan";
@@ -14,7 +15,7 @@ export async function resolveOwnerScannedCard(text: string): Promise<{id:string;
   const token = extractLaundryToken(text);
   if(!token || !validCardToken(token)) return null;
   const digest=createHash("sha256").update(token).digest("hex");
-  const {data,error} = await supabase.rpc("laundry_resolve_owner_card",{p_digest_hex:digest});
+  const {data,error} = await timeAdmin("owner.scan.resolve",()=>supabase.rpc("laundry_resolve_owner_card",{p_digest_hex:digest}));
   if(error || !Array.isArray(data) || data.length !== 1) return null;
   const row=data[0];
   if(!uuidRe.test(row.member_id)) return null;

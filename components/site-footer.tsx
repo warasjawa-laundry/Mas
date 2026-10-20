@@ -8,11 +8,11 @@ export function SiteFooter() {
       <div className="shell footer-inner">
         <div>
           <strong>Mas Jawa Laundry</strong>
-          <p>Jl. Raya Kandang Jati Kulon RT.06 RW.01<br />{site.landmark}</p>
+          <p>{site.shortAddress}</p>
         </div>
         <nav aria-label="Navigasi footer">
           <Link href={siteHref("/#layanan")}>Harga</Link>
-          <Link href={siteHref("/membership")}>Kartu Member</Link>
+          <a href={siteHref("/membership")}>Kartu Member</a>
           <a href={whatsappLink()} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
         </nav>
         <p className="copyright">© {new Date().getFullYear()} Mas Jawa Laundry</p>

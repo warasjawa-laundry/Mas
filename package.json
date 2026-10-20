@@ -14,20 +14,22 @@
     "node": "24.x"
   },
   "dependencies": {
-    "next": "16.4.2",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "@supabase/supabase-js": "2.118.0",
     "@supabase/ssr": "0.7.0",
+    "@supabase/realtime-js": "2.118.0",
+    "@supabase/supabase-js": "2.118.0",
+    "@zxing/browser": "0.1.5",
+    "@zxing/library": "0.21.3",
+    "next": "16.4.2",
     "qrcode": "1.5.4",
-    "@zxing/browser": "0.1.5"
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@types/node": "22.20.5",
+    "@types/qrcode": "1.5.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "typescript": "5.9.3",
-    "@playwright/test": "1.64.1",
-    "@types/qrcode": "1.5.6"
+    "typescript": "5.9.3"
   }
 }

@@ -4,90 +4,88 @@ import {notFound} from "next/navigation";
 import {requireOwner} from "@/lib/supabase/owner";
 import {memberNumber} from "@/lib/laundry/card";
 import {correctOwnerVisit} from "@/app/admin/visits/actions";
+import MemberTaskNav from "@/components/admin/member-task-nav";
 import AmountVisitForm from "@/components/admin/amount-visit-form";
 import MemberPromotions from "@/components/admin/member-promotions";
 import {timeAdmin} from "@/lib/admin/timing";
+import {historyPageNumber,historyPageHref,loadMemberHistory} from "@/lib/laundry/member-history";
 
-type Props={params:Promise<{id:string}>,searchParams:Promise<{error?:string;recorded?:string;corrected?:string;requestId?:string;amountRequestId?:string;amountRecorded?:string;pointsEarned?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
+type Props={params:Promise<{id:string}>,searchParams:Promise<{view?:string;historyPage?:string;error?:string;recorded?:string;corrected?:string;requestId?:string;amountRequestId?:string;amountRecorded?:string;pointsEarned?:string;promoError?:string;promo?:string;promoRequestId?:string}>};
 const validId=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export default async function OwnerMember({params,searchParams}:Props){
  const {supabase}=await requireOwner();
  const {id}=await params,notice=await searchParams;
  if(!validId.test(id))notFound();
+ const historyPage=historyPageNumber(notice.historyPage);
+ const view=notice.promo||notice.promoError?"promo":notice.historyPage||notice.corrected||notice.error==="reason"||notice.error==="void"?"history":notice.view==="promo"||notice.view==="history"?notice.view:"transaction";
  const pointYear=Number(new Intl.DateTimeFormat("en-US",{year:"numeric",timeZone:"Asia/Jakarta"}).format(new Date()));
- const [memberR,addsR,voidsR,historyR,promosR,amountsR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
-  supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent").eq("id",id).maybeSingle(),
+ const [memberR,addsR,voidsR,historyR,promosR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
+  supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent,address").eq("id",id).maybeSingle(),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","ADD"),
   supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("member_id",id).eq("event_type","VOID"),
-  supabase.from("laundry_checklist_events")
-    .select("id,event_type,reverses_event_id,reason,occurred_at")
-    .eq("member_id",id).order("occurred_at",{ascending:false}).limit(30),
-  supabase.from("laundry_member_promotions")
+  view==="history" ? loadMemberHistory(supabase,id,historyPage) : Promise.resolve({events:[],count:0,failed:false,amountsFailed:false,reversalsFailed:false,amounts:new Map(),corrected:new Set<string>(),hasOlder:false}),
+  view==="promo" ? supabase.from("laundry_member_promotions")
     .select("id,title,terms,status,expires_at,created_at,redeemed_at,cancelled_at,cancel_reason")
-    .eq("member_id",id).order("created_at",{ascending:false}).limit(100),
-  supabase.from("laundry_amount_transactions")
-    .select("visit_event_id,amount_idr,description,awarded_points,program_year")
-    .eq("member_id",id).order("occurred_at",{ascending:false}).limit(100),
+    .eq("member_id",id).order("created_at",{ascending:false}).limit(100) : Promise.resolve({data:[],error:null}),
   supabase.rpc("laundry_owner_point_balances",{p_member_id:id}),
-  supabase.from("laundry_point_rules").select("tiers,program_year,revision")
-    .eq("program_year",pointYear).maybeSingle()
+  view==="transaction" ? supabase.from("laundry_point_rules").select("tiers,program_year,revision")
+    .eq("program_year",pointYear).maybeSingle() : Promise.resolve({data:null,error:null})
  ]));
  if(memberR.error || !memberR.data)notFound();
  const member=memberR.data;
- const failed=!!(addsR.error||voidsR.error||historyR.error);
+ const failed=!!(addsR.error||voidsR.error);
  const total=(addsR.count??0)-(voidsR.count??0);
- const history=historyR.data||[];
- const corrected=new Set(history.filter(e=>e.event_type==="VOID").map(e=>e.reverses_event_id));
- const requestId=notice.requestId&&validId.test(notice.requestId)?notice.requestId:randomUUID();
+ const history=historyR.events;
+ const corrected=historyR.corrected;
  const promoRequestId=notice.promoRequestId&&validId.test(notice.promoRequestId)?notice.promoRequestId:randomUUID();
  const amountRequestId=notice.amountRequestId&&validId.test(notice.amountRequestId)?notice.amountRequestId:randomUUID();
- const amountMap=new Map((amountsR.data||[]).map(row=>[row.visit_event_id,row]));
+ const amountMap=historyR.amounts;
  const currentPoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===pointYear);
- const nextPointYear=pointYear===2026?2027:pointYear+1;
- const futurePoints=(balancesR.data||[]).find((r:{program_year:number;points_total:number|string})=>r.program_year===nextPointYear);
  const pointRules=Array.isArray(rulesR.data?.tiers)?rulesR.data.tiers as {minimum:number;points:number}[]:[];
  const idr=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
 
  return <main className="admin-workspace">
-  <div className="admin-topbar"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link><Link href="/admin/settings">Pengaturan</Link></div>
+  <nav className="admin-breadcrumb" aria-label="Kembali"><Link href="/admin/members" className="admin-brand">← Daftar Member</Link></nav>
   <section className="admin-content owner-member-page">
-   <p className="admin-kicker">CATAT TRANSAKSI</p><h1>{member.display_name}</h1>
+   <p className="admin-kicker">MEMBER</p><h1>{member.display_name}</h1>
    <p className="admin-hint">{memberNumber(member.member_number)} · {member.is_active?"Member aktif":"Member nonaktif"}</p>
+   {member.address&&<p className="member-note">Alamat: {member.address}</p>}
    {notice.recorded==="1" && <p className="admin-success" role="status">1 transaksi berhasil dicatat.</p>}
-   {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}.</p>}
+   {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}. <Link href={`/admin/members/${id}?view=history`}>Lihat riwayat →</Link></p>}
    {notice.corrected==="1" && <p className="admin-success" role="status">Transaksi berhasil dibatalkan dengan riwayat tetap tersimpan.</p>}
    {notice.error && <p className="admin-error" role="alert">
-      {notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi owner untuk mengatur poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
+      {notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi pengelola database untuk memeriksa aturan poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
     </p>}
-   <div className="owner-count-box"><span>Total transaksi tercatat</span><strong>{failed?"—":total}</strong>
-    <small>Hanya berubah saat pemilik menekan tombol dan penyimpanan berhasil.</small></div>
-   <div className="owner-point-summary">
-     <div><span>Saldo poin {pointYear}{pointYear===2026?" · Uji coba":""}</span><strong>{balancesR.error?"—":currentPoints?.points_total??0}</strong></div>
-     {nextPointYear<=2100 && futurePoints && <div><span>Saldo program {nextPointYear}</span><strong>{balancesR.error?"—":futurePoints.points_total??0}</strong></div>}
-   </div>
-   <div className="owner-point-settings-link"><Link href={"/admin/points/rules?year="+pointYear}>Atur nominal & poin →</Link></div>
+   <p className="member-context-line">{balancesR.error?"Poin belum dimuat":`${currentPoints?.points_total??0} poin (${pointYear})`} · {failed?"Total transaksi belum dimuat":`${total} transaksi seluruh periode`}</p>
+   <MemberTaskNav memberId={id} view={view}/>
+   {view==="transaction"&&<section aria-label="Catat transaksi">
    {rulesR.error||!rulesR.data?
      <p className="admin-error">Aturan poin belum dimuat. Transaksi bernominal tidak dapat disimpan untuk sementara.</p>:
-     <AmountVisitForm memberId={id} requestId={amountRequestId} memberActive={member.is_active}
+     <AmountVisitForm key={amountRequestId} memberName={member.display_name} memberId={id} requestId={amountRequestId} memberActive={member.is_active}
        tiers={pointRules} year={pointYear}/>}
-   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data & WhatsApp</Link><Link href="#promo-member" className="admin-logout">Promo Member</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
-   <h2>Riwayat transaksi</h2>
-   <details className="owner-history-details">
+   </section>}
+   <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
+   {view==="history"&&<section aria-label="Riwayat member">
+   <h2 id="transaction-history">Riwayat transaksi</h2>
+   <details className="owner-history-details" open>
     <summary>Lihat riwayat dan pembatalan</summary>
-   {failed?<p className="admin-error">Riwayat belum dapat dimuat. Coba lagi.</p>:history.length===0?
-    <div className="member-empty">Belum ada transaksi untuk member ini.</div>:
+   {historyR.amountsFailed&&<p className="admin-error" role="alert">Nominal dan poin transaksi belum dapat dimuat. Coba lagi.</p>}
+   {historyR.reversalsFailed&&<p className="admin-error" role="alert">Status pembatalan belum dapat dimuat. Muat ulang riwayat sebelum membatalkan transaksi.</p>}
+   {historyR.failed?<p className="admin-error">Riwayat belum dapat dimuat. Coba lagi.</p>:history.length===0?
+    <div className="member-empty">{historyPage===1?"Belum ada transaksi untuk member ini.":"Tidak ada transaksi di halaman ini."}</div>:
     <ul className="owner-visit-history">{history.map((event)=>{
       const isVoid=event.event_type==="VOID";
       const wasCorrected=corrected.has(event.id);
       return <li key={event.id}>
-       <div><strong>{isVoid?"Pembatalan":wasCorrected?"Transaksi dibatalkan":"+1 Transaksi"}</strong>
+       <div><strong>{isVoid?"Pembatalan":historyR.reversalsFailed?"Transaksi · status belum dimuat":wasCorrected?"Transaksi dibatalkan":"+1 Transaksi"}</strong>
         <span>{new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(new Date(event.occurred_at))} WIB</span>
         {!isVoid&&amountMap.has(event.id)&&<><small>{idr(Number(amountMap.get(event.id)!.amount_idr))} · {amountMap.get(event.id)!.description}</small>
         <small>+{amountMap.get(event.id)!.awarded_points} poin ({amountMap.get(event.id)!.program_year}) {wasCorrected?"· dibatalkan":""}</small></>}
-        {!isVoid&&!amountMap.has(event.id)&&<small>Catatan lama tanpa nominal · 0 poin</small>}
+        {!isVoid&&historyR.amountsFailed&&<small>Nominal dan poin belum dapat dimuat.</small>}
+        {!isVoid&&!historyR.amountsFailed&&!amountMap.has(event.id)&&<small>Catatan lama tanpa nominal · 0 poin</small>}
         {isVoid&&<small>Alasan: {event.reason}</small>}
        </div>
-       {!isVoid&&!wasCorrected&&<details className="owner-void-box"><summary>Batalkan</summary>
+       {!isVoid&&!historyR.reversalsFailed&&!wasCorrected&&<details className="owner-void-box"><summary>Batalkan</summary>
          <form action={correctOwnerVisit}>
            <input type="hidden" name="memberId" value={id}/>
            <input type="hidden" name="eventId" value={event.id}/>
@@ -99,12 +97,19 @@ export default async function OwnerMember({params,searchParams}:Props){
        </details>}
       </li>;
     })}</ul>}
+   {!historyR.failed&&(historyPage>1||historyR.hasOlder)&&<nav aria-label="Halaman riwayat transaksi" className="admin-member-pagination">
+    {historyPage>1&&<Link prefetch={false} href={historyPageHref(id,historyPage-1)}>← Lebih baru</Link>}
+    <span>Halaman {historyPage}{historyR.count!==null?` · ${historyR.count} catatan`:""}</span>
+    {historyR.hasOlder&&<Link prefetch={false} href={historyPageHref(id,historyPage+1)}>Lebih lama →</Link>}
+    {historyPage>1&&<Link prefetch={false} href={historyPageHref(id,1)}>Riwayat terbaru</Link>}
+   </nav>}
    </details>
-   <MemberPromotions memberId={id} memberName={member.display_name}
+   </section>}
+   {view==="promo"&&<MemberPromotions memberId={id} memberName={member.display_name}
      requestId={promoRequestId} promos={promosR.data||[]}
      whatsappPhone={member.whatsapp_e164} whatsappConsent={member.whatsapp_promo_consent===true} memberActive={member.is_active}
-     loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>
-   <div className="admin-shortcuts"><Link href={`/admin/members/${id}/card`}>Lihat Kartu QR →</Link><Link href="/admin/scan">Scan Kartu Lain →</Link></div>
+     loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>}
+   <div className="admin-shortcuts"><Link href="/admin/members">← Pilih member lain</Link><Link href="/admin/scan">Scan kartu lain →</Link></div>
   </section>
  </main>;
 }

@@ -5,7 +5,7 @@ const read=path=>readFileSync(path,"utf8");
 const sql=read("supabase/migrations/20261016210000_stage8_member_contact_management.sql");
 const action=read("app/admin/members/contact/actions.ts");
 const edit=read("app/admin/members/[id]/edit/page.tsx");
-const list=read("app/admin/members/page.tsx");
+const list=read("app/admin/members/page.tsx")+read("components/admin/member-directory-list.tsx");
 const detail=read("app/admin/members/[id]/page.tsx");
 const whatsapp=read("components/admin/promo-whatsapp.tsx");
 const css=read("app/admin/admin.css");
@@ -15,7 +15,7 @@ test("member edit is a dedicated owner-only path and never reissues cards or mut
  assert.match(action,/requireOwner\(\)/);
  assert.match(edit,/action=\{updateMemberContact\}/);
  assert.match(list,/\/edit\`}>Ubah Data/);
- assert.match(detail,/Ubah Data & WhatsApp/);
+ assert.match(detail,/Ubah Data/);
  assert.doesNotMatch(action,/laundry_record_visit|laundry_register_member|laundry_grant_manual_promotion|newCardToken|encryptCardToken/);
  assert.match(action,/normalizeWhatsapp/);
  assert.match(action,/validateMemberName/);

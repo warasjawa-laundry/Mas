@@ -20,7 +20,7 @@ test("only owner confirmation can ADD or VOID visit, each using request UUID",()
  assert.match(actions,/laundry_void_visit/);
  assert.match(detail,/<AmountVisitForm/);
  assert.match(read("components/admin/amount-visit-form.tsx"),/action={recordAmountVisit}/);
- assert.match(read("components/admin/amount-visit-form.tsx"),/Simpan Transaksi & Poin/);
+ assert.match(read("components/admin/amount-visit-form.tsx"),/Simpan transaksi/);
  assert.match(detail,/action=\{correctOwnerVisit\}/);
  assert.match(sql,/on conflict\(request_id\) do nothing/i);
  assert.match(sql,/event_type='ADD'/);
@@ -41,4 +41,15 @@ test("public member page remains read-only and does not award promo",()=>{
  assert.match(publicPage,/laundry_public_card_progress/);
  assert.doesNotMatch(publicPage,/laundry_record_visit|recordOwnerVisit/);
  assert.doesNotMatch(actions,/promo|whatsapp|reward|threshold/i);
+});
+
+test("scanner has no redundant member or settings links beneath QR controls",()=>{
+ assert.match(ownerHub,/<ScanCard\/>/);
+ assert.doesNotMatch(ownerHub,/owner-secondary-actions|\+ Tambah Member|Lihat Daftar Member|Kelola Member|Ubah Password/);
+ assert.match(ownerHub,/Kembali ke Ringkasan/);
+ const navigation=read("components/admin/admin-navigation.tsx");
+ assert.match(navigation,/href: "\/admin\/members", label: "Member"/);
+ assert.match(navigation,/href: "\/admin\/settings", label: "Pengaturan"/);
+ const scanner=read("components/admin/scan-card.tsx");
+ assert.match(scanner,/Cari Member Manual/);
 });
