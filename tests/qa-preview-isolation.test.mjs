@@ -5,6 +5,7 @@ import {
   QA_PREVIEW_REF,
   QA_SUPABASE_ORIGIN,
   QA_SUPABASE_PROJECT,
+  OPERATIONAL_SUPABASE_ORIGIN,
   assertQaPreviewIsolation,
 } from "../lib/supabase/qa-preview-isolation.ts";
 
@@ -37,14 +38,21 @@ test("QA Preview recognizes only its own Supabase project", () => {
   }));
 });
 
-test("Main Preview and production are unaffected", () => {
+test("Main Preview and standalone builds retain their existing behavior", () => {
   for(const env of [
     {VERCEL_ENV:"preview",VERCEL_GIT_COMMIT_REF:"main"},
-    {VERCEL_ENV:"production",VERCEL_GIT_COMMIT_REF:QA_PREVIEW_REF},
     {NODE_ENV:"production"},
   ]) {
     assert.doesNotThrow(() => assertQaPreviewIsolation(env));
   }
+});
+
+test("Production requires the operational database and rejects QA overrides",()=>{
+ const production={VERCEL_ENV:"production",SUPABASE_URL:OPERATIONAL_SUPABASE_ORIGIN,SUPABASE_PUBLISHABLE_KEY:"synthetic-public-key"};
+ assert.doesNotThrow(()=>assertQaPreviewIsolation(production));
+ for(const override of [{SUPABASE_URL:QA_SUPABASE_ORIGIN},{SUPABASE_URL:undefined},{SUPABASE_PUBLISHABLE_KEY:undefined},{QA_BRANCH_ISOLATION:QA_SUPABASE_PROJECT}]){
+  assert.throws(()=>assertQaPreviewIsolation({...production,...override}),/Production database isolation/);
+ }
 });
 
 test("DB boundary is enforced before protected and public Supabase requests", () => {

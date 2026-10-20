@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   },
   description: "Informasi harga laundry kiloan dan satuan Mas Jawa Laundry di Kandang Jati Kulon, lokasi, dan kontak WhatsApp.",
   alternates: { canonical: "/" },
-  robots: { index: true, follow: true },
+  verification: { google: "XQz0UL0rQ7ULMEegfQWFxImJpJWBh7mEW8Ied_zJwXE" },
+  robots: { index: process.env.VERCEL_ENV !== "preview", follow: true },
   openGraph: {
     type: "website",
     locale: "id_ID",
