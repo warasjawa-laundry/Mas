@@ -30,8 +30,10 @@ function verify(value:string|undefined,purpose:string,maxAge:number):string|null
  const parts=value.split(".");
  if(parts.length!==2)return null;
  const [body,signature]=parts, expected=mac(body,purpose);
- if(!expected||signature.length!==expected.length)return null;
- if(!timingSafeEqual(Buffer.from(signature),Buffer.from(expected)))return null;
+ if(!expected||!body||!/^[A-Za-z0-9_-]+$/.test(body)||
+    !/^[A-Za-z0-9_-]{43}$/.test(signature))return null;
+ const receivedBytes=Buffer.from(signature,"ascii"),expectedBytes=Buffer.from(expected,"ascii");
+ if(receivedBytes.length!==expectedBytes.length||!timingSafeEqual(receivedBytes,expectedBytes))return null;
  try{
   const obj=JSON.parse(Buffer.from(body,"base64url").toString("utf8"));
   if(typeof obj.sub!=="string"||!obj.sub||

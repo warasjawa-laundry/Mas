@@ -7,6 +7,17 @@ import {
 } from "../lib/admin/entry-pass.ts";
 const read=p=>readFileSync(p,"utf8");
 const guard=read("proxy.ts"),actions=read("app/admin/actions.ts"),owner=read("lib/supabase/owner.ts");
+test("malformed multibyte cookie signatures are rejected without throwing",()=>{
+ const old=process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
+ try{
+  process.env.LAUNDRY_CARD_ENCRYPTION_KEY="test-only-key-with-over-32-characters-abcdef";
+  for(const signature of ["é".repeat(43),"a".repeat(42)+"💧","!".repeat(43),"a".repeat(42)+"="]){
+   const value="e30."+signature;
+   assert.equal(validAdminAccess(value,"owner-1"),false);
+   assert.equal(validAdminEntry(value),false);
+  }
+ }finally{if(old===undefined)delete process.env.LAUNDRY_CARD_ENCRYPTION_KEY;else process.env.LAUNDRY_CARD_ENCRYPTION_KEY=old;}
+});
 test("session grants are signed and bound to verified user",()=>{
  const old=process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
  try{
