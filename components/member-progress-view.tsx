@@ -3,7 +3,7 @@ import MemberProgressRefresh from "@/components/member-progress-refresh";
 import type {PublicTransaction} from "@/lib/laundry/public-history";
 type Props={name?:string|null;number:string;total:number;year:number;points:number|null;balancesFailed:boolean;
  years:{year:number;href:string}[];transactions:PublicTransaction[];historyFailed:boolean;
- page:number;previousHref?:string;nextHref?:string;promos:{title:string}[]};
+ page:number;previousHref?:string;nextHref?:string;promos:{title:string;terms?:string|null;expires_at?:string|null}[]};
 const money=(n:number)=>"Rp"+new Intl.NumberFormat("id-ID").format(n);
 const date=(s:string)=>new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(new Date(s));
 export default function MemberProgressView(p:Props){
@@ -39,7 +39,11 @@ export default function MemberProgressView(p:Props){
    <p className="member-note member-history-note">Poin dihitung dari nominal saat transaksi dicatat dan disesuaikan jika transaksi dibatalkan. Saldo setiap tahun ditampilkan terpisah.</p>
   </section>
   <section className="member-promos" aria-labelledby="member-promos-title"><h2 id="member-promos-title">Promo member</h2>
-   {p.promos.length?<ul className="member-public-promos">{p.promos.slice(0,20).map((v,i)=><li key={i}>{v.title}</li>)}</ul>:<p className="member-note">Belum ada promo pada kartu ini.</p>}
+   {p.promos.length?<ul className="member-public-promos">{p.promos.slice(0,20).map((v,i)=><li key={i}>
+    <strong>{v.title}</strong>
+    {v.terms&&<p className="member-promo-terms">{v.terms}</p>}
+    <small>{v.expires_at?"Berlaku sampai "+date(v.expires_at)+" WIB":"Tanpa tanggal berakhir"}</small>
+   </li>)}</ul>:<p className="member-note">Belum ada promo pada kartu ini.</p>}
   </section>
   <footer className="member-public-foot">Simpan QR untuk penggunaan pribadi. Jika ada transaksi yang tidak sesuai, hubungi petugas laundry.</footer>
  </div></main>;
