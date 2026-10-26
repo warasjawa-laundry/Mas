@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   if (process.env.VERCEL_ENV !== "preview" ||
-      process.env.VERCEL_GIT_COMMIT_REF !== QA_PREVIEW_REF) {
+      (process.env.VERCEL_GIT_COMMIT_REF !== QA_PREVIEW_REF &&
+       process.env.LAUNDRY_DATABASE_MODE !== "single")) {
     return new Response(null, { status: 404 });
   }
 
