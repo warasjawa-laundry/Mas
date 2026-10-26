@@ -3,6 +3,7 @@
 import {useState} from "react";
 import {useFormStatus} from "react-dom";
 import {recordAmountVisit} from "@/app/admin/points/actions";
+import {unstable_rethrow} from "next/navigation";
 
 type Tier={minimum:number;points:number};
 type Props={memberName?:string;memberId:string;requestId:string;memberActive:boolean;tiers:Tier[];year:number};
@@ -28,8 +29,13 @@ export default function AmountVisitForm({memberName,memberId,requestId,memberAct
  const validDesc=description.trim().length>=3&&description.trim().length<=240&&!hasControlCharacters;
  async function saveTransaction(formData:FormData){
    setSaveError("");
-   const result=await recordAmountVisit(formData);
-   setSaveError(result.error);
+   try{
+    const result=await recordAmountVisit(formData);
+    setSaveError(result.error);
+   }catch(failure){
+    unstable_rethrow(failure);
+    setSaveError("Permintaan belum selesai. Periksa koneksi lalu coba lagi. Isian transaksi tetap tersedia di formulir ini.");
+   }
  }
  return <form action={saveTransaction} className="owner-amount-form" onSubmit={event=>{if(!review){event.preventDefault();setReview(true);}}}>
    <input type="hidden" name="memberId" value={memberId}/>
@@ -51,7 +57,7 @@ export default function AmountVisitForm({memberName,memberId,requestId,memberAct
    {review&&<div className="transaction-review"><span>Member</span><strong>{memberName}</strong><span>Nominal</span><strong>Rp{idr(value)}</strong><span>Keterangan</span><p>{description.trim()}</p></div>}
    <div className="owner-point-estimate" role="status">
      <span>Perkiraan poin · {year}</span>
-     <strong>{pointEstimate===null?"—":pointEstimate+" poin"}</strong>
+     <strong>{pointEstimate===null?<span>Belum dihitung</span>:pointEstimate+" poin"}</strong>
      <small>{validAmount?"Dari transaksi Rp"+idr(value)+". Periksa nominal sebelum menyimpan.":"Masukkan nominal untuk melihat poin otomatis."}</small>
    </div>
    {review?<ReviewActions onEdit={()=>setReview(false)} disabled={!memberActive || !validAmount || !validDesc || tiers.length!==5}/>:

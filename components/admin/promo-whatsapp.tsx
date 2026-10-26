@@ -72,9 +72,9 @@ export default function PromoWhatsapp(props:PromoWhatsappProps){
       ref={inputRef}
       id={`wa-message-${props.promoId}`}
       rows={9}
-      maxLength={2200}
+      maxLength={4000}
       value={message}
-      onChange={event=>{setMessage(event.target.value.slice(0,2200));setFeedback("");}}
+      onChange={event=>{setMessage(event.target.value);setFeedback("");}}
     />
     <div className="owner-wa-actions">
       <button type="button" className="admin-logout" disabled={!message.trim()} onClick={()=>void copyMessage()}>

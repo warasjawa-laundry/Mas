@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { requireOwner } from "@/lib/supabase/owner";
 import { cardIssuanceReady } from "@/lib/laundry/card";
 import { registerLaundryMember } from "@/app/admin/members/actions";
+import RecoverableForm from "@/components/admin/recoverable-form";
+import PendingSubmit from "@/components/admin/pending-submit";
 type Props={searchParams:Promise<{error?:string;requestId?:string}>};
 export default async function CreateMember({searchParams}:Props) {
   await requireOwner();
@@ -23,7 +25,7 @@ export default async function CreateMember({searchParams}:Props) {
       <p className="admin-hint">Cukup isi nama. Nomor WhatsApp tidak wajib.</p>
       {!ready && <p className="admin-error" role="alert">Kartu belum dapat diterbitkan. Hubungi pengelola sebelum menyimpan data.</p>}
       {err && <p className="admin-error" role="alert">{messages[err] || messages.save}</p>}
-      <form className="admin-form member-form" action={registerLaundryMember}>
+      <RecoverableForm className="admin-form member-form" action={registerLaundryMember}>
         <input type="hidden" name="requestId" value={requestId}/>
         <label htmlFor="member-name">Nama pelanggan *</label>
         <input id="member-name" name="name" minLength={2} maxLength={100} autoComplete="name" placeholder="Nama pelanggan" required disabled={!ready}/>
@@ -31,8 +33,8 @@ export default async function CreateMember({searchParams}:Props) {
         <input id="member-phone" name="whatsapp" type="tel" autoComplete="tel" placeholder="08xxxxxxxxxx" inputMode="tel" disabled={!ready}/>
         <label className="member-consent"><input type="checkbox" name="consent" disabled={!ready}/><span>Pelanggan setuju menerima pesan promo melalui WhatsApp</span></label>
         <p className="admin-helper">Persetujuan promo hanya dicatat, bukan pengiriman otomatis.</p>
-        <button type="submit" className="admin-primary" disabled={!ready}>Simpan & Lihat Kartu</button>
-      </form>
+        <PendingSubmit disabled={!ready} label="Simpan & Lihat Kartu"/>
+      </RecoverableForm>
       <p className="member-note">Memindai kartu QR tidak otomatis mencatat transaksi laundry.</p>
     </section>
   </main>;
