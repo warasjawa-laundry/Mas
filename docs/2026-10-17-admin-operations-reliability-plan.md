@@ -151,3 +151,99 @@ Evidence: `docs/2026-10-17-stage4-supabase-qa-checkpoint.md`. Neither customer d
 - [ ] Dedicated isolated Vercel QA project or safely linked branch-specific Preview must be configured, protected by Vercel Auth, using **only** `tnadzytuamdxfypoeggy`; user approval required for any new Vercel project.
 - [ ] Authenticated cross-page browser UAT and production release sign-off.
 Evidence: `docs/2026-10-17-stage5-concurrency-preview-blocker.md`.
+
+### Stage 5 update — Existing Preview QA branch isolation RESOLVED (2026-10-17 WIB)
+
+- [x] User confirmed: **use existing Vercel Preview**, no new project.
+- [x] Confirmed existing Vercel `mas` project is linked to `unyilhm1-hue/mas`, not the application code repo `warasjawa-laundry/Mas`.
+- [x] Created **branch name only** `feature/admin-operations-reliability-20261017` from the existing commit of linked repository `unyilhm1-hue/mas`; no source or `main` changes there.
+- [x] Created 8 Preview-only environment variables scoped to that branch. Supabase URL, publishable key and distinct AES key belong to QA `tnadzytuamdxfypoeggy`. No global Preview or production variable overwritten. Feature flags remain `0`.
+- [x] Implemented `assertQaPreviewIsolation()` before Auth, scan progress, and card encryption operations. Feature branch fails closed if it inherits shared Preview (possibly customer-connected) settings.
+- [x] Added `tests/qa-preview-isolation.test.mjs` with negative and positive cases. QR generation already points feature QA cards to feature-specific alias.
+- [ ] Run all CI checks on the guard+docs candidate and deploy only the exact passing SHA to same existing Vercel Preview alias; verify `bom1`, branch and environment isolation.
+- [ ] Create a genuine Auth user in **Supabase QA** using the official Auth admin UI/API, not direct SQL password mutation. Set the QA-only email to match `OWNER_AUTH_EMAIL` scoped variable; activate QA owner row separately.
+- [ ] Authenticated QA browser E2E (login → member → QR → transaction/point → void/promo). Do not run against customer preview/main.
+- [ ] Obtain explicit authorization for any customer SQL migration, feature activation or production publication.
+
+Details: `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.
+
+### Stage 5 — QA Preview deployment READY; UAT gate pending (2026-10-17)
+
+## Deployment certification checkpoint — 2026-10-17
+- [x] Six PR #12 GitHub Actions workflows **SUCCESS** for exact deployment source SHA `6bb3d436f7d98ab717f8d6822b9bbf54d1081c65`.
+- [x] Manual existing-project Preview deployment `dpl_A9vYE1PD5wNKTNH4iQ1Eym829zNu` **READY** with functions in Mumbai `bom1`.
+- [x] Verified source Git branch `feature/admin-operations-reliability-20261017`, SHA `6bb3d43`, and stable QA alias `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app`.
+- [x] Verified main Preview alias still points to `dpl_3qF3NBniMjH9ka1LCY9jAFuJyM2z`, not the QA deployment; main shared Preview configuration untouched.
+- [x] QA Supabase remains empty of auth users, owners, members and cards; original two seed year rules remain.
+- [ ] **Runtime isolation attestation**: after signing into Vercel team session, open `https://mas-git-feature-admin-operat-e444d5-m8traders-projects-081d9dc2.vercel.app/api/qa-readiness`; must return HTTP 200 `{"qaPreviewIsolation":"configured"}`. External unauthenticated retrieval is blocked by Vercel protection and cannot be treated as verified.
+- [ ] Provision a real QA Auth owner in Supabase `tnadzytuamdxfypoeggy` via supported Auth management, set matching branch-only email and owner account row, then authenticated browser UAT.
+- [ ] QA feature flags remain OFF; source guard in draft PR #12 is not merged to production `main`. No production DB migrations executed.
+
+**Important:** READY/6 green CI workflows validate the deployment, not a successful authenticated browser transaction. Never test against the Vercel main alias or production database.
+
+### Stage 5 checkpoint — screenshot confirms QA runtime configuration (2026-10-17)
+
+- [x] User opened protected Vercel branch QA readiness endpoint and shared screenshot showing `{"qaPreviewIsolation":"configured"}`.
+- [x] Branch runtime isolation check recognized expected QA project URL and marker. This does **not** certify Supabase Auth credentials, database operations or browser UAT.
+- [x] Isolated QA database remains free of Auth users, owner grants and member records on read-only inspection.
+- [x] QA Auth enrollment procedure and outstanding gate recorded in `docs/2026-10-17-stage5-preview-qa-isolation-checkpoint.md`.
+- [ ] Create real QA-only Auth user with controlled email through Supabase Authentication dashboard; do not share password.
+- [ ] Set QA branch email, grant only that user owner status in QA, redeploy branch and complete Auth/transaction UAT.
+- [ ] Keep customer database and official hosting unchanged; do not merge QA guard PR #12 until browser UAT is certified.
+
+### 2026-10-17 QA owner provisioning checkpoint
+
+- [x] User created **one real Supabase Auth user** in project `tnadzytuamdxfypoeggy` using the Auth administration interface.
+- [x] Verified the only user is non-anonymous and email-confirmed; one corresponding active `public.laundry_owner_accounts` record provisioned **in QA only** with strict identity and zero-existing-owner guards.
+- [x] Verified QA counts by read-only SQL: Auth users `1`, active owner rows `1`, confirmed active owners `1`, members `0`, cards `0`. No production or customer data touched.
+- [!] Branch-specific Vercel variable `OWNER_AUTH_EMAIL` **still contains the placeholder**. Attempt to change it via connected management API was blocked by tool safety validation; the user must update this variable in Vercel Settings. No successful change or redeployment may be claimed.
+- [ ] In Vercel project `mas`, Settings → Environment Variables, edit ONLY the `OWNER_AUTH_EMAIL` entry with `Preview` and Git Branch `feature/admin-operations-reliability-20261017`. Set to the same confirmed email as the new QA Auth user. Never edit the shared Preview entry; never put the password into Vercel.
+- [ ] Manually redeploy from the current PR #12 source branch to existing Vercel Preview after user confirms the branch-specific email is updated. Verify deployment metadata, `/api/qa-readiness` and owner login before any data-writing UAT.
+- [ ] Finish authenticated UAT with a synthetic QA member; leave Stage 10 flags disabled until ready.
+
+### Stage 11 — Hide rule editor and make point policy database-managed (2026-10-17)
+- [x] Removed all edit entry points from member page, sidebar and dashboard; old `/admin/points/rules` direct link returns 404.
+- [x] Removed rule editing/year-setup Server Actions, preserved explicit transaction entry, read-only point estimate and balances.
+- [x] Added SQL migration to revoke public/private policy RPC execution and point-table writes from browser/API roles; **applied only to QA**.
+- [x] Supabase QA regression: anonymous, authenticated and service roles denied editing/initialization; authenticated still can read thresholds and record transactions.
+- [x] Seven GitHub workflows PASS at code SHA `18a2441` including ephemeral PostgreSQL privilege and concurrency gate.
+- [x] Protected branch-only Vercel Preview READY `dpl_AJE5PpTScpG83N8UNX4yU8fUJ1Wc`, region `bom1`; main alias unchanged.
+- [ ] Mobile screenshot verification by operator; test owner login and actual recording with isolated fixture.
+- [ ] Production rollout remains blocked pending explicit authorization for customer database Stage 11 migration.
+
+Documentation: `docs/2026-10-17-stage11-db-only-point-rules-checkpoint.md`.
+
+### Stage 12 — Fresh admin login on refresh and public reentry (2026-10-17)
+- [x] Audit source: Supabase SSR cookies were persistent and login page auto-skipped when `getVerifiedOwner()` succeeded.
+- [x] Require new password to enter admin via full document navigation/refresh, public-side client transition or restored browser history, while internal admin tab changes remain available.
+- [x] Session-specific HMAC cookie bound to verified owner, explicit local signout and cookie expiry; login ID prefilled, password empty.
+- [x] Browser-history guard, root navigation boundary, no-store admin headers, and login password clearing on BFCache restore.
+- [x] Unit/security and Playwright regression coverage; seven GitHub workflows PASS on exact code `91ca7ec8`.
+- [x] Existing QA Vercel Preview READY: `dpl_9zzq3jBNW4CZdHsEqMm2B8e7ivdL`, Mumbai; main Preview unchanged.
+- [ ] Operator login/refresh/homepage/back navigation real authenticated Android UAT.
+- [ ] PR #12 merge and production rollout blocked until separate approval.
+
+Details: `docs/2026-10-17-stage12-admin-fresh-auth-boundary.md`.
+
+### Stage 13 — Mobile Kartu Member entry/scroll restoration (2026-10-17)
+- [x] Screenshot and code audit: public member entry could retain a deep scroll position with menu overlay, hiding the QR scanner and admin entry.
+- [x] Native document navigation on all homepage/header/footer member-entry links; all other public links unchanged.
+- [x] Explicit membership scroll reset on entry and browser page restore (but respect the `#scan-kartu` anchor).
+- [x] Show **Scan QR Kartu** and **Masuk Admin** compactly near the top; remove duplicate lower admin entry.
+- [x] Mobile Playwright reproduction and regression tests plus source-level contracts.
+- [x] All seven GitHub workflows PASS at code SHA `52c7f00`.
+- [x] Protected existing Vercel QA Preview READY `dpl_8Xej8XTcYd5XsRavkVK99rd6n1MR`; preview main alias unchanged.
+- [ ] User mobile device visual confirmation; PR #12 remains DRAFT, no production release.
+
+Full checkpoint: `docs/2026-10-17-stage13-membership-landing-navigation.md`.
+
+### Stage 14 — Bahasa homepage dan Kartu Member (2026-10-17)
+- [x] Audit 8 berkas copy UI/SEO/pesan QR; **em dash tidak ditemukan**. En dash pada durasi dan jam dipertahankan.
+- [x] 55 penggantian copy dibuat untuk menghapus slogan abstrak, pengulangan dan campuran istilah.
+- [x] Fakta paket, status member, izin promo WhatsApp, sifat QR read-only dan aturan poin tidak berubah.
+- [x] Tes regresi editorial ditambahkan; **7/7 CI PASS** pada code SHA `72deca8`.
+- [x] Preview QA READY, deployment `dpl_5owefDQAzfZbH9nnj5J9YWsuVq3E`, region `bom1`, alias QA terverifikasi; Preview `main` tidak berubah.
+- [ ] Verifikasi kalimat dan tampilan pada perangkat Android oleh pemilik.
+- [ ] Rilis/merge belum disetujui. Tidak ada perubahan di production.
+
+Dokumentasi: `docs/2026-10-17-stage14-public-copy-antislop.md`.

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import SiteAdminBoundary from "@/components/admin/site-admin-boundary";
 import { assets, site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -8,16 +9,17 @@ export const metadata: Metadata = {
     default: "Mas Jawa Laundry | Laundry Kiloan & Satuan di Kandang Jati Kulon",
     template: "%s | Mas Jawa Laundry",
   },
-  description: "Mas Jawa Laundry melayani laundry kiloan dan satuan di Kandang Jati Kulon. Lihat daftar harga, layanan, lokasi, dan hubungi langsung melalui WhatsApp.",
+  description: "Informasi harga laundry kiloan dan satuan Mas Jawa Laundry di Kandang Jati Kulon, lokasi, dan kontak WhatsApp.",
   alternates: { canonical: "/" },
-  robots: { index: true, follow: true },
+  verification: { google: "XQz0UL0rQ7ULMEegfQWFxImJpJWBh7mEW8Ied_zJwXE" },
+  robots: { index: process.env.VERCEL_ENV !== "preview", follow: true },
   openGraph: {
     type: "website",
     locale: "id_ID",
     url: site.baseUrl,
     siteName: site.name,
     title: "Mas Jawa Laundry | Kiloan & Satuan",
-    description: "Lihat layanan, harga dan cara menghubungi Mas Jawa Laundry.",
+    description: "Lihat tarif laundry kiloan dan satuan, alamat, serta kontak WhatsApp Mas Jawa Laundry.",
     images: [{ url: assets.og, alt: "Mas Jawa Laundry" }],
   },
   icons: { icon: assets.logo },
@@ -34,7 +36,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id">
-      <body>{children}</body>
+      <body><SiteAdminBoundary />{children}</body>
     </html>
   );
 }

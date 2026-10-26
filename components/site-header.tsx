@@ -5,7 +5,7 @@ import { siteHref } from "@/lib/navigation";
 
 const nav = [
   { href: "/#layanan", text: "Layanan & Harga" },
-  { href: "/#keunggulan", text: "Tentang Kami" },
+  { href: "/#keunggulan", text: "Cara Laundry" },
   { href: "/membership", text: "Kartu Member" },
   { href: "/#kontak", text: "Lokasi" },
 ];
@@ -19,9 +19,11 @@ export function SiteHeader() {
           <span className="brand-copy"><strong>Mas Jawa</strong><small>LAUNDRY</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Navigasi utama">
-          {nav.map((item) => <Link key={item.href} href={siteHref(item.href)}>{item.text}</Link>)}
+          {nav.map((item) => item.href === "/membership"
+            ? <a key={item.href} href={siteHref(item.href)}>{item.text}</a>
+            : <Link key={item.href} href={siteHref(item.href)}>{item.text}</Link>)}
         </nav>
-        <a className="header-contact" href={whatsappLink("Halo Mas Jawa Laundry, saya mau tanya layanan laundry.")} target="_blank" rel="noopener noreferrer">Hubungi WhatsApp <span aria-hidden="true">↗</span></a>
+        <a className="header-contact" href={whatsappLink("Halo, saya ingin tanya tentang layanan Mas Jawa Laundry.")} target="_blank" rel="noopener noreferrer">Hubungi WhatsApp <span aria-hidden="true">↗</span></a>
         <details className="mobile-nav">
           <summary aria-label="Buka menu navigasi">Menu <span aria-hidden="true">☰</span></summary>
           <nav aria-label="Navigasi mobile" className="mobile-nav-list">

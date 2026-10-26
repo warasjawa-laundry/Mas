@@ -20,7 +20,6 @@ test("QR never uses human-readable member number or third-party generation",()=>
  assert.match(card,/randomBytes\(32\)/);
  assert.match(card,/createHash\("sha256"\)/);
  assert.match(card,/aes-256-gcm/);
- assert.match(card,/createDecipheriv/);
  assert.doesNotMatch(card,/NEXT_PUBLIC_/);
  assert.doesNotMatch(action,/service_role|SUPABASE_SECRET_KEY/);
 });

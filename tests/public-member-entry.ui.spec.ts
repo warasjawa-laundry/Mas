@@ -9,7 +9,7 @@ test("mobile header Kartu Member opens usable access page",async ({page})=>{
   await expect(page.getByRole("heading",{name:"Sudah punya kartu member?"})).toBeVisible();
   await expect(page.getByRole("button",{name:"Buka Kamera"})).toBeVisible();
   await expect(page.getByRole("button",{name:"Pilih Foto QR"})).toBeVisible();
-  await expect(page.getByRole("link",{name:/Masuk ke pengelolaan kartu member/})).toHaveAttribute("href","/admin/login");
+  await expect(page.locator(".member-entry-actions").getByRole("link",{name:/Masuk Admin/})).toHaveAttribute("href","/admin/login");
 });
 
 test("customer QR entry needs no owner session and renders without horizontal overflow",async ({page})=>{

@@ -40,9 +40,10 @@ test("mobile menu reveals relevant navigation without requiring JS-only disclosu
   await expect(page.getByRole("heading", { name: "Sudah punya kartu member?" })).toBeVisible();
 });
 
-test("membership info is honest before member backend launches", async ({ page }) => {
+test("approved membership page shows final copy and preserves metadata", async ({ page }) => {
   await page.goto("/membership", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Program sedang disiapkan.", { exact: false })).toBeVisible();
+  await expect(page.getByText(/program sedang disiapkan|kartu uji coba|preview/i)).toHaveCount(0);
+  await expect(page.getByText("Scan QR untuk melihat poin, riwayat transaksi, dan promo member.", {exact:false})).toBeVisible();
   await expect(page.locator("meta[property='og:url']")).toHaveAttribute(
     "content", "https://masjawalaundry.web.id/membership"
   );

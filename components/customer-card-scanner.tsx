@@ -2,6 +2,7 @@
 
 import {useEffect, useRef, useState, type ChangeEvent} from "react";
 import {useRouter} from "next/navigation";
+import {decodeLaundryQrImage} from "@/lib/laundry/qr-image";
 import {extractLaundryToken} from "@/lib/laundry/scan";
 
 type CameraControls = {stop:()=>void};
@@ -20,6 +21,7 @@ export default function CustomerCardScanner(){
   const imagePicker=useRef<HTMLInputElement>(null);
   const cameraControls=useRef<CameraControls|null>(null);
   const cameraAttempt=useRef(0);
+  const imageAttempt=useRef<AbortController|null>(null);
   const mounted=useRef(true);
   const decoding=useRef(false);
   const navigated=useRef(false);
@@ -32,6 +34,7 @@ export default function CustomerCardScanner(){
     mounted.current=true;
     return ()=>{
       mounted.current=false;
+      imageAttempt.current?.abort();
       cameraAttempt.current++;
       cameraControls.current?.stop();
       cameraControls.current=null;
@@ -55,7 +58,7 @@ export default function CustomerCardScanner(){
     const token=extractLaundryToken(raw);
     if(!token){
       stopCamera();
-      setError("QR tersebut bukan kartu Mas Jawa Laundry. Coba foto kartu yang benar.");
+      setError("QR ini tidak dikenali sebagai kartu Mas Jawa Laundry. Periksa kembali foto atau kartu yang dipindai.");
       return;
     }
     navigated.current=true;
@@ -68,13 +71,13 @@ export default function CustomerCardScanner(){
     if(starting || reading || cameraOpen || decoding.current || navigated.current)return;
     setError("");
     if(!navigator.mediaDevices?.getUserMedia){
-      setError("Kamera tidak tersedia di browser ini. Pilih foto QR dari galeri HP.");
+      setError("Kamera tidak bisa digunakan di browser ini. Pilih foto QR dari galeri HP.");
       return;
     }
     const attempt=++cameraAttempt.current;
     setStarting(true);
     try {
-      const {BrowserQRCodeReader}=await import("@zxing/browser");
+      const {BrowserQRCodeReader}=await import("@zxing/browser/esm/readers/BrowserQRCodeReader");
       if(!mounted.current || cameraAttempt.current!==attempt || !cameraVideo.current)return;
       const scanner=new BrowserQRCodeReader();
       const controls=await scanner.decodeFromVideoDevice(undefined,cameraVideo.current,(result,_error,control)=>{
@@ -90,7 +93,7 @@ export default function CustomerCardScanner(){
       setCameraOpen(true);
     }catch{
       if(mounted.current && cameraAttempt.current===attempt){
-        setError("Kamera tidak dapat dibuka. Izinkan akses kamera, atau pilih foto QR.");
+        setError("Kamera tidak bisa dibuka. Periksa izin kamera atau gunakan foto QR.");
         setCameraOpen(false);
       }
     }finally{
@@ -110,20 +113,16 @@ export default function CustomerCardScanner(){
     setError("");
     decoding.current=true;
     setReading(true);
-    let objectUrl:string|null=null;
+    const attempt=new AbortController();imageAttempt.current=attempt;
     try{
-      const {BrowserQRCodeReader}=await import("@zxing/browser");
-      if(!mounted.current)return;
-      objectUrl=URL.createObjectURL(file);
-      // Image contents are decoded locally; the photo is never uploaded.
-      const qr=await new BrowserQRCodeReader().decodeFromImageUrl(objectUrl);
-      if(mounted.current)openCard(qr.getText());
+      const text=await decodeLaundryQrImage(file,attempt.signal);
+      if(mounted.current)openCard(text);
     }catch{
       if(mounted.current && !navigated.current){
-        setError("QR tidak terbaca. Coba screenshot lebih jelas atau gunakan kamera.");
+        setError("QR belum terbaca. Pastikan QR terlihat utuh dan gambar tidak buram, lalu pilih foto lagi.");
       }
     }finally{
-      if(objectUrl)URL.revokeObjectURL(objectUrl);
+      if(imageAttempt.current===attempt)imageAttempt.current=null;
       decoding.current=false;
       if(mounted.current && !navigated.current)setReading(false);
     }
@@ -132,11 +131,7 @@ export default function CustomerCardScanner(){
   return <section className="customer-card-scanner" aria-labelledby="customer-scan-heading">
     <div className="customer-scan-heading">
       <h2 id="customer-scan-heading">Sudah punya kartu member?</h2>
-      <p>Scan QR pada kartu atau pilih screenshot QR dari galeri untuk melihat jumlah transaksi dan promo milik kartu Anda.</p>
-    </div>
-    <div className={"customer-camera"+(cameraOpen||starting?" customer-camera-active":"")}>
-      <video ref={cameraVideo} muted playsInline autoPlay aria-label="Pratinjau kamera untuk memindai kartu member"/>
-      {!cameraOpen && <span>{starting?"Membuka kamera…":"QR kartu member Mas Jawa Laundry"}</span>}
+      <p>Pindai QR pada kartu atau pilih fotonya dari galeri. Anda bisa melihat jumlah transaksi dan promo yang tercatat.</p>
     </div>
     {error && <p className="customer-scan-error" role="alert">{error}</p>}
     <div className="customer-scan-actions">
@@ -153,6 +148,10 @@ export default function CustomerCardScanner(){
         {reading?"Membaca QR…":"Pilih Foto QR"}
       </button>
     </div>
-    <p className="customer-scan-note">Foto diproses di HP dan tidak diunggah. Scan hanya membuka informasi kartu; transaksi hanya dicatat oleh petugas.</p>
+    <div className={"customer-camera"+(cameraOpen||starting?" customer-camera-active":"")}>
+      <video ref={cameraVideo} muted playsInline autoPlay aria-label="Kamera untuk memindai kartu member"/>
+      {!cameraOpen && <span>{starting?"Membuka kamera…":"Pilih kamera atau foto QR dari galeri"}</span>}
+    </div>
+    <p className="customer-scan-note">Foto diperiksa di HP dan tidak dikirim ke server. Pemindaian QR hanya menampilkan catatan kartu, bukan mencatat transaksi baru.</p>
   </section>;
 }

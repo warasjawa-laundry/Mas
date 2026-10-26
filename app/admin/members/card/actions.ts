@@ -8,6 +8,21 @@ import {
 
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+export async function issueImportedMemberCard(formData:FormData) {
+ const {supabase}=await requireOwner();
+ const memberId=String(formData.get("memberId")??"");
+ if(!uuid.test(memberId))redirect("/admin/members");
+ const back="/admin/members/"+memberId+"/card";
+ if(!cardIssuanceReady())redirect(back+"?issueError=unavailable");
+ const token=newCardToken();
+ const {data,error}=await supabase.rpc("laundry_issue_imported_member_card",{
+  p_member_id:memberId,p_token_digest_hex:tokenDigest(token),
+  p_token_ciphertext_hex:encryptCardToken(token)
+ });
+ if(error||typeof data!=="string"||!uuid.test(data))redirect(back+"?issueError=save");
+ redirect(back);
+}
+
 export async function reissueOwnerCard(formData:FormData) {
  const {supabase}=await requireOwner();
  const memberId=String(formData.get("memberId")??"");

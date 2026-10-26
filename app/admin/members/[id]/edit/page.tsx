@@ -21,13 +21,15 @@ export default async function EditMember({params,searchParams}:Props) {
   const {id}=await params;
   if(!validUUID.test(id))notFound();
   const notice=await searchParams;
-  const [memberR,changesR]=await Promise.all([
+  const [memberR,changesR,importR]=await Promise.all([
     supabase.from("laundry_members")
-      .select("id,member_number,display_name,whatsapp_e164,whatsapp_promo_consent,whatsapp_consent_at,member_edit_revision,is_active")
+      .select("id,member_number,display_name,whatsapp_e164,whatsapp_promo_consent,whatsapp_consent_at,member_edit_revision,is_active,address")
       .eq("id",id).maybeSingle(),
     supabase.from("laundry_member_contact_events")
       .select("id,action,name_changed,phone_changed,consent_before,consent_after,created_at")
-      .eq("member_id",id).order("created_at",{ascending:false}).limit(8)
+      .eq("member_id",id).order("created_at",{ascending:false}).limit(8),
+    supabase.from("laundry_member_import_rows").select("source_phone,phone_needs_review")
+      .eq("member_id",id).eq("phone_needs_review",true).limit(1)
   ]);
   if(memberR.error || !memberR.data)notFound();
   const member=memberR.data;
@@ -36,10 +38,7 @@ export default async function EditMember({params,searchParams}:Props) {
     new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Jakarta"}).format(new Date(member.whatsapp_consent_at))+" WIB":null;
 
   return <main className="admin-workspace">
-    <header className="admin-topbar">
-      <Link href={"/admin/members/"+id} className="admin-brand">← Kembali ke Member</Link>
-      <Link href="/admin/members">Daftar Member</Link>
-    </header>
+    <nav className="admin-breadcrumb" aria-label="Kembali"><Link href={"/admin/members/"+id}>← Kembali ke Member</Link></nav>
     <section className="admin-content owner-member-edit">
       <p className="admin-kicker">DATA MEMBER</p>
       <h1>Ubah Data Member</h1>
@@ -50,6 +49,8 @@ export default async function EditMember({params,searchParams}:Props) {
       {notice.result==="unchanged" && <p className="admin-success" role="status">Tidak ada perubahan data.</p>}
       {notice.error && <p className="admin-error" role="alert">{errors[notice.error]||errors.save}</p>}
       {!member.is_active && <p className="admin-error" role="alert">Member ini tidak aktif. Data tidak dapat diedit.</p>}
+      {member.address&&<p className="member-note">Alamat: {member.address}</p>}
+      {importR.data?.[0]&&!member.whatsapp_e164&&<p className="admin-error" role="alert">Nomor dari Excel perlu diperiksa: {importR.data[0].source_phone}. Masukkan nomor yang benar pada kolom WhatsApp di bawah.</p>}
 
       <form action={updateMemberContact} className="owner-edit-card">
         <input type="hidden" name="memberId" value={id}/>
