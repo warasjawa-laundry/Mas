@@ -19,7 +19,7 @@ test("only owner confirmation can ADD or VOID visit, each using request UUID",()
  assert.match(actions,/laundry_record_visit/);
  assert.match(actions,/laundry_void_visit/);
  assert.match(detail,/<AmountVisitForm/);
- assert.match(read("components/admin/amount-visit-form.tsx"),/action={recordAmountVisit}/);
+ assert.match(read("components/admin/amount-visit-form.tsx"),/await recordAmountVisit\(formData\)/);
  assert.match(read("components/admin/amount-visit-form.tsx"),/Simpan transaksi/);
  assert.match(detail,/action=\{correctOwnerVisit\}/);
  assert.match(sql,/on conflict\(request_id\) do nothing/i);

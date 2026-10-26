@@ -22,7 +22,7 @@ test("five database-managed nominal bands with year-isolated default rules",()=>
  assert.doesNotMatch(member,/Atur nominal & poin/);
 });
 test("owner manually confirms amount, description and preview points before adding a visit",()=>{
- assert.match(form,/action=\{recordAmountVisit\}/);
+ assert.match(form,/await recordAmountVisit\(formData\)/);
  assert.match(form,/name="amountIdr"/);
  assert.match(form,/name="description"/);
  assert.match(form,/Perkiraan poin/);

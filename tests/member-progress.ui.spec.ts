@@ -33,3 +33,13 @@ test("unavailable history is distinguished from a genuine empty year",async({pag
  await page.setContent(`<style>${css}</style>${renderToStaticMarkup(out.exports.default({...props,transactions:[],points:0}))}`);
  await expect(page.getByText("Belum ada transaksi pada tahun ini.")).toBeVisible();await expect(page.getByRole("alert")).toHaveCount(0);
 });
+
+for(const width of [320,390,1440])test(`available promotion includes terms and WIB expiry at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});
+ await page.setContent(`<style>body{margin:0}${css}</style>${renderToStaticMarkup(out.exports.default({...props,promos:[{title:'Diskon cuci 10%',terms:'Sekali untuk layanan reguler',expires_at:'2026-12-31T16:59:59Z'},{title:'Gratis antar',terms:null,expires_at:null}]}))}`);
+ const promos=page.getByRole('region',{name:'Promo member'});
+ await expect(promos.getByText('Sekali untuk layanan reguler',{exact:true})).toBeVisible();
+ await expect(promos.getByText('Berlaku sampai 31 Des 2026, 23.59 WIB',{exact:true})).toBeVisible();
+ await expect(promos.getByText('Tanpa tanggal berakhir',{exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+});

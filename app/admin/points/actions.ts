@@ -15,7 +15,7 @@ export async function recordAmountVisit(formData:FormData){
   const desc=String(formData.get("description")??"").trim();
   if(!whole.test(amountText)||Number(amountText)<1||Number(amountText)>1_000_000_000||
     desc.length<3||desc.length>240||/[\x00-\x1f\x7f]/.test(desc)){
-    redirect("/admin/members/"+memberId+"?error=amount&amountRequestId="+requestId);
+    return {error:"Periksa nominal transaksi dan isi keterangan 3–240 karakter dalam satu baris, tanpa Enter atau tab."};
   }
 
   const {data,error}=await supabase.rpc("laundry_record_amount_visit",{
@@ -25,8 +25,9 @@ export async function recordAmountVisit(formData:FormData){
     p_request_id:requestId
   });
   if(error || !Array.isArray(data) || data.length!==1){
-    const suffix=error?.message?.includes("point_year_not_configured")?"rules":"save";
-    redirect("/admin/members/"+memberId+"?error="+suffix+"&amountRequestId="+requestId);
+    return {error:error?.message?.includes("point_year_not_configured")
+      ?"Aturan poin tahun ini belum tersedia. Hubungi pengelola. Isian transaksi tetap tersimpan di formulir ini."
+      :"Transaksi belum berhasil disimpan. Periksa koneksi lalu coba lagi. Isian transaksi tetap tersimpan di formulir ini."};
   }
   redirect("/admin/members/"+memberId+"?amountRecorded=1&pointsEarned="+(Number(data[0].points_awarded)||0));
 }
