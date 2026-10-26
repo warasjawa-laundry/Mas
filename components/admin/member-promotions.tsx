@@ -1,6 +1,7 @@
 import { grantManualPromo, finishManualPromo } from "@/app/admin/promotions/actions";
 import PendingSubmit from "@/components/admin/pending-submit";
 import PromoWhatsapp from "@/components/admin/promo-whatsapp";
+import RecoverableForm from "@/components/admin/recoverable-form";
 
 type Promotion = {
   id:string;title:string;terms:string|null;status:string;
@@ -51,7 +52,7 @@ export default function MemberPromotions({
    {error && <p className="admin-error" role="alert">{descriptions[error]??descriptions.save}</p>}
    <details className="owner-promo-create" open={!!error||promos.length===0}>
      <summary>+ Berikan Promo</summary>
-     <form action={grantManualPromo} className="owner-promo-form">
+     <RecoverableForm action={grantManualPromo} className="owner-promo-form">
        <input type="hidden" name="memberId" value={memberId}/>
        <input type="hidden" name="requestId" value={requestId}/>
        <p>Promo untuk <strong>{memberName}</strong>.</p>
@@ -67,7 +68,7 @@ export default function MemberPromotions({
        <p className="member-note">Tanggal berakhir pada pukul 23.59 WIB. Tidak ada pemberitahuan WhatsApp otomatis.</p>
        <PendingSubmit label="Simpan Promo untuk Member"/>
        </fieldset>
-     </form>
+     </RecoverableForm>
    </details>
    {loadFailed ? <p className="admin-error" role="alert">Daftar promo belum dapat dimuat. Coba lagi.</p>
     : !promos.length ? <p className="member-note owner-promo-empty">Belum ada promo untuk member ini.</p>
@@ -88,15 +89,15 @@ export default function MemberPromotions({
             whatsappConsent={whatsappConsent} memberActive={memberActive}/>
         </details>}
         {p.status==="AVAILABLE" && memberActive && <div className="owner-promo-actions">
-          {!expired&&<details className="owner-promo-use"><summary>Tandai Digunakan</summary><p>Pastikan member sudah menggunakan promo ini. Status akan berubah menjadi Digunakan.</p><form action={finishManualPromo}>
+          {!expired&&<details className="owner-promo-use"><summary>Tandai Digunakan</summary><p>Pastikan member sudah menggunakan promo ini. Status akan berubah menjadi Digunakan.</p><RecoverableForm action={finishManualPromo}>
             <input type="hidden" name="memberId" value={memberId}/>
             <input type="hidden" name="promoId" value={p.id}/>
             <input type="hidden" name="action" value="USE"/>
             <PendingSubmit className="admin-logout" label="Konfirmasi penggunaan"/>
-          </form></details>}
+          </RecoverableForm></details>}
           <details className="owner-promo-cancel">
             <summary>Batalkan Promo</summary>
-            <form action={finishManualPromo}>
+            <RecoverableForm action={finishManualPromo}>
               <input type="hidden" name="memberId" value={memberId}/>
               <input type="hidden" name="promoId" value={p.id}/>
               <input type="hidden" name="action" value="CANCEL"/>
@@ -104,7 +105,7 @@ export default function MemberPromotions({
               <input id={"promo-reason-"+p.id} name="reason" minLength={3} maxLength={500}
                 placeholder="Contoh: promo salah diberikan" required/>
               <PendingSubmit className="admin-logout" label="Konfirmasi Pembatalan"/>
-            </form>
+            </RecoverableForm>
           </details>
         </div>}
       </li>;

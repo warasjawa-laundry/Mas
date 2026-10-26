@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { assets, site, whatsappLink } from "@/lib/site";
 import { siteHref } from "@/lib/navigation";
+import MobileNavigation from "@/components/mobile-navigation";
 
 const nav = [
   { href: "/#layanan", text: "Layanan & Harga" },
@@ -24,13 +25,12 @@ export function SiteHeader() {
             : <Link key={item.href} href={siteHref(item.href)}>{item.text}</Link>)}
         </nav>
         <a className="header-contact" href={whatsappLink("Halo, saya ingin tanya tentang layanan Mas Jawa Laundry.")} target="_blank" rel="noopener noreferrer">Hubungi WhatsApp <span aria-hidden="true">↗</span></a>
-        <details className="mobile-nav">
-          <summary aria-label="Buka menu navigasi">Menu <span aria-hidden="true">☰</span></summary>
+        <MobileNavigation>
           <nav aria-label="Navigasi mobile" className="mobile-nav-list">
             {nav.map((item) => <Link key={item.href} href={siteHref(item.href)}>{item.text}</Link>)}
             <a href={whatsappLink("Halo Mas Jawa Laundry, saya mau tanya layanan laundry.")} target="_blank" rel="noopener noreferrer">Hubungi WhatsApp ↗</a>
           </nav>
-        </details>
+        </MobileNavigation>
       </div>
     </header>
   );

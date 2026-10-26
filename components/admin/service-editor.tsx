@@ -3,11 +3,18 @@ import {useActionState} from "react";
 import {formatPrice,type Service} from "@/lib/services/catalog";
 import {saveService} from "@/app/admin/settings/services/actions";
 import PendingSubmit from "@/components/admin/pending-submit";
+import {unstable_rethrow} from "next/navigation";
 type Props={service:Partial<Service>;newId?:string;categories:string[]};
+async function saveWithRecovery(previous:{error:string},data:FormData){
+ try{return await saveService(previous,data)}catch(failure){
+  unstable_rethrow(failure);
+  return {error:"Permintaan belum selesai. Periksa koneksi lalu coba lagi. Isian layanan tetap tersedia di formulir ini."};
+ }
+}
 export default function ServiceEditor({service:s,newId,categories}:Props){
  const id=s.id??newId!;
- const [state,action,pending]=useActionState(saveService,{error:""});
- return <form action={action} className="service-editor admin-form">
+ const [state,action,pending]=useActionState(saveWithRecovery,{error:""});
+ return <form action={action} className="service-editor admin-form" onReset={event=>event.preventDefault()}>
   {state.error&&<p className="admin-error" role="alert">{state.error}</p>}
   <fieldset className="service-fields" disabled={pending}>
   <input type="hidden" name="id" value={id}/><input type="hidden" name="revision" value={s.revision??0}/>

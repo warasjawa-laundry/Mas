@@ -17,7 +17,7 @@ export async function grantManualPromo(formData: FormData) {
 
   if (title.length<3 || title.length>120 || terms.length>2000 ||
       (expires && !/^\d{4}-\d{2}-\d{2}$/.test(expires))) {
-    redirect("/admin/members/"+memberId+"?promoError=invalid&promoRequestId="+requestId);
+    return {error:"Periksa judul, ketentuan, dan tanggal berlaku promo. Isian tetap tersedia di formulir ini."};
   }
 
   let expiresAt: string|null=null;
@@ -27,10 +27,10 @@ export async function grantManualPromo(formData: FormData) {
     if(Number.isNaN(date.getTime()) ||
        new Date(date.getTime()+7*3600000).toISOString().slice(0,10)!==expires) {
       // Safeguard against malformed dates and timezone rollover.
-      redirect("/admin/members/"+memberId+"?promoError=invalid&promoRequestId="+requestId);
+      return {error:"Periksa tanggal berlaku promo. Isian tetap tersedia di formulir ini."};
     }
     expiresAt=date.toISOString();
-    if(date.getTime()<=Date.now())redirect("/admin/members/"+memberId+"?promoError=invalid&promoRequestId="+requestId);
+    if(date.getTime()<=Date.now())return {error:"Pilih tanggal berlaku promo hari ini atau setelahnya."};
   }
 
   const { data,error }=await supabase.rpc("laundry_grant_manual_promotion",{
@@ -38,7 +38,7 @@ export async function grantManualPromo(formData: FormData) {
     p_expires_at:expiresAt,p_request_id:requestId
   });
   if(error||typeof data!=="string") {
-    redirect("/admin/members/"+memberId+"?promoError=save&promoRequestId="+requestId);
+    return {error:"Promo belum berhasil disimpan. Periksa koneksi lalu coba lagi. Isian tetap tersedia di formulir ini."};
   }
   redirect("/admin/members/"+memberId+"?promo=created");
 }
@@ -50,13 +50,13 @@ export async function finishManualPromo(formData:FormData) {
   const action=String(formData.get("action")??"");
   const reason=String(formData.get("reason")??"").trim();
   if(!uuid.test(memberId)||!uuid.test(promoId))redirect("/admin/members");
-  if(!["USE","CANCEL"].includes(action))redirect("/admin/members/"+memberId+"?promoError=invalid");
+  if(!["USE","CANCEL"].includes(action))return {error:"Pilih tindakan promo yang valid."};
   if(action==="CANCEL"&&(reason.length<3||reason.length>500))
-    redirect("/admin/members/"+memberId+"?promoError=reason");
+    return {error:"Alasan pembatalan harus 3–500 karakter."};
 
   const {data,error}=await supabase.rpc("laundry_finish_manual_promotion",{
     p_member_id:memberId,p_promotion_id:promoId,p_action:action,p_reason:action==="CANCEL"?reason:null
   });
-  if(error||data!==true)redirect("/admin/members/"+memberId+"?promoError=finish");
+  if(error||data!==true)return {error:"Status promo belum berhasil diubah. Periksa statusnya lalu coba lagi. Isian tetap tersedia di formulir ini."};
   redirect("/admin/members/"+memberId+"?promo="+(action==="USE"?"used":"cancelled"));
 }

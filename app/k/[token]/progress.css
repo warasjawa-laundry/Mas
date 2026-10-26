@@ -48,6 +48,8 @@
 .member-public-promos li{margin:8px 0;overflow-wrap:anywhere}
 .member-public-promos li>small{display:block;color:#536274;margin-top:4px}
 .member-public .member-promo-terms{margin:4px 0;white-space:pre-line}
+.member-recovery-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.member-recovery-actions a{display:inline-flex;align-items:center;min-height:44px;padding:10px 14px;border:1px solid #b6a3ce;border-radius:7px;color:#51278b;font-weight:600}
 .member-public-foot {font-size:12px;line-height:1.65;color:#536274;border-top:1px solid #e0e4eb;padding-top:20px;margin-top:28px}
 .member-public :focus-visible{outline:3px solid #a080d1;outline-offset:3px}
 @media(max-width:480px){.member-public{padding:16px 12px 32px}.member-public-shell{padding:20px 16px}.member-point-primary,.member-count{padding:14px;gap:8px}.member-point-primary>strong,.member-count>strong{font-size:28px}.member-history-list li{padding:14px}.member-transaction-values{gap:8px}.member-transaction-points{font-size:13px}.member-transaction-top{font-size:11px;gap:8px}}

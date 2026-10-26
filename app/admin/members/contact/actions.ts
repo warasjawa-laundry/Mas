@@ -18,7 +18,7 @@ export async function updateMemberContact(formData:FormData) {
     name=validateMemberName(String(formData.get("name")??""));
     phone=normalizeWhatsapp(String(formData.get("whatsapp")??""));
   }catch{
-    redirect(back+"?error=invalid");
+    return {error:"Periksa nama dan nomor WhatsApp. Isian perubahan tetap tersedia di formulir ini."};
   }
   const consentAction=String(formData.get("consentAction")??"");
   const customerConfirmed=formData.get("customerConfirmed")==="on";
@@ -28,7 +28,7 @@ export async function updateMemberContact(formData:FormData) {
      !/^(0|[1-9][0-9]{0,14})$/.test(expectedRaw) || !Number.isSafeInteger(expected))redirect(back+"?error=invalid");
 
   if(consentAction==="GRANT" && (!phone || !customerConfirmed)) {
-    redirect(back+"?error=consent");
+    return {error:"Masukkan nomor WhatsApp dan konfirmasi persetujuan pelanggan untuk mengaktifkan promo."};
   }
   const {data,error}=await supabase.rpc("laundry_update_member_contact",{
     p_member_id:memberId,
@@ -40,8 +40,9 @@ export async function updateMemberContact(formData:FormData) {
     p_request_id:requestId
   });
   if(error || (data!=="UPDATED" && data!=="UNCHANGED")) {
-    const code=error?.message?.includes("member_modified_reload")?"conflict":"save";
-    redirect(back+"?error="+code);
+    return {error:error?.message?.includes("member_modified_reload")
+      ?"Data member sudah berubah dari perangkat lain. Salin isian perubahan sebelum memuat ulang dan memeriksa data terbaru."
+      :"Perubahan belum berhasil disimpan. Periksa koneksi lalu coba lagi. Isian tetap tersedia di formulir ini."};
   }
   redirect(back+"?result="+(data==="UPDATED"?"saved":"unchanged"));
 }

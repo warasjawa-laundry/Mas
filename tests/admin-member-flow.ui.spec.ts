@@ -14,10 +14,12 @@ function component(path:string,extra:Record<string,unknown>={}){
 }
 const Directory=component("components/admin/member-directory-list.tsx");
 const Nav=component("components/admin/member-task-nav.tsx");
+const RecoverableForm=component("components/admin/recoverable-form.tsx");
 const Promos=component("components/admin/member-promotions.tsx",{
  "@/app/admin/promotions/actions":{grantManualPromo:()=>{},finishManualPromo:()=>{}},
  "@/components/admin/pending-submit":{default:({label,className="admin-primary"}:Record<string,string>)=>createElement("button",{className,type:"submit"},label)},
  "@/components/admin/promo-whatsapp":{default:()=>null},
+ "@/components/admin/recoverable-form":{default:RecoverableForm},
 });
 const css=readFileSync("app/globals.css","utf8").replace(/^@import[^\n]*\n/,"")+"\n"+readFileSync("app/admin/admin.css","utf8");
 const memberId="00000000-0000-4000-8000-000000000012";

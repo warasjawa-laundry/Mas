@@ -12,8 +12,8 @@ export default async function AdminHome() {
     supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("event_type","ADD"),
     supabase.from("laundry_checklist_events").select("id",{count:"exact",head:true}).eq("event_type","VOID"),
   ]));
-  const memberCount = membersR.error ? "—" : String(membersR.count ?? 0);
-  const visitCount = addedR.error || voidR.error ? "—" : String(Math.max(0,(addedR.count ?? 0)-(voidR.count ?? 0)));
+  const memberCount = membersR.error ? null : String(membersR.count ?? 0);
+  const visitCount = addedR.error || voidR.error ? null : String(Math.max(0,(addedR.count ?? 0)-(voidR.count ?? 0)));
 
   return <main className="admin-workspace">
     <section className="admin-content admin-home" aria-labelledby="dashboard-title">
@@ -27,8 +27,8 @@ export default async function AdminHome() {
         <div className="admin-scan-alternative"><span>Atau gunakan kartu member</span><Link href="/admin/scan" prefetch={false}>Scan QR <span aria-hidden="true">→</span></Link></div>
       </section>
       <div className="admin-home-stats" aria-label="Ringkasan seluruh data">
-        <div><span>Member aktif</span><strong>{memberCount}</strong></div>
-        <div><span>Total transaksi</span><strong>{visitCount}</strong><small>Seluruh periode, setelah pembatalan</small></div>
+        <div><span>Member aktif</span>{memberCount===null?<p className="member-note">Belum dimuat</p>:<strong>{memberCount}</strong>}</div>
+        <div><span>Total transaksi</span>{visitCount===null?<p className="member-note">Belum dimuat</p>:<strong>{visitCount}</strong>}<small>Seluruh periode, setelah pembatalan</small></div>
       </div>
       {(membersR.error||addedR.error||voidR.error) &&
         <p role="status" className="admin-error">Sebagian ringkasan belum berhasil dimuat. Scan dan pencarian member tetap dapat digunakan.</p>}

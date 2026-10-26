@@ -9,11 +9,11 @@
 .admin-form{display:flex;flex-direction:column;gap:9px}
 .admin-form label{font-size:14px;font-weight:700;margin-top:6px}
 .admin-form input{width:100%;min-height:50px;padding:12px 14px;border:1px solid #b5c1d0;border-radius:10px;font-size:16px;background:white;color:#1b2637}
-.admin-form input:focus{outline:3px solid #e7d8ff;border-color:#6d28d9}
+.admin-form input:focus{outline:3px solid #6d28d9;outline-offset:2px;border-color:#6d28d9}
 .admin-primary{background:#6d28d9;color:white;border:0;border-radius:11px;min-height:50px;font-weight:700;cursor:pointer;margin-top:18px;padding:12px 20px}
 .admin-primary:hover{background:#5922b3}.admin-password-field{position:relative}
 .admin-password-field input{padding-right:112px}
-.admin-show-password{position:absolute;right:8px;top:6px;min-height:38px;border:0;border-radius:8px;background:#f3f1f8;color:#4d2d83;cursor:pointer;padding:4px 11px;font-size:13px}
+.admin-show-password{position:absolute;right:4px;top:3px;min-height:44px;min-width:44px;border:0;border-radius:8px;background:#f3f1f8;color:#4d2d83;cursor:pointer;padding:4px 11px;font-size:13px}
 .admin-footnote{border-top:1px solid #e8ecf1;padding-top:20px;margin:27px 0 0;color:#637186;font-size:12px}
 .admin-error,.admin-success{padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5}.admin-error{background:#fff0f0;border:1px solid #f6caca;color:#923e3e}.admin-success{background:#eaf8ee;color:#176b45;border:1px solid #b8e2c5}
 .admin-workspace{min-height:100vh}
@@ -179,7 +179,7 @@
 .owner-wa-panel textarea{display:block;width:100%;min-width:0;box-sizing:border-box;
   font:inherit;font-size:16px;line-height:1.6;resize:vertical;
   border:1px solid #bcc6d6;border-radius:10px;background:#fff;color:#172337;padding:13px}
-.owner-wa-panel textarea:focus-visible{outline:3px solid #e4d7fa;border-color:#6d28d9}
+.owner-wa-panel textarea:focus-visible{outline:3px solid #6d28d9;outline-offset:2px;border-color:#6d28d9}
 .owner-wa-actions{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
 .owner-wa-actions>*{flex:1 1 140px;min-height:48px!important;
   display:flex;align-items:center;justify-content:center;text-align:center;
@@ -220,7 +220,7 @@
 .owner-edit-card>label:not(.owner-consent-attestation){font-size:14px;font-weight:800;color:#1b2637}
 .owner-edit-card>input:not([type=hidden]),.owner-edit-card>select{width:100%;min-width:0;box-sizing:border-box;min-height:50px;padding:11px 13px;border:1px solid #b9c4d3;border-radius:10px;font:inherit;font-size:16px;color:#1b2637;background:white}
 .owner-edit-card>select{white-space:normal;max-width:100%}
-.owner-edit-card input:focus-visible,.owner-edit-card select:focus-visible{outline:3px solid #e3d7f5;border-color:#6d28d9}
+.owner-edit-card input:focus-visible,.owner-edit-card select:focus-visible{outline:3px solid #6d28d9;outline-offset:2px;border-color:#6d28d9}
 .owner-edit-card>.admin-helper{color:#667587;font-size:13px;line-height:1.55;margin:0 0 10px}
 .owner-consent-current{display:grid;gap:5px;border-radius:12px;background:#f6f3fb;border:1px solid #e6def2;padding:15px;margin:7px 0}
 .owner-consent-current strong{font-size:14px}
@@ -262,7 +262,7 @@
 .owner-amount-form input{min-height:52px}
 .owner-amount-form textarea{min-height:88px;resize:vertical}
 .owner-amount-form input:focus-visible,.owner-amount-form textarea:focus-visible,
-.owner-point-rule-form input:focus-visible{outline:3px solid #dacef4;outline-offset:2px}
+.owner-point-rule-form input:focus-visible{outline:3px solid #6d28d9;outline-offset:2px}
 .owner-point-estimate{background:#f6f1fd;border:1px solid #e6d9f8;border-radius:12px;padding:15px;display:grid;gap:5px}
 .owner-point-estimate>span{font-size:13px;font-weight:700}
 .owner-point-estimate>strong{font-size:24px;color:#57258e;font-variant-numeric:tabular-nums}
@@ -510,7 +510,8 @@
 .member-directory-list>li{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #e3e7ee}
 .member-directory-list>li:last-child{border-bottom:0}
 .member-directory-identity{min-width:0}
-.member-directory-name{display:inline-flex;min-height:36px;align-items:center;font-weight:650;color:#263246;font-size:15px;overflow-wrap:anywhere}
+.member-directory-name{display:inline-flex;min-height:44px;align-items:center;font-weight:650;color:#263246;font-size:15px;overflow-wrap:anywhere}
+.owner-point-estimate strong>span{font-size:14px;font-weight:500}
 .member-directory-identity p{font-size:12px;color:#536274;margin:2px 0 0;line-height:1.6}
 .member-directory-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 .member-directory-record{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 14px;background:#6032b0;color:#fff!important;border-radius:7px;font-size:13px;font-weight:600}

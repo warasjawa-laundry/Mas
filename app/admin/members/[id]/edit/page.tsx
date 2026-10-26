@@ -4,6 +4,8 @@ import {notFound} from "next/navigation";
 import {requireOwner} from "@/lib/supabase/owner";
 import {memberNumber} from "@/lib/laundry/card";
 import {updateMemberContact} from "@/app/admin/members/contact/actions";
+import RecoverableForm from "@/components/admin/recoverable-form";
+import PendingSubmit from "@/components/admin/pending-submit";
 
 type Props={
   params:Promise<{id:string}>;
@@ -52,7 +54,7 @@ export default async function EditMember({params,searchParams}:Props) {
       {member.address&&<p className="member-note">Alamat: {member.address}</p>}
       {importR.data?.[0]&&!member.whatsapp_e164&&<p className="admin-error" role="alert">Nomor dari Excel perlu diperiksa: {importR.data[0].source_phone}. Masukkan nomor yang benar pada kolom WhatsApp di bawah.</p>}
 
-      <form action={updateMemberContact} className="owner-edit-card">
+      <RecoverableForm action={updateMemberContact} className="owner-edit-card">
         <input type="hidden" name="memberId" value={id}/>
         <input type="hidden" name="requestId" value={randomUUID()}/>
         <input type="hidden" name="expectedRevision" value={member.member_edit_revision}/>
@@ -75,7 +77,7 @@ export default async function EditMember({params,searchParams}:Props) {
         <label htmlFor="edit-member-consent">Perubahan izin promo</label>
         <select id="edit-member-consent" name="consentAction" defaultValue="KEEP" disabled={!member.is_active}>
           <option value="KEEP">Pertahankan status saat ini (jika nomor tidak berubah)</option>
-          <option value="GRANT">Aktifkan — pelanggan sudah menyetujui</option>
+          <option value="GRANT">Aktifkan (pelanggan sudah menyetujui)</option>
           <option value="REVOKE">Cabut izin menerima promo</option>
         </select>
         <label className="owner-consent-attestation">
@@ -84,10 +86,10 @@ export default async function EditMember({params,searchParams}:Props) {
         </label>
         <p className="admin-helper">Memilih Pertahankan tidak otomatis mengaktifkan izin. Mengubah nomor akan mencabut izin lama; memilih Aktifkan membutuhkan konfirmasi di atas. Website tidak mengirim pesan otomatis.</p>
         <div className="owner-edit-actions">
-          <button type="submit" className="admin-primary" disabled={!member.is_active}>Simpan Perubahan</button>
+          <PendingSubmit label="Simpan Perubahan" disabled={!member.is_active}/>
           <Link href={"/admin/members/"+id} className="admin-logout">Batal</Link>
         </div>
-      </form>
+      </RecoverableForm>
 
       <section className="owner-contact-history" aria-labelledby="member-contact-history-heading">
         <h2 id="member-contact-history-heading">Riwayat perubahan data</h2>
