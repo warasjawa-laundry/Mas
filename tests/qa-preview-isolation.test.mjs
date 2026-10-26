@@ -14,6 +14,14 @@ const preview = {
   VERCEL_GIT_COMMIT_REF: QA_PREVIEW_REF,
 };
 
+test("explicit single-project mode uses only the operational database",()=>{
+ const single={...preview,LAUNDRY_DATABASE_MODE:"single",SUPABASE_URL:OPERATIONAL_SUPABASE_ORIGIN,SUPABASE_PUBLISHABLE_KEY:"synthetic-public-key"};
+ assert.doesNotThrow(()=>assertQaPreviewIsolation(single));
+ for(const override of [{SUPABASE_URL:QA_SUPABASE_ORIGIN},{SUPABASE_PUBLISHABLE_KEY:undefined},{QA_BRANCH_ISOLATION:QA_SUPABASE_PROJECT}]){
+  assert.throws(()=>assertQaPreviewIsolation({...single,...override}),/Single-project database/);
+ }
+});
+
 test("QA Preview fails closed on missing branch override", () => {
   for(const extra of [
     {},

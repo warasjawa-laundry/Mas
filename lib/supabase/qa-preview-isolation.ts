@@ -12,6 +12,13 @@ export const QA_SUPABASE_ORIGIN = "https://tnadzytuamdxfypoeggy.supabase.co";
 export const OPERATIONAL_SUPABASE_ORIGIN = "https://hncfyfvqtlnvqyfrydzb.supabase.co";
 
 export function assertQaPreviewIsolation(env: NodeJS.ProcessEnv = process.env): void {
+  if(env.LAUNDRY_DATABASE_MODE==="single"){
+    if(env.SUPABASE_URL!==OPERATIONAL_SUPABASE_ORIGIN||
+       !env.SUPABASE_PUBLISHABLE_KEY||env.QA_BRANCH_ISOLATION){
+      throw new Error("Single-project database is not configured");
+    }
+    return;
+  }
   // Production must never inherit the QA database or its branch marker.
   if (env.VERCEL_ENV === "production") {
     if (env.SUPABASE_URL !== OPERATIONAL_SUPABASE_ORIGIN ||

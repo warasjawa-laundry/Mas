@@ -1,11 +1,12 @@
 import "server-only";
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { createCipheriv, createHash, randomBytes } from "node:crypto";
+import { decryptCardWithKeys } from "@/lib/laundry/card-crypto";
 import { cardOriginForEnvironment } from "@/lib/laundry/card-origins";
 import { assertQaPreviewIsolation } from "@/lib/supabase/qa-preview-isolation";
 
 function getCardKey() {
   assertQaPreviewIsolation();
-  const key = process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
+  const key = process.env.LAUNDRY_CARD_ENCRYPTION_KEY_OPERATIONAL || process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
   if (!key) throw new Error("Card encryption is not configured");
   const material = Buffer.from(key, "base64");
   if (material.length !== 32 || material.toString("base64") !== key)
@@ -33,16 +34,13 @@ export function encryptCardToken(token: string) {
   return Buffer.concat([iv, body, cipher.getAuthTag()]).toString("hex");
 }
 export function decryptCardToken(hex: string) {
-  if (!/^[a-f0-9]+$/.test(hex) || hex.length < 56 || hex.length > 4096)
-    throw new Error("Invalid ciphertext");
-  const bytes = Buffer.from(hex, "hex");
-  const decipher = createDecipheriv("aes-256-gcm", getCardKey(), bytes.subarray(0, 12));
-  decipher.setAuthTag(bytes.subarray(bytes.length - 16));
-  const token = Buffer.concat([
-    decipher.update(bytes.subarray(12, bytes.length - 16)), decipher.final()
-  ]).toString("utf8");
-  if (!validCardToken(token)) throw new Error("Invalid decrypted token");
-  return token;
+  const primary=getCardKey();
+  const legacyValue=process.env.LAUNDRY_CARD_ENCRYPTION_KEY_OPERATIONAL
+    ?process.env.LAUNDRY_CARD_ENCRYPTION_KEY:undefined;
+  const legacy=legacyValue?Buffer.from(legacyValue,"base64"):undefined;
+  if(legacy&&(legacy.length!==32||legacy.toString("base64")!==legacyValue))
+    throw new Error("Invalid legacy card key material");
+  return decryptCardWithKeys(hex,primary,legacy);
 }
 export function memberNumber(value: number | string) {
   return "MJL-" + String(value).padStart(6, "0");

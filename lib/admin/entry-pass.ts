@@ -8,7 +8,7 @@ const ENTRY_MAX_AGE_MS = 60*1000;
 function secret(): string | null {
   // Reuse existing server-only high-entropy key, with domain separation so the
   // derived MAC cannot be confused with any QR encryption operation.
-  const value=process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
+  const value=process.env.LAUNDRY_CARD_ENCRYPTION_KEY_OPERATIONAL || process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
   return value && value.length>=32 ? value : null;
 }
 function mac(body:string,purpose:string):string|null{

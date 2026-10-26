@@ -15,6 +15,9 @@ export async function GET() {
   const headers = { "Cache-Control": "no-store, max-age=0" };
   try {
     assertQaPreviewIsolation();
+    if(process.env.LAUNDRY_DATABASE_MODE==="single"){
+      return NextResponse.json({qaPreviewIsolation:"retired",databaseMode:"single"},{headers});
+    }
     // Intentionally excludes URLs, credentials, cookies, member data and tokens.
     // Shows configuration safety only; it does not certify login or RPC access.
     return NextResponse.json({ qaPreviewIsolation: "configured" }, { headers });
