@@ -497,6 +497,7 @@
 .promo-fields{display:grid;gap:10px;border:0;padding:0;margin:0;min-width:0}
 .promo-fields:disabled{opacity:.6}
 .owner-promo-use{max-width:100%;flex:1 1 180px}
+@media(max-width:440px){.owner-promo-use{flex:0 1 auto}}
 .owner-promo-use>summary{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border:1px solid #ccd3df;border-radius:7px;color:#4f2a87;cursor:pointer;font-size:14px}
 .owner-promo-use>p{font-size:13px;color:#536274;line-height:1.6;margin:12px 0}
 .owner-promo-use button{width:100%}

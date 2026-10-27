@@ -38,6 +38,11 @@ for(const width of [320,390,1440])test(`compact member directory and explicit pr
  await page.setContent(shell(`<h1>Nama Contoh</h1><p class="admin-hint">MJL-000006 · Member aktif</p>${renderToStaticMarkup(Nav({memberId,view:"promo"}))}${renderToStaticMarkup(Promos({memberId,memberName:"Nama Contoh",requestId:"synthetic",memberActive:true,whatsappPhone:null,whatsappConsent:false,loadFailed:false,promos:[{id:"synthetic-promo",title:"Diskon cuci 10%",terms:"Sekali untuk layanan reguler",status:"AVAILABLE",created_at:"2026-10-17T00:00:00Z",expires_at:null}]}))}`));
  await expect(page.getByRole("link",{name:"Promo",exact:true})).toHaveAttribute("aria-current","page");
  await expect(page.getByRole("button",{name:"Konfirmasi penggunaan"})).toBeHidden();
+ if(width<=440){
+  const useAction=await page.locator(".owner-promo-use>summary").boundingBox();
+  const cancelAction=await page.locator(".owner-promo-cancel>summary").boundingBox();
+  expect(cancelAction!.y-(useAction!.y+useAction!.height)).toBeLessThanOrEqual(20);
+ }
  await page.getByText("Tandai Digunakan",{exact:true}).click();
  await expect(page.getByRole("button",{name:"Konfirmasi penggunaan"})).toBeVisible();
  await page.getByText("+ Berikan Promo",{exact:true}).click();
