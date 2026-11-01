@@ -1,7 +1,7 @@
 "use server";
 import {cashierRpcAccess} from "@/lib/pos/g4-server";
 export type NamedCashierMember={memberNumber:string;displayName:string};
-/** PII-minimal prefix lookup; never sends customer phone, address or card credentials. */
+/** PII-minimal prefix lookup: only public-facing name and member number. */
 export async function findCashierMembers(raw:string):Promise<NamedCashierMember[]>{
  if(typeof raw!=="string"||raw.length>60)return [];
  const prefix=raw.trim();
