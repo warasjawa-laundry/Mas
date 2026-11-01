@@ -47,9 +47,10 @@ export default async function CashierHome({ searchParams }: Props) {
       <p>{session.outlet_address}</p>
       <section role="status" style={{background:"#f3f4f8",padding:20,borderRadius:14}}>
         <strong>{session.write_enabled ? "Akses kasir aktif" : "Modul transaksi belum diaktifkan"}</strong>
-        <p>{session.write_enabled ? "Hak akses kasir akan dipakai oleh modul nota dan pembayaran ketika fitur tersedia." :
+        <p>{session.write_enabled ? "Modul nota dan status kerja telah disiapkan. Pembayaran dan poin masih menunggu G5." :
           "Pembuatan nota dan pembayaran belum tersedia. Data pelanggan dan poin produksi tidak berubah."}</p>
       </section>
+      <section style={{marginTop:20,padding:18,border:"1px solid #e2e8f0",borderRadius:14}}><h2 style={{marginTop:0}}>Pesanan Laundry</h2><p>Daftar nota, tambah pesanan, dan status cucian. Transaksi hanya akan aktif setelah gate POS dan database disetujui.</p><Link href="/kasir/pesanan" style={{fontWeight:750}}>Buka Daftar Pesanan</Link></section>
       <h2 style={{marginTop:24,fontSize:19}}>Hak akses yang diberikan pemilik</h2>
       <ul>{CASHIER_PERMISSIONS.filter(([key]) => hasCashierGrant(session.permissions,key)).map(([key,label]) => <li key={key}>{label}</li>)}</ul>
       <p style={{fontSize:12,color:"#64748b"}}>Sesi login berlaku maksimum 12 jam, atau lebih singkat jika owner mencabut perangkat. Perangkat perlu aktivasi owner kembali setelah tujuh hari.</p>

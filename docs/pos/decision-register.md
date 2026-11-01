@@ -23,7 +23,7 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 | Nominal contract for G2/G4 | BigInt utility implemented; focused red/green tests and independent review completed |
 | G2 RBAC/financial schema and legacy bridge | **Partial QA:** 17 POS tables, deny-by-default + RLS, 5 immutable triggers, read-only outlet RPC, actor FK now auth.users; SQL rollback regression passed. Authenticated owner/cashier UAT, payment RPC, production rollout and approval still pending. |
 | G3 owner login + cashier MAS-XXXX | **Partial QA:** satu outlet MJL, owner CRUD+izin, username urut tidak reuse, per-device paired username login, token sesi kedua, lockout/revoke, SQL+Node tests. Physical real-auth UAT, production migration and financial actor bridge pending. |
-| G4–G8 | Not implemented; keep payment/points write disabled and do not start a second outlet |
+| G4 create/read/work notes | **Implemented in isolated QA:** staff actor FK bridge, singleton invoice counter, member-number/guest, catalog-authoritative pricing, immutable command result, order list/detail, status transitions and HTML print. SQL rollback passes; still missing physical QR UAT, discount/delivery rules, concurrent race evidence, production migration authorization. |\n| G5–G8 | Not implemented; live payment/cash/point commands remain OFF; one outlet only |
 
 ## Owner decision: sequential cashier usernames (1 November 2026)
 
@@ -59,3 +59,7 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 The legacy checklist and audit event `actor_id` foreign keys point to `laundry_owner_accounts`. A cashier cannot insert a correctly attributed point event merely because a new POS helper accepts that cashier. Adding cashiers as active owners would be an unacceptable privilege escalation.
 
 Bridge FK di QA **sudah diterapkan secara terbatas**; sebelum operasi produksi tetap perlu review independen dan regresi owner/cashier terautentikasi. Catatan desain awal: point/audit actor references may need to target canonical `auth.users` while owner-only RPC authorization, base-table grants and RLS remain unchanged. Existing historical rows must not be rewritten and actor identities must not be fabricated. Member/card/promo owner-only constraints should remain unchanged unless separately required. This is a constraint change, not something to describe as “only adding new tables.” Add direct privilege, cashier attribution, owner regression and historical-FK tests before accepting it. No such migration has been applied to production or QA in this foundation patch.
+
+## G4 QA-only verification (1 November 2026)
+
+[Receipt](./g4-order-verification.md). No production Supabase mutation. The existing owner actor provenance is preserved; real MAS-XXXX staff is linked only to order creation/work events (G4), **not** payment/legacy point posting (G5 blocked). A single review/PR/CI batch includes the SQL migration, UI and tests.
