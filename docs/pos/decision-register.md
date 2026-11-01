@@ -12,17 +12,24 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 - Amount/line/subtotal/fees/final caps are Rp1 billion. A later discount does not rescue an overflowing subtotal. Quantities are capped at one million units per line, with at most 1,000 lines, to bound parsing/calculation. These technical limits are documented and tested; changing them needs synchronized DB validation.
 - Unknown item/adjustment/discount fields are rejected rather than silently ignored; a misspelled fee must not produce a successful lower quote.
 - New QA reconstructs only schema, migration seeds and rollback fixtures, not real customer rows or private consolidation payloads.
-- No global Preview env overwrite, new Vercel project or production release is used to work around a wrong Git connection. The G1 cloud gate remains pending until the existing project link is repaired.
+- Owner intentionally keeps existing Vercel `mas` Git connection to `unyilhm1-hue/mas` and requests **no staging/Preview**. Source work stays in `warasjawa-laundry/Mas`; use temporary PR branches merged to `main`, existing Production deployment only, and explicit SHA/domain verification. The previous reconnect requirement is superseded; cloud Preview is N/A by owner decision, not PASS.
 
 ## Task status
 
 | Task | Status |
 | --- | --- |
 | G0 source/data baseline | Read-only snapshot, source pin, schema/RPC inventory complete; reference screenshots/Excel and backup/restore evidence still pending |
-| G1 QA schema/code isolation | QA created, 17 migrations reconstructed, 8 SQL tests pass, code boundary hardening implemented; protected Preview configuration/UAT blocked by Git link |
+| G1 QA schema/code isolation | New QA active, 17 migrations and 8 SQL tests done, guard added; Preview N/A by owner decision, authenticated UAT/restore remain pending |
 | Nominal contract for G2/G4 | BigInt utility implemented; focused red/green tests and independent review completed |
 | G2 RBAC/financial schema and legacy bridge | Not implemented; actor FK constraint issue must be resolved in reviewed migration design |
 | G3–G8 | Not implemented; retain dependency gates |
+
+## Latest owner decisions — direct main workflow
+
+- Only one Vercel project `mas`; keep connected Git repository `unyilhm1-hue/mas` unchanged.
+- No Vercel Preview, staging or new deployment environment. Release reviewed partial features via `main` to existing Production; verify SHA and domain mapping after each merge; never turn on incomplete POS payments or point writes.
+- Screenshot references remain in `reference/binatu-ui-ux` (25 sanitized JPGs, commit `c17b043`), mapped from `docs/pos/evidence-manifest.md`.
+- Existing member, point, QR production records must remain intact. No live write testing.
 
 ## Newly verified G2 design issue
 

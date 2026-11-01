@@ -1,4 +1,4 @@
-# POS Mas Jawa Laundry Implementation Plan V2
+# POS Mas Jawa Laundry Implementation Plan V2 — revisi eksekusi 1 Nov 2026
 
 > **For agentic workers:** implementasikan per task memakai skill executing-plans; gunakan subagent-driven-development hanya bila delegasi dipilih. Dokumen ini adalah masterplan review, bukan izin migrasi atau release. Setiap paket implementasi harus menyertakan subplan kode dan tes sebelum dikerjakan.
 
@@ -10,9 +10,21 @@
 
 **Spec:** [rencana V1](./implementation-plan-v1.md), disempurnakan oleh [review V1](./review-v1.md). V2 menggantikan kontrak V1 yang ambigu. Tanggal revisi: 1 November 2026 WIB. Keputusan D01–D11 kemudian disahkan untuk implementasi; status eksekusinya ada pada [decision register](./decision-register.md).
 
+## Keputusan owner terbaru: alur source dan deployment (mengikat)
+
+1. **Satu repository kode utama:** `warasjawa-laundry/Mas`; setiap task memakai branch sementara dari `main`, lulus tes/review PR, lalu **langsung merge ke `main`**. Hindari branch kerja jangka panjang.
+2. **Satu proyek deployment:** Vercel `mas`, domain `masjawalaundry.web.id`, dan koneksi Git Vercel ke `unyilhm1-hue/mas` **tetap**, tidak di-reconnect. **Tidak membuat Vercel Preview/staging/proyek baru.** Setelah merge verifikasi commit SHA dan domain pada deployment Production aktual; koneksi Git berbeda artinya auto-deploy dari repository kode tidak boleh diasumsikan.
+3. **Deploy kode bertahap ke Production yang sama**, namun POS belum lengkap **tidak boleh diaktifkan**. Simpan `/admin/pos` dan terutama pembayaran/poin dalam keadaan tidak dapat diakses/ditulis sampai gate relevan dan persetujuan cutover. Flag database tetap wajib, bukan sekadar menyembunyikan tombol.
+4. **QA tetap terpisah pada tingkat database**, memakai Supabase `cwxsbgfjynwxqalwonae` untuk migrasi, concurrency, dan tes sintetis; tidak membuat staging website. Pelanggan dan kartu produksi tidak disalin ke QA. Guard fail-closed Preview/CI tetap dipertahankan walau tidak ada Preview aktif.
+5. **Referensi visual wajib:** [25 screenshot Binatu tersanitasi](./evidence-manifest.md) pada branch `reference/binatu-ui-ux`, commit `c17b043`. Alur dan tata letak kasir familier, perubahan hanya aditif untuk QR/member/poin; aset pihak ketiga tidak disalin.
+6. **Keputusan D01–D11 disetujui untuk implementasi** sebagaimana [decision register](./decision-register.md). Persetujuan coding dan merge `main` **bukan** persetujuan pembayaran/poin live atau cutover.
+7. **Baseline 1 Nov:** PR #17 pada `main` commit `92fbf5e` sudah memasukkan fondasi QA/kalkulator, **bukan** POS operasional; catat SHA HEAD baru tiap task. QA aktif `cwxsbgfjynwxqalwonae`; QA lama `tnadzytuamdxfypoeggy` tetap inactive.
+
+Ketentuan terbaru di atas **menggantikan** syarat Preview/reconnect serta status "keputusan belum disahkan" yang masih tersisa sebagai catatan historis dalam dokumen V2, tanpa menghapus gate keselamatan lain.
+
 ## 0. Status, lingkup dan aturan tetap
 
-- **Status:** draft desain hasil review, belum dibangun, belum disetujui untuk production cutover. Checkbox menunjukkan pekerjaan yang belum dilakukan.
+- **Status:** implementasi fondasi G0/G1 sebagian telah di-merge lewat PR #17; pekerjaan POS operasional belum diimplementasi/diaktifkan. PR per task boleh di-merge setelah tes, sedangkan activation/cutover masih memerlukan gate tersendiri.
 - **Tidak membuat website, domain, atau repository baru.** Aplikasi tetap `warasjawa-laundry/Mas`; area kasir berada pada `/admin/pos` sebelum navigasi lama diganti bertahap.
 - **Pertahankan identitas/data lama:** `laundry_members`, `laundry_member_cards`, `laundry_point_rules`, `laundry_amount_transactions`, `laundry_checklist_events`, `laundry_member_promotions`, nomor MJL dan URL QR lama.
 - **Satu member untuk seluruh outlet:** `laundry_members.id` adalah FK kanonis; nomor nota berbeda dari nomor member. Nama/HP yang sama tidak otomatis digabung.
@@ -29,10 +41,11 @@
 | --- | --- | --- |
 | Production Supabase `hncfyfvqtlnvqyfrydzb`, Mumbai | Identitas historis dari pekerjaan sebelumnya/V1; health saat ini belum dibaca ulang | Verifikasi org, region, health dan credential scope secara read-only |
 | QA lama `tnadzytuamdxfypoeggy` | Historis pernah berisi data nyata dan dipause | Pertahankan arsip; bukan tempat tes sintetis otomatis |
-| Main terakhir pada chat: `3bef1a50f132f6a5916a1109de5ab9c97c5f9e75` | Checkpoint rilis PR16, bukan klaim main terbaru | Freeze SHA remote aktual dan tree; catat waktu dan sumber |
+| QA POS baru `cwxsbgfjynwxqalwonae` | ACTIVE_HEALTHY; 17 migrasi lama direplay pada PR #17 | Khusus data/tes sintetis SQL; tanpa Vercel Preview baru |
+| `main` 1 November 2026 (PR #17) | HEAD terverifikasi `92fbf5e` (saat baseline), produksi Vercel READY | Pin SHA aktual baru sebelum tiap perubahan |
 | 785 member, 17 kartu aktif dan rekonsiliasi poin | Checkpoint 27 Oktober, bukan baseline 1 November | Snapshot konsisten baru; jangan mengharapkan jumlah tetap bila usaha berjalan |
 | Tier poin V1: 10k/25k/50k/100k/200k | Input dokumen; bukan hasil query baru dalam review ini | Baca tiers/revision aktual per tahun; runtime dilarang hardcode contoh |
-| 25 screenshot Binatu dan contoh Excel | Disebut V1; tidak tersedia pada lampiran review ini | Inventaris file, halaman, ukuran, field yang terbukti; jangan mengarang UI/header |
+| 25 screenshot Binatu | 25 JPG **tersanitasi**, tersedia di branch `reference/binatu-ui-ux` commit `c17b043`; tidak termasuk `main` | [Manifest dan layar](./evidence-manifest.md); bandingkan UX per layar, jangan publikasikan PII Excel |
 | Guard QA dan reauth admin | Dibaca dari salinan lokal `work/fix-ui-flows` | Cocokkan dengan SHA remote dan deployment sebelum menyimpulkan perilaku live |
 
 Baseline produksi harus memuat schema, fungsi, grants, RLS, migration history, counts, snapshot ledger dan saldo per member/tahun. Ambil snapshot dalam satu transaksi read-only consistent snapshot; hasil beberapa query di waktu berbeda tidak dianggap satu baseline. Perbandingan sesudah migrasi menggunakan snapshot baru dan daftar write bisnis sah di antara kedua waktu; alternatifnya gunakan maintenance window yang disetujui. Checksum disimpan privat, bukan PII/token di PR. Backup/restorability dibuktikan terpisah; checksum bukan backup.
@@ -51,6 +64,7 @@ Keterbatasan tersebut harus disetujui, bukan dianggap keputusan owner yang sudah
 
 - IDR disimpan `bigint`; API mengirim uang sebagai string bilangan bulat, misalnya `"93000"`. Kuantitas sebagai string desimal dengan maksimum tiga digit pecahan. Tolak exponent, NaN, tanda negatif, pemisah ribuan ambigu dan nilai di luar batas kontrak.
 - Usulan batas pilot: setiap nota dan setiap pembayaran paling banyak Rp1.000.000.000 agar sesuai batas jalur poin lama; agregat laporan tetap bigint/string. Batas disahkan di G2.
+- Normalisasi **satuan katalog lama** harus eksplisit: produksi memiliki `kg`, `meter`, dan `M` (karpet); kalkulator hanya `kg`, `m`, `pcs`. Adapter katalog mengubah `kg`→`kg`, `meter`/`M`→`m`, `pcs`/`satuan`→`pcs` untuk katalog masa depan; nilai tidak dikenal ditolak, tanpa migrasi data harga lama.
 - kg/m: kelipatan 0,001; pcs: bilangan bulat positif. Harga Rp/unit berupa integer non-negatif. Qty item harus positif; layanan gratis dimodelkan sebagai harga nol dengan alasan/izin.
 - Usulan rounding: `line_total = floor((price_idr * qty_milli + 500) / 1000)` untuk nilai non-negatif. Contoh Rp6.000 × 1,255 kg = Rp7.530; Rp3.500 × 0,001 m = Rp4. Jangan gunakan float JS untuk uang.
 - Jumlahkan line totals, tambahkan biaya, terapkan satu diskon nominal atau basis points persen menurut urutan yang disahkan. Usulan diskon persen dihitung atas subtotal layanan, tidak atas ongkir; round half-up per nota. Total tidak boleh negatif, diskon melebihi basis ditolak, tidak di-clamp diam-diam.
@@ -171,7 +185,7 @@ Setiap table exposed memiliki RLS/grants sesuai kebutuhan; default deny untuk an
 
 Guard sesi saat ini memaksa reauth pada document entry tertentu. Tetapkan kebijakan sebelum shell POS: mempertahankan kebijakan lama dengan draft recoverable, atau mengubah lewat review auth tersendiri. Refresh, dua tab, return WA dan timeout harus mempertahankan payload/request ID secara aman atau memungkinkan lookup server sesudah login. Draft finansial final berada di server; hindari raw QR, credential dan PII di localStorage.
 
-Semua Preview/CI write harus memiliki project allowlist QA serta memeriksa Vercel environment, DB URL/ref, key pairing dan setiap credential server/DB/service-role/storage. `LAUNDRY_DATABASE_MODE=single` tidak boleh meloloskan Preview ke operasional. Test dengan URL produksi, key produksi, URL QA+key salah, branch baru dan env hilang harus fail closed. Jangan mengklaim network egress isolated bila hanya URL env yang diperiksa; dokumentasikan enforcement yang benar-benar ada. Pemeriksaan production read-only harus dipisahkan dari runner write tests.
+**Tidak ada deployment Vercel Preview/staging menurut keputusan owner.** Guard existing tetap fail-closed terhadap Preview, CI, URL/key salah dan prod DB pada runner. QA SQL/RLS ditest pada Supabase QA independen, dan regression owner/member pada kode lokal/CI serta UAT terkontrol. G1 Preview lama ditandai **N/A oleh keputusan owner, bukan PASS**. Tes autentikasi/perangkat yang tadinya direncanakan di Preview tetap pending; jangan menyubstitusinya dengan write finansial produksi. Periksa SHA deployed pada Production setelah merge karena Git Vercel tetap terhubung ke repository berbeda. Jangan mengubah koneksi maupun env global.
 
 ## 7. UX, rute dan kompatibilitas
 
@@ -188,6 +202,8 @@ Semua Preview/CI write harus memiliki project allowlist QA serta memeriksa Verce
 | `/admin/staff`, `/admin/outlets` | Owner provisioning, reset lewat alur Auth, scope pegawai/outlet |
 | Route member/scan/rules lama | Tetap kompatibel, owner requirement tidak diperluas; link lama diuji |
 | `/membership`, `/k/[token]` | Tetap publik/read-only; token, consent, noindex/no-store/no-referrer dipertahankan |
+
+**Pemetaan layar 25 screenshot:** 01–02 daftar/menu kasir; 03–04 pilih pelanggan/durasi; 05–11 katalog layanan, +/- qty dan sticky total; 12–14 parfum/antar/diskon; 15–17 rincian/status/siap ambil; 18–20 draf WhatsApp/pembayaran; 21–22 mutasi kas; 23–25 manajer/login kasir/pegawai. Lihat [manifest](./evidence-manifest.md) untuk link gambar satu per satu. Lakukan perbandingan side-by-side viewport Android, navigasi dan posisi aksi utama, uji alur pegawai, dan catat pengecualian yang disetujui owner.
 
 Satu aksi utama per tahap; bottom sheet durasi punya keyboard/focus trap/Escape. Sticky total menunjukkan qty per unit, total dan Lanjut tanpa menutupi input/keyboard. Promo tidak otomatis menjadi diskon nota: penggunaan promo/discount benefit perlu linkage dan izin eksplisit; jangan menandai promo dipakai saat sekadar melihat QR.
 
@@ -216,7 +232,7 @@ Setiap task: buat tes perilaku yang gagal -> jalankan dan simpan bukti gagal -> 
 | Task | Files/output target | Urutan dan gate penerimaan |
 | --- | --- | --- |
 | G0 Baseline | `docs/pos/baseline.md`, `docs/pos/evidence-manifest.md`, `docs/pos/decision-register.md` | [ ] Freeze remote SHA/tree; [ ] verifikasi local vs remote; [ ] snapshot read-only konsisten; [ ] daftar seluruh routes/RPC; [ ] inventaris screenshot/Excel; [ ] sahkan keputusan G2. Tidak write produksi |
-| G1 Isolasi | `lib/supabase/qa-preview-isolation.ts`, `tests/pos-environment-isolation.test.mjs`, `docs/pos/environments.md` | [ ] Tes mode single/branch baru/env salah gagal; [ ] QA sintetis disediakan terpisah; [ ] semua runner write dikunci QA; [ ] synthetic restore/migration rehearsal dan credential segregation terbukti. Tidak mengubah produksi untuk menjalankan tes |
+| G1 Isolasi | `lib/supabase/qa-preview-isolation.ts`, `tests/pos-environment-isolation.test.mjs`, `docs/pos/environments.md` | [x] guard dan QA DB baru PR #17; [ ] restore rehearsal, credential-negative, RLS/concurrency dan UAT yang dibutuhkan. **Tidak membuat Preview** (N/A keputusan owner, bukan bukti pengujian lengkap). Tidak write produksi |
 | G2 Kontrak/DB | `docs/pos/contracts.md`, `docs/pos/permissions.md`, `supabase/migrations/` via migration tool, `supabase/tests/pos-contracts.sql` | [ ] ADR nominal/status/tahun/role/cutoff disahkan; [ ] fresh install + upgrade dari schema legacy; [ ] RLS/grants/direct API test; [ ] lock/idempotency primitive; [ ] advisor dan compatibility review. SQL test rollback-only bukan pengganti tes commit/concurrency |
 | G3 Auth/shell | `lib/supabase/pos-staff.ts`, `app/admin/pos/layout.tsx`, `app/admin/login/page.tsx`, `components/pos/navigation.tsx`, `tests/pos-auth.ui.spec.ts` | [ ] Test owner regression dan forbidden cashier; [ ] auth/sesi/draft recovery; [ ] outlet switch hanya scope sah; [ ] shell mobile/desktop sesuai referensi yang tersedia |
 | G4 Order | `lib/pos/money.ts`, `lib/pos/contracts.ts`, `app/admin/pos/orders/**`, `components/pos/order-wizard.tsx`, `tests/pos-money.test.mjs`, `tests/pos-order.ui.spec.ts` | [ ] Test qty/rounding/catalog conflict/duplicate create; [ ] customer+QR resolver tanpa write; [ ] create nota request-id stabil; [ ] work transitions dan print HTML. Belum ada award saat create |
@@ -243,7 +259,7 @@ Commands awal mengikuti repo: `npm test`, `npm run typecheck`, `npm run build`, 
 
 ## 10. Keputusan owner sebelum implementasi terkait
 
-Semua baris berstatus **usulan, belum disahkan**; review dokumen bukan persetujuan bisnis otomatis.
+**Owner telah menyetujui D01–D11 untuk implementasi pada 1 November 2026**, tercatat di decision register. Penetapan outlet pilot, cutoff, data awal, dan kesiapan perangkat masih wajib dikonfirmasi pada gate terkait. Persetujuan ini tidak menyalakan POS di Production.
 
 | ID | Usulan konkret | Gate |
 | --- | --- | --- |
@@ -263,10 +279,11 @@ G0 dan review dokumen boleh berlangsung tanpa menunggu semua keputusan. Task yan
 
 ## 11. Release, rollback dan Definition of Done
 
-- Gate GO: seluruh tests/CI hijau, DB migration/RLS review, UAT authenticated/fisik, restore rehearsal, env QA aman, baseline ledger historis terjaga dan keputusan bisnis/release tertulis. Monitoring punya penerima tindakan, query rekonsiliasi dan owner on-call; jangan sekadar menulis “monitor”.
+- **Alur release terbaru:** setiap task dari branch singkat → PR + tes + review → merge ke `main` → produksi melalui proyek Vercel `mas` yang sekarang. Tidak membuat deployment Preview/staging lain, tidak mengganti Git connection. Setelah merge cocokkan SHA Vercel Production + alias domain terhadap GitHub `main`, dan laporkan jika sinkronisasi tidak otomatis.
+- **Gate GO khusus aktivasi POS finansial:** seluruh tests/CI hijau, DB migration/RLS review, UAT authenticated/fisik, restore rehearsal, env QA aman, baseline ledger historis terjaga dan keputusan bisnis/release tertulis. Merge kode parsial ke `main` **bukan** izin mengaktifkan POS; DB write flag default off. Monitoring punya penerima tindakan, query rekonsiliasi dan owner on-call; jangan sekadar menulis “monitor”.
 - Urutan: deploy schema additive yang kompatibel dengan app lama -> deploy app flag-off -> verifikasi read-only -> tetapkan outlet/source of truth/cutoff -> enable DB-scoped write flag -> pilot -> reconcile shift. Semua alat pembayaran POS tetap disabled sampai G5/G7 lengkap.
 - `POS_WRITE_DISABLED` harus diperiksa di DB command, bukan hanya menu/env client. Simpan flags per outlet dan capability agar bisa menghentikan create/payment/refund secara terkontrol; lookup committed/read/receipt print tetap tersedia bagi yang berhak. Command yang sudah commit tidak dibatalkan oleh switch.
-- NO-GO/stop pilot segera untuk duplicate receipt/award, mismatch kas/piutang, data historis/token hilang, privilege leak, unidentified payment result yang tidak bisa direkonsiliasi, atau Preview dapat menulis produksi.
+- NO-GO/stop pilot segera untuk duplicate receipt/award, mismatch kas/piutang, data historis/token hilang, privilege leak, unidentified payment result yang tidak bisa direkonsiliasi, atau QA/runner dapat menulis produksi.
 - Saat insiden: stop command baru pada outlet, reconcile receipt/poin committed, pertahankan akses baca dan hasil command, forward-fix. Jangan otomatis kembali ke input nominal lama atau menyalakan Binatu bersamaan karena itu bisa menduplikasi penjualan/poin. Pengalihan operasional memerlukan owner, cutoff, register nota sementara unik dan rekonsiliasi sebelum posting ulang.
 - Jangan drop/revert destructive additive schema setelah transaksi nyata. App rollback hanya ke build yang memahami data/cutoff POS atau read-only safe mode; pastikan guard DB tetap berlaku walau UI lama kembali.
 - Pilot lulus setelah minimal dua shift tertutup berturut-turut tanpa selisih tak terjelaskan dan tanpa P0/P1, dengan volume uji sintetis concurrency sudah lulus; owner dapat menetapkan masa lebih panjang. Tidak ada auto rollout lintas outlet.

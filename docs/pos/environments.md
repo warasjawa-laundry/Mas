@@ -12,14 +12,13 @@ QA cards only use `LAUNDRY_CARD_ENCRYPTION_KEY_QA`; operational keys cannot be a
 
 The catalog realtime helper checks the same boundary before emitting a client URL/key. Readiness exposes only configured/blocked status and is Preview-only, no-store; it does not certify login/RPC/data access.
 
-## Cloud work and current blocker
+## Owner-selected deployment and test workflow (1 November 2026)
 
-Preview-only Vercel Authentication protection was enabled (`ssoProtection.deploymentType=preview`). Production deployment/domain was not switched.
+- **Keep Git connection:** Vercel project `mas` stays linked to `unyilhm1-hue/mas`. Do not reconnect it to `warasjawa-laundry/Mas`.
+- **One Production deployment environment:** no separate Preview/staging/project. Implementation tasks are reviewed PRs against `warasjawa-laundry/Mas` and merged promptly to `main`. Use the existing Production release path and verify its actual deployed commit SHA/domain. The Git connection mismatch remains intentional, so auto-sync **must not be assumed**.
+- **No weakening existing guards:** prior Preview credential/origin/card hardening remains fail closed in source, even if no Preview is requested. Do not overwrite global env values or substitute production keys for QA credentials.
+- **SQL QA:** independent Supabase project `cwxsbgfjynwxqalwonae`, synthetic fixtures and migration/concurrency tests. Previous QA `tnadzytuamdxfypoeggy` remains inactive. Never copy real customer rows, cards or encryption keys.
+- **Missing tests:** authenticated QA card round trip, actual hardware and restore rehearsal are still unverified without Preview. Mark as pending and design a safe permitted UAT process later; never test POS financial writes on production to substitute for staging.
+- **Partial Production safety:** code can deploy to existing Production after each tested merge but cashier UI and payment/point commands remain disabled until G8 and explicit pilot approval; enforce the financial write switch at DB level. Production verification of deployed SHA and existing owner/QR functionality is required after each merge.
 
-Prepared branch-specific QA overrides include QA URL/key/mode/ref, a separate random QA card key, empty operational/legacy card key overrides, synthetic owner identity, optional owner flags off, and POS writes disabled. **These variables have not been applied:** Vercel rejects the branch because the project's Git connection points at `unyilhm1-hue/mas`. No broad Preview or Production env variable was overwritten as a workaround.
-
-MCP does not expose reconnecting an existing project's Git source. Its create-git-project tool would create/reuse a different repo-linked project, which violates the one-project constraint. Browser fallback is disabled by Work settings. Local Vercel CLI identifies another account and returned 403 reading this project; no CLI write was attempted.
-
-Required external fix: existing Vercel `mas` -> Settings -> Git -> reconnect to `warasjawa-laundry/Mas`, preserving the project/team/domains and repository policy disabling automatic deploys. Then verify the link through the connector, apply branch-only QA overrides, create a protected Preview, use its observed branch alias for `QA_CARD_ORIGIN`/scanner allowlist, and provision a synthetic QA owner through the supported Auth admin workflow. Do not copy owner passwords or production encryption material.
-
-Before G1 completion, prove Preview readiness, isolated read/write behavior with synthetic data, unavailable production credentials, card/QR round trip, and authenticated QA access. Foundation code may be reviewed as a draft while this gate is pending; it must not be promoted as a complete POS release.
+**Historical evidence:** PR #17 `92fbf5e` was observed READY with official Production domain alias, but that is not proof of future auto-deploy from `warasjawa-laundry/Mas` or of POS financial readiness.
