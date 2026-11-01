@@ -30,11 +30,11 @@ export function OrderForm({services,requestId,canWrite}:{services:CatalogService
  function inc(id:string){
    const s=services.find(x=>x.id===id);if(!s)return;
    const cur=quantities[id]||"0";
-   try{const n=BigInt(cur.split(".")[0]||"0")+1n; if(n<=1000000n)changeQuantity(id,String(n));}catch{changeQuantity(id,"1")}
+   try{const n=BigInt(cur.split(".")[0]||"0")+BigInt(1); if(n<=BigInt(1000000))changeQuantity(id,String(n));}catch{changeQuantity(id,"1")}
  }
  function dec(id:string){
    const cur=quantities[id];if(!cur)return;
-   try{const n=BigInt(cur.split(".")[0]||"0")-1n;changeQuantity(id,n>0n?String(n):"")}catch{changeQuantity(id,"")}
+   try{const n=BigInt(cur.split(".")[0]||"0")-BigInt(1);changeQuantity(id,n>BigInt(0)?String(n):"")}catch{changeQuantity(id,"")}
  }
  return <div className={styles.form}>
   <nav className={styles.steps} aria-label="Langkah pemesanan">
