@@ -22,3 +22,7 @@ The catalog realtime helper checks the same boundary before emitting a client UR
 - **Partial Production safety:** code can deploy to existing Production after each tested merge but cashier UI and payment/point commands remain disabled until G8 and explicit pilot approval; enforce the financial write switch at DB level. Production verification of deployed SHA and existing owner/QR functionality is required after each merge.
 
 **Historical evidence:** PR #17 `92fbf5e` was observed READY with official Production domain alias, but that is not proof of future auto-deploy from `warasjawa-laundry/Mas` or of POS financial readiness.
+
+## G2 QA-only schema snapshot
+
+On 1 Nov 2026, migration `pos_g2_foundation_roles_orders_financial_schema` succeeded only on QA `cwxsbgfjynwxqalwonae`. 17/17 new tables enforce RLS and grant no direct access to `authenticated`/`anon`; five journal tables reject UPDATE/DELETE; the legacy checklist actor FK now targets `auth.users` without changing old owner RPC authorization. A rollback-only SQL regression passed and left no synthetic rows. Operational Supabase was not modified. This is not a Production migration authorization. See [G2 receipt](./g2-verification.md).

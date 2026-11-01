@@ -21,7 +21,7 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 | G0 source/data baseline | Read-only snapshot, source pin, schema/RPC inventory complete; reference screenshots/Excel and backup/restore evidence still pending |
 | G1 QA schema/code isolation | New QA active, 17 migrations and 8 SQL tests done, guard added; Preview N/A by owner decision, authenticated UAT/restore remain pending |
 | Nominal contract for G2/G4 | BigInt utility implemented; focused red/green tests and independent review completed |
-| G2 RBAC/financial schema and legacy bridge | Not implemented; actor FK constraint issue must be resolved in reviewed migration design |
+| G2 RBAC/financial schema and legacy bridge | **Partial QA:** 17 POS tables, deny-by-default + RLS, 5 immutable triggers, read-only outlet RPC, actor FK now auth.users; SQL rollback regression passed. Authenticated owner/cashier UAT, payment RPC, production rollout and approval still pending. |
 | G3–G8 | Not implemented; retain dependency gates |
 
 ## Latest owner decisions — direct main workflow
@@ -31,8 +31,16 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 - Screenshot references remain in `reference/binatu-ui-ux` (25 sanitized JPGs, commit `c17b043`), mapped from `docs/pos/evidence-manifest.md`.
 - Existing member, point, QR production records must remain intact. No live write testing.
 
+## G2 QA schema package — one PR/CI batch
+
+- Migrasi SQL additive `supabase/migrations/20261101142000_pos_g2_foundation_roles_orders_financial_schema.sql` telah diterapkan di **QA saja** (`cwxsbgfjynwxqalwonae`) sebagai migrasi `pos_g2_foundation_roles_orders_financial_schema`; semua 17 tabel baru RLS + default deny.
+- SQL test rollback `supabase/tests/pos-g2-schema-contract.sql` lulus dan terhubung ke satu run Stage 10 CI untuk paket ini.
+- FK `laundry_checklist_events.actor_id` sekarang mereferensikan `auth.users` di QA, tanpa menaikkan privilege kasir atau mengubah owner-only RPC.
+- Tidak ada login QA, test user, live POS receipt/point, atau migration ke DB produksi. G2 belum PASS menyeluruh.
+- Tidak ada push per-file; satu branch dan satu PR untuk menekan penggunaan kuota CI.
+
 ## Newly verified G2 design issue
 
 The legacy checklist and audit event `actor_id` foreign keys point to `laundry_owner_accounts`. A cashier cannot insert a correctly attributed point event merely because a new POS helper accepts that cashier. Adding cashiers as active owners would be an unacceptable privilege escalation.
 
-Before writing the bridge migration, review an explicit compatibility change: point/audit actor references may need to target canonical `auth.users` while owner-only RPC authorization, base-table grants and RLS remain unchanged. Existing historical rows must not be rewritten and actor identities must not be fabricated. Member/card/promo owner-only constraints should remain unchanged unless separately required. This is a constraint change, not something to describe as “only adding new tables.” Add direct privilege, cashier attribution, owner regression and historical-FK tests before accepting it. No such migration has been applied to production or QA in this foundation patch.
+Bridge FK di QA **sudah diterapkan secara terbatas**; sebelum operasi produksi tetap perlu review independen dan regresi owner/cashier terautentikasi. Catatan desain awal: point/audit actor references may need to target canonical `auth.users` while owner-only RPC authorization, base-table grants and RLS remain unchanged. Existing historical rows must not be rewritten and actor identities must not be fabricated. Member/card/promo owner-only constraints should remain unchanged unless separately required. This is a constraint change, not something to describe as “only adding new tables.” Add direct privilege, cashier attribution, owner regression and historical-FK tests before accepting it. No such migration has been applied to production or QA in this foundation patch.
