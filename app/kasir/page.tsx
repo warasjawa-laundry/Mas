@@ -14,7 +14,7 @@ export default async function CashierHome({ searchParams }: Props) {
   const [session, params] = await Promise.all([getCashierSession(), searchParams]);
   const paired = session ? true : await isCashierDevicePaired();
   return <main style={wrap}>
-    <p style={{fontSize:13,fontWeight:800,color:"#6d28d9"}}>MAS JAWA LAUNDRY</p>
+    <p style={{fontSize:13,fontWeight:800,color:"#a16207"}}>MAS JAWA LAUNDRY</p>
     <h1 style={{fontSize:30}}>Kasir</h1>
     {!paired ? <section style={{background:"#f3f4f8",padding:24,borderRadius:16}}>
       <h2>Perangkat belum diaktifkan</h2>
@@ -35,7 +35,7 @@ export default async function CashierHome({ searchParams }: Props) {
           autoComplete="off" autoCapitalize="characters" spellCheck={false} required maxLength={8}
           pattern="MAS-[0-9]{4}" style={{minHeight:48,padding:12,border:"1px solid #bec8d7",borderRadius:10,fontSize:18}} />
         <button type="submit" style={{minHeight:48,padding:12,border:0,borderRadius:10,
-          color:"#fff",background:"#6d28d9",fontSize:16,fontWeight:700}}>Masuk Kasir</button>
+          color:"#fff",background:"#a16207",fontSize:16,fontWeight:700}}>Masuk Kasir</button>
       </form>
       <p style={{fontSize:13,color:"#64748b",marginTop:15}}>Untuk keamanan, username hanya berlaku pada perangkat yang sudah disetujui owner.</p>
       <form action={disconnectCashierDevice}>
