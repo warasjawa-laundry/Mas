@@ -1,4 +1,4 @@
--- G2 contract checks. Safe to run only in clean synthetic QA; rolls back fixture.
+-- G2 contracts after G3 migration: singleton outlet exists; regression runs in a rollback transaction.
 begin;
 set local statement_timeout='15s';
 do $g2$
@@ -16,7 +16,7 @@ begin
  into v_tables,v_rls
  from pg_class c join pg_namespace n on c.relnamespace=n.oid
  where n.nspname='public' and c.relkind='r' and c.relname like 'laundry_pos_%';
- if v_tables<>17 or v_rls<>17 then raise exception 'G2 table/RLS count mismatch: %/%',v_tables,v_rls; end if;
+ if v_tables<>19 or v_rls<>19 then raise exception 'G2 table/RLS count mismatch: %/%',v_tables,v_rls; end if;
 
  select count(*) into v_bad
  from pg_class c join pg_namespace n on n.oid=c.relnamespace
@@ -42,17 +42,17 @@ begin
  if v_owner_fn<>3 then raise exception 'G2 legacy functions missing'; end if;
 
  select count(*) into v_rows from public.laundry_pos_outlets;
- if v_rows<>0 then raise exception 'G2 QA must start empty'; end if;
- insert into public.laundry_pos_outlets(code,name) values('QATEST','Synthetic outlet') returning id into v_outlet;
- if (select active or write_enabled from public.laundry_pos_outlets where id=v_outlet) then
-  raise exception 'G2 default outlet is not write-disabled'; end if;
+ if v_rows<>1 then raise exception 'G2+G3 requires one fixed outlet'; end if;
+ select id into v_outlet from public.laundry_pos_outlets where code='MJL' and active;
+ if v_outlet is null or (select write_enabled from public.laundry_pos_outlets where id=v_outlet) then
+  raise exception 'G3 fixed outlet missing or unexpectedly write-enabled'; end if;
 
  begin
   insert into public.laundry_pos_outlets(code,name,active,write_enabled) values('BADON','Rejected',false,true);
   raise exception 'G2 accepted impossible active/write setting';
  exception when check_violation then null; end;
  begin
-  insert into public.laundry_pos_outlets(code,name) values('QATEST','Duplicate outlet');
+  insert into public.laundry_pos_outlets(code,name) values('MJL','Duplicate outlet');
   raise exception 'G2 accepted duplicate outlet code';
  exception when unique_violation then null; end;
  begin

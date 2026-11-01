@@ -22,12 +22,21 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 | G1 QA schema/code isolation | New QA active, 17 migrations and 8 SQL tests done, guard added; Preview N/A by owner decision, authenticated UAT/restore remain pending |
 | Nominal contract for G2/G4 | BigInt utility implemented; focused red/green tests and independent review completed |
 | G2 RBAC/financial schema and legacy bridge | **Partial QA:** 17 POS tables, deny-by-default + RLS, 5 immutable triggers, read-only outlet RPC, actor FK now auth.users; SQL rollback regression passed. Authenticated owner/cashier UAT, payment RPC, production rollout and approval still pending. |
-| G3–G8 | Not implemented; retain dependency gates |
+| G3 owner-only login + passwordless cashiers | **Partial QA implementation:** satu outlet MJL, owner CRUD + izin kasir, pairing/revoke perangkat, UI owner/kasir, unit+SQL tests. Physical device/real-auth UAT, prod migration/financial actor bridge pending. |
+| G4–G8 | Not implemented; keep payment/points write disabled and do not start a second outlet |
+
+## Owner change — only one outlet and passwordless staff (1 November 2026)
+
+- Owner is the only user with ID/password login. Cashier is an owner-managed display-name/profile + explicitly assigned permissions, **not** a Supabase Auth account.
+- Device activation requires an already logged-in owner on the actual workstation, issues a random 256-bit cookie token (SHA-256 digest stored DB), then signs out owner locally; staff uses `/kasir` without passwords. Owner can remove (soft-disable), revoke devices, adjust permissions. Seven-day expiry.
+- Exactly one fixed outlet: Mas Jawa Laundry, Jl. Raya Kandang Jati Kulon RT.06 RW.01, Kandang Jati Kulon, Probolinggo. No add/edit/switch outlet UI. POS flag `write_enabled=false` in QA; no financial writes on Production.
+- Supersedes previous D08 multioutlet assumption and D09 individual cashier passwords. G5 must migrate financial actor refs to actual staff IDs before enabling payments: owner identity must never be substituted for cashier.
+- QA receipt: [`g3-single-outlet-cashiers.md`](./g3-single-outlet-cashiers.md); G3 is not signed off until authenticated device/physical tests.
 
 ## Latest owner decisions — direct main workflow
 
 - Only one Vercel project `mas`; keep connected Git repository `unyilhm1-hue/mas` unchanged.
-- No Vercel Preview, staging or new deployment environment. Release reviewed partial features via `main` to existing Production; verify SHA and domain mapping after each merge; never turn on incomplete POS payments or point writes.
+- No Vercel Preview, staging or new deployment environment. Release reviewed partial features via `main` to existing Production; verify SHA and domain mapping after each merge; never turn on incomplete POS payments or point writes. Owner login only; one outlet only.
 - Screenshot references remain in `reference/binatu-ui-ux` (25 sanitized JPGs, commit `c17b043`), mapped from `docs/pos/evidence-manifest.md`.
 - Existing member, point, QR production records must remain intact. No live write testing.
 
