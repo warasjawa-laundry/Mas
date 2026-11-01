@@ -141,7 +141,10 @@ Review lock graph harus mencakup helper legacy yang masih hidup, bukan hanya RPC
 
 ## 5. Model data dan invariants
 
-Nama berikut adalah target kontrak V2; SQL final dibuat dan diuji pada G2, bukan dijalankan dari dokumen.
+**G2 update 1 Nov 2026:** [laporan QA dan sisa gate](./g2-verification.md). 17 tabel baru, RLS, fungsi read-only outlet, trigger jurnal, dan FK actor baru telah diterapkan **hanya di QA**. Skema POS belum ada di produksi dan pembayaran tetap nonaktif. Migrasi yang nanti diterapkan ke produksi harus melalui review dan backup/restore gate tersendiri.
+
+
+Nama berikut adalah kontrak V2. Struktur awal sudah direalisasikan di QA; pengendalian lintas tabel melalui RPC pembayaran, refund, point award dan cutover masih belum diimplementasikan.
 
 | Tabel POS | Kunci/isi utama | Invariant |
 | --- | --- | --- |
@@ -233,7 +236,7 @@ Setiap task: buat tes perilaku yang gagal -> jalankan dan simpan bukti gagal -> 
 | --- | --- | --- |
 | G0 Baseline | `docs/pos/baseline.md`, `docs/pos/evidence-manifest.md`, `docs/pos/decision-register.md` | [ ] Freeze remote SHA/tree; [ ] verifikasi local vs remote; [ ] snapshot read-only konsisten; [ ] daftar seluruh routes/RPC; [ ] inventaris screenshot/Excel; [ ] sahkan keputusan G2. Tidak write produksi |
 | G1 Isolasi | `lib/supabase/qa-preview-isolation.ts`, `tests/pos-environment-isolation.test.mjs`, `docs/pos/environments.md` | [x] guard dan QA DB baru PR #17; [ ] restore rehearsal, credential-negative, RLS/concurrency dan UAT yang dibutuhkan. **Tidak membuat Preview** (N/A keputusan owner, bukan bukti pengujian lengkap). Tidak write produksi |
-| G2 Kontrak/DB | `docs/pos/contracts.md`, `docs/pos/permissions.md`, `supabase/migrations/` via migration tool, `supabase/tests/pos-contracts.sql` | [ ] ADR nominal/status/tahun/role/cutoff disahkan; [ ] fresh install + upgrade dari schema legacy; [ ] RLS/grants/direct API test; [ ] lock/idempotency primitive; [ ] advisor dan compatibility review. SQL test rollback-only bukan pengganti tes commit/concurrency |
+| G2 Kontrak/DB | `supabase/migrations/20261101142000_pos_g2_foundation_roles_orders_financial_schema.sql`, `supabase/tests/pos-g2-schema-contract.sql`, `docs/pos/g2-verification.md` | [x] 17 tabel POS di QA, default-deny RLS dan grants, index/constraint, 5 immutable journal triggers, outlet read RPC, actor FK dilebarkan ke `auth.users`, SQL rollback test lulus; [ ] authenticated owner/cashier UAT, release migrasi produksi, transaction/point RPC, concurrent writes/restore rehearsal. **Hanya QA; uang/poin produksi belum aktif.** |
 | G3 Auth/shell | `lib/supabase/pos-staff.ts`, `app/admin/pos/layout.tsx`, `app/admin/login/page.tsx`, `components/pos/navigation.tsx`, `tests/pos-auth.ui.spec.ts` | [ ] Test owner regression dan forbidden cashier; [ ] auth/sesi/draft recovery; [ ] outlet switch hanya scope sah; [ ] shell mobile/desktop sesuai referensi yang tersedia |
 | G4 Order | `lib/pos/money.ts`, `lib/pos/contracts.ts`, `app/admin/pos/orders/**`, `components/pos/order-wizard.tsx`, `tests/pos-money.test.mjs`, `tests/pos-order.ui.spec.ts` | [ ] Test qty/rounding/catalog conflict/duplicate create; [ ] customer+QR resolver tanpa write; [ ] create nota request-id stabil; [ ] work transitions dan print HTML. Belum ada award saat create |
 | G5 Payment/points | `app/admin/pos/orders/[id]/actions.ts`, `components/pos/payment-form.tsx`, `supabase/tests/pos-payment.sql`, `tests/pos-concurrency.test.mjs`, migration RPC + legacy cutoff guard | [ ] Test partial/full/replay/conflicting payload/unknown commit; [ ] DB receipt+cash+ADD+amount+link atomik; [ ] full refund/VOID; [ ] larangan award manual kedua; [ ] old portal saldo sesuai |
