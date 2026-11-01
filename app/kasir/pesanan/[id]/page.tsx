@@ -7,6 +7,7 @@ import { hasCashierGrant } from "@/lib/pos/cashier-permissions";
 import { advanceWorkStatus } from "../actions";
 import { collectCashierPayment,openCashierShift,refundCashierOrder } from "../payment-actions";
 import { PrintButton } from "./print-button";
+import { WhatsAppDraft } from "./whatsapp-draft";
 import styles from "../orders.module.css";
 
 export const dynamic="force-dynamic";
@@ -116,5 +117,6 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
     <button className={styles.mainButton} type="submit" disabled={!canWrite}>Ubah ke {target==='READY'?'Siap Diambil':'Sudah Diambil'}</button>
    </form>}
   </section>
+  {hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft invoice={o.invoice_no} customer={o.customer_name} workStatus={o.work_status} total={money(o.total_idr)}/>}
  </main>;
 }

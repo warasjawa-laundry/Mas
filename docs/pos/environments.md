@@ -38,3 +38,7 @@ On 1 November 2026, migration `pos_g4_order_creation_staff_attribution` was appl
 ## G5 isolated QA receipt
 
 Pada 1 November 2026, migrasi G5 `pos_g5_payment_cash_points_full_refund` diterapkan **hanya** ke QA `cwxsbgfjynwxqalwonae`, sesudah uji coba DDL transaction rollback. Pengujian SQL sintetis menggunakan `BEGIN`/`ROLLBACK` (partial+full payment, guest, zero total, refund/VOID, izin dan revoke) lulus. Setelah tes: 0 order, 0 payment, 0 cash ledger, 0 point links, dan outlet `write_enabled=false`. Production project `hncfyfvqtlnvqyfrydzb` tidak disentuh. G5 belum cutover, tidak ada penyalinan kredensial QA ke produksi, dan tidak mengubah satu project Vercel/Git connection yang telah diputuskan owner.
+
+## Paket B QA schema receipt — 2 Nov 2026
+
+Migrasi `pos_g6_cash_reports` dan `pos_g6b_import_review` sudah **diterapkan dan diuji hanya pada Supabase QA `cwxsbgfjynwxqalwonae`**. Seluruh fixture perintah kas, close shift, impor historis dan match pelanggan dibatalkan melalui ROLLBACK; verifikasi terakhir 0 nota, pembayaran, jurnal, tautan poin, batch/row impor dan flag write tetap OFF. Database produksi `hncfyfvqtlnvqyfrydzb` dan koneksi Vercel tidak disentuh. Kode UI baru bisa masuk Vercel Production yang sudah ada dengan aman namun tanpa migrasi POS operasional sampai gate G7/G8 dan persetujuan cutover.

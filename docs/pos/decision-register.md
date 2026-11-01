@@ -23,7 +23,7 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 | Nominal contract for G2/G4 | BigInt utility implemented; focused red/green tests and independent review completed |
 | G2 RBAC/financial schema and legacy bridge | **Partial QA:** 17 POS tables, deny-by-default + RLS, 5 immutable triggers, read-only outlet RPC, actor FK now auth.users; SQL rollback regression passed. Authenticated owner/cashier UAT, payment RPC, production rollout and approval still pending. |
 | G3 owner login + cashier MAS-XXXX | **Partial QA:** satu outlet MJL, owner CRUD+izin, username urut tidak reuse, per-device paired username login, token sesi kedua, lockout/revoke, SQL+Node tests. Physical real-auth UAT, production migration and financial actor bridge pending. |
-| G4 create/read/work notes | **Implemented in isolated QA:** staff actor FK bridge, singleton invoice counter, member-number/guest, catalog-authoritative pricing, immutable command result, order list/detail, status transitions and HTML print. SQL rollback passes; still missing physical QR UAT, discount/delivery rules, concurrent race evidence, production migration authorization. |\n| G5–G8 | Not implemented; live payment/cash/point commands remain OFF; one outlet only |
+| G4 create/read/work notes | **Implemented in isolated QA:** staff actor FK bridge, singleton invoice counter, member-number/guest, catalog-authoritative pricing, immutable command result, order list/detail, status transitions and HTML print. SQL rollback passes; still missing physical QR UAT, discount/delivery rules, concurrent race evidence, production migration authorization. |\n| G5 | QA payment/refund + points code merged in PR #23, live production database unchanged; real concurrency/UAT pending |\n| G6 | QA cash/report/shift/CSV/WA manual implemented (Paket B); production write OFF; physical UAT/pilot pending |\n| G6b | QA owner-only Excel import/review implemented (Paket B); historical posting and point backfill explicitly disabled |\n| G7–G8 | Physical UAT, backup/restore, reconciled cutover and pilot not complete |
 
 ## Owner decision: sequential cashier usernames (1 November 2026)
 
@@ -70,3 +70,10 @@ Bridge FK di QA **sudah diterapkan secara terbatas**; sebelum operasi produksi t
 - SQL migration `20261101233000_pos_g5_payment_points_refund.sql` berhasil diterapkan **hanya pada Supabase QA** dan belum masuk Supabase produksi.
 - Regression rollback: sebagian bayar tanpa poin, lunas satu ADD/amount/link, replay UUID, konflik payload, versi lama, overpayment, guest tanpa poin, nota nol, refund dua metode + VOID, ADD manual owner terblokir saat cutover, kasir tanpa izin refund, dan sesi kasir dicabut semuanya lulus.
 - **Belum GO:** pengujian fisik Android/QR, race dua koneksi, login Auth nyata, backup/restore, dan persetujuan migrasi produksi. `write_enabled=false` pada QA; tidak ada pembayaran/poin produksi aktif. G6/G6b belum dibuat.
+
+## Paket B owner decisions (2 November 2026)
+
+- UI/UX sedekat mungkin dengan Binatu (25 screenshot tersanitasi) dengan identitas Mas Jawa Laundry; G6/G6b mengikuti pola mutasi/periode dan modal transaksi lunas, tanpa mengambil aset proprietari.
+- Hanya ada satu outlet `MJL`, satu shift/register `MAIN`, dan project Vercel Production `mas` tetap terhubung ke `unyilhm1-hue/mas`. GitHub source target `main` dengan satu PR konsolidasi.
+- Impor Excel Binatu owner-only **tidak** menambah poin, riwayat kunjungan atau pembayaran; kecocokan nama menampilkan nomor member + telepon + alamat untuk dipilih manual; nomor nota Binatu adalah kunci konflik.
+- G6 shift closing dan laporan di QA siap untuk UAT; keputusan pilot produksi, riwayat piutang dan poster/thermal printer belum disahkan sebagai live. Panduan: [G6–G6b verification](./g6-g6b-verification.md).
