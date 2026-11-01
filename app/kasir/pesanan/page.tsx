@@ -18,7 +18,7 @@ export default async function CashierOrders({searchParams}:{searchParams:Promise
   <Link href="/kasir">← Kasir</Link>
   <header className={styles.header}><div><p className={styles.kicker}>MAS JAWA LAUNDRY · {access.session.username}</p><h1>Daftar Pesanan</h1></div>
   <Link className={styles.mainLink} href="/kasir/pesanan/baru">+ Tambah Pesanan</Link></header>
-  <div className={styles.tabs}><span>Antrian</span><span>Siap Ambil</span><span>Belum Bayar</span></div>
+  <div className={styles.tabs}><span>Antrian</span><span>Siap Ambil</span><span>Belum Bayar</span><Link href="/kasir/kas">Mutasi Kas</Link><Link href="/kasir/laporan">Laporan</Link></div>
   {params.error==='unconfirmed'&&<p className={styles.warning} role="alert">Hasil permintaan sebelumnya belum diketahui. Periksa daftar nota sebelum membuat pesanan baru untuk mencegah duplikasi.</p>}
   {!access.session.write_enabled&&<p className={styles.warning} role="status">Transaksi masih dikunci sampai rilis POS disetujui. Daftar hanya untuk pengujian setelah migrasi.</p>}
   {error?<p role="alert" className={styles.warning}>Modul pesanan belum tersedia pada database aktif.</p>:

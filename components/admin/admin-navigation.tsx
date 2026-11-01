@@ -8,6 +8,7 @@ const sections = [
   { href: "/admin", label: "Ringkasan" },
   { href: "/admin/scan", label: "Scan QR" },
   { href: "/admin/members", label: "Member" },
+  { href: "/admin/pos/import", label: "Impor Binatu" },
   { href: "/admin/settings", label: "Pengaturan" },
 ] as const;
 
