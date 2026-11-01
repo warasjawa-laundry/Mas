@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireOwner } from "@/lib/supabase/owner";
 import { parseCashierGrants } from "@/lib/pos/cashier-permissions";
 import { newCashierDeviceToken } from "@/lib/pos/cashier-device-token";
-import { CASHIER_DEVICE_COOKIE, cashierCookieOptions } from "@/lib/pos/cashier-device";
+import { CASHIER_DEVICE_COOKIE, CASHIER_LOGIN_COOKIE, cashierCookieOptions, cashierLoginCookieOptions } from "@/lib/pos/cashier-device";
 import { ADMIN_ACCESS_COOKIE, ADMIN_ENTRY_COOKIE, adminSessionCookieOptions } from "@/lib/admin/entry-pass";
 
 const back = "/admin/pos/kasir";
@@ -78,5 +78,6 @@ export async function activateCashierDevice(form: FormData) {
   jar.set(ADMIN_ACCESS_COOKIE, "", { ...adminSessionCookieOptions, maxAge: 0 });
   jar.set(ADMIN_ENTRY_COOKIE, "", { ...adminSessionCookieOptions, maxAge: 0 });
   jar.set(CASHIER_DEVICE_COOKIE, token, cashierCookieOptions);
+  jar.set(CASHIER_LOGIN_COOKIE, "", { ...cashierLoginCookieOptions, maxAge: 0 });
   redirect("/kasir");
 }

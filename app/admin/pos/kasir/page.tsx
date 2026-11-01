@@ -7,6 +7,7 @@ import styles from "./cashiers.module.css";
 
 type CashierRow = {
   staff_id: string;
+  username: string;
   display_name: string;
   active: boolean;
   permissions: CashierGrants;
@@ -33,14 +34,14 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
   ]);
   const unavailable = Boolean(result.error);
   const cashiers = (Array.isArray(result.data) ? result.data : []) as CashierRow[];
-  const message = params.saved ? "Kasir berhasil disimpan." : params.removed ?
+  const message = params.saved ? "Kasir berhasil disimpan. Username kasir baru ditampilkan pada daftar." : params.removed ?
     "Kasir telah dihapus dari daftar aktif dan semua perangkatnya dicabut." :
     params.revoked ? "Seluruh akses perangkat kasir sudah dicabut." : null;
 
   return <main className="admin-workspace"><div className={`admin-content ${styles.wrap}`}>
     <p className="admin-kicker">PENGATURAN OWNER</p>
     <h1>Kelola Kasir</h1>
-    <p className="admin-hint">Owner saja yang login. Tambahkan nama kasir dan pilih hak aksesnya. Tidak ada ID, password, atau pengelolaan cabang untuk pegawai.</p>
+    <p className="admin-hint">Owner saja yang login. Tambahkan nama kasir dan pilih hak aksesnya. Sistem membuat username otomatis MAS-0001, MAS-0002, dan seterusnya. Kasir masuk dengan username tanpa password pada perangkat yang diaktifkan owner. Tidak ada pengelolaan cabang.</p>
     <section className={styles.location}>
       <h2>Outlet tetap</h2>
       <strong>Mas Jawa Laundry</strong>
@@ -64,6 +65,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
         {cashiers.length === 0 && <p className={styles.empty}>Belum ada kasir. Tambahkan dari formulir di atas.</p>}
         {cashiers.map(c => <article key={c.staff_id} className={styles.panel}>
           <h3>{c.display_name} <small>{c.active ? "Aktif" : "Dihapus / nonaktif"}</small></h3>
+          <p className={styles.help}>Username: <strong style={{fontSize:16,color:"#4c1d95"}}>{c.username}</strong> · Nomor tidak berubah ketika nama diubah atau kasir dihapus.</p>
           <p className={styles.help}>Perangkat aktif: {c.active_devices}. Menonaktifkan kasir akan mencabut semua perangkatnya, tetapi riwayat tetap tersimpan.</p>
           {c.active ? <>
             <form action={saveCashier} className={styles.form}>
@@ -91,7 +93,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
           </> : <p className={styles.help}>Kasir nonaktif tidak dapat masuk. Riwayat dan audit tetap disimpan.</p>}
         </article>)}
       </section>
-      <p className={styles.help}><strong>Aktivasi:</strong> buka halaman ini di HP/komputer kasir, login sebagai owner, lalu pilih “Aktifkan di perangkat ini”. Sesi owner otomatis keluar; pegawai tidak perlu password. Token perangkat berlaku 7 hari dan dapat dicabut sewaktu-waktu.</p>
+      <p className={styles.help}><strong>Aktivasi:</strong> buka halaman ini di HP/komputer kasir, login sebagai owner, lalu pilih “Aktifkan di perangkat ini”. Sesi owner otomatis keluar; pegawai memasukkan username MAS-XXXX pada /kasir tanpa password. Perangkat terikat pada kasir yang dipilih owner; username kasir lain tidak bisa digunakan. Token perangkat berlaku 7 hari dan dapat dicabut sewaktu-waktu.</p>
       <p className={styles.help}><strong>Keamanan:</strong> akses kasir tidak memberikan izin mengelola member, mengubah aturan poin, atau melihat password owner. Pembayaran POS masih belum aktif sampai pengujian dan migrasi finansial selesai.</p>
     </>}
     <div className="admin-shortcuts"><Link href="/admin/settings">← Kembali ke Pengaturan</Link></div>
