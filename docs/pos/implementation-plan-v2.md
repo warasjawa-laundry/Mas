@@ -1,0 +1,284 @@
+# POS Mas Jawa Laundry Implementation Plan V2
+
+> **For agentic workers:** implementasikan per task memakai skill executing-plans; gunakan subagent-driven-development hanya bila delegasi dipilih. Dokumen ini adalah masterplan review, bukan izin migrasi atau release. Setiap paket implementasi harus menyertakan subplan kode dan tes sebelum dikerjakan.
+
+**Goal:** mengembangkan area `/admin` yang ada menjadi kasir laundry, dengan nota, pembayaran, mutasi dan poin yang konsisten, tanpa kehilangan member, QR atau riwayat lama.
+
+**Architecture:** Next.js tetap satu aplikasi/domain/repo. Command bisnis diproses atomik di PostgreSQL melalui RPC terotorisasi, dengan order lock, idempotency dan audit. Ledger poin lama tetap menjadi satu-satunya sumber saldo; tabel POS menautkan nota ke event lama.
+
+**Tech Stack:** baseline dokumen V1 adalah Next.js 16.4.2, React 19.3.1, TypeScript 5.9.3, Node 24.x dan Supabase. Versi aktual dan kompatibilitas diverifikasi pada G0; tidak ada upgrade otomatis akibat rencana ini.
+
+**Spec:** [rencana V1](./implementation-plan-v1.md), disempurnakan oleh [review V1](./review-v1.md). V2 menggantikan kontrak V1 yang ambigu. Tanggal revisi: 1 November 2026 WIB. Keputusan D01–D11 kemudian disahkan untuk implementasi; status eksekusinya ada pada [decision register](./decision-register.md).
+
+## 0. Status, lingkup dan aturan tetap
+
+- **Status:** draft desain hasil review, belum dibangun, belum disetujui untuk production cutover. Checkbox menunjukkan pekerjaan yang belum dilakukan.
+- **Tidak membuat website, domain, atau repository baru.** Aplikasi tetap `warasjawa-laundry/Mas`; area kasir berada pada `/admin/pos` sebelum navigasi lama diganti bertahap.
+- **Pertahankan identitas/data lama:** `laundry_members`, `laundry_member_cards`, `laundry_point_rules`, `laundry_amount_transactions`, `laundry_checklist_events`, `laundry_member_promotions`, nomor MJL dan URL QR lama.
+- **Satu member untuk seluruh outlet:** `laundry_members.id` adalah FK kanonis; nomor nota berbeda dari nomor member. Nama/HP yang sama tidak otomatis digabung.
+- **Scan QR tidak pernah menghasilkan poin atau transaksi.** Kasir memilih member; pelanggan membaca catatan.
+- Poin POS diterbitkan sekali pada pelunasan terkonfirmasi, dari total final nota; status pekerjaan tidak memicu poin. Definisi refund/koreksi mengikuti keputusan di bagian 10.
+- Tidak ada write uji coba ke produksi. QA menggunakan data sintetis; QA lama tidak dipulihkan, dikosongkan atau dipakai tanpa pemeriksaan dan otorisasi tersendiri.
+- Owner requirement lama tidak dilemahkan agar kasir dapat mengaksesnya. Semua command dan pembacaan sensitif diperiksa ulang pada server/DB.
+- Fitur lama tetap tersedia sesuai hak: daftar/edit member, scan kamera/galeri, kartu cetak/reissue, promo/consent/WA, riwayat/VOID, katalog dan program tahunan. Penulisan transaksi nominal manual dibatasi saat outlet cutover, bukan dihapus historinya.
+- Tidak membuat aset atau menyalin kode/aset proprietary Binatu. Identitas Mas Jawa Laundry dipertahankan; referensi UI dipakai hanya jika inventaris buktinya tersedia.
+
+## 1. Evidence dan baseline yang wajib dibedakan
+
+| Informasi | Status pada review ini | Tindakan G0 |
+| --- | --- | --- |
+| Production Supabase `hncfyfvqtlnvqyfrydzb`, Mumbai | Identitas historis dari pekerjaan sebelumnya/V1; health saat ini belum dibaca ulang | Verifikasi org, region, health dan credential scope secara read-only |
+| QA lama `tnadzytuamdxfypoeggy` | Historis pernah berisi data nyata dan dipause | Pertahankan arsip; bukan tempat tes sintetis otomatis |
+| Main terakhir pada chat: `3bef1a50f132f6a5916a1109de5ab9c97c5f9e75` | Checkpoint rilis PR16, bukan klaim main terbaru | Freeze SHA remote aktual dan tree; catat waktu dan sumber |
+| 785 member, 17 kartu aktif dan rekonsiliasi poin | Checkpoint 27 Oktober, bukan baseline 1 November | Snapshot konsisten baru; jangan mengharapkan jumlah tetap bila usaha berjalan |
+| Tier poin V1: 10k/25k/50k/100k/200k | Input dokumen; bukan hasil query baru dalam review ini | Baca tiers/revision aktual per tahun; runtime dilarang hardcode contoh |
+| 25 screenshot Binatu dan contoh Excel | Disebut V1; tidak tersedia pada lampiran review ini | Inventaris file, halaman, ukuran, field yang terbukti; jangan mengarang UI/header |
+| Guard QA dan reauth admin | Dibaca dari salinan lokal `work/fix-ui-flows` | Cocokkan dengan SHA remote dan deployment sebelum menyimpulkan perilaku live |
+
+Baseline produksi harus memuat schema, fungsi, grants, RLS, migration history, counts, snapshot ledger dan saldo per member/tahun. Ambil snapshot dalam satu transaksi read-only consistent snapshot; hasil beberapa query di waktu berbeda tidak dianggap satu baseline. Perbandingan sesudah migrasi menggunakan snapshot baru dan daftar write bisnis sah di antara kedua waktu; alternatifnya gunakan maintenance window yang disetujui. Checksum disimpan privat, bukan PII/token di PR. Backup/restorability dibuktikan terpisah; checksum bukan backup.
+
+## 2. Batas rilis pertama dan jalur lanjutan
+
+**Pilot yang diusulkan:** satu outlet, akun pegawai individual, katalog multiunit, pembuatan nota, DP/pelunasan bila disahkan, pencatatan tunai dan non-tunai manual terverifikasi, jurnal kas, poin otomatis, full refund terotorisasi, laporan operasional, draf WA manual, print HTML. QR/member/promo lama tetap berfungsi.
+
+**Paket lanjutan terpisah:** import historis dengan posting, refund parsial/repricing nota lunas, re-award setelah koreksi, gateway pembayaran/webhook, WA otomatis, printer thermal khusus, operasi offline. Import preview dan ekspor tetap dibangun sebelum cutover; posting historis bukan syarat menyalakan transaksi baru bila saldo awal/piutang sudah direkonsiliasi.
+
+Keterbatasan tersebut harus disetujui, bukan dianggap keputusan owner yang sudah diberikan. Jika refund parsial atau thermal wajib saat pilot, perluas kontrak dan UAT sebelum G2 ditutup; jangan menyalakan tombol yang belum punya semantik ledger.
+
+## 3. Kontrak nominal, waktu dan status
+
+### 3.1 Nominal dan katalog
+
+- IDR disimpan `bigint`; API mengirim uang sebagai string bilangan bulat, misalnya `"93000"`. Kuantitas sebagai string desimal dengan maksimum tiga digit pecahan. Tolak exponent, NaN, tanda negatif, pemisah ribuan ambigu dan nilai di luar batas kontrak.
+- Usulan batas pilot: setiap nota dan setiap pembayaran paling banyak Rp1.000.000.000 agar sesuai batas jalur poin lama; agregat laporan tetap bigint/string. Batas disahkan di G2.
+- kg/m: kelipatan 0,001; pcs: bilangan bulat positif. Harga Rp/unit berupa integer non-negatif. Qty item harus positif; layanan gratis dimodelkan sebagai harga nol dengan alasan/izin.
+- Usulan rounding: `line_total = floor((price_idr * qty_milli + 500) / 1000)` untuk nilai non-negatif. Contoh Rp6.000 × 1,255 kg = Rp7.530; Rp3.500 × 0,001 m = Rp4. Jangan gunakan float JS untuk uang.
+- Jumlahkan line totals, tambahkan biaya, terapkan satu diskon nominal atau basis points persen menurut urutan yang disahkan. Usulan diskon persen dihitung atas subtotal layanan, tidak atas ongkir; round half-up per nota. Total tidak boleh negatif, diskon melebihi basis ditolak, tidak di-clamp diam-diam.
+- Katalog tetap memanfaatkan `laundry_services`. Tambahkan aturan layanan/durasi/unit secara aditif bila dibutuhkan; jangan membuat dua editor harga tanpa otoritas yang jelas. Quote menyertakan `catalog_revision`; server menghitung ulang sebelum create, perubahan harga menghasilkan konflik dan review ulang, bukan biaya baru tersembunyi.
+- Snapshot nama, harga, unit, durasi, diskon, parfum/ongkir tersimpan pada nota. Setelah finalisasi tidak dapat diedit melalui katalog. Semua total server/DB authoritative.
+- Jangan tampilkan jumlah kg+pcs+meter sebagai satu angka. Tampilkan ringkasan per satuan. Durasi menyimpan `due_at` UTC dan label WIB; usulan berbasis elapsed hours, tidak mengasumsikan hari kerja/libur tanpa jadwal yang disahkan.
+
+### 3.2 State terpisah
+
+| Axis | State dan aturan |
+| --- | --- |
+| Lifecycle | `DRAFT -> CONFIRMED -> CANCELLED`; nota final tidak dihapus. Order cancelled tidak menerima pembayaran baru |
+| Pekerjaan | `QUEUED -> READY -> COLLECTED`; koreksi mundur hanya oleh peran berizin + alasan. Tidak mengubah lunas atau poin |
+| Pembayaran | `UNPAID`, `PARTIAL`, `PAID`, `ZERO_TOTAL`; dihitung dari posting terkonfirmasi dan total tagihan, bukan input klien |
+| Refund | `NONE`, `PENDING`, `FULLY_REFUNDED`; rencana refund bukan uang keluar. Full refund selesai menutup finansial nota dan meniadakan award aktif |
+| Status command | `COMMITTED` dapat diputar ulang; timeout klien berarti `UNKNOWN`, bukan otomatis gagal |
+
+`paid_total = sum(confirmed receipts)`; `refund_total = sum(confirmed refund entries)`; `net_received = paid_total - refund_total`. Pending transfer tidak termasuk receipt. Piutang hanya untuk order aktif tanpa refund terminal: `max(total_due - net_received, 0)`. Order fully refunded/cancelled tidak muncul sebagai piutang tertagih. Laporan refund dan pembatalan terpisah dari pesanan aktif.
+
+Pembayaran tidak boleh melampaui sisa tagihan. Untuk uang tunai, pisahkan uang diterima kasir dan kembalian dari nominal yang diterapkan ke nota; hanya nominal bersih diterapkan menjadi ledger receipt. Non-tunai dicatat sebagai penerimaan metode non-tunai setelah pegawai berizin mengonfirmasi bukti; bukan klaim settlement bank otomatis.
+
+Nota nol memiliki status ZERO_TOTAL, tidak membuat receipt Rp0, tidak memanggil RPC lama yang mensyaratkan Rp1, dan tidak memberi poin/transaksi kunjungan baru. Kebijakan lain harus disahkan sebelum diubah.
+
+### 3.3 Tahun dan aturan poin
+
+- Usulan: waktu pelunasan diambil DB setelah memperoleh order lock dan sebelum posting; timestamp disimpan UTC, tahun dihitung dengan `Asia/Jakarta`. Hindari `now()` transaction-start yang dapat melewati batas tahun saat menunggu lock; ambil satu timestamp kejadian dan gunakan konsisten.
+- Client tidak mengirim `paid_at` authoritative untuk command live. Backdate hanya proses historis terpisah yang disetujui.
+- Simpan `program_year`, `rule_revision`, tier snapshot yang diperlukan untuk rekonstruksi, `basis_amount`, `awarded_points`, dan event asal. Rule dibaca dengan lock yang konsisten terhadap edit revisi; urutan lock sama pada semua command.
+- Tahun belum memiliki aturan: usulan menolak seluruh posting pelunasan member dan memberi pesan `POINT_RULE_MISSING`, bukan menyimpan bayar lalu diam-diam kehilangan poin. Ini risiko operasional yang perlu persetujuan; aturan tahun berikut harus siap sebelum pergantian tahun. Alternatif deferred-award memerlukan desain rekonsiliasi terpisah.
+- Member tidak aktif: jangan diam-diam menghilangkan hak poin setelah uang diterima. Usulan blok pelunasan sampai owner memulihkan identitas atau mengonfirmasi perlakuan guest dengan alasan. Guest yang memang dibuat tanpa member tetap boleh membayar tanpa poin.
+
+## 4. Atomic command dan integrasi poin
+
+### 4.1 Kontrak request/result
+
+Command minimal:
+
+| RPC | Input bisnis | Hasil |
+| --- | --- | --- |
+| `pos_create_order` | request UUID, outlet, customer ref, item qty, adjustment IDs/values, catalog revision | order ID, invoice no, version, totals |
+| `pos_post_payment_and_award` | request UUID, order ID, expected version, applied amount string, method, evidence reference opsional | payment ID, applied amount, remaining, version, payment state, award summary |
+| `pos_set_work_status` | request UUID, order ID, expected version, target, reason | work status, version, event ID |
+| `pos_cancel_order` | request UUID, order ID, expected version, reason | cancelled order atau `REFUND_REQUIRED` |
+| `pos_refund_order_full` | request UUID, order ID, expected version, alokasi refund per receipt, reason | refund IDs, terminal state, VOID event ID jika ada |
+| `pos_command_result` | request UUID | hasil committed yang boleh dilihat actor/outlet, atau `NOT_FOUND` |
+| `pos_resolve_member_card` | raw token hanya pada request terlindungi | ID member, nomor MJL, nama/status minimal; tidak mutasi |
+
+Semua memakai identity dari sesi, bukan actor/role dari client. `outlet_id` input diverifikasi. Envelope hasil: `{request_id, replayed, order_id, version, result}`. Error stabil: `FORBIDDEN`, `VALIDATION`, `VERSION_CONFLICT`, `CATALOG_CHANGED`, `IDEMPOTENCY_CONFLICT`, `POINT_RULE_MISSING`, `MEMBER_INACTIVE`, `REFUND_REQUIRED`, `WRITES_DISABLED`. Tidak membocorkan SQL, HP atau token pada error/log.
+
+### 4.2 Urutan transaksi
+
+1. Validasi sesi aktif, staff/outlet capability dan DB write switch. Retry hasil committed boleh dibaca saat switch off bila masih berhak.
+2. Reservasi `request_id` dalam registry command dengan actor, operation, target/outlet, payload kanonis/hash. Request ID sama + payload berbeda adalah konflik. Unique key menangani dua request bersamaan; request yang kalah menunggu lalu membaca hasil committed yang sama. Baris reservasi dan hasil berada dalam transaksi bisnis yang sama.
+3. Bila sudah committed dan payload/otorisasi cocok, kembalikan hasil asli **sebelum** memeriksa `expected_version` terhadap versi order sekarang. Versi lama pada retry tidak membatalkan replay yang sah.
+4. Lock order `FOR UPDATE`; validasi versi, lifecycle, sisa bayar dan metode. Semua jalur perubahan finansial/koreksi menggunakan order lock yang sama. Lock dependency lain dengan urutan terdokumentasi; tangani deadlock/serialization failure dengan retry request ID yang sama.
+5. Hitung timestamp dan totals authoritative. Untuk pelunasan member, validasi status member dan snapshot aturan tahun dengan lock yang kompatibel. Buat receipt, ledger dan audit.
+6. Bila pertama kali lunas: tulis satu ADD, satu amount transaction, satu link award dalam transaksi DB yang sama. Gunakan helper POS terotorisasi yang mempertahankan semantik ledger lama; jangan menghapus owner check lama atau mengirim poin dari client.
+7. Simpan result command dan version baru, lalu commit. Error sebelum commit merollback seluruh efek; jangan catch error lalu mengembalikan sukses sebagian.
+8. Bila respons hilang sesudah commit, UI mempertahankan request ID, memanggil result lookup atau retry payload identik. Jangan membuat UUID baru untuk “coba lagi”. `NOT_FOUND` dapat berarti transaksi pertama belum commit; retry yang sama tetap aman.
+
+Tidak melakukan HTTP bank/WA/printer di dalam transaksi DB. Yang dijamin tepat satu adalah posting DB per command/award, bukan klaim exactly-once jaringan. Rollback DB tidak mengembalikan uang fisik atau transfer yang sudah masuk. UI memeriksa kesiapan nota/member/aturan sebelum kasir menerima uang; bila uang sudah diterima tetapi posting belum diketahui, tunjukkan rekonsiliasi dan bukti penerimaan, jangan menyuruh pelanggan membayar lagi. Jika gateway kelak dipakai, idempotency provider dan inbox webhook menjadi paket desain tambahan.
+
+Review lock graph harus mencakup helper legacy yang masih hidup, bukan hanya RPC POS. Hindari urutan member/rule/order yang berlawanan; uji interleaving edit rule, VOID legacy, payment dan deactivation. Penanganan deadlock tidak boleh membuat request ID baru atau menulis audit sukses sebelum commit.
+
+### 4.3 Award, refund dan jalur lama
+
+- Link berisi order, award cycle, member, event ID, rule revision dan basis amount. Unique `(order_id, cycle)` serta satu active award per order; indeks pada child saja tidak dapat menjamin seluruh status ledger, sehingga semua transisi melalui RPC yang sama.
+- Full refund: alokasikan terhadap receipt/metode asal; jumlah refund kumulatif tidak melebihi receipt. Ledger refund dan VOID award asal atomik, memakai tahun asal meskipun refund dilakukan tahun berikutnya. Nota ditutup; tidak menerima pembayaran/re-award otomatis.
+- Cancellation order yang sudah memiliki DP mengembalikan `REFUND_REQUIRED`; lakukan full refund seluruh uang yang sudah diterima sebelum terminal cancellation. Tidak menghasilkan VOID bila belum ada award.
+- Salah member setelah pembayaran dimulai tidak boleh diperbaiki lewat edit nama/member biasa. Koreksi khusus owner harus mengunci order dan menautkan VOID/replacement secara eksplisit; tidak ada backfill otomatis untuk guest atau import.
+- Legacy amount rows tetap menjadi riwayat, bukan dianggap otomatis receipt POS. Link nota memakai event existing hanya pada rekonsiliasi owner yang telah diperiksa; jangan menyalin nominalnya menjadi pendapatan baru.
+- Sebelum pilot, buat registry rekonsiliasi event historis ke outlet/sumber dan cutoff per outlet. Guard DB menolak award manual **baru** untuk jalur POS-enabled yang tercakup, termasuk pemanggilan langsung RPC lama. Karena RPC lama tidak membawa outlet, global-member mapping yang ambigu harus menolak dan meminta rekonsiliasi, bukan memilih outlet dari client. Bila mapping belum aman, rilis pilot ditahan atau penulisan manual lama dihentikan global setelah persetujuan operasional.
+- Tetap izinkan pemeriksaan/VOID historis sesuai hak dan audit; jangan menonaktifkan seluruh fungsi koreksi hanya karena input manual ditutup. UI dan DB sama-sama memeriksa cutoff.
+
+## 5. Model data dan invariants
+
+Nama berikut adalah target kontrak V2; SQL final dibuat dan diuji pada G2, bukan dijalankan dari dokumen.
+
+| Tabel POS | Kunci/isi utama | Invariant |
+| --- | --- | --- |
+| `laundry_pos_outlets` | code, name, active, config revision | code unik; outlet nonaktif tidak menerima command baru |
+| `laundry_pos_staff` | auth_user_id, name, active | akun individual, tanpa password/PIN plaintext |
+| `laundry_pos_staff_outlets` | staff, outlet, role/capability revision | unik staff/outlet; tidak self-grant |
+| `laundry_pos_guest_customers` | nama, kontak opsional, linked_member | tanpa nomor MJL baru; link tidak award retroaktif |
+| `laundry_pos_orders` | outlet, sequence, invoice_no, customer ref/snapshot, three states, totals, version | unik outlet+sequence/invoice; customer member atau guest konsisten; immutable sesudah final kecuali command koreksi |
+| `laundry_pos_order_items` | service ref, price/unit/duration snapshot, qty | qty positif, pcs integer, line rounding deterministik |
+| `laundry_pos_order_adjustments` | type, basis, value, approval, reason | diskon/biaya terbatas dan diaudit |
+| `laundry_pos_commands` | request UUID, actor, operation, payload hash, result | request unik; result committed hanya setelah semua efek berhasil |
+| `laundry_pos_payments` | order, request, receipt/refund type, original receipt, amount, method, timestamp | jurnal immutable; refund reference wajib; direct UPDATE/DELETE ditolak |
+| `laundry_pos_cash_ledger` | receipt/refund atau non-sale source, shift, outlet, method, direction, amount | satu posting per sumber dan alokasi; cash/noncash tidak dicampur |
+| `laundry_pos_cash_shifts` | outlet, register code, opening, actor, closed_at, counted, expected, discrepancy | satu shift terbuka per register; close idempoten |
+| `laundry_pos_order_events` | actor, order, event, sanitized payload, reason, timestamp | append-only; tidak menyimpan token/password/PII berlebih |
+| `laundry_pos_point_links` | order/cycle, ADD/VOID refs, member/year/revision/basis | event refs unik; satu award aktif; FK ke ledger lama |
+| `laundry_pos_import_batches/rows` | source, outlet, file hash, external invoice, row hash, validation/match | source+outlet+external invoice unik pada record identitas historis; revisi source append-only |
+| `laundry_pos_legacy_reconciliation` | legacy event, outlet/sumber, reviewed_by, cutoff relation | tidak menggandakan event/receipt; keputusan mapping diaudit |
+
+FK historis ke member/service memakai restriction atau soft deactivate, bukan cascade delete jurnal. Index wajib pada FK dan pola outlet+created_at, outlet+work state, order+payment time, staff+outlet; verifikasi query plan dengan data sintetis yang realistis.
+
+Nomor nota: counter/sequence DB per outlet, contoh `MJL-KJK-000001`; tidak memakai `max()+1`, tidak mengulang nomor batal, boleh ada gap. Tanggal tampilan nota WIB bukan sumber uniqueness. Konfirmasi format outlet sebelum G2.
+
+## 6. Hak akses, sesi dan isolasi
+
+| Capability | Cashier | Outlet manager | Owner |
+| --- | --- | --- | --- |
+| Cari identitas member minimal untuk order | Ya, melalui resolver terbatas/rate limited | Ya | Ya |
+| Baca pesanan/kas | Outlet yang ditugaskan; riwayat kas sesuai shift/izin | Outlet yang ditugaskan | Semua outlet |
+| Create order/terima pembayaran/status kerja | Outlet yang ditugaskan | Outlet yang ditugaskan | Ya |
+| Diskon custom/full refund/cash correction | Tidak secara default | Hanya jika diberi capability | Ya + reason |
+| Register member | Wrapper POS terbatas bila disahkan | Sesuai capability | Jalur owner lama |
+| Edit global contact/consent, reissue QR, promo, point rules | Tidak secara default | Tidak secara default | Ya |
+| Kelola akun/outlet/export PII/import posting | Tidak | Tidak secara default | Ya; scope export tercatat |
+
+Membership global tidak berarti kasir boleh melihat semua pesanan/HP/alamat/poin lintas outlet. Search mengembalikan nama, MJL dan kontak tersamarkan untuk disambiguasi; kontak lengkap hanya untuk member pada pesanan outlet yang berhak dan sesuai kebutuhan layanan. Owner modules lama tetap owner-only; POS memakai helper/DTO/RPC khusus.
+
+Role dibaca dari tabel server-controlled pada command penting; deactivation/revocation harus efektif meski JWT lama belum expired. Jangan percaya pilihan “Manajer” pada login atau user_metadata. Password individual via Supabase Auth pada pilot; PIN singkat tidak dianggap setara password tanpa threat model/rate limit/perangkat terpercaya yang disepakati. Jangan berbagi credential owner.
+
+Setiap table exposed memiliki RLS/grants sesuai kebutuhan; default deny untuk anon dan direct financial writes. Public wrapper minimal SECURITY INVOKER bila memungkinkan; helper elevated di private schema dengan search_path kosong, schema-qualified names, auth/capability check eksplisit. Uji juga owner fungsi, views, grants EXECUTE bawaan dan service-role bypass. Jangan mengirim key server ke client.
+
+Guard sesi saat ini memaksa reauth pada document entry tertentu. Tetapkan kebijakan sebelum shell POS: mempertahankan kebijakan lama dengan draft recoverable, atau mengubah lewat review auth tersendiri. Refresh, dua tab, return WA dan timeout harus mempertahankan payload/request ID secara aman atau memungkinkan lookup server sesudah login. Draft finansial final berada di server; hindari raw QR, credential dan PII di localStorage.
+
+Semua Preview/CI write harus memiliki project allowlist QA serta memeriksa Vercel environment, DB URL/ref, key pairing dan setiap credential server/DB/service-role/storage. `LAUNDRY_DATABASE_MODE=single` tidak boleh meloloskan Preview ke operasional. Test dengan URL produksi, key produksi, URL QA+key salah, branch baru dan env hilang harus fail closed. Jangan mengklaim network egress isolated bila hanya URL env yang diperiksa; dokumentasikan enforcement yang benar-benar ada. Pemeriksaan production read-only harus dipisahkan dari runner write tests.
+
+## 7. UX, rute dan kompatibilitas
+
+| Rute | Deliverable |
+| --- | --- |
+| `/admin/login` | Identitas pegawai + password; outlet dipilih hanya dari hak setelah login; owner lama tetap masuk |
+| `/admin/pos` | Ringkasan outlet/kasir, Tambah Pesanan, Cari Pesanan, Member, Kas |
+| `/admin/pos/orders` | Antrian/Siap Ambil/Belum Bayar; search nota/nama; pagination server |
+| `/admin/pos/orders/new` | Pelanggan/QR -> durasi -> kategori/layanan/qty -> parfum/antar/diskon/catatan -> review -> nota |
+| `/admin/pos/orders/[id]` | Detail nota, kerja dan bayar terpisah, pembayaran terkonfirmasi, draf WA, print, audit |
+| `/admin/pos/cash` | Shift, saldo awal, kas masuk/keluar non-sale, expected/count/discrepancy, close |
+| `/admin/pos/reports` | Pesanan, penerimaan/refund/piutang, poin; filters dan ekspor |
+| `/admin/pos/import` | Owner preview, mapping, quarantine, rekonsiliasi; posting terpisah |
+| `/admin/staff`, `/admin/outlets` | Owner provisioning, reset lewat alur Auth, scope pegawai/outlet |
+| Route member/scan/rules lama | Tetap kompatibel, owner requirement tidak diperluas; link lama diuji |
+| `/membership`, `/k/[token]` | Tetap publik/read-only; token, consent, noindex/no-store/no-referrer dipertahankan |
+
+Satu aksi utama per tahap; bottom sheet durasi punya keyboard/focus trap/Escape. Sticky total menunjukkan qty per unit, total dan Lanjut tanpa menutupi input/keyboard. Promo tidak otomatis menjadi diskon nota: penggunaan promo/discount benefit perlu linkage dan izin eksplisit; jangan menandai promo dipakai saat sekadar melihat QR.
+
+State wajib: loading, empty, failed fetch, offline, pending, unknown payment result, retry/reconcile, success, stale catalog/version, duplicate customer choices, revoked card, unauthorized outlet. Form error mempertahankan isian dan request ID; sukses tampil hanya setelah hasil DB.
+
+Portal awal mempertahankan DTO publik yang ada; tidak menambah HP/alamat/catatan internal/daftar nota lintas outlet. Jika status nota ditambahkan, gunakan DTO allowlist dan review privasi khusus. Tombol bantuan WA dari kartu dan preview pelanggan dari kartu cetak adalah peningkatan terpisah yang bisa disertakan dengan approval desain.
+
+Viewport QA: 320/360/390/768/1024/1440, zoom 200%, keyboard/tab/Enter/Escape, focus/contrast AA dan touch target minimal 44px. Android Chrome fisik tetap UAT terpisah dari emulasi desktop. Print HTML bukan jaminan thermal; ukuran 58/80 mm dan perangkat perlu profil serta hasil uji sendiri.
+
+## 8. Kas, laporan, impor dan WA
+
+**Kas:** opening balance bukan penjualan. Saldo harapan cash = saldo awal + receipts cash + cash-in non-sale - refunds cash - cash-out non-sale. Usulan pilot mewajibkan register/shift terbuka untuk setiap posting kasir, termasuk non-tunai untuk atribusi petugas; saldo cash tetap hanya menghitung metode cash. Payment dan close mengunci shift dengan urutan lock yang sama, sehingga posting tidak bisa masuk diam-diam ke shift yang sudah ditutup. Shift ditutup dengan counted cash, selisih dan alasan; close memakai lock+request ID, tidak memindahkan receipt ke hari lain. Timestamp payment/recording/shift disimpan terpisah. Koreksi shift tertutup append-only oleh owner; tidak edit jurnal lama. Pengeluaran memerlukan kategori, alasan dan permission.
+
+**Laporan:** pisahkan nilai order per created_at, penerimaan/refund per kejadian posting, piutang as-of, kas per metode/shift dan poin per program_year. Ini laporan operasional; jangan menyebut semuanya laba/revenue akuntansi. Rentang WIB memakai `[start, end)` dengan konversi UTC, bukan menganggap semua hari 23:59:59. Ekspor memakai snapshot/as_of konsisten, schema_version, filter/outlet, count, subtotal, exported_at dan timezone. Batasi akses dan cegah formula injection pada cell teks; pertahankan nomor MJL/nota sebagai teks.
+
+**Impor:** validasi XLSX dan batas parser (ukuran terkompresi/hasil ekstrak, sheet, row, cell, timeout), file hash, header yang dipetakan dari contoh asli, formula/external links/macro tidak dieksekusi. Area batal dan masuk dipisah, footer bukan row bisnis. Nominal dan footer yang tidak cocok dikarantina. Exact duplicate aman; status source berbeda adalah revision/conflict, bukan overwrite otomatis.
+
+Import historis default ke arsip non-operasional dengan `source_system`, external invoice/outlet dan status audit. Tanpa tanggal bayar valid, paid_at tetap null dan record tidak masuk laporan penerimaan live. Tidak memberi poin atau membuat receipt/ledger live otomatis. Piutang terbuka di-cutover hanya lewat batch opening receivable disetujui dengan nominal/outlet/date_cutoff dan pencegahan pencatatan dua kali. Rekonsiliasi terhadap event manual lama wajib sebelum linking; nama sama tidak cukup sebagai identity match. Posting historis mempunyai approval dan PR/gate sendiri.
+
+**WA:** V1 hanya menyusun draf setelah user memilih kontak/consent yang sesuai; tidak mengirim otomatis dan tidak menganggap membuka WA sebagai delivery sukses. Draf mencantumkan nota/nominal/status yang benar tanpa membocorkan raw QR. Paket otomatis kelak memakai outbox setelah commit dan deduplication, bukan HTTP di transaksi pembayaran.
+
+## 9. Paket implementasi dan acceptance
+
+Setiap task: buat tes perilaku yang gagal -> jalankan dan simpan bukti gagal -> implementasi minimal -> jalankan tes lulus -> review diff -> commit/PR beserta bukti. Tidak membuat seluruh skema/pembayaran dalam satu PR besar. Subplan tiap paket harus menentukan SQL signature/error, fixture dan perintah tes yang benar setelah G0 memverifikasi toolchain.
+
+| Task | Files/output target | Urutan dan gate penerimaan |
+| --- | --- | --- |
+| G0 Baseline | `docs/pos/baseline.md`, `docs/pos/evidence-manifest.md`, `docs/pos/decision-register.md` | [ ] Freeze remote SHA/tree; [ ] verifikasi local vs remote; [ ] snapshot read-only konsisten; [ ] daftar seluruh routes/RPC; [ ] inventaris screenshot/Excel; [ ] sahkan keputusan G2. Tidak write produksi |
+| G1 Isolasi | `lib/supabase/qa-preview-isolation.ts`, `tests/pos-environment-isolation.test.mjs`, `docs/pos/environments.md` | [ ] Tes mode single/branch baru/env salah gagal; [ ] QA sintetis disediakan terpisah; [ ] semua runner write dikunci QA; [ ] synthetic restore/migration rehearsal dan credential segregation terbukti. Tidak mengubah produksi untuk menjalankan tes |
+| G2 Kontrak/DB | `docs/pos/contracts.md`, `docs/pos/permissions.md`, `supabase/migrations/` via migration tool, `supabase/tests/pos-contracts.sql` | [ ] ADR nominal/status/tahun/role/cutoff disahkan; [ ] fresh install + upgrade dari schema legacy; [ ] RLS/grants/direct API test; [ ] lock/idempotency primitive; [ ] advisor dan compatibility review. SQL test rollback-only bukan pengganti tes commit/concurrency |
+| G3 Auth/shell | `lib/supabase/pos-staff.ts`, `app/admin/pos/layout.tsx`, `app/admin/login/page.tsx`, `components/pos/navigation.tsx`, `tests/pos-auth.ui.spec.ts` | [ ] Test owner regression dan forbidden cashier; [ ] auth/sesi/draft recovery; [ ] outlet switch hanya scope sah; [ ] shell mobile/desktop sesuai referensi yang tersedia |
+| G4 Order | `lib/pos/money.ts`, `lib/pos/contracts.ts`, `app/admin/pos/orders/**`, `components/pos/order-wizard.tsx`, `tests/pos-money.test.mjs`, `tests/pos-order.ui.spec.ts` | [ ] Test qty/rounding/catalog conflict/duplicate create; [ ] customer+QR resolver tanpa write; [ ] create nota request-id stabil; [ ] work transitions dan print HTML. Belum ada award saat create |
+| G5 Payment/points | `app/admin/pos/orders/[id]/actions.ts`, `components/pos/payment-form.tsx`, `supabase/tests/pos-payment.sql`, `tests/pos-concurrency.test.mjs`, migration RPC + legacy cutoff guard | [ ] Test partial/full/replay/conflicting payload/unknown commit; [ ] DB receipt+cash+ADD+amount+link atomik; [ ] full refund/VOID; [ ] larangan award manual kedua; [ ] old portal saldo sesuai |
+| G6 Kas/report/export | `app/admin/pos/cash/**`, `app/admin/pos/reports/**`, `lib/pos/reports.ts`, `tests/pos-reports.test.mjs`, `tests/pos-cash.ui.spec.ts` | [ ] Shift open/close concurrent; [ ] non-sale entries; [ ] method/date/as-of reconciliation; [ ] CSV/XLSX access dan injection tests; [ ] WA draft, tanpa auto-send |
+| G6b Import preview | `app/admin/pos/import/**`, `lib/pos/import-preview.ts`, `tests/pos-import.test.mjs`, `docs/pos/import-reconciliation.md` | [ ] Parser limits + fixtures dari template valid; [ ] quarantine/matching/conflict; [ ] source history tidak memicu ledger/poin; [ ] opening receivable approval; [ ] posting historis tetap disabled |
+| G7 UAT | `docs/pos/uat.md`, artefak screenshot/print/rekonsiliasi privat | [ ] Android/desktop/keyboard/network loss; [ ] physical camera dan gallery; [ ] seluruh regresi owner/member/QR/promo; [ ] thermal hanya bila scope disahkan; [ ] owner/petugas sign-off, nol P0/P1 |
+| G8 Pilot/release | `docs/pos/cutover.md`, `docs/pos/rollback.md`, `docs/pos/monitoring.md` | [ ] backup restore terbukti; [ ] migration additive flag off; [ ] app kompatibel; [ ] audit baseline sah; [ ] pilih outlet/source of truth; [ ] approval release spesifik; [ ] enable pilot; [ ] reconcile tiap shift; [ ] perluasan setelah gate pilot |
+
+Commands awal mengikuti repo: `npm test`, `npm run typecheck`, `npm run build`, `npm run test:ui`. SQL/RLS dijalankan di DB sintetis melalui runner yang diverifikasi G1. Tes concurrency harus memakai minimal dua koneksi dan commit nyata pada QA ephemeral; tidak bisa dibuktikan oleh satu transaksi rollback saja.
+
+### Acceptance examples wajib
+
+1. Order Rp93.000 member aktif, DP Rp30.000 -> nol award; Rp63.000 sisanya -> satu award sesuai revision DB saat lunas. Angka poin contoh hanya dihitung dari fixture yang mendefinisikan tier 50k->5.
+2. Request pelunasan sama diulang setelah order version naik -> replay payment/event lama; payload amount/member/order/method berbeda dengan UUID sama -> konflik tanpa write.
+3. Dua kasir memakai UUID berbeda untuk sisa penuh yang sama -> hanya satu diterima; yang lain version/sisa conflict, tidak receipt/poin kedua. Dua DP berbeda yang totalnya sah diuji dengan refresh version eksplisit.
+4. Timeout sebelum commit dan sesudah commit -> UI menampilkan reconcile; retry UUID sama menghasilkan maksimal satu posting. Error injeksi sesudah setiap tahap receipt/ledger/ADD/link -> tidak ada efek parsial.
+5. Edit rule bersamaan dengan pembayaran -> hasil seluruhnya satu revision; 31 Des/1 Jan WIB sesudah menunggu lock -> timestamp kejadian konsisten; tahun tanpa rule -> seluruh command ditolak sesuai kebijakan yang disahkan.
+6. Full refund di tahun berikut -> refund per metode asal, VOID pada award tahun asal, nol active award dan tidak membuka piutang baru; replay refund tidak menggandakan cash-out.
+7. Cashier mencoba direct table insert, owner RPC, order outlet lain, mengubah role/outlet, mengakses kontak global, dan token setelah akun dinonaktifkan -> ditolak tanpa mutasi.
+8. QR lama/reissue/revoked, member duplicate name, guest, disabled member, promo tanpa consent, public year/history -> regression; scan/reload saldo tidak menambah row ledger.
+9. Qty 0/negatif/fraction pcs/3+ pecahan, rounding half, discount overbasis, stale catalog, nol total, cash change dan pending bank transfer -> hasil sesuai kontrak.
+10. Dua close shift bersamaan, opening cash, expenses, refund ke metode berbeda yang ditolak, hari WIB lintas UTC, imported paid_at null, file duplicate/formula/bomb/row limit -> ledger dan reports tetap reconcile.
+
+## 10. Keputusan owner sebelum implementasi terkait
+
+Semua baris berstatus **usulan, belum disahkan**; review dokumen bukan persetujuan bisnis otomatis.
+
+| ID | Usulan konkret | Gate |
+| --- | --- | --- |
+| D01 | Poin dari total final setelah diskon termasuk biaya yang ditagihkan, saat 100% lunas | G2/G5 |
+| D02 | DP didukung; guest tanpa poin; nol total tanpa event poin/transaksi baru | G2 |
+| D03 | Tahun WIB saat pelunasan DB; missing rule menolak posting pelunasan member; member nonaktif memerlukan penyelesaian owner | G2/G5 |
+| D04 | Tidak ada backfill guest/member/import atau re-award otomatis | G2/G6b |
+| D05 | Pilot hanya full refund; partial refund/repricing dan koreksi salah member setelah bayar lewat paket khusus sebelum diaktifkan | G2/G5 |
+| D06 | Cashier diskon preset; diskon custom/full refund/cash correction hanya owner atau manager berizin; reason wajib | G2/G4 |
+| D07 | Qty .001 kg/m dan integer pcs; half-up item; diskon atas subtotal layanan; batas nota Rp1 miliar | G2/G4 |
+| D08 | Nomor outlet+counter unik; daftar layanan/durasi/parfum/ongkir dan format estimasi disahkan berdasarkan katalog nyata | G2/G4 |
+| D09 | Password individual, reauth policy eksplisit; tidak memperkenalkan PIN singkat pada pilot | G3 |
+| D10 | WA manual, online-only, HTML print; thermal/offline/gateway/WA otomatis paket lanjutan | G4/G7 |
+| D11 | Outlet pilot, register/shift, saldo awal/piutang, sumber kebenaran dan waktu cutoff manual/Binatu | G8 |
+
+G0 dan review dokumen boleh berlangsung tanpa menunggu semua keputusan. Task yang bergantung pada keputusan belum disahkan berhenti pada artefak desain/tes sintetis, tidak mengubah bisnis produksi.
+
+## 11. Release, rollback dan Definition of Done
+
+- Gate GO: seluruh tests/CI hijau, DB migration/RLS review, UAT authenticated/fisik, restore rehearsal, env QA aman, baseline ledger historis terjaga dan keputusan bisnis/release tertulis. Monitoring punya penerima tindakan, query rekonsiliasi dan owner on-call; jangan sekadar menulis “monitor”.
+- Urutan: deploy schema additive yang kompatibel dengan app lama -> deploy app flag-off -> verifikasi read-only -> tetapkan outlet/source of truth/cutoff -> enable DB-scoped write flag -> pilot -> reconcile shift. Semua alat pembayaran POS tetap disabled sampai G5/G7 lengkap.
+- `POS_WRITE_DISABLED` harus diperiksa di DB command, bukan hanya menu/env client. Simpan flags per outlet dan capability agar bisa menghentikan create/payment/refund secara terkontrol; lookup committed/read/receipt print tetap tersedia bagi yang berhak. Command yang sudah commit tidak dibatalkan oleh switch.
+- NO-GO/stop pilot segera untuk duplicate receipt/award, mismatch kas/piutang, data historis/token hilang, privilege leak, unidentified payment result yang tidak bisa direkonsiliasi, atau Preview dapat menulis produksi.
+- Saat insiden: stop command baru pada outlet, reconcile receipt/poin committed, pertahankan akses baca dan hasil command, forward-fix. Jangan otomatis kembali ke input nominal lama atau menyalakan Binatu bersamaan karena itu bisa menduplikasi penjualan/poin. Pengalihan operasional memerlukan owner, cutoff, register nota sementara unik dan rekonsiliasi sebelum posting ulang.
+- Jangan drop/revert destructive additive schema setelah transaksi nyata. App rollback hanya ke build yang memahami data/cutoff POS atau read-only safe mode; pastikan guard DB tetap berlaku walau UI lama kembali.
+- Pilot lulus setelah minimal dua shift tertutup berturut-turut tanpa selisih tak terjelaskan dan tanpa P0/P1, dengan volume uji sintetis concurrency sudah lulus; owner dapat menetapkan masa lebih panjang. Tidak ada auto rollout lintas outlet.
+
+Selesai berarti pegawai berizin dapat membuat nota dan menerima pembayaran, pelunasan memberi poin satu kali sesuai aturan DB, refund yang didukung menjaga ledger, kas/laporan reconcile, dan pelanggan menggunakan QR lama dengan saldo konsisten. Seluruh fitur pilot, batas scope dan bukti diterima owner. Dokumen ini tidak membuktikan fitur sudah dibangun atau data/cloud telah diubah.
+
+## 12. Referensi review
+
+- [PostgreSQL explicit locking](https://www.postgresql.org/docs/current/explicit-locking.html)
+- [PostgreSQL transaction isolation](https://www.postgresql.org/docs/current/transaction-iso.html)
+- [Supabase database functions](https://supabase.com/docs/guides/database/functions)
+- [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security)
+- [Next.js data security](https://nextjs.org/docs/app/guides/data-security)
+
+Referensi tersebut mendukung mekanisme teknis; keputusan tier, refund, tahun, kas dan lingkup pilot adalah usulan desain bisnis Mas Jawa Laundry, bukan aturan yang diklaim berasal dari vendor.

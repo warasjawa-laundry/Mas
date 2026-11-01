@@ -5,6 +5,7 @@ import {defaultServices} from "./defaults";
 import type {PublishedService} from "./catalog";
 export type RealtimeConfig={url:string;key:string};
 export function catalogRealtimeConfig():RealtimeConfig|null{
+ assertQaPreviewIsolation();
  const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_PUBLISHABLE_KEY;
  if(!url||!key)return null;
  let safe=key.startsWith("sb_publishable_");

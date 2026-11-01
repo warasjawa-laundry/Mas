@@ -37,7 +37,7 @@ test('invalid or stale service edits return inline errors without redirecting or
 });
 test('Realtime browser configuration excludes service-role and secret credentials',()=>{
  const out={exports:{}};const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_secret_never_public'};
- runInNewContext(compiled('lib/services/server.ts'),{exports:out.exports,module:out,require:n=>({'server-only':{},'@supabase/supabase-js':{},'@/lib/supabase/qa-preview-isolation':{},'./defaults':{defaultServices:[]}}[n]),process:{env},Buffer,JSON});
+ runInNewContext(compiled('lib/services/server.ts'),{exports:out.exports,module:out,require:n=>({'server-only':{},'@supabase/supabase-js':{},'@/lib/supabase/qa-preview-isolation':{assertQaPreviewIsolation(){}},'./defaults':{defaultServices:[]}}[n]),process:{env},Buffer,JSON});
  assert.equal(out.exports.catalogRealtimeConfig(),null);
  env.SUPABASE_PUBLISHABLE_KEY='a.'+Buffer.from(JSON.stringify({role:'service_role'})).toString('base64url')+'.b';assert.equal(out.exports.catalogRealtimeConfig(),null);
  env.SUPABASE_PUBLISHABLE_KEY='sb_publishable_synthetic';assert.equal(out.exports.catalogRealtimeConfig().key,'sb_publishable_synthetic');

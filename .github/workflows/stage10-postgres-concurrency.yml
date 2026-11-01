@@ -4,6 +4,9 @@ on:
     paths:
       - "supabase/migrations/**"
       - "supabase/tests/**"
+      - "lib/pos/**"
+      - "lib/supabase/qa-preview-isolation.ts"
+      - "tests/pos-*.test.mjs"
       - ".github/workflows/stage10-postgres-concurrency.yml"
   workflow_dispatch:
 permissions:
