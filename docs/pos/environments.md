@@ -34,3 +34,7 @@ The 1 Nov migration `pos_single_outlet_owner_managed_cashier` succeeded on isola
 ## G4 QA-only order workflow
 
 On 1 November 2026, migration `pos_g4_order_creation_staff_attribution` was applied **only** to QA `cwxsbgfjynwxqalwonae`. SQL rollback regression passed after apply. The one outlet remains `write_enabled=false`; QA has 20 POS tables with RLS and 0 remaining orders, payment entries, point links or cashier sessions. Production Supabase `hncfyfvqtlnvqyfrydzb` was not modified. Source deployment to the existing Vercel Production project must not be mistaken for a database cutover. [G4 details](./g4-order-verification.md).
+
+## G5 isolated QA receipt
+
+Pada 1 November 2026, migrasi G5 `pos_g5_payment_cash_points_full_refund` diterapkan **hanya** ke QA `cwxsbgfjynwxqalwonae`, sesudah uji coba DDL transaction rollback. Pengujian SQL sintetis menggunakan `BEGIN`/`ROLLBACK` (partial+full payment, guest, zero total, refund/VOID, izin dan revoke) lulus. Setelah tes: 0 order, 0 payment, 0 cash ledger, 0 point links, dan outlet `write_enabled=false`. Production project `hncfyfvqtlnvqyfrydzb` tidak disentuh. G5 belum cutover, tidak ada penyalinan kredensial QA ke produksi, dan tidak mengubah satu project Vercel/Git connection yang telah diputuskan owner.

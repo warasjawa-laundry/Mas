@@ -63,3 +63,10 @@ Bridge FK di QA **sudah diterapkan secara terbatas**; sebelum operasi produksi t
 ## G4 QA-only verification (1 November 2026)
 
 [Receipt](./g4-order-verification.md). No production Supabase mutation. The existing owner actor provenance is preserved; real MAS-XXXX staff is linked only to order creation/work events (G4), **not** payment/legacy point posting (G5 blocked). A single review/PR/CI batch includes the SQL migration, UI and tests.
+
+## G5 Paket A — bukti QA (1 November 2026)
+
+- Satu PR konsolidasi berisi: skema atribusi finansial kasir nyata tanpa menyamar sebagai owner, dua-token scoped `payment_collect`/`refund_full`, buka shift MAIN saldo awal 0, pembayaran sebagian/lunas, jurnal kas, award satu kali, full refund/VOID, guard legacy manual ADD, status read-only, dan UI pembayaran meniru pola referensi Binatu dengan identitas Mas Jawa.
+- SQL migration `20261101233000_pos_g5_payment_points_refund.sql` berhasil diterapkan **hanya pada Supabase QA** dan belum masuk Supabase produksi.
+- Regression rollback: sebagian bayar tanpa poin, lunas satu ADD/amount/link, replay UUID, konflik payload, versi lama, overpayment, guest tanpa poin, nota nol, refund dua metode + VOID, ADD manual owner terblokir saat cutover, kasir tanpa izin refund, dan sesi kasir dicabut semuanya lulus.
+- **Belum GO:** pengujian fisik Android/QR, race dua koneksi, login Auth nyata, backup/restore, dan persetujuan migrasi produksi. `write_enabled=false` pada QA; tidak ada pembayaran/poin produksi aktif. G6/G6b belum dibuat.

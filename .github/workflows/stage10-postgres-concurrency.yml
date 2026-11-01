@@ -60,5 +60,6 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-single-outlet-passwordless-cashier.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-cashier-sequential-username-login.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-g4-orders-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-g5-payment-rollback.sql
       - name: Two independent connection concurrency tests
         run: bash supabase/tests/stage10-postgres-parallel-race.sh
