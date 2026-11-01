@@ -19,7 +19,7 @@ function money(v: string): string {
  const normalized=s.replace(/^([0-9]{1,3}(?:\.[0-9]{3})+)(?:,00)?$/,(_,n:string)=>n.replace(/\./g,""))
   .replace(/^([0-9]{1,3}(?:,[0-9]{3})+)(?:\.00)?$/,(_,n:string)=>n.replace(/,/g,""))
   .replace(/^([0-9]+)[.,]00$/,"$1");
- if (!/^(0|[1-9][0-9]{0,9})$/.test(normalized) || BigInt(normalized)>1000000000n)
+ if (!/^(0|[1-9][0-9]{0,9})$/.test(normalized) || BigInt(normalized)>BigInt(1000000000))
   throw new Error("Nominal harus Rupiah bulat 0–1 miliar");
  return normalized;
 }
@@ -45,7 +45,7 @@ function fromGrid(grid: string[][]): ImportRow[] {
   if(raw.startsWith("LUNAS"))payment=BigInt(total)===BigInt(paid)?"PAID":"UNKNOWN";
   else if(raw.includes("BELUM BAYAR") && paid==="0")payment="UNPAID";
   else if(raw.includes("SEBAGIAN")||raw.includes("DP"))payment="PARTIAL";
-  else if(BigInt(paid)>0n && BigInt(paid)<BigInt(total))payment="PARTIAL";
+  else if(BigInt(paid)>BigInt(0) && BigInt(paid)<BigInt(total))payment="PARTIAL";
   const statusValue=UPPER(textCell(row[col("STATUS")]));
   const status:ImportRow["status"]=statusValue==="ANTRIAN"?"ANTRIAN":
      statusValue.includes("SIAP")?"SIAP_AMBIL":statusValue.includes("SELESAI")?"SELESAI":"LAINNYA";

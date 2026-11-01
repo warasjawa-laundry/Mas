@@ -10,14 +10,14 @@ export function parseCashEntry(form:FormData){
  const requestId=value(form,"requestId",36),direction=value(form,"direction",3),
   amountIdr=value(form,"amountIdr",10),reason=value(form,"reason",300);
  if(!requestId||!UUID.test(requestId)||!direction||!["IN","OUT"].includes(direction)||
-    !amountIdr||!POSITIVE.test(amountIdr)||BigInt(amountIdr)>1000000000n||
+    !amountIdr||!POSITIVE.test(amountIdr)||BigInt(amountIdr)>BigInt(1000000000)||
     !reason||reason.length<3)return null;
  return {requestId,direction,amountIdr,reason};
 }
 export function parseCloseShift(form:FormData){
  const requestId=value(form,"requestId",36),countedIdr=value(form,"countedIdr",10),reason=value(form,"reason",300);
  if(!requestId||!UUID.test(requestId)||countedIdr===null||!MONEY.test(countedIdr)||
-   BigInt(countedIdr)>1000000000n||reason===null)return null;
+   BigInt(countedIdr)>BigInt(1000000000)||reason===null)return null;
  return {requestId,countedIdr,reason};
 }
 const DAY=/^\d{4}-\d{2}-\d{2}$/;
