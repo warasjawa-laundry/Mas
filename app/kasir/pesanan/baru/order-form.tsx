@@ -5,11 +5,14 @@ import { posUnitFromCatalog } from "@/lib/pos/catalog-units";
 import { formatIdr } from "@/lib/pos/g4-order";
 import { createCashierOrder } from "../actions";
 import { CashierQrScanner } from "./cashier-qr-scanner";
+import { MemberNamePicker } from "./member-name-picker";
+import { DurationSheet } from "./duration-sheet";
+import {ALL_DURATIONS,durationOptions,servicesForDuration} from "@/lib/pos/g7-catalog";
 import styles from "./wizard.module.css";
 
 export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number};
 const money=(n:string|number|bigint)=>formatIdr(n);
-const steps=["Pelanggan","Layanan","Konfirmasi"];
+const steps=["Pelanggan","Durasi","Layanan","Konfirmasi"];
 
 export function OrderForm({services,requestId,canWrite,canLookup}:{services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean}){
  const [step,setStep]=useState(0);
@@ -18,9 +21,12 @@ export function OrderForm({services,requestId,canWrite,canLookup}:{services:Cata
  const [member,setMember]=useState("");
  const [scannedName,setScannedName]=useState("");
  const [quantities,setQuantities]=useState<Record<string,string>>({});
+ const [duration,setDuration]=useState(ALL_DURATIONS);
  const [perfume,setPerfume]=useState("");
  const [notes,setNotes]=useState("");
- const chosen=useMemo(()=>services.filter(s=>(quantities[s.id]??"")!==""),[services,quantities]);
+ const options=useMemo(()=>durationOptions(services),[services]);
+ const available=useMemo(()=>servicesForDuration(services,duration),[services,duration]);
+ const chosen=useMemo(()=>available.filter(s=>(quantities[s.id]??"")!==""),[available,quantities]);
  const quote=useMemo(()=>{
    if(!chosen.length||chosen.length>30)return null;
    try{return calculateOrderTotals(chosen.map(s=>({priceIdr:String(s.price_idr),quantity:quantities[s.id],unit:posUnitFromCatalog(s.unit)})))}
@@ -51,14 +57,21 @@ export function OrderForm({services,requestId,canWrite,canLookup}:{services:Cata
    </div>
    {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder="Nama pelanggan" /></label>:
     <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{setMember(e.target.value.replace(/\D/g,'').slice(0,12));setScannedName("")}} maxLength={12} placeholder="Nomor member pada kartu" /></label>
+     {canLookup&&<MemberNamePicker disabled={false} onPick={row=>{setMember(row.memberNumber);setScannedName(row.displayName)}}/>}
      {canLookup&&<CashierQrScanner disabled={false} onMember={(number,name)=>{setMember(number);setScannedName(name)}}/>}
      {scannedName&&<p className={styles.scanned} role="status">Member ditemukan: <strong>{scannedName}</strong> · MJL-{member.padStart(6,"0")}. Periksa identitas sebelum lanjut.</p>}</>}
    <p className={styles.help}>Data pelanggan akan diverifikasi ulang oleh database saat nota dibuat. Scan kartu tidak pernah menambah poin.</p>
   </section>}
-  {step===1&&<section className={styles.panel} aria-labelledby="services-title">
+  {step===1&&<section className={styles.panel} aria-labelledby="duration-title-step">
+   <h2 id="duration-title-step">Pilih durasi</h2>
+   <p className={styles.help}>Katalog Mas Jawa memiliki tarif berbeda untuk layanan dengan durasi berbeda. Pilih durasi berdasarkan layanan yang tersedia.</p>
+   <DurationSheet options={options} value={duration} onSelect={value=>{setDuration(value);setQuantities({})}}/>
+   <p className={styles.help}>Durasi hanya menyaring layanan berkatalog. Estimasi tanggal selesai belum diterbitkan otomatis.</p>
+  </section>}
+  {step===2&&<section className={styles.panel} aria-labelledby="services-title">
    <h2 id="services-title">Pilih layanan</h2><p className={styles.help}>Jumlah kg/m bisa sampai tiga desimal. Gunakan +/− atau ketik angka tepat.</p>
-   {services.length===0?<p className={styles.help}>Katalog belum tersedia.</p>:<div className={styles.services}>
-    {services.map(s=><div key={s.id} className={styles.service}>
+   {available.length===0?<p className={styles.help}>Tidak ada layanan untuk pilihan durasi ini.</p>:<div className={styles.services}>
+    {available.map(s=><div key={s.id} className={styles.service}>
      <div className={styles.serviceInfo}><strong>{s.name}</strong><small>{s.category}{s.package_name?` · ${s.package_name}`:""} · {s.duration||"Reguler"}</small>
      <span>{money(s.price_idr)} / {s.unit}</span></div>
      <div className={styles.quantity}><button type="button" aria-label={`Kurangi ${s.name}`} onClick={()=>dec(s.id)}>−</button>
@@ -67,13 +80,27 @@ export function OrderForm({services,requestId,canWrite,canLookup}:{services:Cata
     </div>)}
    </div>}
   </section>}
-  {step===2&&<section className={styles.panel} aria-labelledby="summary-title">
+  {step===3&&<section className={styles.panel} aria-labelledby="summary-title">
    <h2 id="summary-title">Konfirmasi pesanan</h2>
    <p><strong>{customerType==='guest'?name:`Member MJL #${member}`}</strong></p>
    <div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span>{s.name} — {quantities[s.id]} {s.unit}</span><strong>{quote?money(quote.items[i].lineTotalIdr):"—"}</strong></div>)}</div>
-   <label className={styles.field}>Pilihan parfum (opsional)<input value={perfume} onChange={e=>setPerfume(e.target.value)} maxLength={80} placeholder="Contoh: Melati" /></label>
+   <div className={styles.presetGroup} role="group" aria-label="Pilihan parfum">
+    <strong>Pilihan parfum (opsional)</strong>
+    <div className={styles.presetButtons}>
+     {["Tanpa parfum","Melati","Lavender","Mawar"].map(p=><button key={p} type="button"
+       aria-pressed={perfume===(p==="Tanpa parfum"?"":p)}
+       onClick={()=>setPerfume(p==="Tanpa parfum"?"":p)}>{p}</button>)}
+    </div>
+    <label className={styles.field}>Nama parfum lain
+     <input value={perfume} onChange={e=>setPerfume(e.target.value)} maxLength={80} placeholder="Parfum sesuai pelanggan" />
+    </label>
+   </div>
+   <div className={styles.unavailableAdjustments} aria-label="Ongkir dan diskon belum tersedia">
+    <strong>Antar/jemput dan diskon</strong>
+    <p className={styles.help}>Belum dapat dikenakan. Tarif ongkir dan aturan diskon harus disetujui owner serta divalidasi database sebelum transaksi diaktifkan. Total saat ini hanya harga layanan.</p>
+   </div>
    <label className={styles.field}>Catatan cucian (opsional)<textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={500} rows={3} placeholder="Catatan untuk proses laundry" /></label>
-   <p className={styles.help}>Harga disahkan ulang dari database sebelum nota dibuat. Pembayaran dan poin tidak diproses pada tahap ini.</p>
+   <p className={styles.help}>Durasi terpilih: {options.find(o=>o.value===duration)?.label}. Harga setiap layanan disahkan ulang oleh database. Pembayaran dan poin tidak diproses saat membuat nota.</p>
    {!canWrite&&<p className={styles.warn} role="status">Nota belum dapat dibuat: transaksi POS masih dikunci pada database.</p>}
    <form action={createCashierOrder}>
     <input type="hidden" name="requestId" value={requestId}/>

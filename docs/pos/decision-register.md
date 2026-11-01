@@ -84,3 +84,11 @@ Bridge FK di QA **sudah diterapkan secara terbatas**; sebelum operasi produksi t
 - Owner's request for UI/UX nearly identical to Binatu remains binding, BUT visual sign-off is not met; see [UI parity audit](./ui-parity-audit.md) for explicit gaps (duration sheet, delivery fee, discounts, member name search, physical Android screenshot comparison).
 - G8 database production migration, backup/restore, data reconciliation, owner cutover sign-off, flag enable, real payment/point posting and new Vercel staging environment are NOT authorized by successful source PR. Source is `warasjawa-laundry/Mas` main; existing Production project/Git connection stays.
 - QA history contains a comment-only migration entry preceding actual G7 DDL; rectify evidence at future schema-cutover review, do not copy QA migration log into production.
+
+
+## G7 wizard decisions — 2 Nov 2026
+
+- Durasi dipilih dari `laundry_services.duration` sebenarnya, bukan tarif Reguler/Express/Kilat fiktif; dapat berubah sesuai katalog yang disetujui owner. Belum ada due-date otomatis dari durasi rentang.
+- Kasir dengan `member_lookup` berhak melihat maksimal 8 nama+nomor per pencarian prefix min 3 karakter. Phone/address tetap hanya untuk alur owner import Binatu, tidak diperluas ke kasir.
+- Preset parfum hanya mengisi field existing. Ongkir dan diskon akan tetap non-operasional sampai owner menentukan nilai, otorisasi, dan aturan akuntansi/POINT base. Semua bukti UI masih source-level, bukan full signed-off parity.
+- G8 **NO-GO**, DB produksi tidak disentuh, existing Vercel project/linked Git unchanged.
