@@ -10,3 +10,24 @@
 .warning,.empty{padding:16px;border-radius:12px;background:#fff7ed;color:#92400e;margin:20px 0}.empty{color:#64748b;background:#f1f5f9}.ok{background:#ecfdf5;color:#065f46;padding:15px;border-radius:10px}.muted{font-size:13px;color:#64748b}
 
 @media print{.shell{padding:0;max-width:100%;font-size:12px}.shell a,.shell button,.warning{display:none!important}.card{border:0;padding:8px 0}.shell h1{font-size:23px}}
+/* G5 payment card: familiar order total, payment modes and receipt history. */
+.cardHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cardHeading h2{margin:0}
+.paymentBadge{display:inline-flex;border-radius:20px;background:#ede9fe;color:#5b21b6;font-size:13px;font-weight:800;padding:7px 12px}
+.paymentTotals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
+.paymentTotals>div{background:#f8fafc;border-radius:12px;padding:14px;display:grid;gap:7px}
+.paymentTotals small{color:#64748b;font-size:12px}.paymentTotals strong{font-size:18px}
+.paymentTotals .remaining{background:#f3e8ff;color:#581c87}
+.receiptList{border-top:1px solid #e7ebf1;margin-top:12px}
+.receipt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #e7ebf1}
+.receipt span{font-weight:700}.receipt small{display:block;font-size:12px;font-weight:400;color:#64748b;margin-top:4px}
+.paymentForm{display:grid;gap:14px;margin:18px 0}
+.paymentForm h3{font-size:17px;margin:0}
+.paymentForm label{font-size:14px;font-weight:750;display:grid;gap:7px}
+.paymentForm input,.paymentForm select{font:inherit;width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#172337;padding:12px;min-height:48px}
+.paymentForm button{width:100%}.mutedPanel{padding:14px;border-radius:14px;background:#f1f5f9;margin:16px 0}
+.refundPanel{border-top:1px solid #e7ebf1;padding-top:16px;margin-top:22px}.refundPanel summary{font-weight:800;color:#9f1239;cursor:pointer}
+.dangerButton{background:#be123c;color:#fff;border:0;border-radius:12px;padding:12px 16px;min-height:48px;font-weight:800;cursor:pointer}
+.dangerButton:disabled{background:#94a3b8;cursor:not-allowed}
+@media(max-width:480px){.paymentTotals{grid-template-columns:repeat(2,minmax(0,1fr))}.paymentTotals .remaining{grid-column:1/-1}}
+@media print{.paymentForm,.refundPanel,.mutedPanel{display:none!important}.paymentTotals strong{font-size:14px}}
