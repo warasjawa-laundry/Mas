@@ -4,9 +4,14 @@ import { decryptCardWithKeys } from "@/lib/laundry/card-crypto";
 import { cardOriginForEnvironment } from "@/lib/laundry/card-origins";
 import { assertQaPreviewIsolation } from "@/lib/supabase/qa-preview-isolation";
 
+function usesQaDatabase() {
+  return process.env.VERCEL_ENV === "preview" || process.env.LAUNDRY_DATABASE_MODE === "qa";
+}
 function getCardKey() {
   assertQaPreviewIsolation();
-  const key = process.env.LAUNDRY_CARD_ENCRYPTION_KEY_OPERATIONAL || process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
+  const key = usesQaDatabase()
+    ? process.env.LAUNDRY_CARD_ENCRYPTION_KEY_QA
+    : process.env.LAUNDRY_CARD_ENCRYPTION_KEY_OPERATIONAL || process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
   if (!key) throw new Error("Card encryption is not configured");
   const material = Buffer.from(key, "base64");
   if (material.length !== 32 || material.toString("base64") !== key)
@@ -14,7 +19,7 @@ function getCardKey() {
   return material;
 }
 export function cardIssuanceReady() {
-  try { getCardKey(); return true; } catch { return false; }
+  try { getCardKey(); publicCardOrigin(); return true; } catch { return false; }
 }
 export function newCardToken() { return randomBytes(32).toString("base64url"); }
 export function validCardToken(token: string) {
@@ -35,7 +40,7 @@ export function encryptCardToken(token: string) {
 }
 export function decryptCardToken(hex: string) {
   const primary=getCardKey();
-  const legacyValue=process.env.LAUNDRY_CARD_ENCRYPTION_KEY_OPERATIONAL
+  const legacyValue=!usesQaDatabase()&&process.env.LAUNDRY_CARD_ENCRYPTION_KEY_OPERATIONAL
     ?process.env.LAUNDRY_CARD_ENCRYPTION_KEY:undefined;
   const legacy=legacyValue?Buffer.from(legacyValue,"base64"):undefined;
   if(legacy&&(legacy.length!==32||legacy.toString("base64")!==legacyValue))
@@ -46,7 +51,10 @@ export function memberNumber(value: number | string) {
   return "MJL-" + String(value).padStart(6, "0");
 }
 export function publicCardOrigin() {
-  // Preview cards always point to a stable, reviewed test alias. Never encode
-  // the immutable VERCEL_URL deployment host in a physical card.
-  return cardOriginForEnvironment(process.env.VERCEL_ENV, process.env.NODE_ENV, process.env.VERCEL_GIT_COMMIT_REF);
+  return cardOriginForEnvironment(
+    usesQaDatabase() ? "preview" : process.env.VERCEL_ENV,
+    process.env.NODE_ENV,
+    process.env.VERCEL_GIT_COMMIT_REF,
+    process.env.QA_CARD_ORIGIN,
+  );
 }

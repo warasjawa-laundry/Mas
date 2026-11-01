@@ -11,11 +11,13 @@ import {
 
 const token = "A".repeat(43);
 const url = (origin, suffix = "") => `${origin}/k/${token}${suffix}`;
+const newQaOrigin = "https://mas-git-pos-qa-m8traders-projects-081d9dc2.vercel.app";
 
-test("Preview QR always uses a stable alias across immutable deployments", () => {
-  assert.equal(cardOriginForEnvironment("preview", "production"), REVIEW_CARD_ORIGIN);
-  assert.equal(REVIEW_CARD_ORIGIN, "https://mas-git-main-m8traders-projects-081d9dc2.vercel.app");
-  assert.equal(extractLaundryToken(url(REVIEW_CARD_ORIGIN)), token);
+test("every Preview branch requires its explicit safe QA card origin", () => {
+  for (const branch of [undefined, "main", "feature/pos-foundation-v2", QA_REVIEW_BRANCH]) {
+    assert.equal(cardOriginForEnvironment("preview", "production", branch, newQaOrigin), newQaOrigin);
+    assert.throws(() => cardOriginForEnvironment("preview", "production", branch));
+  }
 });
 
 test("Production QR only uses official origin; local development remains local", () => {
@@ -57,10 +59,18 @@ test("Reject hostile links rather than following or accepting arbitrary URLs", (
   assert.equal(extractLaundryToken(token), token);
 });
 
-test("QA feature Preview QR remains inside isolated branch instead of production-connected main",()=>{
-  assert.equal(cardOriginForEnvironment("preview","production",QA_REVIEW_BRANCH), QA_CARD_ORIGIN);
-  assert.equal(cardOriginForEnvironment("preview","production","main"), REVIEW_CARD_ORIGIN);
-  assert.equal(cardOriginForEnvironment("production","production",QA_REVIEW_BRANCH), OFFICIAL_CARD_ORIGIN);
-  assert.equal(extractLaundryToken(url(QA_CARD_ORIGIN)),token);
-  assert.notEqual(QA_CARD_ORIGIN,REVIEW_CARD_ORIGIN);
+test("new QA card destinations reject production, retired QA and unclean origins", () => {
+  for (const origin of [
+    undefined, "", REVIEW_CARD_ORIGIN, QA_CARD_ORIGIN, OFFICIAL_CARD_ORIGIN,
+    "http://mas-git-pos-qa-m8traders-projects-081d9dc2.vercel.app",
+    "https://mas-git-pos-qa-other-team.vercel.app",
+    "https://mas-git-pos-qa-m8traders-projects-081d9dc2.vercel.app.evil.invalid",
+    "https://mas-immutable-m8traders-projects-081d9dc2.vercel.app",
+    newQaOrigin + "/", newQaOrigin + "/k", newQaOrigin + "?q=1", newQaOrigin + "#fragment",
+    newQaOrigin + ":443", newQaOrigin + ":8080", " " + newQaOrigin, newQaOrigin + " ",
+    newQaOrigin.replace("https://", "https://user:pass@"),
+  ]) assert.throws(() => cardOriginForEnvironment("preview", "production", "main", origin), String(origin));
+  assert.equal(cardOriginForEnvironment("production", "production", QA_REVIEW_BRANCH, newQaOrigin), OFFICIAL_CARD_ORIGIN);
+  assert.equal(extractLaundryToken(url(QA_CARD_ORIGIN)), token);
+  assert.equal(extractLaundryToken(url(REVIEW_CARD_ORIGIN)), token);
 });

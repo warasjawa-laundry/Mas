@@ -1,84 +1,82 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import {
-  QA_PREVIEW_REF,
-  QA_SUPABASE_ORIGIN,
-  QA_SUPABASE_PROJECT,
-  OPERATIONAL_SUPABASE_ORIGIN,
-  assertQaPreviewIsolation,
-} from "../lib/supabase/qa-preview-isolation.ts";
+import { createHash } from "node:crypto";
+import { assertQaPreviewIsolation } from "../lib/supabase/qa-preview-isolation.ts";
 
+const qaOrigin = "https://cwxsbgfjynwxqalwonae.supabase.co";
+const productionOrigin = "https://hncfyfvqtlnvqyfrydzb.supabase.co";
 const preview = {
   VERCEL_ENV: "preview",
-  VERCEL_GIT_COMMIT_REF: QA_PREVIEW_REF,
+  LAUNDRY_DATABASE_MODE: "qa",
+  QA_BRANCH_ISOLATION: "cwxsbgfjynwxqalwonae",
+  SUPABASE_URL: qaOrigin,
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_unregistered-key",
 };
 
-test("explicit single-project mode uses only the operational database",()=>{
- const single={...preview,LAUNDRY_DATABASE_MODE:"single",SUPABASE_URL:OPERATIONAL_SUPABASE_ORIGIN,SUPABASE_PUBLISHABLE_KEY:"synthetic-public-key"};
- assert.doesNotThrow(()=>assertQaPreviewIsolation(single));
- for(const override of [{SUPABASE_URL:QA_SUPABASE_ORIGIN},{SUPABASE_PUBLISHABLE_KEY:undefined},{QA_BRANCH_ISOLATION:QA_SUPABASE_PROJECT}]){
-  assert.throws(()=>assertQaPreviewIsolation({...single,...override}),/Single-project database/);
- }
-});
-
-test("QA Preview fails closed on missing branch override", () => {
-  for(const extra of [
-    {},
-    { QA_BRANCH_ISOLATION: QA_SUPABASE_PROJECT },
-    { QA_BRANCH_ISOLATION: QA_SUPABASE_PROJECT, SUPABASE_URL:"https://hncfyfvqtlnvqyfrydzb.supabase.co" },
-    { QA_BRANCH_ISOLATION: QA_SUPABASE_PROJECT, SUPABASE_URL:QA_SUPABASE_ORIGIN },
-    { QA_BRANCH_ISOLATION: "wrong", SUPABASE_URL:QA_SUPABASE_ORIGIN, SUPABASE_PUBLISHABLE_KEY:"qa-only" },
-  ]) {
-    assert.throws(
-      () => assertQaPreviewIsolation({...preview,...extra}),
-      /QA Preview database isolation is not configured/
-    );
+test("every Preview branch fails closed without QA configuration", () => {
+  for (const branch of ["main", "new-feature-name", "feature/pos-foundation-v2", undefined]) {
+    assert.throws(() => assertQaPreviewIsolation({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: branch }));
   }
 });
 
-test("QA Preview recognizes only its own Supabase project", () => {
-  assert.doesNotThrow(() => assertQaPreviewIsolation({
-    ...preview,
-    QA_BRANCH_ISOLATION: QA_SUPABASE_PROJECT,
-    SUPABASE_URL: QA_SUPABASE_ORIGIN,
-    SUPABASE_PUBLISHABLE_KEY:"qa-only",
+test("single mode cannot redirect a Preview deployment to production", () => {
+  assert.throws(() => assertQaPreviewIsolation({
+    VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: "main", LAUNDRY_DATABASE_MODE: "single",
+    SUPABASE_URL: productionOrigin, SUPABASE_PUBLISHABLE_KEY: "synthetic-public-key",
   }));
 });
 
-test("Main Preview and standalone builds retain their existing behavior", () => {
-  for(const env of [
-    {VERCEL_ENV:"preview",VERCEL_GIT_COMMIT_REF:"main"},
-    {NODE_ENV:"production"},
-  ]) {
+test("runtime environment cannot authorize an unregistered public key", () => {
+  for (const key of ["sb_publishable_unregistered-key", "qa-only", "", undefined]) {
+    assert.throws(() => assertQaPreviewIsolation({
+      ...preview, SUPABASE_PUBLISHABLE_KEY: key,
+      QA_SUPABASE_KEY_SHA256: createHash("sha256").update(key ?? "").digest("hex"),
+      SUPABASE_EXPECTED_KEY_HASH: createHash("sha256").update(key ?? "").digest("hex"),
+    }));
+  }
+});
+
+test("the retired QA project cannot be reused for Preview", () => {
+  assert.throws(() => assertQaPreviewIsolation({
+    ...preview, VERCEL_GIT_COMMIT_REF: "feature/admin-operations-reliability-20261017",
+    QA_BRANCH_ISOLATION: "tnadzytuamdxfypoeggy",
+    SUPABASE_URL: "https://tnadzytuamdxfypoeggy.supabase.co", SUPABASE_PUBLISHABLE_KEY: "retired-qa-key",
+  }));
+});
+
+test("standalone public builds and CI without database settings remain available", () => {
+  for (const env of [{}, { NODE_ENV: "production" }, { CI: "true" }, { VERCEL_ENV: "development" }]) {
     assert.doesNotThrow(() => assertQaPreviewIsolation(env));
   }
 });
 
-test("Production requires the operational database and rejects QA overrides",()=>{
- const production={VERCEL_ENV:"production",SUPABASE_URL:OPERATIONAL_SUPABASE_ORIGIN,SUPABASE_PUBLISHABLE_KEY:"synthetic-public-key"};
- assert.doesNotThrow(()=>assertQaPreviewIsolation(production));
- for(const override of [{SUPABASE_URL:QA_SUPABASE_ORIGIN},{SUPABASE_URL:undefined},{SUPABASE_PUBLISHABLE_KEY:undefined},{QA_BRANCH_ISOLATION:QA_SUPABASE_PROJECT}]){
-  assert.throws(()=>assertQaPreviewIsolation({...production,...override}),/Production database isolation/);
- }
+test("local configured databases require an explicit reviewed environment mode", () => {
+  assert.throws(() => assertQaPreviewIsolation({
+    SUPABASE_URL: productionOrigin, SUPABASE_PUBLISHABLE_KEY: "synthetic-public-key",
+  }));
 });
 
-test("DB boundary is enforced before protected and public Supabase requests", () => {
-  const read=path=>readFileSync(path,"utf8");
-  for(const file of ["proxy.ts","lib/supabase/server.ts","app/k/[token]/page.tsx","lib/laundry/card.ts"]){
-    assert.match(read(file),/assertQaPreviewIsolation\(\)/,file);
+test("CI rejects operational credentials even when single mode is selected", () => {
+  for (const VERCEL_ENV of [undefined, "production", "preview"]) {
+    assert.throws(() => assertQaPreviewIsolation({
+      CI: "true", VERCEL_ENV, LAUNDRY_DATABASE_MODE: "single",
+      SUPABASE_URL: productionOrigin, SUPABASE_PUBLISHABLE_KEY: "synthetic-public-key",
+    }));
   }
-  assert.ok(read("proxy.ts").indexOf(" assertQaPreviewIsolation();") < read("proxy.ts").indexOf(" const url=process.env.SUPABASE_URL"));
-  assert.ok(read("app/k/[token]/page.tsx").indexOf("assertQaPreviewIsolation();") < read("app/k/[token]/page.tsx").indexOf("const url=process.env.SUPABASE_URL"));
 });
 
-test("QA readiness endpoint is preview-only, non-sensitive and uncached", () => {
-  const route=readFileSync("app/api/qa-readiness/route.ts","utf8");
-  assert.match(route, /qaPreviewIsolation: "configured"/);
-  assert.match(route, /qaPreviewIsolation: "blocked"/);
-  assert.match(route, /VERCEL_GIT_COMMIT_REF !== QA_PREVIEW_REF/);
-  assert.match(route, /status: 404/);
-  assert.match(route, /status: 503/);
-  assert.match(route, /no-store/);
-  assert.doesNotMatch(route, /service_role|createClient\(|laundry_members|token_ciphertext/);
+test("production rejects an unknown key and QA inheritance", () => {
+  for (const extra of [{}, { QA_BRANCH_ISOLATION: "cwxsbgfjynwxqalwonae" }, { LAUNDRY_DATABASE_MODE: "qa" }]) {
+    assert.throws(() => assertQaPreviewIsolation({
+      VERCEL_ENV: "production", SUPABASE_URL: productionOrigin,
+      SUPABASE_PUBLISHABLE_KEY: "synthetic-public-key", ...extra,
+    }));
+  }
+});
+
+test("existing Supabase request entry points retain the boundary check", () => {
+  for (const file of ["proxy.ts", "lib/supabase/server.ts", "app/k/[token]/page.tsx", "lib/laundry/card.ts", "lib/services/server.ts"]) {
+    assert.match(readFileSync(file, "utf8"), /assertQaPreviewIsolation\(\)/, file);
+  }
 });
