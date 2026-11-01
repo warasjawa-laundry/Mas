@@ -1,4 +1,4 @@
--- G2 contracts after G3 migration: singleton outlet exists; regression runs in a rollback transaction.
+-- G2 contracts after G3 username login: singleton outlet exists; regression runs in a rollback transaction.
 begin;
 set local statement_timeout='15s';
 do $g2$
@@ -16,7 +16,7 @@ begin
  into v_tables,v_rls
  from pg_class c join pg_namespace n on c.relnamespace=n.oid
  where n.nspname='public' and c.relkind='r' and c.relname like 'laundry_pos_%';
- if v_tables<>19 or v_rls<>19 then raise exception 'G2 table/RLS count mismatch: %/%',v_tables,v_rls; end if;
+ if v_tables<>20 or v_rls<>20 then raise exception 'G2 table/RLS count mismatch: %/%',v_tables,v_rls; end if;
 
  select count(*) into v_bad
  from pg_class c join pg_namespace n on n.oid=c.relnamespace

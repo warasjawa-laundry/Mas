@@ -22,8 +22,14 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 | G1 QA schema/code isolation | New QA active, 17 migrations and 8 SQL tests done, guard added; Preview N/A by owner decision, authenticated UAT/restore remain pending |
 | Nominal contract for G2/G4 | BigInt utility implemented; focused red/green tests and independent review completed |
 | G2 RBAC/financial schema and legacy bridge | **Partial QA:** 17 POS tables, deny-by-default + RLS, 5 immutable triggers, read-only outlet RPC, actor FK now auth.users; SQL rollback regression passed. Authenticated owner/cashier UAT, payment RPC, production rollout and approval still pending. |
-| G3 owner-only login + passwordless cashiers | **Partial QA implementation:** satu outlet MJL, owner CRUD + izin kasir, pairing/revoke perangkat, UI owner/kasir, unit+SQL tests. Physical device/real-auth UAT, prod migration/financial actor bridge pending. |
+| G3 owner login + cashier MAS-XXXX | **Partial QA:** satu outlet MJL, owner CRUD+izin, username urut tidak reuse, per-device paired username login, token sesi kedua, lockout/revoke, SQL+Node tests. Physical real-auth UAT, production migration and financial actor bridge pending. |
 | G4–G8 | Not implemented; keep payment/points write disabled and do not start a second outlet |
+
+## Owner decision: sequential cashier usernames (1 November 2026)
+
+- Owner supplies cashier **name** only; database automatically assigns `MAS-0001`, `MAS-0002`, ... `MAS-9999`. Counter locks single outlet row; immutable unique ID not reissued after disable/delete.
+- Cashier signs into `/kasir` by entering the assigned username, no password, only on a device owner paired for **that cashier**; device token 7 days and a second login token 12 hours. Five wrong attempts lock device for five minutes; other staff IDs rejected even if known.
+- This supersedes former automatic cashier access on a paired device, but keeps owner as the only password account. No second outlet, no live payment writes. QA migration and SQL rollback tests passed; physical UAT and production migration pending.
 
 ## Owner change — only one outlet and passwordless staff (1 November 2026)
 
