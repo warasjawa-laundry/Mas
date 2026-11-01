@@ -11,6 +11,7 @@ export default async function OwnerSettings({ searchParams }: Props) {
       <p className="admin-kicker">ADMIN</p>
       <h1>Pengaturan</h1>
       <section className="settings-service-entry"><h2>Layanan dan harga</h2><p>Tambah layanan, ubah tarif dan satuan, atau sembunyikan layanan dari homepage.</p><Link href="/admin/settings/services" prefetch={false} className="admin-primary">Kelola layanan dan harga →</Link></section>
+      <section className="settings-service-entry"><h2>Kasir Mas Jawa Laundry</h2><p>Owner menambahkan kasir, mengatur hak akses, dan mengaktifkan perangkat pegawai tanpa ID/password kasir. Outlet tetap satu, sesuai alamat laundry.</p><Link href="/admin/pos/kasir" prefetch={false} className="admin-primary">Kelola kasir →</Link></section>
       <h2>Ubah Password</h2>
       <p className="admin-hint">Untuk keamanan, masukkan password saat ini sebelum menggantinya. Setelah berhasil, Anda diminta login kembali.</p>
       {error && <p className="admin-error" role="alert">{error === "failed" ? "Password belum berhasil diganti. Silakan coba lagi." : "Periksa password lama dan pastikan password baru memenuhi syarat."}</p>}

@@ -16,7 +16,7 @@
 | 15–17 | Invoice details, order status and ready-to-pick-up confirmation |
 | 18–20 | WhatsApp draft and cash/noncash payment confirmation |
 | 21–22 | Cash period selection and traceable cash ledger |
-| 23–25 | Manager login, cashier login, cashier management per outlet |
+| 23–25 | **Adaptasi:** hanya owner login, owner kelola izin kasir, akses kasir di perangkat yang dipair tanpa username/password; tidak meniru layar login kasir Binatu |
 
 Each POS UI task must compare same-screen mobile captures side by side with the corresponding reference and preserve cashier muscle memory. Deviations of navigation, action placement or workflow need owner sign-off. Use original Mas Jawa branding and assets, not Binatu's protected logo/images.
 

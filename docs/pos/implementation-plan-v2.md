@@ -12,6 +12,8 @@
 
 ## Keputusan owner terbaru: alur source dan deployment (mengikat)
 
+**Revisi operasional kasir/outlet (1 November 2026):** hanya **owner** yang login dengan ID/password; pegawai kasir tidak membuat akun login. Owner mengelola nama, izin, penghapusan/nonaktivasi, dan pairing perangkat kasir melalui `/admin/pos/kasir`. Perangkat kasir mendapat token rahasia sementara dan bukan cookie owner. **Outlet hanya satu:** Mas Jawa Laundry, Jl. Raya Kandang Jati Kulon RT.06 RW.01, Kandang Jati Kulon, Probolinggo (sesuai `lib/site.ts`). Tidak ada fitur menambah, memilih, atau menghapus outlet. Perubahan ini mengesampingkan kontrak staff individual Supabase Auth dan beberapa outlet pada versi terdahulu. Lihat [laporan G3 owner-managed cashier](./g3-single-outlet-cashiers.md).
+
 1. **Satu repository kode utama:** `warasjawa-laundry/Mas`; setiap task memakai branch sementara dari `main`, lulus tes/review PR, lalu **langsung merge ke `main`**. Hindari branch kerja jangka panjang.
 2. **Satu proyek deployment:** Vercel `mas`, domain `masjawalaundry.web.id`, dan koneksi Git Vercel ke `unyilhm1-hue/mas` **tetap**, tidak di-reconnect. **Tidak membuat Vercel Preview/staging/proyek baru.** Setelah merge verifikasi commit SHA dan domain pada deployment Production aktual; koneksi Git berbeda artinya auto-deploy dari repository kode tidak boleh diasumsikan.
 3. **Deploy kode bertahap ke Production yang sama**, namun POS belum lengkap **tidak boleh diaktifkan**. Simpan `/admin/pos` dan terutama pembayaran/poin dalam keadaan tidak dapat diakses/ditulis sampai gate relevan dan persetujuan cutover. Flag database tetap wajib, bukan sekadar menyembunyikan tombol.
@@ -27,7 +29,7 @@ Ketentuan terbaru di atas **menggantikan** syarat Preview/reconnect serta status
 - **Status:** implementasi fondasi G0/G1 sebagian telah di-merge lewat PR #17; pekerjaan POS operasional belum diimplementasi/diaktifkan. PR per task boleh di-merge setelah tes, sedangkan activation/cutover masih memerlukan gate tersendiri.
 - **Tidak membuat website, domain, atau repository baru.** Aplikasi tetap `warasjawa-laundry/Mas`; area kasir berada pada `/admin/pos` sebelum navigasi lama diganti bertahap.
 - **Pertahankan identitas/data lama:** `laundry_members`, `laundry_member_cards`, `laundry_point_rules`, `laundry_amount_transactions`, `laundry_checklist_events`, `laundry_member_promotions`, nomor MJL dan URL QR lama.
-- **Satu member untuk seluruh outlet:** `laundry_members.id` adalah FK kanonis; nomor nota berbeda dari nomor member. Nama/HP yang sama tidak otomatis digabung.
+- **Satu outlet tetap dan satu keanggotaan:** `laundry_members.id` tetap FK kanonis semua nota; tidak membuat nomor member atau cabang baru. Nama/HP yang sama tidak otomatis digabung.
 - **Scan QR tidak pernah menghasilkan poin atau transaksi.** Kasir memilih member; pelanggan membaca catatan.
 - Poin POS diterbitkan sekali pada pelunasan terkonfirmasi, dari total final nota; status pekerjaan tidak memicu poin. Definisi refund/koreksi mengikuti keputusan di bagian 10.
 - Tidak ada write uji coba ke produksi. QA menggunakan data sintetis; QA lama tidak dipulihkan, dikosongkan atau dipakai tanpa pemeriksaan dan otorisasi tersendiri.
@@ -141,16 +143,18 @@ Review lock graph harus mencakup helper legacy yang masih hidup, bukan hanya RPC
 
 ## 5. Model data dan invariants
 
-**G2 update 1 Nov 2026:** [laporan QA dan sisa gate](./g2-verification.md). 17 tabel baru, RLS, fungsi read-only outlet, trigger jurnal, dan FK actor baru telah diterapkan **hanya di QA**. Skema POS belum ada di produksi dan pembayaran tetap nonaktif. Migrasi yang nanti diterapkan ke produksi harus melalui review dan backup/restore gate tersendiri.
+**G2/G3 update 1 Nov 2026:** [laporan fondasi G2](./g2-verification.md) dan [paket satu outlet/kasir G3](./g3-single-outlet-cashiers.md). 17 tabel awal + 2 tabel perangkat/audit baru di QA, semuanya RLS default deny. Outlet MJL tunggal seeded dengan `write_enabled=false`; staff tidak lagi FK ke akun Auth. **Belum ada migrasi POS produksi dan pembayaran tetap nonaktif.** Migrasi yang nanti diterapkan ke produksi harus melalui review dan backup/restore gate tersendiri.
 
 
 Nama berikut adalah kontrak V2. Struktur awal sudah direalisasikan di QA; pengendalian lintas tabel melalui RPC pembayaran, refund, point award dan cutover masih belum diimplementasikan.
 
 | Tabel POS | Kunci/isi utama | Invariant |
 | --- | --- | --- |
-| `laundry_pos_outlets` | code, name, active, config revision | code unik; outlet nonaktif tidak menerima command baru |
-| `laundry_pos_staff` | auth_user_id, name, active | akun individual, tanpa password/PIN plaintext |
-| `laundry_pos_staff_outlets` | staff, outlet, role/capability revision | unik staff/outlet; tidak self-grant |
+| `laundry_pos_outlets` | code `MJL`, nama/alamat tetap dari `lib/site.ts`, singleton_key, write_enabled | **Tepat satu outlet tetap**; tidak ada RPC tambah cabang; transaksi off sampai gate finansial |
+| `laundry_pos_staff` | staff_id UUID internal, display_name, active | **Bukan** akun Auth; owner tambah/edit/soft-delete; pegawai tidak perlu ID/password |
+| `laundry_pos_staff_outlets` | staff_id, satu outlet MJL, role cashier, izin JSON boolean | whitelist eksplisit, owner-only mutate; bukan fitur multioutlet atau manajer login |
+| `laundry_pos_cashier_devices` | staff_id, token_digest SHA256, expiry, revoked_at, issued_by | hanya owner dapat pairing; token mentah tidak disimpan; cek revoked/izin per request |
+| `laundry_pos_cashier_audit` | staff, owner, create/update/disable/pair/revoke, changes | jejak administrasi tidak hilang saat kasir dinonaktifkan |
 | `laundry_pos_guest_customers` | nama, kontak opsional, linked_member | tanpa nomor MJL baru; link tidak award retroaktif |
 | `laundry_pos_orders` | outlet, sequence, invoice_no, customer ref/snapshot, three states, totals, version | unik outlet+sequence/invoice; customer member atau guest konsisten; immutable sesudah final kecuali command koreksi |
 | `laundry_pos_order_items` | service ref, price/unit/duration snapshot, qty | qty positif, pcs integer, line rounding deterministik |
@@ -166,23 +170,27 @@ Nama berikut adalah kontrak V2. Struktur awal sudah direalisasikan di QA; pengen
 
 FK historis ke member/service memakai restriction atau soft deactivate, bukan cascade delete jurnal. Index wajib pada FK dan pola outlet+created_at, outlet+work state, order+payment time, staff+outlet; verifikasi query plan dengan data sintetis yang realistis.
 
-Nomor nota: counter/sequence DB per outlet, contoh `MJL-KJK-000001`; tidak memakai `max()+1`, tidak mengulang nomor batal, boleh ada gap. Tanggal tampilan nota WIB bukan sumber uniqueness. Konfirmasi format outlet sebelum G2.
+Nomor nota: counter/sequence DB pada **satu outlet `MJL`**, contoh `MJL-000001`; tidak memakai `max()+1`, tidak mengulang nomor batal, boleh ada gap. Tahun/tanggal tampilan WIB bukan sumber uniqueness. Tidak ada prefix cabang lain.
 
-## 6. Hak akses, sesi dan isolasi
+## 6. Hak akses, sesi dan isolasi (revisi owner-only login)
 
-| Capability | Cashier | Outlet manager | Owner |
-| --- | --- | --- | --- |
-| Cari identitas member minimal untuk order | Ya, melalui resolver terbatas/rate limited | Ya | Ya |
-| Baca pesanan/kas | Outlet yang ditugaskan; riwayat kas sesuai shift/izin | Outlet yang ditugaskan | Semua outlet |
-| Create order/terima pembayaran/status kerja | Outlet yang ditugaskan | Outlet yang ditugaskan | Ya |
-| Diskon custom/full refund/cash correction | Tidak secara default | Hanya jika diberi capability | Ya + reason |
-| Register member | Wrapper POS terbatas bila disahkan | Sesuai capability | Jalur owner lama |
-| Edit global contact/consent, reissue QR, promo, point rules | Tidak secara default | Tidak secara default | Ya |
-| Kelola akun/outlet/export PII/import posting | Tidak | Tidak secara default | Ya; scope export tercatat |
+| Capability | Kasir tanpa ID/password (perangkat sudah dipair owner) | Owner login |
+| --- | --- | --- |
+| Lihat/buat nota, ubah status, cari member / QR | Hanya jika izin `order_view`, `order_create`, `order_work`, `member_lookup` diberikan | Ya |
+| Terima pembayaran dan cetak nota | Hanya jika `payment_collect`, `receipt_print` diberikan **dan** G5/G8 aktif | Ya, setelah gate |
+| Lihat/catat kas, laporan | `cash_view`, `cash_entry`, `reports_view` berdasarkan izin | Ya |
+| Refund penuh | `refund_full` hanya bila owner mengizinkan, wajib reason dan mekanisme G5 | Ya |
+| Ubah aturan poin, reissue kartu, edit global member, promo | Tidak dapat diberikan melalui izin kasir | Owner saja |
+| Tambah/edit/hapus kasir, aktifkan/cabut perangkat | Tidak dapat diberikan | Owner saja |
+| Tambah outlet atau ganti cabang | **Tidak ada fitur** | **Tidak ada fitur** |
 
-Membership global tidak berarti kasir boleh melihat semua pesanan/HP/alamat/poin lintas outlet. Search mengembalikan nama, MJL dan kontak tersamarkan untuk disambiguasi; kontak lengkap hanya untuk member pada pesanan outlet yang berhak dan sesuai kebutuhan layanan. Owner modules lama tetap owner-only; POS memakai helper/DTO/RPC khusus.
+**Satu-satunya kredensial login manusia adalah login owner yang sudah ada.** Owner masuk pada perangkat kasir untuk memilih dan mengaktifkan satu kasir; server mengeluarkan token acak 256-bit, hanya SHA256 token disimpan pada tabel `laundry_pos_cashier_devices`, lalu `signOut` sesi owner lokal dan hapus cookie admin sebelum membuat cookie kasir HttpOnly/Secure/SameSite Strict. Kasir membuka `/kasir` tanpa ID/password. Sesi berlaku maksimum 7 hari dan bisa dicabut seketika oleh owner, termasuk saat kasir dihapus (soft-delete agar audit tetap utuh). Tidak ada pemilihan profil bebas bagi pegawai dan tidak pernah memberikan cookie/password owner kepada kasir.
 
-Role dibaca dari tabel server-controlled pada command penting; deactivation/revocation harus efektif meski JWT lama belum expired. Jangan percaya pilihan “Manajer” pada login atau user_metadata. Password individual via Supabase Auth pada pilot; PIN singkat tidak dianggap setara password tanpa threat model/rate limit/perangkat terpercaya yang disepakati. Jangan berbagi credential owner.
+Kebijakan izin dicek dari database pada **setiap tindakan yang nanti dibangun**, bukan hanya disabled tombol: whitelist boolean `order_view`, `order_create`, `order_work`, `member_lookup`, `payment_collect`, `receipt_print`, `whatsapp_draft`, `cash_view`, `cash_entry`, `reports_view`, `refund_full`. Server tidak menganggap token valid sebagai izin finansial. Fungsi finansial harus memeriksa izin eksplisit dan `write_enabled=true` di DB pada setiap command; transaksi/poin saat ini tetap OFF.
+
+**Bridge actor wajib sebelum G5:** event lama memiliki `actor_id` FK `auth.users`, sedangkan profil kasir tidak menjadi `auth.users`. RPC nota/pembayaran/VOID kelak harus mengaitkan pencatat ke `staff_id` nyata secara terpisah dari owner Auth, tanpa mengisi actor sebagai owner palsu atau menjalankan owner-only RPC atas nama kasir. Perlu migrasi additive, fallback historis dan concurrency audit yang diuji lebih dulu; **G5 BLOCKED** sampai aman.
+
+Membership tetap satu `laundry_members`; kasir hanya boleh melihat DTO minimal setelah izin `member_lookup` dan pengujian akses; pelanggan tidak otomatis mendapat poin saat QR discan.
 
 Setiap table exposed memiliki RLS/grants sesuai kebutuhan; default deny untuk anon dan direct financial writes. Public wrapper minimal SECURITY INVOKER bila memungkinkan; helper elevated di private schema dengan search_path kosong, schema-qualified names, auth/capability check eksplisit. Uji juga owner fungsi, views, grants EXECUTE bawaan dan service-role bypass. Jangan mengirim key server ke client.
 
@@ -194,7 +202,7 @@ Guard sesi saat ini memaksa reauth pada document entry tertentu. Tetapkan kebija
 
 | Rute | Deliverable |
 | --- | --- |
-| `/admin/login` | Identitas pegawai + password; outlet dipilih hanya dari hak setelah login; owner lama tetap masuk |
+| `/admin/login` | **Owner saja** memakai login lama; tidak ada username/password kasir |
 | `/admin/pos` | Ringkasan outlet/kasir, Tambah Pesanan, Cari Pesanan, Member, Kas |
 | `/admin/pos/orders` | Antrian/Siap Ambil/Belum Bayar; search nota/nama; pagination server |
 | `/admin/pos/orders/new` | Pelanggan/QR -> durasi -> kategori/layanan/qty -> parfum/antar/diskon/catatan -> review -> nota |
@@ -202,11 +210,13 @@ Guard sesi saat ini memaksa reauth pada document entry tertentu. Tetapkan kebija
 | `/admin/pos/cash` | Shift, saldo awal, kas masuk/keluar non-sale, expected/count/discrepancy, close |
 | `/admin/pos/reports` | Pesanan, penerimaan/refund/piutang, poin; filters dan ekspor |
 | `/admin/pos/import` | Owner preview, mapping, quarantine, rekonsiliasi; posting terpisah |
-| `/admin/staff`, `/admin/outlets` | Owner provisioning, reset lewat alur Auth, scope pegawai/outlet |
+| `/admin/pos/kasir` | Owner menambah/mengubah/menghapus kasir, pilih izin, aktifkan/cabut perangkat; **bukan** user Auth |
+| `/kasir` | Tampilan kasir tanpa login, hanya dapat dibuka perangkat yang sudah dipair dan tokennya aktif; transaksi belum aktif |
+| Multi-outlet / tambah outlet | **Ditiadakan**; satu alamat Mas Jawa Laundry dari `lib/site.ts` |
 | Route member/scan/rules lama | Tetap kompatibel, owner requirement tidak diperluas; link lama diuji |
 | `/membership`, `/k/[token]` | Tetap publik/read-only; token, consent, noindex/no-store/no-referrer dipertahankan |
 
-**Pemetaan layar 25 screenshot:** 01–02 daftar/menu kasir; 03–04 pilih pelanggan/durasi; 05–11 katalog layanan, +/- qty dan sticky total; 12–14 parfum/antar/diskon; 15–17 rincian/status/siap ambil; 18–20 draf WhatsApp/pembayaran; 21–22 mutasi kas; 23–25 manajer/login kasir/pegawai. Lihat [manifest](./evidence-manifest.md) untuk link gambar satu per satu. Lakukan perbandingan side-by-side viewport Android, navigasi dan posisi aksi utama, uji alur pegawai, dan catat pengecualian yang disetujui owner.
+**Pemetaan layar 25 screenshot:** 01–02 daftar/menu kasir; 03–04 pilih pelanggan/durasi; 05–11 katalog layanan, +/- qty dan sticky total; 12–14 parfum/antar/diskon; 15–17 rincian/status/siap ambil; 18–20 draf WhatsApp/pembayaran; 21–22 mutasi kas; 23–25 login owner, status perangkat kasir tanpa password, manajemen kasir milik owner (adaptasi dari referensi Binatu). Lihat [manifest](./evidence-manifest.md) untuk link gambar satu per satu. Lakukan perbandingan side-by-side viewport Android, navigasi dan posisi aksi utama, uji alur pegawai, dan catat pengecualian yang disetujui owner.
 
 Satu aksi utama per tahap; bottom sheet durasi punya keyboard/focus trap/Escape. Sticky total menunjukkan qty per unit, total dan Lanjut tanpa menutupi input/keyboard. Promo tidak otomatis menjadi diskon nota: penggunaan promo/discount benefit perlu linkage dan izin eksplisit; jangan menandai promo dipakai saat sekadar melihat QR.
 
@@ -237,13 +247,13 @@ Setiap task: buat tes perilaku yang gagal -> jalankan dan simpan bukti gagal -> 
 | G0 Baseline | `docs/pos/baseline.md`, `docs/pos/evidence-manifest.md`, `docs/pos/decision-register.md` | [ ] Freeze remote SHA/tree; [ ] verifikasi local vs remote; [ ] snapshot read-only konsisten; [ ] daftar seluruh routes/RPC; [ ] inventaris screenshot/Excel; [ ] sahkan keputusan G2. Tidak write produksi |
 | G1 Isolasi | `lib/supabase/qa-preview-isolation.ts`, `tests/pos-environment-isolation.test.mjs`, `docs/pos/environments.md` | [x] guard dan QA DB baru PR #17; [ ] restore rehearsal, credential-negative, RLS/concurrency dan UAT yang dibutuhkan. **Tidak membuat Preview** (N/A keputusan owner, bukan bukti pengujian lengkap). Tidak write produksi |
 | G2 Kontrak/DB | `supabase/migrations/20261101142000_pos_g2_foundation_roles_orders_financial_schema.sql`, `supabase/tests/pos-g2-schema-contract.sql`, `docs/pos/g2-verification.md` | [x] 17 tabel POS di QA, default-deny RLS dan grants, index/constraint, 5 immutable journal triggers, outlet read RPC, actor FK dilebarkan ke `auth.users`, SQL rollback test lulus; [ ] authenticated owner/cashier UAT, release migrasi produksi, transaction/point RPC, concurrent writes/restore rehearsal. **Hanya QA; uang/poin produksi belum aktif.** |
-| G3 Auth/shell | `lib/supabase/pos-staff.ts`, `app/admin/pos/layout.tsx`, `app/admin/login/page.tsx`, `components/pos/navigation.tsx`, `tests/pos-auth.ui.spec.ts` | [ ] Test owner regression dan forbidden cashier; [ ] auth/sesi/draft recovery; [ ] outlet switch hanya scope sah; [ ] shell mobile/desktop sesuai referensi yang tersedia |
+| G3 Owner & kasir | `supabase/migrations/20261101155000_pos_single_outlet_owner_managed_cashier.sql`, `app/admin/pos/kasir/**`, `app/kasir/**`, `lib/pos/cashier-*.ts`, `tests/pos-cashier-*.test.mjs`, `supabase/tests/pos-single-outlet-passwordless-cashier.sql` | [x] satu outlet seeded di QA, owner add/edit/soft-delete kasir, whitelist izin, pairing token perangkat, revoke & expiry, UI owner/kasir, tes SQL rollback dan Node; [ ] QA fisik Android + owner auth/device pairing dan production migration approval. Tidak ada transaksi live / owner login yang dibagikan |
 | G4 Order | `lib/pos/money.ts`, `lib/pos/contracts.ts`, `app/admin/pos/orders/**`, `components/pos/order-wizard.tsx`, `tests/pos-money.test.mjs`, `tests/pos-order.ui.spec.ts` | [ ] Test qty/rounding/catalog conflict/duplicate create; [ ] customer+QR resolver tanpa write; [ ] create nota request-id stabil; [ ] work transitions dan print HTML. Belum ada award saat create |
 | G5 Payment/points | `app/admin/pos/orders/[id]/actions.ts`, `components/pos/payment-form.tsx`, `supabase/tests/pos-payment.sql`, `tests/pos-concurrency.test.mjs`, migration RPC + legacy cutoff guard | [ ] Test partial/full/replay/conflicting payload/unknown commit; [ ] DB receipt+cash+ADD+amount+link atomik; [ ] full refund/VOID; [ ] larangan award manual kedua; [ ] old portal saldo sesuai |
 | G6 Kas/report/export | `app/admin/pos/cash/**`, `app/admin/pos/reports/**`, `lib/pos/reports.ts`, `tests/pos-reports.test.mjs`, `tests/pos-cash.ui.spec.ts` | [ ] Shift open/close concurrent; [ ] non-sale entries; [ ] method/date/as-of reconciliation; [ ] CSV/XLSX access dan injection tests; [ ] WA draft, tanpa auto-send |
 | G6b Import preview | `app/admin/pos/import/**`, `lib/pos/import-preview.ts`, `tests/pos-import.test.mjs`, `docs/pos/import-reconciliation.md` | [ ] Parser limits + fixtures dari template valid; [ ] quarantine/matching/conflict; [ ] source history tidak memicu ledger/poin; [ ] opening receivable approval; [ ] posting historis tetap disabled |
 | G7 UAT | `docs/pos/uat.md`, artefak screenshot/print/rekonsiliasi privat | [ ] Android/desktop/keyboard/network loss; [ ] physical camera dan gallery; [ ] seluruh regresi owner/member/QR/promo; [ ] thermal hanya bila scope disahkan; [ ] owner/petugas sign-off, nol P0/P1 |
-| G8 Pilot/release | `docs/pos/cutover.md`, `docs/pos/rollback.md`, `docs/pos/monitoring.md` | [ ] backup restore terbukti; [ ] migration additive flag off; [ ] app kompatibel; [ ] audit baseline sah; [ ] pilih outlet/source of truth; [ ] approval release spesifik; [ ] enable pilot; [ ] reconcile tiap shift; [ ] perluasan setelah gate pilot |
+| G8 Pilot/release | `docs/pos/cutover.md`, `docs/pos/rollback.md`, `docs/pos/monitoring.md` | [ ] backup restore terbukti; [ ] migration additive flag off; [ ] app kompatibel; [ ] audit baseline sah; [ ] pilih outlet/source of truth; [ ] approval release spesifik; [ ] enable pilot; [ ] reconcile tiap shift; [ ] operasional satu outlet stabil, tidak ada ekspansi cabang |
 
 Commands awal mengikuti repo: `npm test`, `npm run typecheck`, `npm run build`, `npm run test:ui`. SQL/RLS dijalankan di DB sintetis melalui runner yang diverifikasi G1. Tes concurrency harus memakai minimal dua koneksi dan commit nyata pada QA ephemeral; tidak bisa dibuktikan oleh satu transaksi rollback saja.
 
@@ -271,12 +281,12 @@ Commands awal mengikuti repo: `npm test`, `npm run typecheck`, `npm run build`, 
 | D03 | Tahun WIB saat pelunasan DB; missing rule menolak posting pelunasan member; member nonaktif memerlukan penyelesaian owner | G2/G5 |
 | D04 | Tidak ada backfill guest/member/import atau re-award otomatis | G2/G6b |
 | D05 | Pilot hanya full refund; partial refund/repricing dan koreksi salah member setelah bayar lewat paket khusus sebelum diaktifkan | G2/G5 |
-| D06 | Cashier diskon preset; diskon custom/full refund/cash correction hanya owner atau manager berizin; reason wajib | G2/G4 |
+| D06 | Owner menentukan hak diskon dan refund kasir secara granular; refund_full harus diberi izin eksplisit dan reason wajib, tidak ada login manajer terpisah | G2/G4/G5 |
 | D07 | Qty .001 kg/m dan integer pcs; half-up item; diskon atas subtotal layanan; batas nota Rp1 miliar | G2/G4 |
-| D08 | Nomor outlet+counter unik; daftar layanan/durasi/parfum/ongkir dan format estimasi disahkan berdasarkan katalog nyata | G2/G4 |
-| D09 | Password individual, reauth policy eksplisit; tidak memperkenalkan PIN singkat pada pilot | G3 |
+| D08 | **Satu outlet `MJL` tetap**; nomor nota counter tunggal, tanpa fitur cabang; layanan/durasi/parfum/ongkir berdasarkan katalog nyata | G2/G4 |
+| D09 | **Hanya owner login dengan ID/password**; kasir tanpa ID/password, akses dari perangkat yang dipair owner, izin granular & bisa dicabut, tanpa akun Auth kasir | G3 |
 | D10 | WA manual, online-only, HTML print; thermal/offline/gateway/WA otomatis paket lanjutan | G4/G7 |
-| D11 | Outlet pilot, register/shift, saldo awal/piutang, sumber kebenaran dan waktu cutoff manual/Binatu | G8 |
+| D11 | Pilot pada outlet Mas Jawa Laundry tetap saja; register/shift, saldo awal/piutang, sumber kebenaran dan waktu cutoff manual/Binatu | G8 |
 
 G0 dan review dokumen boleh berlangsung tanpa menunggu semua keputusan. Task yang bergantung pada keputusan belum disahkan berhenti pada artefak desain/tes sintetis, tidak mengubah bisnis produksi.
 
@@ -294,6 +304,8 @@ G0 dan review dokumen boleh berlangsung tanpa menunggu semua keputusan. Task yan
 Selesai berarti pegawai berizin dapat membuat nota dan menerima pembayaran, pelunasan memberi poin satu kali sesuai aturan DB, refund yang didukung menjaga ledger, kas/laporan reconcile, dan pelanggan menggunakan QR lama dengan saldo konsisten. Seluruh fitur pilot, batas scope dan bukti diterima owner. Dokumen ini tidak membuktikan fitur sudah dibangun atau data/cloud telah diubah.
 
 ## 12. Referensi review
+
+- [G3 — Kasir tanpa password dan outlet tunggal](./g3-single-outlet-cashiers.md). Owner tetap satu-satunya login; pembayaran POS belum diaktifkan.
 
 - [PostgreSQL explicit locking](https://www.postgresql.org/docs/current/explicit-locking.html)
 - [PostgreSQL transaction isolation](https://www.postgresql.org/docs/current/transaction-iso.html)
