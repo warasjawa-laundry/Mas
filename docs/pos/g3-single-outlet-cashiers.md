@@ -28,6 +28,8 @@
 
 ## Bukti QA dan batas penerimaan
 
+- **Penyesuaian regresi G2 setelah G3:** tes lama awalnya mengasumsikan 17 tabel dan belum ada outlet. Sesudah migrasi G3 ada **19 tabel** dan **satu outlet MJL tetap**; pengujian G2 kini memverifikasi kondisi baru, serta tetap menolak outlet kedua dan transaksi yang write-enabled. Perubahan ini diperiksa lulus di QA sebelum CI diulang.
+
 - Migrasi tambahan: `supabase/migrations/20261101155000_pos_single_outlet_owner_managed_cashier.sql`.
 - Test: `supabase/tests/pos-single-outlet-passwordless-cashier.sql` (synthetic owner and staff, transaction rollback); Node `tests/pos-cashier-*.test.mjs`.
 - Pada Supabase QA `cwxsbgfjynwxqalwonae`: migrasi dan tes SQL **lulus**; satu outlet dan anon tanpa izin owner, token salah/expired/revoked gagal, izin dinamis, soft-delete, audit, dan fungsi owner lama tidak diperluas. Seluruh test data sintetik di-rollback.
