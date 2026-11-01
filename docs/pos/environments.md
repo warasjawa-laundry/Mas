@@ -42,3 +42,7 @@ Pada 1 November 2026, migrasi G5 `pos_g5_payment_cash_points_full_refund` ditera
 ## Paket B QA schema receipt — 2 Nov 2026
 
 Migrasi `pos_g6_cash_reports` dan `pos_g6b_import_review` sudah **diterapkan dan diuji hanya pada Supabase QA `cwxsbgfjynwxqalwonae`**. Seluruh fixture perintah kas, close shift, impor historis dan match pelanggan dibatalkan melalui ROLLBACK; verifikasi terakhir 0 nota, pembayaran, jurnal, tautan poin, batch/row impor dan flag write tetap OFF. Database produksi `hncfyfvqtlnvqyfrydzb` dan koneksi Vercel tidak disentuh. Kode UI baru bisa masuk Vercel Production yang sudah ada dengan aman namun tanpa migrasi POS operasional sampai gate G7/G8 dan persetujuan cutover.
+
+
+## G7/G8 2 Nov 2026 preflight (read-only)
+Production `hncfyfvqtlnvqyfrydzb`: 785 member, 18 cards, 21 checklist events, 19 amount events, **0 public POS tables** at inspection. QA `cwxsbgfjynwxqalwonae`: 20 POS tables, outlet `MJL.write_enabled=false` and no POS orders. G7 QR lookup and order-board DDL applied to QA; synthetic card rollback test passed. Source merge/deploy never implies permission to migrate or activate operational Supabase. G8 requires independently verified backup+restore, hardware and 25-screen UAT, reconciled Binatu cutoff and explicit owner authorization. No new Vercel project/Preview; Git link unchanged.

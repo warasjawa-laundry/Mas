@@ -1,8 +1,8 @@
 .shell{max-width:840px;margin:auto;padding:24px 16px 110px;font-family:system-ui,-apple-system,sans-serif;color:#172337}
-.shell a{color:#5b21b6}.shell h1{font-size:clamp(26px,5vw,35px);margin:10px 0}
-.kicker{font-size:12px;letter-spacing:.085em;font-weight:800;color:#6d28d9}
+.shell a{color:#9a6500}.shell h1{font-size:clamp(26px,5vw,35px);margin:10px 0}
+.kicker{font-size:12px;letter-spacing:.085em;font-weight:800;color:#facc15}
 .header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:16px 0 22px}
-.mainLink,.mainButton{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;min-height:48px;background:#6d28d9;border-radius:12px;color:white!important;font-size:15px;font-weight:750;text-decoration:none;border:0;cursor:pointer}
+.mainLink,.mainButton{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;min-height:48px;background:#facc15;border-radius:12px;color:#172337!important;font-size:15px;font-weight:750;text-decoration:none;border:0;cursor:pointer}
 .mainButton:disabled{background:#94a3b8;cursor:not-allowed}
 .tabs{display:flex;gap:4px;overflow:auto;border-bottom:1px solid #dbe1e9;padding:10px 0;white-space:nowrap}.tabs span{padding:10px 14px;font-weight:700;color:#475569}
 .rows{display:grid;gap:12px;margin-top:20px}.order{display:flex;justify-content:space-between;gap:12px;border:1px solid #dfe5ed;padding:17px;border-radius:14px;background:#fff;text-decoration:none;color:#172337!important}.order p{margin:7px 0 0}.alignRight{text-align:right}.alignRight small,.item small{display:block;margin-top:6px;color:#64748b}
@@ -13,11 +13,11 @@
 /* G5 payment card: familiar order total, payment modes and receipt history. */
 .cardHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .cardHeading h2{margin:0}
-.paymentBadge{display:inline-flex;border-radius:20px;background:#ede9fe;color:#5b21b6;font-size:13px;font-weight:800;padding:7px 12px}
+.paymentBadge{display:inline-flex;border-radius:20px;background:#fef3c7;color:#92400e;font-size:13px;font-weight:800;padding:7px 12px}
 .paymentTotals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0}
 .paymentTotals>div{background:#f8fafc;border-radius:12px;padding:14px;display:grid;gap:7px}
 .paymentTotals small{color:#64748b;font-size:12px}.paymentTotals strong{font-size:18px}
-.paymentTotals .remaining{background:#f3e8ff;color:#581c87}
+.paymentTotals .remaining{background:#fffbeb;color:#92400e}
 .receiptList{border-top:1px solid #e7ebf1;margin-top:12px}
 .receipt{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #e7ebf1}
 .receipt span{font-weight:700}.receipt small{display:block;font-size:12px;font-weight:400;color:#64748b;margin-top:4px}
@@ -31,3 +31,6 @@
 .dangerButton:disabled{background:#94a3b8;cursor:not-allowed}
 @media(max-width:480px){.paymentTotals{grid-template-columns:repeat(2,minmax(0,1fr))}.paymentTotals .remaining{grid-column:1/-1}}
 @media print{.paymentForm,.refundPanel,.mutedPanel{display:none!important}.paymentTotals strong{font-size:14px}}
+.tabs a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:10px;color:#374151!important;text-decoration:none;font-size:14px;font-weight:700}
+.tabs a[aria-current=page]{background:#facc15;color:#172337!important}
+.tabs a:focus-visible{outline:3px solid #2563eb;outline-offset:2px}

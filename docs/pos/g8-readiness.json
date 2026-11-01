@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-02",
+  "status": "NO_GO",
+  "sourceRepository": "warasjawa-laundry/Mas",
+  "vercelProject": "mas",
+  "vercelGitConnection": "unyilhm1-hue/mas",
+  "reviewedMainSha": "17ecaf06664b763bb5a8593fe119855ba56fdd9b",
+  "deployedProductionSha": "17ecaf06664b763bb5a8593fe119855ba56fdd9b",
+  "productionPosTables": 0,
+  "productionOutletCount": 0,
+  "productionWriteEnabledOutlets": 0,
+  "financePostingEnabled": false,
+  "importBackfillEnabled": false,
+  "productionReadOnlyBaseline": {
+    "members": 785,
+    "cards": 18,
+    "visitEvents": 21,
+    "amountTransactions": 19
+  },
+  "evidence": {
+    "qaSqlMigration": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "qaTwoConnectionRace": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "restoreRehearsal": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "realOwnerAuthUat": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "realCashierDeviceUat": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "physicalQrUat": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "financialReconciliation": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "legacyMemberParity": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "uiOwnerSignOff": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "cutoverOwnerApproval": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    }
+  }
+}

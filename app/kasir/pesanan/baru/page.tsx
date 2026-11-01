@@ -2,6 +2,7 @@ import Link from "next/link";
 import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { cashierRpcAccess } from "@/lib/pos/g4-server";
+import { hasCashierGrant } from "@/lib/pos/cashier-permissions";
 import { OrderForm,type CatalogService } from "./order-form";
 import styles from "./wizard.module.css";
 
@@ -19,6 +20,6 @@ export default async function NewCashierOrder({searchParams}:{searchParams:Promi
   {reason&&<p className={styles.warn} role="alert">{reason==='unconfirmed'?'Penyimpanan belum terkonfirmasi. Sebelum mencoba lagi, periksa Daftar Pesanan agar tidak membuat duplikat.':
    reason==='disabled'?'Transaksi belum diaktifkan.':'Form tidak valid, periksa data pelanggan dan kuantitas.'}</p>}
   {error?<p className={styles.warn} role="alert">Katalog POS belum tersedia di database aktif. Tidak ada transaksi yang dibuat.</p>:
-   <OrderForm services={(Array.isArray(data)?data:[]) as CatalogService[]} requestId={randomUUID()} canWrite={access.session.write_enabled}/>}
+   <OrderForm services={(Array.isArray(data)?data:[]) as CatalogService[]} requestId={randomUUID()} canWrite={access.session.write_enabled} canLookup={hasCashierGrant(access.session.permissions,"member_lookup")}/>}
  </main>;
 }

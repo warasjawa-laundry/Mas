@@ -77,3 +77,10 @@ Bridge FK di QA **sudah diterapkan secara terbatas**; sebelum operasi produksi t
 - Hanya ada satu outlet `MJL`, satu shift/register `MAIN`, dan project Vercel Production `mas` tetap terhubung ke `unyilhm1-hue/mas`. GitHub source target `main` dengan satu PR konsolidasi.
 - Impor Excel Binatu owner-only **tidak** menambah poin, riwayat kunjungan atau pembayaran; kecocokan nama menampilkan nomor member + telepon + alamat untuk dipilih manual; nomor nota Binatu adalah kunci konflik.
 - G6 shift closing dan laporan di QA siap untuk UAT; keputusan pilot produksi, riwayat piutang dan poster/thermal printer belum disahkan sebagai live. Panduan: [G6–G6b verification](./g6-g6b-verification.md).
+
+
+## Paket C G7/G8 decision — 2 Nov 2026
+- In-scope code batch: read-only cashier QR camera/gallery+database digest lookup, functional status tabs, POS visual yellow style, SQL regression & committed two-session PostgreSQL race CI, owner UAT runbook and fail-closed release receipt.
+- Owner's request for UI/UX nearly identical to Binatu remains binding, BUT visual sign-off is not met; see [UI parity audit](./ui-parity-audit.md) for explicit gaps (duration sheet, delivery fee, discounts, member name search, physical Android screenshot comparison).
+- G8 database production migration, backup/restore, data reconciliation, owner cutover sign-off, flag enable, real payment/point posting and new Vercel staging environment are NOT authorized by successful source PR. Source is `warasjawa-laundry/Mas` main; existing Production project/Git connection stays.
+- QA history contains a comment-only migration entry preceding actual G7 DDL; rectify evidence at future schema-cutover review, do not copy QA migration log into production.

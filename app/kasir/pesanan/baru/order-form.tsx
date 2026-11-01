@@ -4,17 +4,19 @@ import { calculateOrderTotals } from "@/lib/pos/money";
 import { posUnitFromCatalog } from "@/lib/pos/catalog-units";
 import { formatIdr } from "@/lib/pos/g4-order";
 import { createCashierOrder } from "../actions";
+import { CashierQrScanner } from "./cashier-qr-scanner";
 import styles from "./wizard.module.css";
 
 export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number};
 const money=(n:string|number|bigint)=>formatIdr(n);
 const steps=["Pelanggan","Layanan","Konfirmasi"];
 
-export function OrderForm({services,requestId,canWrite}:{services:CatalogService[];requestId:string;canWrite:boolean}){
+export function OrderForm({services,requestId,canWrite,canLookup}:{services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean}){
  const [step,setStep]=useState(0);
  const [customerType,setCustomerType]=useState<"guest"|"member">("guest");
  const [name,setName]=useState("");
  const [member,setMember]=useState("");
+ const [scannedName,setScannedName]=useState("");
  const [quantities,setQuantities]=useState<Record<string,string>>({});
  const [perfume,setPerfume]=useState("");
  const [notes,setNotes]=useState("");
@@ -42,13 +44,15 @@ export function OrderForm({services,requestId,canWrite}:{services:CatalogService
   </nav>
   {step===0&&<section className={styles.panel} aria-labelledby="customer-title">
    <h2 id="customer-title">Pilih pelanggan</h2>
-   <p className={styles.help}>Mulai dari pelanggan umum atau nomor member yang sudah terdaftar. Scan QR dan pencarian nama belum dibuka pada tahap ini.</p>
+   <p className={styles.help}>Pilih pelanggan seperti di Binatu. Member lama bisa dipilih lewat nomor atau scan QR kartu Mas Jawa.</p>
    <div className={styles.segment}>
     <label><input type="radio" checked={customerType==='guest'} onChange={()=>setCustomerType('guest')}/> Pelanggan umum</label>
     <label><input type="radio" checked={customerType==='member'} onChange={()=>setCustomerType('member')}/> Member MJL</label>
    </div>
    {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder="Nama pelanggan" /></label>:
-    <label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>setMember(e.target.value.replace(/\D/g,'').slice(0,12))} maxLength={12} placeholder="Nomor member pada kartu" /></label>}
+    <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{setMember(e.target.value.replace(/\D/g,'').slice(0,12));setScannedName("")}} maxLength={12} placeholder="Nomor member pada kartu" /></label>
+     {canLookup&&<CashierQrScanner disabled={false} onMember={(number,name)=>{setMember(number);setScannedName(name)}}/>}
+     {scannedName&&<p className={styles.scanned} role="status">Member ditemukan: <strong>{scannedName}</strong> · MJL-{member.padStart(6,"0")}. Periksa identitas sebelum lanjut.</p>}</>}
    <p className={styles.help}>Data pelanggan akan diverifikasi ulang oleh database saat nota dibuat. Scan kartu tidak pernah menambah poin.</p>
   </section>}
   {step===1&&<section className={styles.panel} aria-labelledby="services-title">
