@@ -20,3 +20,12 @@
 
 ## Kebijakan
 Satu source repo `warasjawa-laundry/Mas` → satu PR batch → merge `main` setelah CI, hanya proyek Vercel Production `mas` saat kode aman. Git connection tetap `unyilhm1-hue/mas`. Tidak ada deployment staging, tidak ada perubahan database produksi, **G8 belum diaktifkan**. Lihat [UAT](./uat.md), [cutover](./cutover.md), [rollback](./rollback.md), [monitoring](./monitoring.md).
+
+
+## G7 continuation — katalog dan pencarian member (2 Nov 2026)
+
+- Migrasi `pos_g7_member_name_prefix_safe` diuji dan dijalankan hanya pada Supabase QA, dengan helper `laundry_pos_g7_member_name`; regresi SQL roll-back: dua member bernama sama tetap dua nomor unik, member nonaktif tidak tampil, prefix pendek/tanda wildcard tidak memperluas hasil, perangkat salah/izin dicabut ditolak, tidak menambah kunjungan atau poin. **PASS**.
+- Canonical source: `supabase/migrations/20261102074500_pos_g7_member_name_search.sql`. Catatan: selama verifikasi fungsi QA diperbaiki melalui tambahan migration receipt QA `pos_g7_member_name_prefix_fix_qa` setelah pertama kali percobaan `pg_catalog.coalesce` gagal; source canonical sudah diperbaiki dan akan replay dari nol oleh CI. **Jangan menyalin histori QA ke produksi**.
+- Wizard source menampilkan durasi nyata katalog dan menggunakan harga layanan SQL, bukan tarif ekspres buatan. Pencarian nama manual diperkecil ke nama + nomor, tidak menampilkan HP/alamat. Preset parfum tanpa biaya. Diskon/ongkir sengaja nonaktif hingga policy dan RPC ditetapkan owner.
+- Tes Node `tests/pos-g7-catalog-ux.test.mjs` dan regresi SQL `pos-g7-member-name-rollback.sql` masuk satu PR; klaim PASS CI hanya setelah GitHub benar-benar selesai.
+- **Tidak ada bukti baru G8**: physical UAT/QR, pixel parity, restore rehearsal, opening receivables, owner sign-off, dan migrasi produksi tetap BLOCKED.

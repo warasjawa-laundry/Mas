@@ -13,3 +13,24 @@
 .galleryPick{background:#fff;border-color:#d1d5db;position:relative;overflow:hidden}.galleryPick input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .qrVideo{display:block;max-width:100%;width:100%;max-height:280px;background:#111;margin:12px 0;border-radius:10px}.qrHidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.scanned{padding:11px 12px;border-radius:10px;background:#ecfdf5;color:#065f46}
 .qrActions button:focus-visible,.galleryPick:focus-within{outline:3px solid #2563eb;outline-offset:3px}
+
+
+/* G7 parity: service-backed duration bottom sheet & safe customer chooser. */
+.durationPicker{margin:16px 0}.durationTrigger{width:100%;min-height:70px;display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid #eab308;border-radius:13px;background:#fffbeb;color:#172337;padding:14px;text-align:left;cursor:pointer}
+.durationTrigger span{font-size:12px;color:#64748b}.durationTrigger strong{font-size:16px;flex:1}.durationTrigger small{font-size:12px;color:#92400e}
+.sheetBackdrop{position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.55);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.sheet{width:min(100%,640px);max-height:min(88vh,720px);overflow-y:auto;overscroll-behavior:contain;background:#fff;border-radius:20px 20px 0 0;padding:16px 18px 24px;box-shadow:0 -10px 40px #0003}
+.sheetHandle{width:42px;height:5px;border-radius:99px;background:#cbd5e1;margin:0 auto 15px}
+.sheetHeader{display:flex;justify-content:space-between;align-items:center;gap:12px}.sheetHeader h3{font-size:20px;margin:6px 0}.sheetHeader button{min-width:44px;min-height:44px;background:#f1f5f9;border:0;border-radius:11px;font-size:20px;cursor:pointer}
+.sheetOptions{display:grid;gap:7px;margin:12px 0}.sheetOption{display:flex;justify-content:space-between;align-items:center;gap:18px;width:100%;min-height:66px;padding:12px 14px;border:1px solid #e2e8f0;background:white;border-radius:12px;text-align:left;cursor:pointer;color:#172337;font-size:20px}
+.sheetOption span:first-child{display:grid;gap:3px}.sheetOption strong{font-size:15px}.sheetOption small{font-size:12px;color:#64748b}.sheetOption[aria-pressed=true]{border-color:#eab308;background:#fffbeb}
+.sheetCancel{width:100%;min-height:48px;background:#f1f5f9;border:0;border-radius:12px;cursor:pointer;font-weight:700}
+.memberSearch{border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin:14px 0;background:#f8fafc}.memberSearch .field{margin:2px 0 10px}
+.memberResults{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:8px}.memberResults li button{min-height:54px;width:100%;border-radius:10px;border:1px solid #cbd5e1;background:white;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;text-align:left;cursor:pointer}
+.memberResults li span{font-size:13px;color:#92400e;white-space:nowrap}.memberResults li strong{font-size:14px;overflow-wrap:anywhere}
+.presetGroup{margin:20px 0}.presetGroup>strong{display:block;font-size:15px;margin-bottom:10px}.presetButtons{display:flex;gap:8px;flex-wrap:wrap}.presetButtons button{min-height:44px;padding:10px 13px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#334155;cursor:pointer;font-size:14px}
+.presetButtons button[aria-pressed=true]{background:#fef3c7;border-color:#eab308;color:#78350f;font-weight:750}
+.unavailableAdjustments{border:1px dashed #cbd5e1;padding:14px;border-radius:12px;background:#f8fafc;margin:14px 0}.unavailableAdjustments>strong{font-size:15px}
+.durationTrigger:focus-visible,.sheet button:focus-visible,.memberResults button:focus-visible,.presetButtons button:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+@media(min-width:700px){.sheetBackdrop{align-items:center;padding:24px}.sheet{border-radius:20px}}
+@media(max-width:390px){.memberResults li button{align-items:flex-start;flex-direction:column}.durationTrigger{flex-wrap:wrap}.durationTrigger strong{flex-basis:65%}}

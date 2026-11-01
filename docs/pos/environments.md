@@ -46,3 +46,8 @@ Migrasi `pos_g6_cash_reports` dan `pos_g6b_import_review` sudah **diterapkan dan
 
 ## G7/G8 2 Nov 2026 preflight (read-only)
 Production `hncfyfvqtlnvqyfrydzb`: 785 member, 18 cards, 21 checklist events, 19 amount events, **0 public POS tables** at inspection. QA `cwxsbgfjynwxqalwonae`: 20 POS tables, outlet `MJL.write_enabled=false` and no POS orders. G7 QR lookup and order-board DDL applied to QA; synthetic card rollback test passed. Source merge/deploy never implies permission to migrate or activate operational Supabase. G8 requires independently verified backup+restore, hardware and 25-screen UAT, reconciled Binatu cutoff and explicit owner authorization. No new Vercel project/Preview; Git link unchanged.
+
+
+## G7 follow-up QA only
+
+Helper pencarian nama member aktif/izin ketat ditambahkan pada QA `cwxsbgfjynwxqalwonae` melalui dry-run dan migration `pos_g7_member_name_prefix_safe`. Regresi transaksi rollback lulus; source canonical memakai `20261102074500_pos_g7_member_name_search.sql`. QA sempat memerlukan patch helper `pos_g7_member_name_prefix_fix_qa` akibat penamaan COALESCE yang tidak valid dan telah diperbaiki dalam source final. **Bukan migrasi produksi**; tidak ada perubahan pada `hncfyfvqtlnvqyfrydzb`, Vercel env, domain atau key.

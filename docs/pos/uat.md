@@ -35,3 +35,11 @@
 - **Terverifikasi otomatis:** struktur SQL/ACL RLS, parser, regresi historis, build, dan tes race dua sesi CI (hanya bila job CI hijau).
 - **Tidak terverifikasi:** kamera/QR fisik, perangkat Android nyata, terminal printer, uang tunai fisik, penilaian visual owner, portal live seusai posting, dan rekonsiliasi Binatu asli.
 - Semua P0/P1, selisih rupiah, salah member atau poin ganda memblokir G8.
+
+
+## Instruksi uji tambahan — wizard G7 durasi/member
+
+- Bandingkan screenshot 03–04 dan 05–14: member nama sama harus bisa dipilih manual berdasarkan **nomor**, pencarian min 3 karakter, QR tidak membuat ADD. Pilih durasi satu per satu: daftar layanan/total harus menunjukkan harga katalog sebenarnya, tidak boleh ada pilihan layanan tersembunyi yang masih dihitung setelah ganti durasi.
+- Tekan Escape dan Tab/Shift+Tab pada bottom sheet durasi memakai keyboard, tutup sheet harus mengembalikan fokus ke tombol pembuka. Periksa zoom 200% dan 320px HP.
+- Bandingkan parfum preset/kustom; pastikan semua opsi harga non-layanan (ongkir/diskon) **tidak mempengaruhi total** dan tidak dikirim ke RPC G4 sebelum disahkan owner.
+- Saat QA database belum terpasang, lihat pesan kesalahan yang jelas, tidak menyimpan transaksi diam-diam. Semua skenario ini **belum ditandatangani oleh kasir/owner nyata**.
