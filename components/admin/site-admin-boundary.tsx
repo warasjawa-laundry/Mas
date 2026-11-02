@@ -16,6 +16,8 @@ export default function SiteAdminBoundary(){
   previous.current=path;
   if(!before)return;
   if(before.startsWith("/admin")&&!path.startsWith("/admin")){
+    // Switching the unified login tab to a verified cashier session is not owner-page exit.
+    if(before==="/admin/login"&&path.startsWith("/kasir"))return;
     window.location.replace("/admin/leave");
     return;
   }

@@ -73,3 +73,9 @@ test("soft navigation crossing the homepage/admin boundary is not reusable autho
  assert.match(read("components/admin/admin-history-guard.tsx"),/event\.persisted/);
  assert.match(read("next.config.ts"),/private, no-store, max-age=0/);
 });
+
+test("unified login may enter cashier without discarding its new session, while leaving owner pages still clears owner auth",()=>{
+ const boundary=read("components/admin/site-admin-boundary.tsx");
+ assert.match(boundary,/before==="\/admin\/login"&&path\.startsWith\("\/kasir"\)/);
+ assert.match(boundary,/window\.location\.replace\("\/admin\/leave"\)/);
+});
