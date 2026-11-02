@@ -19,3 +19,9 @@
 **G8 visual gate:** owner/perwakilan kasir membandingkan semua 25 layar pada viewport setara, mencatat screenshot privat dan tanda tangan; tidak boleh mengklaim siap hanya karena TypeScript/CI hijau. Aset Binatu asli tidak ditanam di produk.
 
 **Update G7 lanjutan:** wizard 4 tahap + bottom sheet durasi service-backed, pencarian nama yang membatasi PII dan pilihan manual bila member senama, preset parfum dan label belum tersedia untuk diskon/ongkir. Tidak ada klaim 25/25 PASS ataupun pengukuran pixel nyata. QR tetap read-only, PII tidak dibuka untuk kasir tanpa izin; biaya hanya dari harga layanan katalog. Semua gap tertinggal dibawa ke G8 sebagai blocker sesuai UAT.
+
+
+### Audit koreksi navigasi PR #29 (2 November 2026)
+- Owner tetap dalam namespace /admin untuk daftar/tambah/rincian; tidak dilempar ke login Kasir. Penulisan nota dan pembayaran Owner tetap dikunci G8 sampai command owner-attributed ditinjau.
+- Scan Barcode/QR dipasang dalam Pilih Pelanggan dan tersedia pada Menu Owner Operasional. Impor Binatu berada di Data & pelanggan; Layanan & Harga pada Pengaturan. Semua halaman reuse shell Argon POS, bukan UI admin terpisah.
+- Menu Kasir mengikuti izin, pembacaan owner POS memakai read-only RPC pada QA; Android/UAT fisik 25 screenshot tetap pending.

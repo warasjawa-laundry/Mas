@@ -124,7 +124,8 @@ test("account keeps staff and password actions while service-price settings stay
   const tree = await render("app/admin/settings/page.tsx");
   assert.ok(nodes(tree).some(node => node.action === actions.changeOwnerPassword));
   assert.ok(nodes(tree).some(node => node.href === "/admin/pos/kasir"));
-  assert.doesNotMatch(JSON.stringify(tree), /\/admin\/settings\/services|Layanan dan harga/);
+  assert.ok(nodes(tree).some(node=>node.href==="/admin/settings/services"));
+ assert.match(JSON.stringify(tree),/Layanan & Harga/);
 });
 
 test("login uses Manajer and Kasir with existing ID payloads, actions, and errors", async () => {

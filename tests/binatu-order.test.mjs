@@ -39,14 +39,16 @@ test('mobile flow reaches services without a quote, then requires a valid quote 
  assert.equal(canAdvanceOrderStep(3,true,true,true),false);
 });
 
-test('cashier UI keeps payload/write safeguards while hiding deferred scan and points',()=>{
+test('cashier UI keeps payload safeguards and integrated read-only scan',()=>{
  const form=source('app/kasir/pesanan/baru/order-form.tsx');
- assert.doesNotMatch(form,/CashierQrScanner|scan QR|poin/i);
+ assert.match(form,/CashierQrScanner/);
+ assert.match(form,/<CashierQrScanner role=\{role\}/);
+ assert.doesNotMatch(form,/awardPoint|postPoint|laundry_record_visit/i);
  assert.match(form,/step<3/);
  assert.match(form,/canAdvanceOrderStep/);
  assert.match(form,/stepQuantity/);
  for(const name of ['requestId','kind','guestName','memberNumber','items','perfume','notes'])assert.match(form,new RegExp('name="'+name+'"'));
- assert.match(form,/action=\{createCashierOrder\}/);
+ assert.match(form,/action=\{createAction\?\?createCashierOrder\}/);
  assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\}/);
  assert.match(form,/calculateOrderTotals/);
  assert.match(form,/useFormStatus/);
@@ -67,6 +69,8 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
   '@/lib/pos/g7-catalog':catalog,'@/lib/pos/ui-quantity':quantities,
   '../actions':{createCashierOrder:async()=>{}},
   './member-search-actions':{findCashierMembers:async()=>[]},
+  '@/app/admin/pesanan/member-actions':{findOwnerPosMembers:async()=>[]},
+  './cashier-qr-scanner':{CashierQrScanner:()=>null},
   './wizard.module.css':{default:new Proxy({},{get:(_target,key)=>String(key)})},
  };
  function load(path){
@@ -85,7 +89,7 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
  assert.match(html,/Transaksi POS masih dikunci/);
  assert.match(html,/<button[^>]*disabled=""[^>]*type="submit">Buat pesanan/);
  assert.match(html,/name="requestId" value="test-request"/);
- assert.doesNotMatch(html,/Scan|QR|poin|Promo/);
+ assert.doesNotMatch(html,/poin|Promo|<video/i);
  const empty=renderToStaticMarkup(React.createElement(OrderForm,{...props,services:[]}));
  assert.match(empty,/Tidak ada layanan yang cocok/);
  assert.match(empty,/Belum ada layanan dipilih/);

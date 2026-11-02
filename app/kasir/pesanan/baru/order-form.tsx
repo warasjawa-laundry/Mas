@@ -7,6 +7,7 @@ import {canAdvanceOrderStep,stepQuantity} from "@/lib/pos/ui-quantity";
 import {formatIdr} from "@/lib/pos/g4-order";
 import {createCashierOrder} from "../actions";
 import {MemberNamePicker} from "./member-name-picker";
+import {CashierQrScanner} from "./cashier-qr-scanner";
 import {DurationSheet} from "./duration-sheet";
 import {ALL_DURATIONS,durationOptions,servicesForDuration} from "@/lib/pos/g7-catalog";
 import styles from "./wizard.module.css";
@@ -20,7 +21,10 @@ function CreateOrderButton({disabled}:{disabled:boolean}){
  return <button className={styles.primary} disabled={disabled||pending} aria-busy={pending} type="submit">{pending?'Menyimpan pesanan…':'Buat pesanan'}</button>;
 }
 
-export function OrderForm({services,requestId,canWrite,canLookup}:{services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean}){
+export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction}:{
+ services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";
+ createAction?:(form:FormData)=>void|Promise<void>;
+}){
  const [step,setStep]=useState(0);
  const [customerType,setCustomerType]=useState<"guest"|"member">("guest");
  const [name,setName]=useState("");
@@ -72,7 +76,10 @@ export function OrderForm({services,requestId,canWrite,canLookup}:{services:Cata
      </div>
      {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder="Masukkan nama pelanggan"/><small>Minimal 2 karakter.</small></label>:
       <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{setMember(e.target.value.replace(/\D/g,'').slice(0,12));setMemberName("")}} maxLength={12} placeholder="Nomor pada kartu member"/></label>
-       {canLookup&&<MemberNamePicker disabled={false} onPick={row=>{setMember(row.memberNumber);setMemberName(row.displayName)}}/>}
+       {canLookup&&<>
+       <CashierQrScanner role={role} disabled={false} onMember={(number,label)=>{setMember(number);setMemberName(label)}}/>
+       <MemberNamePicker role={role} disabled={false} onPick={row=>{setMember(row.memberNumber);setMemberName(row.displayName)}}/>
+       </>}
        {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-{member.padStart(6,"0")}</span></p>}</>}
      <p className={styles.help}>Periksa identitas pelanggan. Data akan diverifikasi kembali saat nota dibuat.</p>
     </section>
@@ -108,7 +115,7 @@ export function OrderForm({services,requestId,canWrite,canLookup}:{services:Cata
     <div className={styles.summaryFooter}><div className={styles.total}><span>Total tagihan</span><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
      {!customerValid&&<p className={styles.help}>Lengkapi pelanggan sebelum membuat nota.</p>}
      {!canWrite&&<p className={styles.warn} role="status">Transaksi POS masih dikunci. Nota belum dapat dibuat.</p>}
-     <form action={createCashierOrder}>
+     <form action={createAction??createCashierOrder}>
       <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="kind" value={customerType}/><input type="hidden" name="guestName" value={customerType==='guest'?name.trim():""}/><input type="hidden" name="memberNumber" value={customerType==='member'?member:""}/><input type="hidden" name="items" value={items}/><input type="hidden" name="perfume" value={perfume}/><input type="hidden" name="notes" value={notes}/>
       <CreateOrderButton disabled={!canWrite||!quote||!customerValid}/>
      </form>

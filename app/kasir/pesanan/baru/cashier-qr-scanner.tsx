@@ -3,10 +3,11 @@ import {useEffect,useRef,useState,type ChangeEvent} from "react";
 import {decodeLaundryQrImage} from "@/lib/laundry/qr-image";
 import {decodeLaundryBarcodeImage} from "@/lib/laundry/barcode-image";
 import {resolveCashierMemberCode} from "./qr-actions";
+import {resolveOwnerPosMemberCode} from "@/app/admin/pesanan/member-actions";
 import styles from "./wizard.module.css";
 type Controls={stop:()=>void};
 const formats=new Set(["image/png","image/jpeg","image/webp","image/gif","image/avif"]);
-export function CashierQrScanner({onMember,disabled}:{onMember:(number:string,name:string)=>void;disabled:boolean}){
+export function CashierQrScanner({onMember,disabled,role="cashier"}:{onMember:(number:string,name:string)=>void;disabled:boolean;role?:"owner"|"cashier"}){
  const video=useRef<HTMLVideoElement>(null);
  const controls=useRef<Controls|null>(null);
  const generation=useRef(0);
@@ -21,7 +22,7 @@ export function CashierQrScanner({onMember,disabled}:{onMember:(number:string,na
   if(!alive.current||busyRef.current)return;
   busyRef.current=true;setBusy(true);setError("");stop();
   try{
-   const result=await resolveCashierMemberCode(raw);
+   const result=await (role==="owner"?resolveOwnerPosMemberCode:resolveCashierMemberCode)(raw);
    if(!alive.current)return;
    if(result)onMember(result.memberNumber,result.displayName);
    else setError("Kartu tidak valid, dicabut, atau member tidak aktif. Gunakan nomor member manual.");

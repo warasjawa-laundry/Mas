@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PosWorkspace from "@/components/pos/pos-workspace";
 import { requireOwner } from "@/lib/supabase/owner";
 import { importBinatuPreview, reviewBinatuRow } from "./actions";
 import { formatIdr } from "@/lib/pos/g4-order";
@@ -23,9 +24,7 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
  const current=params.hide==='1'?null:((params.row&&UUID.test(params.row)?rows.find(r=>r.id===params.row&&r.payment==='PAID'&&r.review==='CONFLICT'):null)??pending[0]??null);
  const {data:candidatesResult,error:candidateError}=current?await supabase.rpc('laundry_pos_g6b_member_candidates',{p_row_id:current.id}):{data:[],error:null};
  const candidates=Array.isArray(candidatesResult)?candidatesResult as Candidate[]:[];
- return <main style={shell}><Link href="/admin">← Admin</Link>
-  <p style={{fontSize:12,color:'#59616f',fontWeight:700}}>MAS JAWA LAUNDRY · MANAJER</p>
-  <h1>Impor Excel Binatu</h1>
+ return <PosWorkspace title="Impor Binatu" category="DATA & PELANGGAN" description="Rekonsiliasi laporan transaksi Binatu dengan database member MasJawa."><div className="binatu-import-content">
   <p>Unggah laporan pesanan Binatu untuk ditinjau. <strong>Tidak ada pembayaran atau poin yang diberikan oleh impor.</strong> Nomor nota Binatu dipakai sebagai identitas asal, bukan nomor member MJL.</p>
   {params.error&&<p role="alert" style={{color:'#9f1239',padding:14,background:'#fff1f2',borderRadius:12}}>
    {params.error==='file'?'Hanya CSV atau XLSX maksimal 1,5 MB.':params.error==='template'?'Template/header atau data XLSX tidak dapat divalidasi. Gunakan laporan Binatu tanpa rumus, makro, dan sheet tambahan.':
@@ -87,5 +86,5 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
     </details>
    </>}
   </section>}
- </main>;
+ </div></PosWorkspace>;
 }
