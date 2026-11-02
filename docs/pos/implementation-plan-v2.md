@@ -403,3 +403,9 @@ Dokumentasi rinci: [G4 Nota Laundry](./g4-order-verification.md). Dalam satu pak
 - Kamera menggunakan BrowserMultiFormatReader untuk QR dan barcode, galeri decode QR lama dengan fallback barcode lokal, server memverifikasi token QR melalui digest kartu dan nomor barcode MJL/angka lewat RPC member lookup scoped; scan tidak membuat visit/nota/pembayaran/poin.
 - HTML Argon adalah referensi visual, bukan backend: data pelanggan, multiplier tarif dan durasi, demo login, pembayaran dan klaim WA terkirim tidak diimpor. Semua tarif dan ledger dari sistem asli.
 - G8 tetap NO-GO: owner POS write, UAT 25 layar/perangkat, backup/restore, migrasi DB dan aktivasi produksi tetap memerlukan bukti dan persetujuan terpisah. Cek Vercel Production SHA karena koneksi Git masih berbeda dari source main.
+
+
+## 21. UI Argon pasca PR #29 — Scan Barcode/QR diaktifkan pada navigasi (2 Nov 2026)
+- Setelah PR #29, owner mengizinkan scan sebagai tambahan UI. Tombol Scan Barcode/QR ditambahkan pada navigasi Owner dan Menu POS; halaman scanner mengikuti shell Binatu/Argon dan memanggil scanner owner lama yang hanya membaca member. Form Kasir mengaktifkan kembali scanner kamera/galeri setelah memilih Member MJL dan memiliki izin `member_lookup`.
+- Decoder barcode/QR, validasi identitas, hak akses, RLS, pembayaran, poin, dan status G8 tidak berubah. Bukan aktivasi transaksi finansial.
+- UAT Android kamera/foto dan perbandingan visual fisik tetap pending; peluncuran produksi harus dibedakan dari merge.

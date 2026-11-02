@@ -17,3 +17,14 @@
 }
 @media(max-width:1023px){.sticky{bottom:calc(72px + env(safe-area-inset-bottom))}.pagePattern{display:block;height:42px;margin:-18px -20px 12px;border-radius:0 0 18px 18px}}
 @media(max-width:480px){.pagePattern{margin:-12px -14px 10px}}
+
+/* Read-only member scan entry in the Argon-style customer step. */
+.qrPanel{background:#fffbeb;border:1px solid #f0d9a0;border-radius:14px;padding:16px;margin-top:16px;min-width:0}
+.qrActions{display:flex;flex-wrap:wrap;gap:10px}
+.qrActions>button,.galleryPick{display:inline-flex;align-items:center;justify-content:center;flex:1 1 155px;min-height:48px;border:1px solid #b78c23;border-radius:10px;background:#fff;color:#2b2d31;font:inherit;font-size:12px;font-weight:800;padding:10px 12px;cursor:pointer;text-align:center}
+.qrActions>button:first-child{background:#f7b801;border-color:#f7b801}
+.qrActions>button:disabled,.galleryPick:has(input:disabled){opacity:.55;cursor:not-allowed}
+.galleryPick input{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.galleryPick:focus-within{outline:3px solid #805c00;outline-offset:2px}
+.qrVideo{display:block;width:100%;max-height:310px;object-fit:contain;margin-top:14px;border-radius:12px;background:#22252a}
+.qrHidden{display:none}

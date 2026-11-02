@@ -7,6 +7,7 @@ import {canAdvanceOrderStep,stepQuantity} from "@/lib/pos/ui-quantity";
 import {formatIdr} from "@/lib/pos/g4-order";
 import {createCashierOrder} from "../actions";
 import {MemberNamePicker} from "./member-name-picker";
+import {CashierQrScanner} from "./cashier-qr-scanner";
 import {DurationSheet} from "./duration-sheet";
 import {ALL_DURATIONS,durationOptions,servicesForDuration} from "@/lib/pos/g7-catalog";
 import styles from "./wizard.module.css";
@@ -73,6 +74,7 @@ export function OrderForm({services,requestId,canWrite,canLookup}:{services:Cata
      {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder="Masukkan nama pelanggan"/><small>Minimal 2 karakter.</small></label>:
       <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{setMember(e.target.value.replace(/\D/g,'').slice(0,12));setMemberName("")}} maxLength={12} placeholder="Nomor pada kartu member"/></label>
        {canLookup&&<MemberNamePicker disabled={false} onPick={row=>{setMember(row.memberNumber);setMemberName(row.displayName)}}/>}
+       {canLookup&&<CashierQrScanner disabled={false} onMember={(number,displayName)=>{setMember(number);setMemberName(displayName)}}/>}
        {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-{member.padStart(6,"0")}</span></p>}</>}
      <p className={styles.help}>Periksa identitas pelanggan. Data akan diverifikasi kembali saat nota dibuat.</p>
     </section>

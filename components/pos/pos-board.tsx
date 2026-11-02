@@ -19,6 +19,7 @@ export default function PosBoard({ role, tab = "queue", view, orders = [], membe
   const links: { label: string; sub: string; href: string; icon: PosIconName }[] = owner ? [
     { label: "Tambah Pesanan", sub: "Masuk sebagai kasir untuk membuat nota", href: addHref, icon: "plus" },
     { label: "Data Pelanggan", sub: "Cari, daftarkan, dan ubah data pelanggan", href: "/admin/members", icon: "people" },
+    { label: "Scan Barcode / QR", sub: "Scan kartu member lewat kamera atau galeri", href: "/admin/scan", icon: "scan" },
     { label: "Kelola Kasir", sub: "ID dan hak akses petugas", href: "/admin/pos/kasir", icon: "staff" },
     { label: "Pengaturan Akun", sub: "Password akun manajer", href: "/admin/settings", icon: "settings" },
   ] : [
