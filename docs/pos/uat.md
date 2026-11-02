@@ -50,3 +50,10 @@
 - [ ] Salah ID, ID nonaktif, pencabutan semua sesi, dua token cookie hilang, 12 jam kedaluwarsa, dan max lima sesi teruji.
 - [ ] Rate limit seluruh outlet 10 percobaan/menit / lock 5 menit; ukur denial-of-service dan dokumentasikan risiko penyamaran akibat ID empat angka mudah ditebak.
 - [ ] Owner menyetujui kontrol identitas yang memadai sebelum POS finansial diaktifkan. Tanpa ini tetap G8 NO-GO.
+
+
+## Update UAT dari keputusan Owner: wizard tiga tahap
+- Uji Pelanggan → Layanan → Konfirmasi pada 320/360/390/768/1440px. Tidak boleh ada langkah Durasi terpisah atau filter durasi global yang menghilangkan layanan terpilih.
+- Pilih dua variasi layanan dengan paket/durasi berbeda di nota sama. Verifikasi kedua item, label durasi, dan tarif katalog yang tepat di konfirmasi.
+- Owner membuka Menu → Pengaturan → Layanan & Harga; ubah durasi pada layanan tertentu tanpa mengubah layanan lainnya. Uji datalist opsi hanya saran, input kustom tetap valid; harga historis tidak tertimpa.
+- Durasi tampil sebagai informasi katalog; sebelum G8 GO wajib putuskan kebijakan ETA tiap item, penyimpanan snapshot durasi pada nota, dan cetak janji tanggal selesai. Jangan janjikan perhitungan selesai otomatis sekarang.

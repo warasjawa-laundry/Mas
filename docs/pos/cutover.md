@@ -18,3 +18,8 @@
 - Script preflight **tidak menjalankan SQL/enable/deploy**; receipt manusia tanpa bukti jelas harus gagal.
 - Tidak mengubah Supabase produksi, koneksi Git, schema, kartu maupun poin selama gate belum lengkap.
 - Jika sebagian gate gagal, gunakan [protokol STOP/rollback](./rollback.md), bukan mengedit jurnal secara langsung.
+
+
+## Tambahan blocker pasca keputusan UI terbaru
+- Jangan GO jika penulisan nota oleh Owner belum memakai actor Owner pada RPC SQL tersendiri, jika durasi per item belum disimpan konsisten pada invoice/due date, atau jika risiko login karyawan ID empat angka belum di-review secara eksplisit.
+- Lihat hasil agregat QA dan Production pada [G8 audit aktual](./g8-audit-20261102.md). Migrasi read-only Owner yang sudah dijalankan hanya di QA tidak berarti migrasi Production boleh berjalan.

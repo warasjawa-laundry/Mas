@@ -25,3 +25,8 @@
 - Owner tetap dalam namespace /admin untuk daftar/tambah/rincian; tidak dilempar ke login Kasir. Penulisan nota dan pembayaran Owner tetap dikunci G8 sampai command owner-attributed ditinjau.
 - Scan Barcode/QR dipasang dalam Pilih Pelanggan dan tersedia pada Menu Owner Operasional. Impor Binatu berada di Data & pelanggan; Layanan & Harga pada Pengaturan. Semua halaman reuse shell Argon POS, bukan UI admin terpisah.
 - Menu Kasir mengikuti izin, pembacaan owner POS memakai read-only RPC pada QA; Android/UAT fisik 25 screenshot tetap pending.
+
+
+### Keputusan Owner terbaru (2 November 2026)
+- Screenshot langkah Durasi terpisah diganti menjadi durasi yang melekat pada tiap layanan karena permintaan eksplisit Owner, bukan ketidaksesuaian desain. Wizard menjadi 3 tahap: Pelanggan/Layanan/Konfirmasi.
+- `Layanan & Harga` memperlihatkan kolom Durasi di tiap baris; Owner dapat mengeditnya lewat form layanan yang sama. Referensi screenshot Binatu harus dibaca dengan perubahan flow yang disetujui Owner, sementara UAT visual yang lain tetap menunggu pemeriksaan fisik.

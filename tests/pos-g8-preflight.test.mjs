@@ -28,3 +28,18 @@ test("no auto-enable switch: any live write during preflight is NO-GO",()=>{
  const r=structuredClone(receipt);r.financePostingEnabled=true;
  assert.ok(evaluatePosG8(r).blockers.some(x=>x.includes("financial writes")));
 });
+test("G8 never passes without owner-actor writes, service-duration policy and cashier ID risk review",()=>{
+ const blockers=evaluatePosG8(receipt).blockers;
+ for(const x of ["ownerPosWriteUat","durationPolicySignOff","cashierIdentityRiskApproval"]){
+  assert.ok(blockers.some(y=>y.includes(x)),x);
+ }
+ const r=structuredClone(receipt);
+ r.status="GO";r.productionPosTables=20;r.productionOutletCount=1;
+ assert.ok(evaluatePosG8(r).blockers.some(x=>x.includes("GO_CANDIDATE")));
+});
+test("QA audit receipt cannot be misinterpreted as Production readiness",()=>{
+ assert.equal(receipt.productionPosTables,0);
+ assert.equal(receipt.qaReadOnlyReceipt.posTables,20);
+ assert.equal(receipt.qaReadOnlyReceipt.writeEnabledOutlets,0);
+ assert.equal(receipt.evidence.ownerPosWriteUat.verified,false);
+});

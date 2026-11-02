@@ -42,18 +42,20 @@ test("G7 backend member prefix search is device-scoped and never exposes PII",()
  assert.match(action,/data\.slice\(0,8\)/);
  assert.doesNotMatch(action,/whatsapp|address|tokenDigest|recordOwnerVisit/);
 });
-test("G7 UI uses real duration step + named member disambiguation + honest tariff warning",()=>{
+test("G8 UX uses per-service duration with three-step wizard and real catalog pricing",()=>{
  const form=source("app/kasir/pesanan/baru/order-form.tsx");
- assert.match(form,/steps=\["Pelanggan","Durasi","Layanan","Konfirmasi"\]/);
- assert.match(form,/DurationSheet/);
+ assert.match(form,/steps=\["Pelanggan","Layanan","Konfirmasi"\]/);
+ assert.doesNotMatch(form,/DurationSheet|setDuration|servicesForDuration/);
+ assert.match(form,/s.duration\|\|"Durasi belum ditentukan"/);
  assert.match(form,/MemberNamePicker/);
- assert.match(form,/onSelect=\{value=>\{setDuration\(value\);setQuantities\(\{\}\)\}\}/);
+ assert.match(form,/step<2/);
  assert.match(form,/Total saat ini hanya harga layanan/);
  assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\}/);
- const sheet=source("app/kasir/pesanan/baru/duration-sheet.tsx");
- assert.match(sheet,/aria-modal="true"/);
- assert.match(sheet,/e\.key==="Escape"/);
- assert.match(sheet,/e\.key!=="Tab"/);
+ const editor=source("components/admin/service-editor.tsx");
+ assert.match(editor,/name="duration"/);
+ const settings=source("app/admin/settings/services/page.tsx");
+ assert.match(settings,/className="mj-service-duration-col"/);
+ assert.match(settings,/s.duration\|\|"Belum diatur"/);
  const picker=source("app/kasir/pesanan/baru/member-name-picker.tsx");
  assert.match(picker,/400\)/); // 400 ms debounce
  assert.match(picker,/onPick\(row\)/);

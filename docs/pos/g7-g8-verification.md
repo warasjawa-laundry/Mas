@@ -29,3 +29,8 @@ Satu source repo `warasjawa-laundry/Mas` → satu PR batch → merge `main` sete
 - Wizard source menampilkan durasi nyata katalog dan menggunakan harga layanan SQL, bukan tarif ekspres buatan. Pencarian nama manual diperkecil ke nama + nomor, tidak menampilkan HP/alamat. Preset parfum tanpa biaya. Diskon/ongkir sengaja nonaktif hingga policy dan RPC ditetapkan owner.
 - Tes Node `tests/pos-g7-catalog-ux.test.mjs` dan regresi SQL `pos-g7-member-name-rollback.sql` masuk satu PR; klaim PASS CI hanya setelah GitHub benar-benar selesai.
 - **Tidak ada bukti baru G8**: physical UAT/QR, pixel parity, restore rehearsal, opening receivables, owner sign-off, dan migrasi produksi tetap BLOCKED.
+
+
+## Audit aktual susulan G8 — 2 November 2026
+- Bukti agregat terbaru dan QA RPC baca-saja Owner: [G8 audit aktual](./g8-audit-20261102.md). Tetap NO-GO. 20 tabel QA ber-RLS, direct write grant 0, QA owner RPC berhasil diterapkan; Production POS 0 tabel tanpa migrasi. Bukan tanda terima cutover.
+- Wizard baru tiga langkah dan durasi di tiap layanan mengikuti keputusan Owner; snapshot ETA belum tersedia, perlu rencana G8 per item sebelum invoice live.

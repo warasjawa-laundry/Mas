@@ -414,3 +414,10 @@ Dokumentasi rinci: [G4 Nota Laundry](./g4-order-verification.md). Dalam satu pak
 - **Board Owner:** RPC `laundry_pos_owner_order_board` dan `laundry_pos_owner_order_detail` read-only, memverifikasi owner di fungsi private. Migrasi disertakan untuk QA, **tidak diterapkan ke Supabase Production**. Saat DB POS tidak tersedia, tampilkan unavailable, bukan angka nota atau saldo palsu. Katalog dari `laundry_services` eksisting.
 - **Paritas visual:** Scan, Impor Binatu, Layanan & Harga semuanya berada pada `PosWorkspace` dengan pattern/header/warna/card milik POS aktif. Tidak ada UI Admin baru atau aset Binatu proprietari; formulir impor dan edit katalog tetap mempertahankan logika existing. Hak akses menu Kasir mengikuti izin server; menu masih bisa dibuka tanpa `order_view`.
 - **Masih tertahan:** uji nyata Android kamera/galeri dan 25 screenshot, akurasi impor dan harga, migrasi QA, owner commands untuk pembuatan nota/pembayaran, rekonsiliasi keuangan, serta G8 owner approval. Status akhir tetap **PARTIAL / G8 NO-GO** sampai bukti valid.
+
+
+## 22. Owner approved: durasi sebagai kolom layanan, wizard 3 tahap (2 Nov 2026)
+- Owner memilih **tanpa menu Durasi terpisah**. `/admin/settings/services` menampilkan durasi di tiap baris Layanan & Harga; form tambah/ubah layanan menggunakan satu field durasi dengan saran dari data katalog sendiri (tidak ada tabel, pilihan tarif, atau surcharge fiktif).
+- Wizard Owner dan Karyawan bersama-sama memakai **Pelanggan → Layanan → Konfirmasi**. Setiap baris layanan menunjukkan paket, durasi, harga, dan satuan. Satu nota dapat memuat beberapa layanan dengan durasi yang berbeda; nominal dihitung dari harga per service ID/revisi seperti sebelumnya. Back/Next dan invalid quantity diverifikasi dengan test.
+- Backend G4 sudah menyimpan item dan snapshot harga tetapi belum menyimpan estimasi due_at/per-item duration secara penuh; jangan mengklaim janji tanggal selesai otomatis, tambahkan sebagai G8 business/UAT gate.
+- Schema dan Auth Production tetap tidak diubah. Keputusan untuk aktivasi finansial memerlukan UAT dan migrasi berizin yang terpisah dari release UI.

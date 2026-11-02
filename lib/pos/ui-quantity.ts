@@ -15,7 +15,6 @@ export function stepQuantity(value:string,unit:QuantityUnit,direction:1|-1):stri
 
 export function canAdvanceOrderStep(step:number,customerValid:boolean,hasServices:boolean,hasQuote:boolean):boolean {
  if(step===0)return customerValid;
- if(step===1)return hasServices;
- if(step===2)return customerValid&&hasQuote;
+ if(step===1)return customerValid&&hasServices&&hasQuote;
  return false;
 }
