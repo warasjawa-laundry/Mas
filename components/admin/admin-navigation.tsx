@@ -10,6 +10,7 @@ type Role = "owner" | "cashier";
 const ownerLinks: { href: string; label: string; sub: string; icon: PosIconName }[] = [
   { href: "/admin", label: "Pesanan", sub: "Antrian dan rincian nota", icon: "orders" },
   { href: "/admin/members", label: "Data Pelanggan", sub: "Daftar dan profil pelanggan", icon: "people" },
+  { href: "/admin/scan", label: "Scan Barcode / QR", sub: "Cari member dengan kamera atau foto", icon: "scan" },
   { href: "/admin/pos/kasir", label: "Kelola Kasir", sub: "ID dan hak akses", icon: "staff" },
   { href: "/admin/settings", label: "Pengaturan Akun", sub: "Password manajer", icon: "settings" },
 ];

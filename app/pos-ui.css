@@ -98,3 +98,15 @@
 @media(max-width:359px){.binatu-bottom-nav{gap:7px;padding-inline:10px}.binatu-bottom-nav>a{padding-inline:13px;gap:6px}.binatu-bottom-nav button span{display:none}.binatu-role-chip{gap:5px;padding-inline:7px}.binatu-outlet-head{padding-inline:16px}.binatu-outlet-head strong{font-size:11px}.binatu-board-heading{padding-inline:16px}.binatu-status-tabs>a{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.admin-root *,.mj-pos-root *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media print{.binatu-sidebar,.binatu-bottom-nav,.binatu-page-cap,.binatu-outlet-head,.binatu-skip-link,.mj-cashier-identity{display:none!important}.admin-root:has(.binatu-sidebar)>#admin-main,.mj-has-sidebar .mj-staff-main{margin:0!important}.admin-root,.mj-pos-root{padding:0!important;background:white}}
+
+/* Owner scanner visually matches the unified POS shell without touching legacy data actions. */
+.binatu-scan-back{display:inline-flex;align-items:center;gap:8px;min-height:44px;text-decoration:none;color:#654b00;font-weight:800;font-size:12px;margin-bottom:20px}
+.binatu-scan-help{max-width:660px;font-size:13px;line-height:1.7;color:#59616f;margin:-8px 0 20px}
+.binatu-scan-panel{max-width:800px;border:1px solid #e6e7e9;border-radius:18px;background:#fff;padding:25px}
+.binatu-scan-panel .owner-scanner-heading h2{font-size:17px;color:#22252a}
+.binatu-scan-panel .owner-scanner-heading p{font-size:12px;line-height:1.6;color:#59616f}
+.binatu-scan-panel .member-add{background:#f7b801!important;color:#22252a!important}
+.binatu-scan-panel .owner-scan-actions{display:flex;gap:10px;flex-wrap:wrap}
+.binatu-scan-panel .owner-scan-actions>*{border-radius:11px;min-height:48px;font-size:12px;text-decoration:none}
+.binatu-scan-panel .owner-scan-actions .admin-logout{color:#22252a;background:#fff;border:1px solid #c9ccd1}
+@media(max-width:640px){.binatu-scan-panel{padding:17px}.binatu-scan-panel .owner-scan-actions>*{flex:1 1 150px}}
