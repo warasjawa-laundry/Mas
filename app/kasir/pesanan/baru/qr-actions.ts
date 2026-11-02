@@ -20,3 +20,16 @@ export async function resolveCashierMemberQr(raw:string):Promise<CashierQrResult
    row.display_name.length<2||row.display_name.length>120)return null;
  return {memberNumber:number,displayName:row.display_name};
 }
+import {normalizeMemberBarcode} from "@/lib/pos/member-code";
+/** QR token or MJL barcode, resolved by separate read-only role-scoped RPCs. */
+export async function resolveCashierMemberCode(raw:string):Promise<CashierQrResult>{
+ if(typeof raw!=="string"||raw.length>500)return null;
+ const number=normalizeMemberBarcode(raw);
+ if(!number)return resolveCashierMemberQr(raw);
+ const access=await cashierRpcAccess("member_lookup");if(!access)return null;
+ const {data,error}=await access.client.rpc("laundry_pos_g4_member_number",{...access.tokens,p_member_number:number});
+ if(error||!Array.isArray(data)||data.length!==1)return null;
+ const row=data[0] as Record<string,unknown>;
+ if(String(row.member_number)!==number||typeof row.display_name!=="string"||row.display_name.length<2||row.display_name.length>120)return null;
+ return {memberNumber:number,displayName:row.display_name};
+}

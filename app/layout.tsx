@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./pos-ui.css";
 import SiteAdminBoundary from "@/components/admin/site-admin-boundary";
 import { assets, site } from "@/lib/site";
 
