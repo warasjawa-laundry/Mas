@@ -21,6 +21,7 @@
 - HTTP smoke against standalone production build: login pages, protected menus redirecting to login, reference SVGs and local font all returned expected successful responses. This did not log in or call a database.
 - New tests cover real static component rendering, escaped customer/catalog text, unavailable data, retained form/action/payloads, staff permissions, disabled financial submit, exact fractional stepping, step progression and actual legacy redirect-query recovery.
 - Existing browser specs were aligned with approved Manajer/customer navigation. They were **not run locally**, because local browser access is disabled in Work. The repository CI runs them on GitHub's hosted runner.
+- First hosted CI run: six workflows passed. The two full-browser workflows each passed 75/78 tests; their only three failures expected the old purple password focus ring at 320/390/1440px, while the new dark ring rendered correctly. Updated that expectation to the approved dark palette and explicitly asserted the retained 3px solid focus indicator; hosted CI is rerun on the follow-up commit.
 
 ## Backend/data preservation
 
