@@ -11,9 +11,10 @@ test("all admin routes share mobile and desktop navigation with no extra auth ca
   assert.match(nav, /binatu-sidebar/);
   assert.match(nav, /binatu-bottom-nav/);
   assert.doesNotMatch(nav, /href:\s*"\/admin\/scan"/);
-  for (const href of ["/admin", "/admin/members", "/admin/settings"]) {
+  for (const href of ["/admin", "/admin/members", "/admin/kas", "/admin/laporan"]) {
     assert.ok(nav.includes(href), href);
   }
+  assert.match(source("components/pos/pos-board.tsx"),/\/admin\/settings/);
   assert.doesNotMatch(nav, /getUser\(|getClaims\(|requireOwner\(|\.from\(/);
 });
 

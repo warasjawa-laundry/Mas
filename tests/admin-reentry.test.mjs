@@ -60,7 +60,8 @@ test("login always prompts for password, keeps ID prefilled, and uses no cached 
  assert.match(password,/input\.current\.value=""/);
  assert.match(password,/name="password"/);
  assert.match(read("components/admin/admin-navigation.tsx"),/href="\/admin\/leave"/);
- assert.match(read("app/admin/scan/page.tsx"),/href="\/admin"/);
+ assert.match(read("app/admin/scan/page.tsx"),/PosWorkspace/);
+ assert.match(read("components/pos/pos-workspace.tsx"),/href=\{backHref\}/);
 });
 
 test("soft navigation crossing the homepage/admin boundary is not reusable authorization",()=>{

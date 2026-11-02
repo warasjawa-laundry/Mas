@@ -40,10 +40,17 @@ test('unavailable board does not pretend zero orders or financial balance is ver
 });
 test('board safely escapes customer text and exposes actual order routes',()=>{
  const {default:Board}=load('components/pos/pos-board.tsx');
- const html=renderToStaticMarkup(createElement(Board,{role:'cashier',orders:rows,dbReady:true,writeEnabled:true}));
+ const html=renderToStaticMarkup(createElement(Board,{role:'cashier',orders:rows,dbReady:true,writeEnabled:true,permissions:{order_view:true,order_create:true}}));
  assert.match(html,/Siti &lt;img src=x&gt;/);
  assert.doesNotMatch(html,/<img src=x>/);
  assert.match(html,/\/kasir\/pesanan\/q/);
  assert.match(html,/\/kasir\/pesanan\/baru/);
  assert.match(html,/Cari pesanan/);
+});
+
+test('cashier without create grant cannot see add-order shortcut',()=>{
+ const {default:Board}=load('components/pos/pos-board.tsx');
+ const html=renderToStaticMarkup(createElement(Board,{role:'cashier',orders:rows,dbReady:true,permissions:{order_view:true}}));
+ assert.doesNotMatch(html,/href="\/kasir\/pesanan\/baru"/);
+ assert.match(html,/href="\/kasir\/pesanan\/q"/);
 });
