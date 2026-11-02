@@ -46,11 +46,13 @@ test("public member page remains read-only and does not award promo",()=>{
 test("scanner has no redundant member or settings links beneath QR controls",()=>{
  assert.match(ownerHub,/<ScanCard\/>/);
  assert.doesNotMatch(ownerHub,/owner-secondary-actions|\+ Tambah Member|Lihat Daftar Member|Kelola Member|Ubah Password/);
- assert.match(ownerHub,/Kembali ke Ringkasan/);
+ assert.match(ownerHub,/PosWorkspace/);
+ assert.match(read("components/pos/pos-workspace.tsx"),/Kembali ke Menu/);
  const navigation=read("components/admin/admin-navigation.tsx");
  assert.match(navigation,/href:\s*"\/admin\/members",\s*label:\s*"Data Pelanggan"/);
- assert.match(navigation,/href:\s*"\/admin\/settings",\s*label:\s*"Pengaturan Akun"/);
+ assert.match(read("components/pos/pos-board.tsx"),/href:"\/admin\/settings"/);
  assert.doesNotMatch(navigation,/href:\s*"\/admin\/scan"/);
+ assert.match(read("components/pos/pos-board.tsx"),/href:"\/admin\/scan"/);
  const scanner=read("components/admin/scan-card.tsx");
  assert.match(scanner,/Cari Member Manual/);
 });
