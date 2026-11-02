@@ -2,7 +2,8 @@
 import {useEffect,useState} from "react";
 import {findCashierMembers,type NamedCashierMember} from "./member-search-actions";
 import styles from "./wizard.module.css";
-export function MemberNamePicker({onPick,disabled}:{onPick:(member:NamedCashierMember)=>void;disabled:boolean}){
+import {findOwnerPosMembers} from "@/app/admin/pesanan/member-actions";
+export function MemberNamePicker({onPick,disabled,role="cashier"}:{onPick:(member:NamedCashierMember)=>void;disabled:boolean;role?:"owner"|"cashier"}){
  const [query,setQuery]=useState("");
  const [results,setResults]=useState<NamedCashierMember[]>([]);
  const [busy,setBusy]=useState(false);
@@ -15,13 +16,13 @@ export function MemberNamePicker({onPick,disabled}:{onPick:(member:NamedCashierM
   const t=setTimeout(async()=>{
    if(!alive)return;
    setBusy(true);setError(false);
-   try{const found=await findCashierMembers(term);
+   try{const found=await (role==="owner"?findOwnerPosMembers:findCashierMembers)(term);
     if(alive){setResults(found);setSearched(true)}
    }catch{if(alive){setError(true);setResults([]);setSearched(true)}}
    finally{if(alive)setBusy(false)}
   },400);
   return ()=>{alive=false;clearTimeout(t)};
- },[query,disabled]);
+ },[query,disabled,role]);
  function change(value:string){setQuery(value.slice(0,60));setResults([]);setError(false);setSearched(false);setBusy(false)}
  return <section className={styles.memberSearch} aria-label="Cari member berdasarkan nama">
   <label className={styles.field}>Cari nama member (minimal 3 huruf)

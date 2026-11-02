@@ -11,6 +11,9 @@ export default async function AdminHome({searchParams}:{searchParams:Promise<{ta
  ]));
  const memberCount=membersR.error?null:String(membersR.count??0);
  const visitCount=addedR.error||voidR.error?null:String(Math.max(0,(addedR.count??0)-(voidR.count??0)));
+ const {data:boardData,error:boardError}=await supabase.rpc("laundry_pos_owner_order_board");
+ const boardReady=!boardError&&Array.isArray(boardData);
  const {tab,view}=await searchParams;
- return <PosBoard role="owner" tab={tab} view={view} memberCount={memberCount} transactionCount={visitCount}/>;
+ return <PosBoard role="owner" tab={tab} view={view} orders={boardReady?boardData:[]}
+    dbReady={boardReady} writeEnabled={false} memberCount={memberCount} transactionCount={visitCount}/>;
 }

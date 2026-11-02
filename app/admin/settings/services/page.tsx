@@ -11,7 +11,7 @@ export default async function ServiceSettings({searchParams}:Props){
  const services=(data??[]) as Service[];
  const categories=[...new Set(services.map(s=>s.category))];
  const messages:Record<string,string>={invalid:"Periksa kategori, nama layanan, harga, satuan, dan urutan.",conflict:"Layanan ini sudah berubah sejak halaman dibuka. Muat ulang sebelum mengedit lagi.",limit:"Batas 200 layanan sudah tercapai.",save:"Perubahan belum tersimpan. Coba lagi."};
- return <main className="admin-workspace"><nav className="admin-breadcrumb"><Link href="/admin/settings" prefetch={false}>← Pengaturan</Link></nav><section className="admin-content service-settings">
+ return <main className="admin-workspace binatu-owner-section"><div className="binatu-page-cap binatu-pattern" aria-hidden="true"/><div className="binatu-outlet-head"><img src="/pos/storefront.svg" width="48" height="48" alt=""/><div><strong>MAS JAWA LAUNDRY</strong><p>Pengaturan · Layanan & Harga</p></div></div><nav className="admin-breadcrumb"><Link href="/admin/settings" prefetch={false}>← Pengaturan</Link></nav><section className="admin-content service-settings">
   <p className="admin-kicker">PENGATURAN</p><h1>Layanan dan harga</h1>
   <p className="admin-hint">Atur layanan yang ditampilkan di homepage. Kategori bisa digunakan untuk laundry, sepatu, karpet, atau usaha lainnya.</p>
   <p className="member-note">Perubahan berlaku setelah disimpan. Harga pada riwayat transaksi member tetap sesuai nominal yang sudah dicatat.</p>

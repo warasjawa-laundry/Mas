@@ -30,7 +30,7 @@ export default async function CashierHome({searchParams}:{searchParams:Promise<{
   dbReady=!error&&Array.isArray(data);if(dbReady)orders=data as PosRow[];
  }
  return <>
-  <PosBoard role="cashier" tab={params.tab} view={params.view} orders={orders} dbReady={dbReady} writeEnabled={session.write_enabled}/>
+  <PosBoard role="cashier" tab={params.tab} view={params.view} orders={orders} dbReady={dbReady} writeEnabled={session.write_enabled} allowedCreate={hasCashierGrant(session.permissions,"order_create")}/>
   <section className="mj-cashier-identity">{!session.write_enabled&&<p role="status">Modul transaksi belum diaktifkan</p>}<span>Kasir: {session.display_name} · {session.username}</span>
    <details><summary>Hak akses kasir</summary><ul>{CASHIER_PERMISSIONS.filter(([key])=>hasCashierGrant(session.permissions,key)).map(([key,label])=><li key={key}>{key==="member_lookup"?"Cari pelanggan":label}</li>)}</ul></details>
    <form action={leaveCashier}><button type="submit">Keluar Kasir</button></form></section>

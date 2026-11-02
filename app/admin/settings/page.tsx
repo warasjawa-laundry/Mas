@@ -11,6 +11,7 @@ export default async function OwnerSettings({ searchParams }: Props) {
       <h1>Pengaturan Akun</h1>
       <p className="admin-hint">Kelola akses kasir dan password manajer.</p>
       <div className="account-settings-grid">
+      <section className="settings-staff-entry"><h2>Layanan & Harga</h2><p>Atur katalog dan tarif yang dipakai pada nota Mas Jawa Laundry.</p><Link href="/admin/settings/services" prefetch={false} className="admin-logout">Kelola Layanan & Harga</Link></section>
       <section className="settings-staff-entry"><h2>Kasir Mas Jawa Laundry</h2><p>Tambahkan kasir, atur hak akses, dan kelola perangkat pegawai outlet.</p><Link href="/admin/pos/kasir" prefetch={false} className="admin-logout">Kelola Kasir</Link></section>
       <section className="settings-password-entry" aria-labelledby="password-heading"><h2 id="password-heading">Ubah Password</h2>
       <p className="admin-hint">Untuk keamanan, masukkan password saat ini sebelum menggantinya. Setelah berhasil, Anda diminta login kembali.</p>

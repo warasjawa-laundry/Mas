@@ -23,7 +23,7 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
  const current=params.hide==='1'?null:((params.row&&UUID.test(params.row)?rows.find(r=>r.id===params.row&&r.payment==='PAID'&&r.review==='CONFLICT'):null)??pending[0]??null);
  const {data:candidatesResult,error:candidateError}=current?await supabase.rpc('laundry_pos_g6b_member_candidates',{p_row_id:current.id}):{data:[],error:null};
  const candidates=Array.isArray(candidatesResult)?candidatesResult as Candidate[]:[];
- return <main style={shell}><Link href="/admin">← Admin</Link>
+ return <main className="binatu-owner-section"><div className="binatu-page-cap binatu-pattern" aria-hidden="true"/><div className="binatu-outlet-head"><img src="/pos/storefront.svg" width="48" height="48" alt=""/><div><strong>MAS JAWA LAUNDRY</strong><p>Impor Binatu · Operasional Owner</p></div></div><div style={shell}><Link href="/admin/menu">← Menu Owner</Link>
   <p style={{fontSize:12,color:'#59616f',fontWeight:700}}>MAS JAWA LAUNDRY · MANAJER</p>
   <h1>Impor Excel Binatu</h1>
   <p>Unggah laporan pesanan Binatu untuk ditinjau. <strong>Tidak ada pembayaran atau poin yang diberikan oleh impor.</strong> Nomor nota Binatu dipakai sebagai identitas asal, bukan nomor member MJL.</p>
@@ -87,5 +87,5 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
     </details>
    </>}
   </section>}
- </main>;
+ </div></main>;
 }

@@ -403,3 +403,12 @@ Dokumentasi rinci: [G4 Nota Laundry](./g4-order-verification.md). Dalam satu pak
 - Kamera menggunakan BrowserMultiFormatReader untuk QR dan barcode, galeri decode QR lama dengan fallback barcode lokal, server memverifikasi token QR melalui digest kartu dan nomor barcode MJL/angka lewat RPC member lookup scoped; scan tidak membuat visit/nota/pembayaran/poin.
 - HTML Argon adalah referensi visual, bukan backend: data pelanggan, multiplier tarif dan durasi, demo login, pembayaran dan klaim WA terkirim tidak diimpor. Semua tarif dan ledger dari sistem asli.
 - G8 tetap NO-GO: owner POS write, UAT 25 layar/perangkat, backup/restore, migrasi DB dan aktivasi produksi tetap memerlukan bukti dan persetujuan terpisah. Cek Vercel Production SHA karena koneksi Git masih berbeda dari source main.
+
+
+## 21. Audit follow-up PR #29 (2 November 2026): Owner POS dan penempatan UI Argon
+- Penyebab redirect: tombol Tambah Pesanan Owner mengarah ke login kasir dan detail nota ke route kasir. Perbaikan mengganti ke route owner `/admin/pesanan/baru` dan `/admin/pesanan/[id]` dan memisahkan otorisasi Owner (Supabase Auth + DB owner accounts) dari identitas staff MAS-XXXX.
+- Keduanya memakai komponen wizard POS yang sama. Scan QR/barcode ditampilkan di tahap Pilih Pelanggan untuk member, diikuti pencarian manual berdasarkan nama dan nomor. Semua scan hanya memilih identitas; ledger tidak ditambah.
+- **Penempatan setara Argon:** bottom nav tetap Pesanan/Menu. Scan Owner tersedia di Menu Owner dan di dalam wizard; Impor Binatu ditempatkan pada Menu Owner (operasional); Layanan & Harga di Menu Owner → Pengaturan. Gunakan existing kartu/header/warna MasJawa, bukan dashboard lain.
+- Dashboard Owner mengambil daftar nota menggunakan read-only owner RPC apabila migrasi G8 kelak dilaksanakan. Di Production saat ini schema POS tidak ada; RPC belum aktif dan UI secara jujur menyatakan data tidak tersedia.
+- Preview nota Owner tidak bisa disimpan sampai implementasi owner command + guard finansial dan signoff G8. Jangan memanggil RPC Kasir menggunakan sesi Owner atau membuat staff palsu. Semua transaksi finansial dan poin tetap tertutup di Production; tidak ada perubahan DB dalam PR ini.
+- Menu kasir harus menyembunyikan navigasi yang tidak sesuai permission. Verifikasi fisik Android/kamera/galeri, owner nav, kas, laporan, receipt dan 25 screenshot masih merupakan UAT terbuka, tidak boleh diklaim lulus hanya dari CI.
