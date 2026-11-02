@@ -11,16 +11,17 @@ export default async function ServiceSettings({searchParams}:Props){
  const {data,error}=await supabase.from("laundry_services").select("id,category,package_name,name,price_idr,unit,duration,position,is_visible,revision").order("position").order("id").limit(200);
  const services=(data??[]) as Service[];
  const categories=[...new Set(services.map(s=>s.category))];
- const messages:Record<string,string>={invalid:"Periksa kategori, nama layanan, harga, satuan, dan urutan.",conflict:"Layanan ini sudah berubah sejak halaman dibuka. Muat ulang sebelum mengedit lagi.",limit:"Batas 200 layanan sudah tercapai.",save:"Perubahan belum tersimpan. Coba lagi."};
- return <PosWorkspace title="Layanan & Harga" category="PENGATURAN" description="Kelola daftar layanan, tarif, dan durasi dengan identitas Mas Jawa Laundry."><div className="admin-content service-settings binatu-service-content">
-  <p className="admin-hint">Atur layanan yang ditampilkan di homepage. Kategori bisa digunakan untuk laundry, sepatu, karpet, atau usaha lainnya.</p>
+ const durations=[...new Set(services.map(s=>s.duration.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"id-ID"));
+ const messages:Record<string,string>={invalid:"Periksa kategori, nama layanan, durasi, harga, satuan, dan urutan.",conflict:"Layanan ini sudah berubah sejak halaman dibuka. Muat ulang sebelum mengedit lagi.",limit:"Batas 200 layanan sudah tercapai.",save:"Perubahan belum tersimpan. Coba lagi."};
+ return <PosWorkspace title="Layanan & Harga" category="PENGATURAN" description="Kelola kategori, paket, durasi dan tarif tiap layanan dalam satu tempat."><div className="admin-content service-settings binatu-service-content">
+  <p className="admin-hint">Setiap layanan memiliki durasi dan harga sendiri. Contoh: Cuci Setrika · Reguler (1–3 hari) dan Express (1–2 hari) dapat memiliki tarif berbeda. Tidak perlu menu Durasi terpisah.</p>
   <p className="member-note">Perubahan berlaku setelah disimpan. Harga pada riwayat transaksi member tetap sesuai nominal yang sudah dicatat.</p>
   {notice.saved==="1"&&<p className="admin-success" role="status">Layanan berhasil disimpan. Daftar harga di homepage diperbarui otomatis.</p>}
   {notice.error&&<p className="admin-error" role="alert">{messages[notice.error]??messages.save}</p>}
   {error?<p className="admin-error" role="alert">Daftar layanan belum dapat dimuat. Muat ulang halaman untuk mencoba lagi.</p>:<>
-   <details className="service-settings-add" open={services.length===0}><summary>+ Tambah layanan</summary><ServiceEditor service={{}} newId={randomUUID()} categories={categories}/></details>
+   <details className="service-settings-add" open={services.length===0}><summary>+ Tambah layanan</summary><ServiceEditor service={{}} newId={randomUUID()} categories={categories} durations={durations}/></details>
    <p className="member-note">{services.length} layanan · {services.filter(s=>s.is_visible).length} ditampilkan</p>
-   <ul className="service-settings-list">{services.map(s=><li key={s.id}><details><summary><span><strong>{s.name}</strong><small>{s.category}{s.package_name?" · "+s.package_name:""} · {s.is_visible?"Ditampilkan":"Disembunyikan"}</small></span><span>{formatPrice(s.price_idr,s.unit)}<small>Ubah</small></span></summary><ServiceEditor service={s} categories={categories}/></details></li>)}</ul>
+   <ul className="service-settings-list">{services.map(s=><li key={s.id}><details><summary><span><strong>{s.name}</strong><small>{s.category}{s.package_name?" · "+s.package_name:""} · {s.is_visible?"Ditampilkan":"Disembunyikan"}</small><small className="mj-service-duration">{s.duration||"Durasi belum diatur"}</small></span><span><small className="mj-price-heading">Harga / satuan</small>{formatPrice(s.price_idr,s.unit)}<small>Ubah</small></span></summary><ServiceEditor service={s} categories={categories} durations={durations}/></details></li>)}</ul>
   </>}
   <Link href="/" prefetch={false} className="admin-logout">Lihat homepage (keluar admin)</Link>
  </div></PosWorkspace>;

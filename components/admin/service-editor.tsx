@@ -4,14 +4,14 @@ import {formatPrice,type Service} from "@/lib/services/catalog";
 import {saveService} from "@/app/admin/settings/services/actions";
 import PendingSubmit from "@/components/admin/pending-submit";
 import {unstable_rethrow} from "next/navigation";
-type Props={service:Partial<Service>;newId?:string;categories:string[]};
+type Props={service:Partial<Service>;newId?:string;categories:string[];durations?:string[]};
 async function saveWithRecovery(previous:{error:string},data:FormData){
  try{return await saveService(previous,data)}catch(failure){
   unstable_rethrow(failure);
   return {error:"Permintaan belum selesai. Periksa koneksi lalu coba lagi. Isian layanan tetap tersedia di formulir ini."};
  }
 }
-export default function ServiceEditor({service:s,newId,categories}:Props){
+export default function ServiceEditor({service:s,newId,categories,durations=[]}:Props){
  const id=s.id??newId!;
  const [state,action,pending]=useActionState(saveWithRecovery,{error:""});
  return <form action={action} className="service-editor admin-form" onReset={event=>event.preventDefault()}>
@@ -24,7 +24,9 @@ export default function ServiceEditor({service:s,newId,categories}:Props){
   <label htmlFor={"name-"+id}>Nama layanan *</label><input id={"name-"+id} name="name" defaultValue={s.name} required maxLength={100} placeholder="Contoh: Cuci sneakers"/>
   <div className="service-price-fields"><div><label htmlFor={"price-"+id}>Harga (Rp) *</label><input id={"price-"+id} name="price_idr" type="number" inputMode="numeric" min={0} max={1000000000} step={1} required defaultValue={s.price_idr} placeholder="35000"/></div>
   <div><label htmlFor={"unit-"+id}>Satuan *</label><input id={"unit-"+id} name="unit" required maxLength={24} defaultValue={s.unit} placeholder="kg, pasang, m²"/></div></div>
-  <label htmlFor={"duration-"+id}>Estimasi pengerjaan (opsional)</label><input id={"duration-"+id} name="duration" defaultValue={s.duration} maxLength={80} placeholder="Contoh: 2–3 hari"/>
+  <label htmlFor={"duration-"+id}>Durasi pengerjaan</label><input id={"duration-"+id} name="duration" list={"duration-options-"+id} defaultValue={s.duration??""} maxLength={80} placeholder="Contoh: 1–3 hari atau 6 jam"/>
+  <datalist id={"duration-options-"+id}>{durations.map(d=><option value={d} key={d}/>)}</datalist>
+  <small>Durasi melekat pada layanan ini, bukan pengaturan terpisah. Bisa berbeda untuk Reguler, Express, atau Kilat.</small>
   <label htmlFor={"position-"+id}>Urutan tampil</label><input id={"position-"+id} name="position" type="number" min={0} max={9999} step={1} required defaultValue={s.position??100}/>
   <small>Angka lebih kecil tampil lebih awal. Layanan dalam kategori dan paket yang sama dikelompokkan otomatis.</small>
   <label className="service-visible"><input type="checkbox" name="is_visible" value="yes" defaultChecked={s.is_visible??true}/><span>Tampilkan di homepage</span></label>

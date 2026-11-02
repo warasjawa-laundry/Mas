@@ -8,13 +8,11 @@ import {formatIdr} from "@/lib/pos/g4-order";
 import {createCashierOrder} from "../actions";
 import {MemberNamePicker} from "./member-name-picker";
 import {CashierQrScanner} from "./cashier-qr-scanner";
-import {DurationSheet} from "./duration-sheet";
-import {ALL_DURATIONS,durationOptions,servicesForDuration} from "@/lib/pos/g7-catalog";
 import styles from "./wizard.module.css";
 
 export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number};
 const money=(n:string|number|bigint)=>formatIdr(n);
-const steps=["Pelanggan","Durasi","Layanan","Konfirmasi"];
+const steps=["Pelanggan","Layanan","Konfirmasi"];
 
 function CreateOrderButton({disabled}:{disabled:boolean}){
  const {pending}=useFormStatus();
@@ -31,17 +29,15 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
  const [member,setMember]=useState("");
  const [memberName,setMemberName]=useState("");
  const [quantities,setQuantities]=useState<Record<string,string>>({});
- const [duration,setDuration]=useState(ALL_DURATIONS);
  const [perfume,setPerfume]=useState("");
  const [notes,setNotes]=useState("");
  const [search,setSearch]=useState("");
  const [category,setCategory]=useState("");
  const title=useRef<HTMLHeadingElement>(null);
- const options=useMemo(()=>durationOptions(services),[services]);
- const available=useMemo(()=>servicesForDuration(services,duration),[services,duration]);
+ const available=services;
  const categories=useMemo(()=>[...new Set(available.map(s=>s.category))],[available]);
  const activeCategory=categories.includes(category)?category:'';
- const visible=available.filter(s=>(!activeCategory||s.category===activeCategory)&&`${s.name} ${s.package_name}`.toLocaleLowerCase('id').includes(search.toLocaleLowerCase('id')));
+ const visible=available.filter(s=>(!activeCategory||s.category===activeCategory)&&`${s.name} ${s.package_name} ${s.duration}`.toLocaleLowerCase('id').includes(search.toLocaleLowerCase('id')));
  const chosen=useMemo(()=>available.filter(s=>(quantities[s.id]??"")!==""),[available,quantities]);
  const quote=useMemo(()=>{
   if(!chosen.length||chosen.length>30)return null;
@@ -83,30 +79,25 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
        {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-{member.padStart(6,"0")}</span></p>}</>}
      <p className={styles.help}>Periksa identitas pelanggan. Data akan diverifikasi kembali saat nota dibuat.</p>
     </section>
-    <section className={`${styles.panel} ${styles.durationPanel} ${step!==1?styles.mobileHidden:''}`} aria-labelledby="duration-title-step">
-     <div className={styles.sectionHeading}><h2 id="duration-title-step">Pilih durasi</h2><span>02</span></div>
-     <DurationSheet options={options} value={duration} onSelect={value=>{setDuration(value);setQuantities({})}}/>
-     <p className={styles.help}>Mengganti durasi mengosongkan pilihan layanan. Tanggal selesai belum dihitung otomatis.</p>
-    </section>
-    <section className={`${styles.panel} ${styles.catalogPanel} ${step!==2?styles.mobileHidden:''}`} aria-labelledby="services-title">
-     <div className={styles.sectionHeading}><h2 id="services-title">Tambah layanan</h2><span>03</span></div>
+    <section className={`${styles.panel} ${styles.catalogPanel} ${step!==1?styles.mobileHidden:''}`} aria-labelledby="services-title">
+     <div className={styles.sectionHeading}><h2 id="services-title">Pilih layanan & durasi</h2><span>02</span></div>
      <label className={styles.search}><span>Cari layanan</span><input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari nama layanan / paket"/></label>
      <div className={styles.categories} aria-label="Kategori layanan"><button type="button" aria-pressed={!activeCategory} onClick={()=>setCategory('')}>Semua</button>{categories.map(c=><button type="button" key={c} aria-pressed={activeCategory===c} onClick={()=>setCategory(c)}>{c||'Lainnya'}</button>)}</div>
      <p className={styles.help}>Ketik jumlah tepat atau gunakan + / −. Gunakan titik untuk desimal, maksimal 3 angka pada kg dan meter.</p>
-     {visible.length===0?<p className={styles.empty}>Tidak ada layanan yang cocok. Ubah pencarian, kategori, atau durasi.</p>:<div className={styles.services}>{visible.map(s=>{
+     {visible.length===0?<p className={styles.empty}>Tidak ada layanan yang cocok. Ubah pencarian atau kategori.</p>:<div className={styles.services}>{visible.map(s=>{
       const error=quantityError(s);
       return <div key={s.id} className={styles.service} data-selected={!!quantities[s.id]}>
-       <div className={styles.serviceInfo}><strong>{s.name}</strong><small>{s.package_name||s.category} · {s.duration||"Durasi belum tercantum"}</small><span>{money(s.price_idr)} <small>/ {s.unit}</small></span></div>
+       <div className={styles.serviceInfo}><strong>{s.name}</strong><small>{s.package_name||s.category}</small><span className={styles.serviceDuration}><span aria-hidden="true">◷</span> {s.duration||"Durasi belum ditentukan"}</span><span>{money(s.price_idr)} <small>/ {s.unit}</small></span></div>
        <div className={styles.quantity}><button type="button" aria-label={`Kurangi ${s.name}`} disabled={!quantities[s.id]} onClick={()=>adjust(s,-1)}>−</button><input aria-label={`Jumlah ${s.name}`} aria-invalid={!!error} aria-describedby={error?`quantity-${s.id}`:undefined} inputMode={s.unit==='pcs'||s.unit==='satuan'?'numeric':'decimal'} placeholder="0" value={quantities[s.id]??""} onChange={e=>changeQuantity(s.id,e.target.value.slice(0,12))}/><button type="button" aria-label={`Tambah ${s.name}`} onClick={()=>adjust(s,1)}>+</button></div>
        {error&&<p id={`quantity-${s.id}`} className={styles.quantityError}>{error}</p>}
       </div>})}</div>}
     </section>
    </div>
-   <aside className={`${styles.summaryPanel} ${step!==3?styles.mobileHidden:''}`} aria-labelledby="summary-title">
-    <div className={styles.summaryHead}><h2 id="summary-title">Atur & rincian pesanan</h2><p>{options.find(o=>o.value===duration)?.label}</p></div>
+   <aside className={`${styles.summaryPanel} ${step!==2?styles.mobileHidden:''}`} aria-labelledby="summary-title">
+    <div className={styles.summaryHead}><h2 id="summary-title">Atur & rincian pesanan</h2><p>Durasi mengikuti masing-masing layanan yang dipilih.</p></div>
     <div className={styles.summaryBody}>
      <div className={styles.customerSummary}><small>Pelanggan</small><strong>{customerValid?customerLabel:'Belum dipilih'}</strong></div>
-     {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}</strong><small>{quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
+     {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{s.duration||"Durasi belum ditentukan"} · {quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
      {chosen.length>30&&<p role="alert" className={styles.warn}>Maksimal 30 layanan per nota. Kurangi pilihan layanan.</p>}
      <label className={styles.field}>Parfum (opsional)<input value={perfume} onChange={e=>setPerfume(e.target.value)} maxLength={80} placeholder="Tanpa parfum / nama parfum"/></label>
      <label className={styles.field}>Catatan cucian (opsional)<textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={500} rows={3} placeholder="Catatan untuk proses laundry"/></label>
@@ -124,7 +115,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
   </div>
   <div className={styles.sticky}>
    <div><small>{customerValid?customerLabel:'Pelanggan belum dipilih'} · {chosen.length} layanan</small><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
-   <div className={styles.controls}>{step>0&&<button type="button" className={styles.back} onClick={()=>go(step-1)}>Kembali</button>}{step<3&&<button type="button" className={styles.primary} disabled={!canContinue} onClick={()=>go(step+1)}>{step===2?'Atur pesanan':'Lanjut'}</button>}</div>
+   <div className={styles.controls}>{step>0&&<button type="button" className={styles.back} onClick={()=>go(step-1)}>Kembali</button>}{step<2&&<button type="button" className={styles.primary} disabled={!canContinue} onClick={()=>go(step+1)}>{step===1?'Atur pesanan':'Lanjut'}</button>}</div>
   </div>
  </div>;
 }

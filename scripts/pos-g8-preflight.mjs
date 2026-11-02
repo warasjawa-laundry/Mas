@@ -4,12 +4,14 @@ import {pathToFileURL} from "node:url";
 const required=[
  "qaSqlMigration","qaTwoConnectionRace","restoreRehearsal","realOwnerAuthUat",
  "realCashierDeviceUat","physicalQrUat","financialReconciliation",
- "legacyMemberParity","uiOwnerSignOff","cutoverOwnerApproval"
+ "legacyMemberParity","uiOwnerSignOff","cutoverOwnerApproval",
+ "ownerPosWriteUat","durationPolicySignOff","cashierIdentityRiskApproval"
 ];
 export function evaluatePosG8(receipt){
  const blockers=[];
  if(!receipt||typeof receipt!=="object"||Array.isArray(receipt))return {ready:false,blockers:["invalid receipt"]};
  if(receipt.schemaVersion!==1)blockers.push("unknown receipt version");
+ if(receipt.status!=="GO_CANDIDATE")blockers.push("release status is not GO_CANDIDATE");
  if(receipt.sourceRepository!=="warasjawa-laundry/Mas"||receipt.vercelProject!=="mas")
   blockers.push("wrong source repository or existing Vercel project");
  if(receipt.vercelGitConnection!=="unyilhm1-hue/mas")blockers.push("Vercel Git connection changed");

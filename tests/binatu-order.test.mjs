@@ -32,10 +32,12 @@ test('mobile flow reaches services without a quote, then requires a valid quote 
  const {canAdvanceOrderStep}=await import(helper.href);
  assert.equal(canAdvanceOrderStep(0,true,true,false),true);
  assert.equal(canAdvanceOrderStep(0,false,true,false),false);
- assert.equal(canAdvanceOrderStep(1,true,true,false),true);
+ assert.equal(canAdvanceOrderStep(1,true,true,false),false);
  assert.equal(canAdvanceOrderStep(1,true,false,false),false);
+ assert.equal(canAdvanceOrderStep(1,true,true,true),true);
+ assert.equal(canAdvanceOrderStep(1,false,true,true),false);
  assert.equal(canAdvanceOrderStep(2,true,true,false),false);
- assert.equal(canAdvanceOrderStep(2,true,true,true),true);
+ assert.equal(canAdvanceOrderStep(2,true,true,true),false);
  assert.equal(canAdvanceOrderStep(3,true,true,true),false);
 });
 
@@ -44,7 +46,8 @@ test('cashier UI keeps payload safeguards and integrated read-only scan',()=>{
  assert.match(form,/CashierQrScanner/);
  assert.match(form,/<CashierQrScanner role=\{role\}/);
  assert.doesNotMatch(form,/awardPoint|postPoint|laundry_record_visit/i);
- assert.match(form,/step<3/);
+ assert.match(form,/steps=\["Pelanggan","Layanan","Konfirmasi"\]/);
+ assert.match(form,/step<2/);
  assert.match(form,/canAdvanceOrderStep/);
  assert.match(form,/stepQuantity/);
  for(const name of ['requestId','kind','guestName','memberNumber','items','perfume','notes'])assert.match(form,new RegExp('name="'+name+'"'));
@@ -80,7 +83,6 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
   return output.exports;
  }
  modules['./member-name-picker']=load('app/kasir/pesanan/baru/member-name-picker.tsx');
- modules['./duration-sheet']=load('app/kasir/pesanan/baru/duration-sheet.tsx');
  const {OrderForm}=load('app/kasir/pesanan/baru/order-form.tsx');
  const props={services:[{id:'test',category:'Test catalog',package_name:'',name:'<script>unsafe</script>',price_idr:8000,unit:'kg',duration:'3 hari',revision:1}],requestId:'test-request',canWrite:false,canLookup:false};
  const html=renderToStaticMarkup(React.createElement(OrderForm,props));

@@ -5,8 +5,8 @@
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "17ecaf06664b763bb5a8593fe119855ba56fdd9b",
-  "deployedProductionSha": "17ecaf06664b763bb5a8593fe119855ba56fdd9b",
+  "reviewedMainSha": "99b3a39b5b18d007caca078582a6c1cc8a70ab1b",
+  "deployedProductionSha": "99b3a39b5b18d007caca078582a6c1cc8a70ab1b",
   "productionPosTables": 0,
   "productionOutletCount": 0,
   "productionWriteEnabledOutlets": 0,
@@ -68,6 +68,38 @@
       "verified": false,
       "reference": "",
       "reviewer": ""
+    },
+    "ownerPosWriteUat": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "durationPolicySignOff": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
+    },
+    "cashierIdentityRiskApproval": {
+      "verified": false,
+      "reference": "",
+      "reviewer": ""
     }
+  },
+  "qaReadOnlyReceipt": {
+    "project": "cwxsbgfjynwxqalwonae",
+    "posTables": 20,
+    "rlsEnabled": 20,
+    "outlets": 1,
+    "writeEnabledOutlets": 0,
+    "orders": 0,
+    "payments": 0,
+    "posPoints": 0,
+    "cashRows": 0,
+    "importRows": 0,
+    "ownerReadOnlyRpc": 2,
+    "anonOwnerBoardExecute": false,
+    "authOwnerBoardExecute": true,
+    "qaOwnerMigration": "pos_owner_readonly_ui_pr31_qa",
+    "verifiedAt": "2026-11-02"
   }
 }
