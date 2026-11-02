@@ -43,5 +43,5 @@ test("phone UI has an accessible gallery action and no hidden image upload", () 
   assert.match(scan, /type="button"[\s\S]*?Pilih Foto QR/);
   assert.match(css, /\.owner-gallery-button/);
   assert.match(css, /\.owner-gallery-hint/);
-  assert.match(css, /@media\(max-width:440px\)/);
+  assert.match(css, /@media\s*\(max-width:\s*479px\)/);
 });

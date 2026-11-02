@@ -29,9 +29,10 @@ test("public progress reads no private phone/name, does not mutate visits",()=>{
  assert.doesNotMatch(sql.slice(sql.indexOf('create or replace function laundry_private.public_card_progress')),/whatsapp_e164/);
  assert.doesNotMatch(portal,/signInWithPassword|laundry_checklist_events/);
 });
-test("member form has optional WhatsApp and explicit consent",()=>{
+test("customer form keeps optional WhatsApp while promotional opt-in UI is deferred",()=>{
  assert.match(member,/name="name"/);
  assert.match(member,/name="whatsapp"/);
- assert.match(member,/name="consent"/);
- assert.match(member,/Simpan & Lihat Kartu/);
+ assert.doesNotMatch(member,/name="consent"/);
+ assert.match(member,/Simpan Pelanggan/);
+ assert.match(action,/const consent = formData.get\("consent"\) === "on"/);
 });

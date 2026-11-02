@@ -21,6 +21,6 @@ test('G4 no payment/award function and order form cannot forge price',()=>{
  assert.doesNotMatch(sql,/insert into public\.laundry_pos_(payments|point_links|cash_ledger)/);
  assert.doesNotMatch(form,/name="price_idr"|name="actor_id"/);
  assert.match(form,/calculateOrderTotals/);
- assert.match(form,/Buat Nota/);
+ assert.match(form,/Buat pesanan/);
  assert.match(sql,/p_request_id uuid/);
 });

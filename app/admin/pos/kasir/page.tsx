@@ -17,11 +17,11 @@ type Props = { searchParams: Promise<{ error?: string; saved?: string; removed?:
 
 function PermissionFields({ grants = {}, prefix }: { grants?: CashierGrants; prefix: string }) {
   return <fieldset className={styles.permissions}>
-    <legend>Hak akses yang diberikan owner</legend>
+    <legend>Hak akses kasir</legend>
     {CASHIER_PERMISSIONS.map(([key,label]) => <label key={key} htmlFor={`${prefix}-${key}`}>
       <input id={`${prefix}-${key}`} type="checkbox" name={`permit_${key}`}
         defaultChecked={hasCashierGrant(grants, key)} />
-      {label}
+      <span>{key === "member_lookup" ? "Cari pelanggan" : label}</span>
     </label>)}
   </fieldset>;
 }
@@ -34,23 +34,26 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
   ]);
   const unavailable = Boolean(result.error);
   const cashiers = (Array.isArray(result.data) ? result.data : []) as CashierRow[];
-  const message = params.saved ? "Kasir berhasil disimpan. Username kasir baru ditampilkan pada daftar." : params.removed ?
+  const message = params.saved ? "Kasir berhasil disimpan. ID kasir tersedia pada daftar." : params.removed ?
     "Kasir telah dihapus dari daftar aktif dan semua perangkatnya dicabut." :
     params.revoked ? "Seluruh akses perangkat kasir sudah dicabut." : null;
 
-  return <main className="admin-workspace"><div className={`admin-content ${styles.wrap}`}>
-    <p className="admin-kicker">PENGATURAN OWNER</p>
-    <h1>Kelola Kasir</h1>
-    <p className="admin-hint">Owner saja yang login. Tambahkan nama kasir dan pilih hak aksesnya. Sistem membuat ID unik empat angka seperti MAS-0001, MAS-0002, dan seterusnya. Kasir cukup memasukkan ID kasir tanpa password dan tanpa aktivasi perangkat. Menu kasir mengikuti hak akses yang kamu pilih. Tidak ada pengelolaan cabang.</p>
+  return <main className="admin-workspace">
+    <div className="binatu-page-cap binatu-pattern" aria-hidden="true"/>
+    <header className={styles.heading}><div className={styles.headingInner}>
+      <Link href="/admin/settings" className={styles.back}>← Pengaturan Akun</Link>
+      <h1>Kelola Kasir</h1>
+      <p>Tambahkan kasir dan pilih pekerjaan yang boleh diakses.</p>
+    </div></header>
+    <div className={`admin-content ${styles.wrap}`}>
     <section className={styles.location}>
-      <h2>Outlet tetap</h2>
-      <strong>Mas Jawa Laundry</strong>
-      <p>{site.address}, {site.shortAddress}</p>
-      <small>Satu outlet saja. Tidak ada tombol tambah atau hapus outlet.</small>
+      <div><span>Outlet</span><strong>Mas Jawa Laundry</strong><p>{site.address}, {site.shortAddress}</p></div>
+      <p className={styles.loginHint}>Kasir masuk menggunakan ID MAS-XXXX tanpa password atau aktivasi perangkat. ID dibuat saat Anda menyimpan kasir baru.</p>
     </section>
-    {unavailable ? <p className="admin-error" role="alert">Modul kasir belum tersedia pada database yang aktif. Tidak ada data kasir yang diubah. Pengaturan ini dapat dipakai setelah migrasi POS disetujui dan diterapkan.</p> : <>
+    {unavailable ? <p className="admin-error" role="alert">Data kasir belum dapat dimuat. Muat ulang halaman atau hubungi pengelola.</p> : <>
       {message && <p className="admin-success" role="status">{message}</p>}
-      {params.error && <p className="admin-error" role="alert">{params.error === "invalid" ? "Nama/ID kasir tidak valid." : "Penyimpanan belum berhasil. Coba lagi setelah memeriksa akses database."}</p>}
+      {params.error && <p className="admin-error" role="alert">{params.error === "invalid" ? "Nama atau ID kasir tidak valid." : "Perubahan belum berhasil disimpan. Periksa koneksi lalu coba lagi."}</p>}
+      <div className={styles.workspace}>
       <section className={styles.panel} aria-labelledby="new-cashier">
         <h2 id="new-cashier">Tambah kasir</h2>
         <form action={saveCashier} className={styles.form}>
@@ -62,11 +65,11 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
       </section>
       <section aria-labelledby="cashier-list" className={styles.list}>
         <h2 id="cashier-list">Daftar kasir ({cashiers.filter(c => c.active).length} aktif)</h2>
-        {cashiers.length === 0 && <p className={styles.empty}>Belum ada kasir. Tambahkan dari formulir di atas.</p>}
+        {cashiers.length === 0 && <p className={styles.empty}>Belum ada kasir. Isi nama dan hak akses pada formulir Tambah kasir.</p>}
         {cashiers.map(c => <article key={c.staff_id} className={styles.panel}>
-          <h3>{c.display_name} <small>{c.active ? "Aktif" : "Dihapus / nonaktif"}</small></h3>
-          <p className={styles.help}>Username: <strong style={{fontSize:16,color:"#4c1d95"}}>{c.username}</strong> · Nomor tidak berubah ketika nama diubah atau kasir dihapus.</p>
-          <p className={styles.help}>Sesi aktif: {c.active_devices}. Menonaktifkan kasir akan memutus semua sesi, tetapi riwayat tetap tersimpan.</p>
+          <div className={styles.cashierHeading}><h3>{c.display_name}</h3><span className={styles.status}>{c.active ? "Aktif" : "Dihapus / nonaktif"}</span></div>
+          <div className={styles.identity}><div><span>ID kasir</span><strong>{c.username}</strong></div><p>Sesi aktif: <strong>{c.active_devices}</strong></p></div>
+          <p className={styles.help}>ID tetap sama saat nama diubah atau kasir dihapus. Menghapus kasir akan memutus semua sesi dan menyimpan riwayatnya.</p>
           {c.active ? <>
             <form action={saveCashier} className={styles.form}>
               <input type="hidden" name="staffId" value={c.staff_id} />
@@ -86,11 +89,15 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
                 <button type="submit" className={styles.dangerButton}>Hapus kasir</button>
               </form>
             </div>
-          </> : <p className={styles.help}>Kasir nonaktif tidak dapat masuk. Riwayat dan audit tetap disimpan.</p>}
+          </> : <p className={styles.help}>Kasir nonaktif tidak dapat masuk. Riwayat aktivitas tetap tersimpan.</p>}
         </article>)}
       </section>
-      <p className={styles.help}><strong>Login kasir:</strong> owner membuat ID empat angka. Karyawan langsung membuka <a href="/kasir">/kasir</a> dan memasukkan ID tersebut—tanpa password atau aktivasi perangkat. Owner dapat mengubah izin atau mencabut semua sesi kapan saja. Sesi maksimal 12 jam.</p>
-      <p className={styles.help}><strong>Keamanan:</strong> ID empat angka mudah ditebak; sistem membatasi percobaan login dan mencatat sesi. Jangan membagikan ID kepada orang luar. Kasir tidak dapat mengelola owner/member/poin melalui hak admin. Pembayaran produksi tetap belum aktif sampai review keamanan dan G8 disetujui.</p>
+      </div>
+      <aside className={styles.accessNote} aria-labelledby="cashier-access-note"><h2 id="cashier-access-note">Akses dan sesi kasir</h2>
+        <p>Kasir membuka <Link href="/admin/login?role=kasir">halaman masuk kasir</Link> dengan ID miliknya. Anda dapat mengubah izin atau mencabut seluruh sesi kapan saja. Sesi berlaku maksimal 12 jam.</p>
+        <p>ID empat angka mudah ditebak. Bagikan hanya kepada pegawai. Sistem membatasi percobaan masuk dan mencatat sesi. Kasir tidak dapat mengelola akun manajer, data pelanggan, atau poin melalui hak admin.</p>
+        <p>Pembayaran produksi tetap belum aktif.</p>
+      </aside>
     </>}
     <div className="admin-shortcuts"><Link href="/admin/settings">← Kembali ke Pengaturan</Link></div>
   </div></main>;

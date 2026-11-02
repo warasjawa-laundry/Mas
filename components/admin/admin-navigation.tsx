@@ -1,57 +1,52 @@
-
 "use client";
 import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {logoutOwner} from "@/app/admin/actions";
-import {leaveCashier} from "@/app/kasir/actions";
-const ownerLinks=[
- {href:"/admin",label:"Pesanan",icon:"▤"},
- {href:"/admin/scan",label:"Scan QR / Barcode",icon:"▦"},
- {href:"/admin/members",label:"Pelanggan",icon:"♙"},
- {href:"/admin/pos/import",label:"Impor Binatu",icon:"↧"},
- {href:"/admin/pos/kasir",label:"Kelola Kasir",icon:"♧"},
- {href:"/admin/settings",label:"Pengaturan",icon:"⚙"}
+import { usePathname } from "next/navigation";
+import { logoutOwner } from "@/app/admin/actions";
+import { leaveCashier } from "@/app/kasir/actions";
+import PosIcon, { type PosIconName } from "@/components/pos/pos-icon";
+import { site } from "@/lib/site";
+
+type Role = "owner" | "cashier";
+const ownerLinks: { href: string; label: string; sub: string; icon: PosIconName }[] = [
+  { href: "/admin", label: "Pesanan", sub: "Antrian dan rincian nota", icon: "orders" },
+  { href: "/admin/members", label: "Data Pelanggan", sub: "Daftar dan profil pelanggan", icon: "people" },
+  { href: "/admin/pos/kasir", label: "Kelola Kasir", sub: "ID dan hak akses", icon: "staff" },
+  { href: "/admin/settings", label: "Pengaturan Akun", sub: "Password manajer", icon: "settings" },
 ];
-const cashierLinks=[
- {href:"/kasir",label:"Pesanan",icon:"▤"},
- {href:"/kasir/pesanan/baru",label:"Tambah Nota",icon:"+"},
- {href:"/kasir/pesanan",label:"Daftar Nota",icon:"☷"},
- {href:"/kasir/kas",label:"Mutasi Kas",icon:"⇄"},
- {href:"/kasir/laporan",label:"Laporan",icon:"▥"}
+const cashierLinks: typeof ownerLinks = [
+  { href: "/kasir", label: "Pesanan", sub: "Antrian dan rincian nota", icon: "orders" },
+  { href: "/kasir/pesanan/baru", label: "Tambah Pesanan", sub: "Pelanggan dan layanan", icon: "plus" },
+  { href: "/kasir/kas", label: "Mutasi Kas", sub: "Penerimaan dan pengeluaran", icon: "cash" },
+  { href: "/kasir/laporan", label: "Laporan", sub: "Rekap per periode", icon: "report" },
 ];
-function current(path:string,href:string){return href==="/admin"||href==="/kasir"?path===href:path===href||path.startsWith(href+"/");}
-function NavLinks({role,mobile=false}:{role:"owner"|"cashier";mobile?:boolean}){
- const path=usePathname()||"";
- const items=role==="owner"?ownerLinks:cashierLinks;
- const show=mobile?(role==="owner"?[ownerLinks[0],ownerLinks[1],ownerLinks[2],ownerLinks[5]]:[cashierLinks[0],cashierLinks[1],cashierLinks[3],cashierLinks[4]]):items;
- return <>{show.map(x=><Link href={x.href} key={x.href} prefetch={false} aria-current={current(path,x.href)?"page":undefined}>
-  <span className="mj-nav-icon" aria-hidden="true">{x.icon}</span><span>{x.label}</span>
- </Link>)}</>;
+function Navigation({ role }: { role: Role }) {
+  const path = usePathname();
+  if (!path || path === "/admin/login") return null;
+  const owner = role === "owner", base = owner ? "/admin" : "/kasir";
+  const menu = path === base + "/menu";
+  const links = owner ? ownerLinks : cashierLinks;
+  const logout = owner ? logoutOwner : leaveCashier;
+  function active(href: string) {
+    if (href === base) return path === base || (!owner && path.startsWith("/kasir/pesanan") && path !== "/kasir/pesanan/baru");
+    return path === href || path!.startsWith(href + "/");
+  }
+  return <>
+    <a className="binatu-skip-link" href={owner ? "#admin-main" : "#cashier-main"}>Lewati navigasi</a>
+    <aside className="binatu-sidebar" aria-label={owner ? "Menu manajer" : "Menu kasir"}>
+      <div className="binatu-sidebar-top binatu-pattern"><div className="binatu-store-card">
+        <Link href={base} className="binatu-store-brand" prefetch={false}><img src="/pos/storefront.svg" width="42" height="42" alt="" /><span>MAS JAWA LAUNDRY<small>{site.shortAddress}</small></span></Link>
+        <div className="binatu-store-role"><span>Akses saat ini</span><strong>{owner ? "Manajer" : "Kasir"}<i aria-hidden="true" /></strong></div>
+      </div></div>
+      <nav className="binatu-side-links" aria-label="Navigasi utama">{links.map(item => <Link href={item.href} key={item.href} prefetch={false} aria-current={active(item.href) ? "page" : undefined}><span className="binatu-side-icon"><PosIcon name={item.icon} size={21} /></span><span><strong>{item.label}</strong><small>{item.sub}</small></span></Link>)}</nav>
+      <div className="binatu-sidebar-bottom"><Link href={base + "/menu"} prefetch={false} aria-current={menu ? "page" : undefined}><PosIcon name="menu" size={20} />Menu {owner ? "Manajer" : "Kasir"}</Link>{owner && <a href="/admin/leave">Situs publik</a>}<form action={logout}><button type="submit"><PosIcon name="logout" size={20} />Keluar Akun</button></form></div>
+      <p className="binatu-sidebar-foot">Mas Jawa Laundry<span>{site.shortAddress}</span></p>
+    </aside>
+    <nav className="binatu-bottom-nav" aria-label={owner ? "Navigasi POS manajer" : "Navigasi POS kasir"}>
+      <Link href={base} prefetch={false} aria-current={!menu && (path === base || !owner && path.startsWith("/kasir/pesanan")) ? "page" : undefined}><PosIcon name="orders" size={21} /><span>Pesanan</span></Link>
+      <Link href={base + "/menu"} prefetch={false} aria-current={menu || path !== base && (owner || !path.startsWith("/kasir/pesanan")) ? "page" : undefined}><PosIcon name="menu" size={21} /><span>Menu</span></Link>
+      <form action={logout}><button type="submit" aria-label="Keluar akun"><PosIcon name="logout" size={19} /><span>Keluar</span></button></form>
+    </nav>
+  </>;
 }
-export default function AdminNavigation(){
- const path=usePathname();
- if(!path||path==="/admin/login")return null;
- return <>
-  <a className="admin-skip-link" href="#admin-main">Lewati navigasi</a>
-  <aside className="admin-shell-sidebar mj-sidebar" aria-label="Menu owner">
-   <Link className="admin-shell-brand mj-sidebar-brand" href="/admin" prefetch={false}><span className="admin-shell-monogram">MJ</span><span>Mas Jawa Laundry<small>Owner · POS</small></span></Link>
-   <nav className="admin-shell-links"><NavLinks role="owner"/></nav>
-   <div className="admin-shell-footer"><a href="/admin/leave">Situs publik (keluar admin)</a><form action={logoutOwner}><button type="submit">Keluar Akun</button></form></div>
-  </aside>
-  <header className="admin-mobile-header mj-mobile-head"><Link href="/admin">Mas Jawa Laundry <span>Owner · POS</span></Link><form action={logoutOwner}><button type="submit">Keluar</button></form></header>
-  <nav className="admin-shell-mobile mj-bottom-nav" aria-label="Navigasi POS owner"><NavLinks role="owner" mobile/></nav>
- </>;
-}
-export function CashierNavigation(){
- const path=usePathname();
- if(!path)return null;
- return <>
-  <aside className="mj-staff-sidebar mj-sidebar" aria-label="Menu kasir">
-   <Link className="mj-sidebar-brand" href="/kasir"><span className="mj-side-logo">MJ</span><span>Mas Jawa Laundry<small>Kasir · POS</small></span></Link>
-   <nav className="mj-staff-links"><NavLinks role="cashier"/></nav>
-   <form action={leaveCashier}><button type="submit" className="mj-logout">Keluar Kasir</button></form>
-  </aside>
-  <header className="mj-staff-mobile-head mj-mobile-head"><Link href="/kasir">Mas Jawa Laundry <span>Kasir · POS</span></Link><form action={leaveCashier}><button type="submit">Keluar</button></form></header>
-  <nav className="mj-staff-bottom mj-bottom-nav" aria-label="Navigasi POS kasir"><NavLinks role="cashier" mobile/></nav>
- </>;
-}
+export default function AdminNavigation() { return <Navigation role="owner" />; }
+export function CashierNavigation() { return <Navigation role="cashier" />; }

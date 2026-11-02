@@ -23,5 +23,5 @@ test("scan camera and gallery stay read-only, local and bounded",()=>{
  assert.match(ui,/12\*1024\*1024/);
  assert.doesNotMatch(ui,/recordOwnerVisit|laundry_pos_g5_payment/);
  const order=src("app/kasir/pesanan/baru/order-form.tsx");
- assert.match(order,/CashierQrScanner/);
+ assert.doesNotMatch(order,/import.*CashierQrScanner|<CashierQrScanner/);
 });

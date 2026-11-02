@@ -14,7 +14,8 @@ export default async function NewCashierOrder({searchParams}:{searchParams:Promi
  const {data,error}=await access.client.rpc("laundry_pos_g4_catalog",access.tokens);
  const {error:reason}=await searchParams;
  return <main className={styles.shell}>
-  <Link href="/kasir/pesanan">← Daftar Pesanan</Link>
+  <div className={`${styles.pagePattern} binatu-pattern`} aria-hidden="true"/>
+  <Link href="/kasir/pesanan">← Daftar pesanan</Link>
   <p className={styles.brand}>MAS JAWA LAUNDRY · {access.session.username}</p>
   <h1>Tambah Pesanan</h1>
   {reason&&<p className={styles.warn} role="alert">{reason==='unconfirmed'?'Penyimpanan belum terkonfirmasi. Sebelum mencoba lagi, periksa Daftar Pesanan agar tidak membuat duplikat.':

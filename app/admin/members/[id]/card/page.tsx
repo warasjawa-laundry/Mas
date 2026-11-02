@@ -52,7 +52,7 @@ export default async function MemberCard({params,searchParams}:Props) {
       {notice.reissued==="1" && <p className="admin-success no-print" role="status">Kartu berhasil diganti. Kartu QR sebelumnya tidak dapat digunakan lagi.</p>}
       {notice.reissueError && <p className="admin-error no-print" role="alert">Penggantian kartu belum berhasil. Periksa alasan, izin fitur dan koneksi, lalu coba lagi.</p>}
       <MemberPrintCard name={card.display_name} number={memberNumber(card.member_number)} qrSvg={svg} logoUrl={assets.logo} />
-      <div className="admin-shortcuts no-print"><PrintCardButton/><Link href={"/admin/members/"+id}>Catat transaksi</Link><Link href="/admin/members">Kembali ke Daftar</Link></div>
+      <div className="admin-shortcuts no-print"><PrintCardButton/><Link href={"/admin/members/"+id}>Profil Pelanggan</Link><Link href="/admin/members">Data Pelanggan</Link></div>
       <p className="member-note no-print">Cetak pada skala 100% atau ukuran asli, lalu nonaktifkan header dan footer pada dialog cetak. Simpan QR untuk penggunaan pribadi. Jika kartu hilang, minta penggantian kepada petugas.</p>
       {allowReissue && <details className="owner-card-reissue no-print">
         <summary>Ganti kartu yang hilang atau bocor</summary>

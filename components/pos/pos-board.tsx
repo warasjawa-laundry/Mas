@@ -1,55 +1,59 @@
-
+"use client";
 import Link from "next/link";
-export type PosRow={id:string;invoice_no:string;customer_name:string;total_idr:string|number;work_status:string;payment_status:string;created_at:string};
-type Props={role:"owner"|"cashier";tab?:string;orders?:PosRow[];memberCount?:string|null;transactionCount?:string|null;dbReady?:boolean;writeEnabled?:boolean};
-const money=(v:string|number)=>"Rp "+(Number(v)||0).toLocaleString("id-ID");
-export default function PosBoard({role,tab="queue",orders=[],memberCount,transactionCount,dbReady=false,writeEnabled=false}:Props){
- const owner=role==="owner";
- const base=owner?"/admin":"/kasir";
- const active=["queue","ready","unpaid"].includes(tab)?tab:"queue";
- const visible=orders.filter(o=>active==="ready"?o.work_status==="READY":active==="unpaid"?["UNPAID","PARTIAL"].includes(o.payment_status):o.work_status==="QUEUED");
- const tabs=[{key:"queue",label:"Antrian"},{key:"ready",label:"Siap Ambil"},{key:"unpaid",label:"Belum Bayar"}];
- return <main className="mj-pos-board">
-  <div className="mj-pos-hero" aria-hidden="true"><span className="mj-pos-hero-deco">✦　○　✧　◌　✦</span></div>
-  <header className="mj-pos-head"><span className="mj-pos-logo" aria-hidden="true">MJ</span>
-   <div className="mj-pos-head-copy"><strong>Mas Jawa Laundry</strong><small>{owner?"Owner · POS":"Kasir · POS"}</small></div>
-   <Link className="mj-pos-header-action" href={owner?"/admin/pos/kasir":"/kasir/pesanan/baru"}>{owner?"Kelola Kasir":"+ Pesanan"}</Link>
-  </header>
-  <section className="mj-pos-intro">
-   <h1>Pesanan Laundry</h1>
-   <p>Kelola antrian, pesanan siap ambil, dan status pembayaran dalam satu aplikasi.</p>
-   {!dbReady&&<div className="mj-pos-notice" role="status">Modul POS produksi belum diaktifkan (G8 NO-GO). Data membership lama tetap aman; tidak ada transaksi atau poin yang diposting.</div>}
-   {dbReady&&!writeEnabled&&<div className="mj-pos-notice" role="status">Pesanan hanya dapat dilihat. Pembuatan nota dan pembayaran masih dikunci oleh database.</div>}
-  </section>
-  <nav className="mj-pos-status-tabs" aria-label="Status pesanan">
-   {tabs.map(t=><Link key={t.key} href={base+"?tab="+t.key} aria-current={active===t.key?"page":undefined}>
-    {t.label} <span>{orders.filter(o=>t.key==="ready"?o.work_status==="READY":t.key==="unpaid"?["UNPAID","PARTIAL"].includes(o.payment_status):o.work_status==="QUEUED").length}</span>
-   </Link>)}
-  </nav>
-  <section className="mj-pos-order-list" aria-label="Daftar nota">
-   {visible.length===0?<div className="mj-pos-empty"><div className="mj-pos-empty-art" aria-hidden="true">▣ <span>✧</span> ♧</div>
-     <h2>Belum Ada Data</h2><p>Tidak ada pesanan dalam kategori ini.</p></div>:
-    <div className="mj-pos-cards">{visible.map(order=><Link key={order.id} href={"/kasir/pesanan/"+order.id} className="mj-pos-order-card">
-      <div><small>{order.invoice_no}</small><strong>{order.customer_name}</strong><small>{new Date(order.created_at).toLocaleDateString("id-ID",{timeZone:"Asia/Jakarta"})}</small></div>
-      <div className="mj-pos-order-right"><strong>{money(order.total_idr)}</strong><span>{order.payment_status==="PAID"?"Lunas":order.payment_status==="PARTIAL"?"DP":"Belum Bayar"}</span></div>
-    </Link>)}</div>}
-  </section>
-  <section className="mj-pos-menu-section" aria-labelledby="mj-menu-heading"><h2 id="mj-menu-heading">Menu {owner?"Owner":"Kasir"}</h2>
-   <div className="mj-pos-menu-grid">
-    {(owner?[
-     {label:"Data Member",href:"/admin/members",icon:"♙",sub:"Member dan kartu"},
-     {label:"Scan Barcode / QR",href:"/admin/scan",icon:"▦",sub:"Pilih pelanggan"},
-     {label:"Impor Binatu",href:"/admin/pos/import",icon:"↧",sub:"Rekonsiliasi"},
-     {label:"Kelola Kasir",href:"/admin/pos/kasir",icon:"♧",sub:"ID dan izin"},
-     {label:"Pengaturan",href:"/admin/settings",icon:"⚙",sub:"Layanan dan poin"}
-    ]:[
-     {label:"Tambah Pesanan",href:"/kasir/pesanan/baru",icon:"+",sub:"Pelanggan dan layanan"},
-     {label:"Daftar Pesanan",href:"/kasir/pesanan",icon:"▤",sub:"Antrian dan nota"},
-     {label:"Mutasi Kas",href:"/kasir/kas",icon:"⇄",sub:"Saldo dan shift"},
-     {label:"Laporan",href:"/kasir/laporan",icon:"▥",sub:"Rekap periode"}
-    ]).map(item=><Link className="mj-pos-menu-card" href={item.href} key={item.href}><span aria-hidden="true" className="mj-pos-menu-icon">{item.icon}</span><strong>{item.label}</strong><small>{item.sub}</small></Link>)}
-   </div>
-   {owner&&<div className="mj-pos-metrics"><div><small>Member aktif</small><strong>{memberCount??"—"}</strong></div><div><small>Kunjungan tercatat</small><strong>{transactionCount??"—"}</strong></div></div>}
-  </section>
- </main>;
+import { useState } from "react";
+import PosIcon, { type PosIconName } from "@/components/pos/pos-icon";
+import { boardDate, boardMoney, filterBoardOrders, paymentLabel, type BoardTab, type PosRow } from "@/lib/pos/board";
+import { site } from "@/lib/site";
+export type { PosRow } from "@/lib/pos/board";
+type Props = { role: "owner" | "cashier"; tab?: string; view?: string; orders?: PosRow[]; memberCount?: string | null; transactionCount?: string | null; dbReady?: boolean; writeEnabled?: boolean };
+const tabs: { key: BoardTab; label: string }[] = [{ key: "queue", label: "Antrian" }, { key: "ready", label: "Siap Ambil" }, { key: "unpaid", label: "Belum Bayar" }];
+
+export default function PosBoard({ role, tab = "queue", view, orders = [], memberCount, transactionCount, dbReady = false, writeEnabled = false }: Props) {
+  const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const owner = role === "owner", base = owner ? "/admin" : "/kasir";
+  const active: BoardTab = tab === "ready" || tab === "unpaid" ? tab : "queue";
+  const visible = dbReady ? filterBoardOrders(orders, active, search) : [];
+  const selected = visible.find(order => order.id === selectedId) ?? visible[0] ?? null;
+  const menu = view === "menu", addHref = owner ? "/admin/login?role=kasir" : "/kasir/pesanan/baru";
+  const links: { label: string; sub: string; href: string; icon: PosIconName }[] = owner ? [
+    { label: "Tambah Pesanan", sub: "Masuk sebagai kasir untuk membuat nota", href: addHref, icon: "plus" },
+    { label: "Data Pelanggan", sub: "Cari, daftarkan, dan ubah data pelanggan", href: "/admin/members", icon: "people" },
+    { label: "Kelola Kasir", sub: "ID dan hak akses petugas", href: "/admin/pos/kasir", icon: "staff" },
+    { label: "Pengaturan Akun", sub: "Password akun manajer", href: "/admin/settings", icon: "settings" },
+  ] : [
+    { label: "Tambah Pesanan", sub: "Pilih pelanggan dan layanan laundry", href: addHref, icon: "plus" },
+    { label: "Cari Pesanan", sub: "Daftar dan rincian nota", href: "/kasir/pesanan", icon: "search" },
+    { label: "Mutasi Kas", sub: "Penerimaan dan pengeluaran kas", href: "/kasir/kas", icon: "cash" },
+    { label: "Laporan", sub: "Rekap transaksi per periode", href: "/kasir/laporan", icon: "report" },
+  ];
+  return <main className={"binatu-board" + (menu ? " binatu-board-menu" : "")}>
+    <div className="binatu-pattern binatu-page-cap" aria-hidden="true" />
+    <header className="binatu-outlet-head"><img src="/pos/storefront.svg" width="50" height="50" alt="" /><div><strong>MAS JAWA LAUNDRY</strong><p>{site.shortAddress}</p></div><span className="binatu-role-chip">{owner ? "Manajer" : "Kasir"}<span aria-hidden="true" /></span></header>
+    {menu ? <section className="binatu-menu-page" aria-labelledby="menu-title">
+      <header className="binatu-page-heading"><div><p>MAS JAWA LAUNDRY</p><h1 id="menu-title">Menu {owner ? "Manajer" : "Kasir"}</h1></div></header>
+      {owner && <div className="binatu-member-metrics"><div><small>Pelanggan aktif</small><strong>{memberCount ?? "Belum dimuat"}</strong></div><div><small>Kunjungan tercatat</small><strong>{transactionCount ?? "Belum dimuat"}</strong><span>Seluruh periode</span></div></div>}
+      <div className="binatu-menu-list">{links.map(link => <Link href={link.href} key={link.href} prefetch={false}><span className="binatu-menu-symbol"><PosIcon name={link.icon} size={24} /></span><span><strong>{link.label}</strong><small>{link.sub}</small></span><span aria-hidden="true">›</span></Link>)}</div>
+    </section> : <>
+      <div className="binatu-board-heading"><h1>Pesanan</h1><Link className="binatu-button" href={addHref} prefetch={false}><PosIcon name="plus" size={18} />Tambah Pesanan</Link></div>
+      {dbReady && <p className="binatu-board-scope">Daftar menampilkan maksimal 80 nota terbaru. Pencarian berlaku pada daftar ini.</p>}
+      {dbReady && !writeEnabled && <p className="binatu-inline-notice" role="status">Pesanan dapat dilihat. Pencatatan transaksi belum diaktifkan.</p>}
+      <div className="binatu-orders-split"><section className="binatu-orders-pane" aria-label="Daftar nota">
+        <label className="binatu-search"><PosIcon name="search" size={19} /><span className="sr-only">Cari pesanan</span><input type="search" placeholder="Cari nama pelanggan atau nomor nota" value={search} maxLength={80} onChange={event => { setSearch(event.target.value); setSelectedId(null); }} disabled={!dbReady} /></label>
+        <nav className="binatu-status-tabs" aria-label="Status pesanan">{tabs.map(item => <Link href={base + "?tab=" + item.key} key={item.key} prefetch={false} aria-current={active === item.key ? "page" : undefined}>{item.label}<span>{dbReady ? filterBoardOrders(orders, item.key).length : "–"}</span></Link>)}</nav>
+        {!dbReady ? <div className="binatu-empty"><img src="/pos/empty-laundry.svg" width="280" height="195" alt="" /><h2>Pesanan belum dapat dimuat</h2><p>{owner ? "Daftar nota tersedia melalui akun kasir. Data pelanggan tetap bisa dikelola dari Menu." : "Layanan pesanan belum tersedia. Muat ulang halaman untuk mencoba lagi."}</p><Link className="binatu-button binatu-button-soft" href={owner ? "/admin/menu" : "/kasir"} prefetch={false}>{owner ? "Buka Menu" : "Muat ulang"}</Link></div> :
+          visible.length === 0 ? <div className="binatu-empty"><img src="/pos/empty-laundry.svg" width="280" height="195" alt="" /><h2>{search ? "Belum ditemukan pada daftar ini" : "Belum Ada Data"}</h2><p>{search ? "Pencarian hanya mencakup 80 nota terbaru. Coba nama atau nomor nota lain." : "Belum ada pesanan dalam kategori ini pada daftar terbaru."}</p>{search ? <button className="binatu-button binatu-button-soft" onClick={() => setSearch("")}>Hapus pencarian</button> : <Link className="binatu-button binatu-button-soft" href={addHref}>Tambah Pesanan</Link>}</div> :
+            <ul className="binatu-order-cards">{visible.map(order => <li key={order.id} className={selected?.id === order.id ? "is-selected" : undefined}><Link className="binatu-order-mobile-link" href={"/kasir/pesanan/" + order.id} prefetch={false}><OrderCard order={order} /></Link><button type="button" className="binatu-order-desktop-pick" aria-pressed={selected?.id === order.id} onClick={() => setSelectedId(order.id)}><OrderCard order={order} /></button></li>)}</ul>}
+      </section><section className="binatu-detail-pane" aria-label="Ringkasan nota terpilih">
+        {selected ? <><header className="binatu-detail-title"><div><p>RINCIAN PESANAN</p><h2>{selected.invoice_no}</h2></div><span className={"binatu-payment-badge " + (selected.payment_status === "PAID" ? "is-paid" : "")}>{paymentLabel(selected.payment_status)}</span></header>
+          <div className="binatu-customer-summary"><span><PosIcon name="people" size={27} /></span><div><small>Pelanggan</small><h3>{selected.customer_name}</h3><p>{boardDate(selected.created_at)}</p></div></div>
+          <dl className="binatu-note-facts"><div><dt>Status cucian</dt><dd>{selected.work_status === "READY" ? "Siap Ambil" : selected.work_status === "COLLECTED" ? "Sudah Diambil" : "Antrian"}</dd></div><div><dt>Pembayaran</dt><dd>{paymentLabel(selected.payment_status)}</dd></div></dl>
+          <div className="binatu-total-summary"><span>Total tagihan</span><strong>{boardMoney(selected.total_idr)}</strong></div><p className="binatu-detail-help">Lihat rincian layanan, riwayat pembayaran, dan tindakan pesanan pada nota.</p><Link href={"/kasir/pesanan/" + selected.id} className="binatu-button binatu-detail-action" prefetch={false}><PosIcon name="receipt" size={20} />Buka Rincian Nota</Link></> :
+          <div className="binatu-detail-placeholder"><img src="/pos/empty-laundry.svg" width="300" height="208" alt="" /><h2>Rincian pesanan</h2><p>Pilih nota pada daftar untuk melihat ringkasannya.</p></div>}
+      </section></div>
+    </>}
+  </main>;
+}
+function OrderCard({ order }: { order: PosRow }) {
+  return <><div className="binatu-order-card-top"><span>{order.invoice_no}</span><strong>{boardMoney(order.total_idr)}</strong></div><div className="binatu-order-card-name">{order.customer_name}</div><div className="binatu-order-card-bottom"><span>{boardDate(order.created_at)}</span><span className={order.payment_status === "PAID" ? "is-paid" : ""}>{paymentLabel(order.payment_status)}</span></div></>;
 }

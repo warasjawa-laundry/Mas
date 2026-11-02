@@ -21,18 +21,18 @@ const Promos=component("components/admin/member-promotions.tsx",{
  "@/components/admin/promo-whatsapp":{default:()=>null},
  "@/components/admin/recoverable-form":{default:RecoverableForm},
 });
-const css=readFileSync("app/globals.css","utf8").replace(/^@import[^\n]*\n/,"")+"\n"+readFileSync("app/admin/admin.css","utf8");
+const css=readFileSync("app/globals.css","utf8").replace(/^@import[^\n]*\n/,"")+"\n"+readFileSync("app/pos-ui.css","utf8")+"\n"+readFileSync("app/admin/admin.css","utf8");
 const memberId="00000000-0000-4000-8000-000000000012";
 const members=[{id:memberId,member_number:6,display_name:"Nama Contoh",is_active:true},{id:memberId+"x",member_number:5,display_name:"Member dengan nama sangat panjang untuk pengujian",is_active:false}];
-for(const width of [320,390,1440])test(`compact member directory and explicit promo actions at ${width}px`,async({page})=>{
+for(const width of [320,390,1440])test(`customer directory and retained legacy promo controls at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:900});
  const shell=(content:string)=>`<style>body{margin:0}${css}</style><div class="admin-root"><main class="admin-workspace"><section class="admin-content owner-member-page">${content}</section></main></div>`;
- await page.setContent(shell(`<div class="member-directory-heading"><h1>Daftar Member</h1><a class="member-directory-add">+ Tambah</a></div><p class="admin-hint">Cari nama atau nomor member.</p>${renderToStaticMarkup(Directory({members}))}`));
- await expect(page.getByRole("link",{name:"Catat",exact:true})).toHaveCount(2);
+ await page.setContent(shell(`<div class="member-directory-heading"><h1>Data Pelanggan</h1><a class="member-directory-add">+ Tambah</a></div><p class="admin-hint">Cari nama atau nomor pelanggan.</p>${renderToStaticMarkup(Directory({members}))}`));
+ await expect(page.getByRole("link",{name:/^Lihat profil /})).toHaveCount(2);
  const row=page.locator(".member-directory-list>li").first();
- expect((await row.boundingBox())!.height).toBeLessThan(130);
- await row.locator("summary").click();
- await expect(row.getByRole("link",{name:"Promo",exact:true})).toHaveAttribute("href",/view=promo/);
+ expect((await row.boundingBox())!.height).toBeLessThan(width<480?190:130);
+ await expect(row.getByRole("link",{name:"Ubah data Nama Contoh",exact:true})).toHaveAttribute("href",/\/edit$/);
+ await expect(row.locator('a[href*="view=promo"],a[href*="/card"]')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
  mkdirSync("artifacts/screenshots",{recursive:true});await page.screenshot({path:`artifacts/screenshots/member-directory-${width}.png`,fullPage:true});
  await page.setContent(shell(`<h1>Nama Contoh</h1><p class="admin-hint">MJL-000006 · Member aktif</p>${renderToStaticMarkup(Nav({memberId,view:"promo"}))}${renderToStaticMarkup(Promos({memberId,memberName:"Nama Contoh",requestId:"synthetic",memberActive:true,whatsappPhone:null,whatsappConsent:false,loadFailed:false,promos:[{id:"synthetic-promo",title:"Diskon cuci 10%",terms:"Sekali untuk layanan reguler",status:"AVAILABLE",created_at:"2026-10-17T00:00:00Z",expires_at:null}]}))}`));

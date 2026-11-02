@@ -23,21 +23,20 @@ export default async function MemberList({searchParams}: Params) {
   const { data, error, count } = await timeAdmin("members.list.query", () => request);
   return <main className="admin-workspace">
     <section className="admin-content member-directory">
-      <p className="admin-kicker">KELOLA MEMBER</p>
-      <div className="member-directory-heading"><h1>Daftar Member</h1><Link className="member-directory-add" href="/admin/members/new" prefetch={false}>+ Tambah</Link></div>
-      <p className="admin-hint">Cari pelanggan untuk mencatat transaksi atau mengelola kartu member.</p>
+      <div className="member-directory-heading"><h1>Data Pelanggan</h1><Link className="member-directory-add" href="/admin/members/new" prefetch={false}>+ Tambah Pelanggan</Link></div>
+      <p className="admin-hint">Cari pelanggan untuk melihat atau memperbarui data kontak.</p>
       <div className="member-toolbar"><MemberSearch query={query} /></div>
-      {!error&&<p className="member-directory-count">{count??0} member{query?" ditemukan":" terdaftar"}</p>}
-      {error ? <p className="admin-error">Data member belum dapat dimuat. Coba lagi.</p> : !data?.length ?
-        <div className="member-empty"><strong>{query ? "Member tidak ditemukan" : "Belum ada member"}</strong>
-          <span>{query ? "Coba nama atau nomor member lain." : "Daftarkan pelanggan pertama lewat tombol + Tambah."}</span></div> :
+      {!error&&<p className="member-directory-count">{count??0} pelanggan{query?" ditemukan":" terdaftar"}</p>}
+      {error ? <p className="admin-error" role="alert">Data pelanggan belum dapat dimuat. Muat ulang halaman untuk mencoba lagi.</p> : !data?.length ?
+        <div className="member-empty"><strong>{query ? "Pelanggan tidak ditemukan" : "Belum ada pelanggan"}</strong>
+          <span>{query ? "Coba nama atau nomor pelanggan lain." : "Daftarkan pelanggan pertama lewat tombol Tambah Pelanggan."}</span></div> :
         <MemberDirectoryList members={data}/>}
-      {!error && count !== null && count > perPage && <nav aria-label="Halaman daftar member" className="admin-member-pagination">
+      {!error && count !== null && count > perPage && <nav aria-label="Halaman daftar pelanggan" className="admin-member-pagination">
         {page > 1 && <Link prefetch={false} href={pageLink(page - 1)}>← Sebelumnya</Link>}
-        <span>Halaman {page} · {count} member</span>
+        <span>Halaman {page} · {count} pelanggan</span>
         {offset + (data?.length ?? 0) < count && <Link prefetch={false} href={pageLink(page + 1)}>Berikutnya →</Link>}
       </nav>}
-      <p className="member-note">Menampilkan hingga 25 member per halaman. Cari menggunakan nama atau nomor member.</p>
+      <p className="member-note">Menampilkan hingga 25 pelanggan per halaman. Cari menggunakan nama atau nomor pelanggan.</p>
     </section>
   </main>;
 }

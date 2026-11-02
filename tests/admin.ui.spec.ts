@@ -5,7 +5,7 @@ test("owner login asks for ID and password, never an email", async ({ page }) =>
   await page.setViewportSize({ width: 360, height: 760 });
   const response = await page.goto("/admin/login");
   expect(response?.status()).toBe(200);
-  await expect(page.getByRole("heading", { name: "Masuk Pemilik" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Masuk Manajer" })).toBeVisible();
   await expect(page.getByLabel("ID Pengguna")).toHaveValue("masjawalaundry");
   await expect(page.locator('input[name="password"]')).toHaveAttribute("type", "password");
   await expect(page.locator('input[type="email"]')).toHaveCount(0);
@@ -45,7 +45,7 @@ test("missing Auth configuration refuses sign-in and shows an operational error"
 test("login page remains clean and readable on desktop", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/admin/login");
-  await expect(page.getByRole("heading", { name: "Masuk Pemilik" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Masuk Manajer" })).toBeVisible();
   mkdirSync("artifacts/stage3", { recursive: true });
   await page.screenshot({ path: "artifacts/stage3/login-1440.png", fullPage: true });
 });

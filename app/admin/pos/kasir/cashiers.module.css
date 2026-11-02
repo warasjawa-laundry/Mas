@@ -1,15 +1,55 @@
-.wrap{max-width:780px}
-.location,.panel{background:white;border:1px solid #e0e5ed;border-radius:16px;padding:clamp(16px,4vw,24px);margin:18px 0}
-.location h2,.panel h2{font-size:19px;margin:0 0 12px}.location p{margin:8px 0;color:#475569}.location small{color:#64748b}
-.form{display:flex;flex-direction:column;gap:12px}
-.form>label{font-weight:700;font-size:14px}
-.form input[type=text]{padding:12px;border:1px solid #bec8d7;border-radius:10px;min-height:48px;font-size:16px}
-.permissions{border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px}
-.permissions legend{font-weight:750;font-size:14px;color:#334155;padding:0 5px}
-.permissions label{display:flex;align-items:center;gap:10px;font-size:14px;min-height:44px}
-.permissions input{width:20px;height:20px;accent-color:#6d28d9}
-.panel h3{margin:0 0 8px;font-size:19px}.panel h3 small{font-size:12px;font-weight:500;color:#64748b;margin-left:8px}
-.help{font-size:13px;color:#64748b;line-height:1.6}
-.list>h2{font-size:21px}.empty{padding:22px;background:#f1f5f9;border-radius:12px}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.actions button{border-radius:9px;padding:10px 12px;min-height:44px;cursor:pointer;font-size:14px;font-weight:700}
-.deviceButton{background:#6d28d9;color:white;border:1px solid #6d28d9}.plainButton{background:white;border:1px solid #cbd5e1;color:#334155}.dangerButton{background:white;border:1px solid #f1b2b2;color:#9f1239}
+.wrap{max-width:1200px}
+.heading{position:relative;margin-top:-12px;background:#fff;border-radius:26px 26px 0 0;border-bottom:1px solid #dfe2e6}
+.headingInner{max-width:1200px;margin-inline:auto;padding:8px 16px 22px}
+.headingInner p{margin:0;color:#59616d;font-size:.875rem;line-height:1.7}
+.back{display:inline-flex;align-items:center;min-height:44px;margin-bottom:10px;color:#59616d;font-size:.8125rem;font-weight:700}
+.location{display:grid;gap:16px;margin:0 0 24px;padding:18px;border-radius:16px;background:#e9eaec}
+.location span{display:block;color:#59616d;font-size:.75rem;margin-bottom:4px}
+.location strong{display:block;font-size:1rem;font-weight:800}
+.location p{margin:4px 0 0;color:#59616d;font-size:.8125rem;line-height:1.7}
+.location .loginHint{margin:0;padding-top:14px;border-top:1px solid #ccd0d5;color:#414852}
+.workspace{display:grid;gap:24px;align-items:start}
+.panel{background:#fff;border:1px solid #dfe2e6;border-radius:16px;padding:20px;min-width:0}
+.panel h2{font-size:1.125rem;margin:0 0 18px}
+.form{display:grid;gap:12px;min-width:0}
+.form>label{font-weight:700;font-size:.875rem}
+.form input[type=text]{width:100%;min-width:0;padding:12px 14px;border:1px solid #858b94;border-radius:12px;min-height:50px;font-size:1rem;background:#fff;color:#22252a}
+.form>button{margin-top:4px;width:100%}
+.permissions{border:0;border-top:1px solid #dfe2e6;padding:14px 0 0;margin:8px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:4px 18px;min-width:0}
+.permissions legend{font-weight:800;font-size:.8125rem;color:#22252a;padding:0 8px 0 0;margin-bottom:4px}
+.permissions label{display:flex;align-items:center;gap:10px;font-size:.8125rem;min-height:44px;line-height:1.5;cursor:pointer;min-width:0}
+.permissions label span{overflow-wrap:anywhere}
+.permissions input{width:21px;height:21px;flex:0 0 21px;margin:0;accent-color:#22252a}
+.cashierHeading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.cashierHeading h3{margin:0;font-size:1rem;font-weight:800;overflow-wrap:anywhere;min-width:0}
+.status{font-size:.75rem;font-weight:700;color:#414852;background:#eef0f2;border-radius:8px;padding:5px 9px}
+.identity{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:#fdf3d0}
+.identity>div>span{display:block;font-size:.75rem;color:#59616d;margin-bottom:2px}
+.identity>div>strong{font-size:1.125rem;font-weight:800;color:#22252a;font-variant-numeric:tabular-nums}
+.identity p{font-size:.8125rem;color:#414852;margin:0}
+.help{font-size:.8125rem;color:#59616d;line-height:1.7;margin:14px 0 18px}
+.list{display:grid;gap:16px;min-width:0}
+.list>h2{font-size:1.125rem;margin:0}
+.empty{padding:24px;background:#fff;border:1px solid #dfe2e6;border-radius:16px;color:#59616d;font-size:.875rem;line-height:1.7;margin:0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid #dfe2e6}
+.actions form{flex:1 1 150px}
+.actions button{width:100%;border-radius:10px;padding:10px 12px;min-height:44px;cursor:pointer;font-size:.8125rem;font-weight:700}
+.plainButton{background:#fff;border:1px solid #858b94;color:#343a43}
+.plainButton:hover{background:#f3f4f6}
+.dangerButton{background:#fff;border:1px solid #b96a6a;color:#8b2929}
+.dangerButton:hover{background:#fff0f0}
+.accessNote{padding:20px 0 0;margin-top:28px;border-top:1px solid #d3d7dc}
+.accessNote h2{font-size:.9375rem}
+.accessNote p{font-size:.8125rem;line-height:1.7;color:#59616d;margin:10px 0}
+.accessNote a{text-decoration:underline;text-underline-offset:3px;font-weight:700}
+@media(min-width:600px){
+ .headingInner{padding:12px 24px 26px}
+ .location{grid-template-columns:1fr 1fr;padding:20px 24px;gap:28px}
+ .location .loginHint{border-top:0;border-left:1px solid #ccd0d5;padding:0 0 0 24px}
+ .panel{padding:24px}
+}
+@media(min-width:1200px){
+ .headingInner{padding-inline:40px}
+ .workspace{grid-template-columns:minmax(290px,.8fr) minmax(0,1.4fr)}
+}
+@media(max-width:359px){.panel{padding:16px}.identity{padding:12px}.actions form{flex-basis:100%}}
