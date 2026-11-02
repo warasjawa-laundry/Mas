@@ -2,7 +2,7 @@ import Link from "next/link";
 import { site } from "@/lib/site";
 import { requireOwner } from "@/lib/supabase/owner";
 import { CASHIER_PERMISSIONS, hasCashierGrant, type CashierGrants } from "@/lib/pos/cashier-permissions";
-import { saveCashier, removeCashier, activateCashierDevice, revokeCashierDevices } from "./actions";
+import { saveCashier, removeCashier, revokeCashierDevices } from "./actions";
 import styles from "./cashiers.module.css";
 
 type CashierRow = {
@@ -41,7 +41,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
   return <main className="admin-workspace"><div className={`admin-content ${styles.wrap}`}>
     <p className="admin-kicker">PENGATURAN OWNER</p>
     <h1>Kelola Kasir</h1>
-    <p className="admin-hint">Owner saja yang login. Tambahkan nama kasir dan pilih hak aksesnya. Sistem membuat username otomatis MAS-0001, MAS-0002, dan seterusnya. Kasir masuk dengan username tanpa password pada perangkat yang diaktifkan owner. Tidak ada pengelolaan cabang.</p>
+    <p className="admin-hint">Owner saja yang login. Tambahkan nama kasir dan pilih hak aksesnya. Sistem membuat ID unik empat angka seperti MAS-0001, MAS-0002, dan seterusnya. Kasir cukup memasukkan ID kasir tanpa password dan tanpa aktivasi perangkat. Menu kasir mengikuti hak akses yang kamu pilih. Tidak ada pengelolaan cabang.</p>
     <section className={styles.location}>
       <h2>Outlet tetap</h2>
       <strong>Mas Jawa Laundry</strong>
@@ -50,7 +50,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
     </section>
     {unavailable ? <p className="admin-error" role="alert">Modul kasir belum tersedia pada database yang aktif. Tidak ada data kasir yang diubah. Pengaturan ini dapat dipakai setelah migrasi POS disetujui dan diterapkan.</p> : <>
       {message && <p className="admin-success" role="status">{message}</p>}
-      {params.error && <p className="admin-error" role="alert">{params.error === "invalid" ? "Nama/ID kasir tidak valid." : params.error === "logout" ? "Aktivasi dibatalkan karena sesi owner gagal keluar." : "Penyimpanan belum berhasil. Coba lagi setelah memeriksa akses database."}</p>}
+      {params.error && <p className="admin-error" role="alert">{params.error === "invalid" ? "Nama/ID kasir tidak valid." : "Penyimpanan belum berhasil. Coba lagi setelah memeriksa akses database."}</p>}
       <section className={styles.panel} aria-labelledby="new-cashier">
         <h2 id="new-cashier">Tambah kasir</h2>
         <form action={saveCashier} className={styles.form}>
@@ -66,7 +66,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
         {cashiers.map(c => <article key={c.staff_id} className={styles.panel}>
           <h3>{c.display_name} <small>{c.active ? "Aktif" : "Dihapus / nonaktif"}</small></h3>
           <p className={styles.help}>Username: <strong style={{fontSize:16,color:"#4c1d95"}}>{c.username}</strong> · Nomor tidak berubah ketika nama diubah atau kasir dihapus.</p>
-          <p className={styles.help}>Perangkat aktif: {c.active_devices}. Menonaktifkan kasir akan mencabut semua perangkatnya, tetapi riwayat tetap tersimpan.</p>
+          <p className={styles.help}>Sesi aktif: {c.active_devices}. Menonaktifkan kasir akan memutus semua sesi, tetapi riwayat tetap tersimpan.</p>
           {c.active ? <>
             <form action={saveCashier} className={styles.form}>
               <input type="hidden" name="staffId" value={c.staff_id} />
@@ -76,13 +76,9 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
               <button type="submit" className="admin-primary">Simpan hak akses</button>
             </form>
             <div className={styles.actions}>
-              <form action={activateCashierDevice}>
-                <input type="hidden" name="staffId" value={c.staff_id} />
-                <button type="submit" className={styles.deviceButton}>Aktifkan di perangkat ini</button>
-              </form>
               <form action={revokeCashierDevices}>
                 <input type="hidden" name="staffId" value={c.staff_id} />
-                <button type="submit" className={styles.plainButton}>Cabut semua perangkat</button>
+                <button type="submit" className={styles.plainButton}>Cabut semua sesi</button>
               </form>
               <form action={removeCashier}>
                 <input type="hidden" name="staffId" value={c.staff_id} />
@@ -93,8 +89,8 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
           </> : <p className={styles.help}>Kasir nonaktif tidak dapat masuk. Riwayat dan audit tetap disimpan.</p>}
         </article>)}
       </section>
-      <p className={styles.help}><strong>Aktivasi:</strong> buka halaman ini di HP/komputer kasir, login sebagai owner, lalu pilih “Aktifkan di perangkat ini”. Sesi owner otomatis keluar; pegawai memasukkan username MAS-XXXX pada /kasir tanpa password. Perangkat terikat pada kasir yang dipilih owner; username kasir lain tidak bisa digunakan. Token perangkat berlaku 7 hari dan dapat dicabut sewaktu-waktu.</p>
-      <p className={styles.help}><strong>Keamanan:</strong> akses kasir tidak memberikan izin mengelola member, mengubah aturan poin, atau melihat password owner. Pembayaran POS masih belum aktif sampai pengujian dan migrasi finansial selesai.</p>
+      <p className={styles.help}><strong>Login kasir:</strong> owner membuat ID empat angka. Karyawan langsung membuka <a href="/kasir">/kasir</a> dan memasukkan ID tersebut—tanpa password atau aktivasi perangkat. Owner dapat mengubah izin atau mencabut semua sesi kapan saja. Sesi maksimal 12 jam.</p>
+      <p className={styles.help}><strong>Keamanan:</strong> ID empat angka mudah ditebak; sistem membatasi percobaan login dan mencatat sesi. Jangan membagikan ID kepada orang luar. Kasir tidak dapat mengelola owner/member/poin melalui hak admin. Pembayaran produksi tetap belum aktif sampai review keamanan dan G8 disetujui.</p>
     </>}
     <div className="admin-shortcuts"><Link href="/admin/settings">← Kembali ke Pengaturan</Link></div>
   </div></main>;
