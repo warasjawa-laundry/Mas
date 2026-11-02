@@ -5,7 +5,7 @@ import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 const memberId='00000000-0000-4000-8000-000000000012';
 const source=ts.transpileModule(readFileSync('app/admin/members/[id]/page.tsx','utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText;
-async function render(view){
+async function render(view,notice={}){
  const calls=[];let historyLoads=0;
  const supabase={from(table){
   calls.push(table);
@@ -27,11 +27,21 @@ async function render(view){
   }},
  };
  const output={exports:{}};runInNewContext(source,{exports:output.exports,module:output,require:n=>{assert.ok(n in mocks,n);return mocks[n]},Intl,Date,Map,Set,Number,Promise});
- const tree=await output.exports.default({params:Promise.resolve({id:memberId}),searchParams:Promise.resolve(view==='transaction'?{}:{view})});
+ const tree=await output.exports.default({params:Promise.resolve({id:memberId}),searchParams:Promise.resolve({view,...notice})});
  return {calls,historyLoads,tree:JSON.stringify(tree)};
 }
 test('transaction entry needs five reads and never waits for history or promos',async()=>{
  const r=await render('transaction');assert.equal(r.calls.length,5);assert.equal(r.historyLoads,0);assert.match(r.tree,/Catat transaksi/);
+});
+
+test('legacy action result URLs preserve transaction feedback without changing the default profile',async()=>{
+ const saved=await render('transaction',{view:undefined,amountRecorded:'1',pointsEarned:'3'});
+ assert.equal(saved.calls.length,5);
+ assert.match(saved.tree,/Transaksi berhasil dicatat/);
+ assert.match(saved.tree,/Poin bertambah/);
+ const failed=await render('transaction',{view:undefined,error:'save'});
+ assert.equal(failed.calls.length,5);
+ assert.match(failed.tree,/Perubahan gagal disimpan/);
 });
 test('promo tab requests promos without loading the ledger or point rules',async()=>{
  const r=await render('promo');assert.equal(r.calls.length,5);assert.equal(r.historyLoads,0);assert.ok(r.calls.includes('laundry_member_promotions'));assert.doesNotMatch(r.tree,/aria-label":"Catat transaksi/);

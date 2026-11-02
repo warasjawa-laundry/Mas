@@ -30,8 +30,7 @@ export default async function CashierReports({searchParams}:{searchParams:Promis
  <div><small>Penerimaan non-tunai</small><strong>{formatIdr(report.noncash_in_idr)}</strong></div>
  </div><p>Non-tunai keluar: <strong>{formatIdr(report.noncash_out_idr)}</strong></p>
  <p>Nota dibuat: <strong>{report.orders_created}</strong> · Piutang pada akhir periode: <strong>{formatIdr(report.receivables_as_of_end_idr)}</strong></p>
- <p>Poin POS netto periode: <strong>{report.net_pos_points}</strong></p>
- <p className={styles.muted}>Ini laporan operasional, bukan laba bersih. Tahun poin mengikuti WIB pada saat transaksi.</p>
+ <p className={styles.muted}>Laporan ini merangkum arus kas operasional, bukan laba bersih.</p>
  {!report.truncated&&<a className={styles.mainLink} href={`/kasir/laporan/export?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}>Ekspor CSV</a>}
  {report.truncated&&<p className={styles.warning}>Hasil terlalu banyak untuk ekspor aman (lebih dari 300 mutasi). Persempit tanggal.</p>}
  </section><section className={styles.card}><h2>Mutasi dalam periode</h2>

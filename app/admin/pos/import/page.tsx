@@ -9,7 +9,7 @@ type Row={id:string;row:number;invoice:string;customer:string;status:string;
  payment:string;total_idr:string;paid_idr:string;review:string;member_id:string|null};
 type Candidate={id:string;number:string;name:string;phone:string|null;address:string|null};
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const shell={maxWidth:850,margin:"auto",padding:"24px 16px 90px",fontFamily:"system-ui,sans-serif"} as const;
+const shell={maxWidth:850,margin:"auto",padding:"24px 16px 90px",fontFamily:"var(--font-pos)",color:"#22252a"} as const;
 const panel={background:"#fff",border:"1px solid #dce1ea",borderRadius:16,padding:20,marginTop:20} as const;
 export default async function ImportPreview({searchParams}:{searchParams:Promise<{batch?:string;row?:string;hide?:string;error?:string;saved?:string}>}){
  const {supabase}=await requireOwner();const params=await searchParams;
@@ -24,7 +24,7 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
  const {data:candidatesResult,error:candidateError}=current?await supabase.rpc('laundry_pos_g6b_member_candidates',{p_row_id:current.id}):{data:[],error:null};
  const candidates=Array.isArray(candidatesResult)?candidatesResult as Candidate[]:[];
  return <main style={shell}><Link href="/admin">← Admin</Link>
-  <p style={{fontSize:12,letterSpacing:1.2,color:'#6d28d9',fontWeight:800}}>MAS JAWA LAUNDRY · OWNER ONLY</p>
+  <p style={{fontSize:12,color:'#59616f',fontWeight:700}}>MAS JAWA LAUNDRY · MANAJER</p>
   <h1>Impor Excel Binatu</h1>
   <p>Unggah laporan pesanan Binatu untuk ditinjau. <strong>Tidak ada pembayaran atau poin yang diberikan oleh impor.</strong> Nomor nota Binatu dipakai sebagai identitas asal, bukan nomor member MJL.</p>
   {params.error&&<p role="alert" style={{color:'#9f1239',padding:14,background:'#fff1f2',borderRadius:12}}>
@@ -34,7 +34,7 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
   <section style={panel}><h2>Unggah laporan</h2>
    <form action={importBinatuPreview} style={{display:'grid',gap:12}}>
     <label>File laporan (.xlsx / .csv)<input name="report" type="file" accept=".xlsx,.csv" required style={{display:'block',marginTop:10,minHeight:44}}/></label>
-    <button style={{background:'#6d28d9',color:'white',padding:14,border:0,borderRadius:12,minHeight:48,fontWeight:750}}>Buka pratinjau</button>
+    <button style={{background:'#f7b801',color:'#22252a',padding:14,border:0,borderRadius:12,minHeight:48,fontWeight:700}}>Buka pratinjau</button>
    </form>
    <p style={{color:'#64748b',fontSize:13}}>Batas 200 nota, satu sheet. Kolom Binatu harus mencakup NOTA, PELANGGAN, STATUS, PEMBAYARAN, HARGA AKHIR, SUDAH BAYAR. File asli tidak disimpan.</p>
   </section>
@@ -50,9 +50,9 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
    {rowsError?<p role="alert">Batch tidak ditemukan atau akses ditolak.</p>:<>
     <p><strong>{rows.length} nota</strong>, {rows.filter(r=>r.payment==='PAID').length} sudah lunas, {pending.length} menunggu review, {conflicts.length} konflik sumber.</p>
     {current?<div role="dialog" aria-modal="true" aria-label="Konfirmasi transaksi lunas Binatu" style={{position:'fixed',inset:0,zIndex:100,background:'rgba(15,23,42,.68)',display:'flex',alignItems:'center',justifyContent:'center',padding:12}}>
-     <div style={{background:'#faf5ff',padding:20,border:'1px solid #ddd6fe',borderRadius:16,maxWidth:650,width:'100%',maxHeight:'94vh',overflowY:'auto'}}>
+     <div style={{background:'#fffaf0',padding:20,border:'1px solid #dfe2e6',borderRadius:16,maxWidth:650,width:'100%',maxHeight:'94vh',overflowY:'auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}><strong>Konfirmasi data</strong><Link href={`/admin/pos/import?batch=${selected}&hide=1`} aria-label="Tutup konfirmasi sementara">Tutup ×</Link></div>
-      <p style={{fontSize:12,fontWeight:800,color:'#6d28d9'}}>KONFIRMASI {rows.filter(r=>r.payment==='PAID').length-pending.length+1} DARI {rows.filter(r=>r.payment==='PAID').length}</p>
+      <p style={{fontSize:12,fontWeight:800,color:'#665000'}}>KONFIRMASI {rows.filter(r=>r.payment==='PAID').length-pending.length+1} DARI {rows.filter(r=>r.payment==='PAID').length}</p>
       <h3>{current.customer}</h3>
       <p>Nota Binatu: <strong>{current.invoice}</strong> · Baris {current.row}</p>
       <p>Status: <strong>Lunas</strong> · Dibayar: <strong>{formatIdr(current.paid_idr)}</strong></p>
@@ -63,11 +63,11 @@ export default async function ImportPreview({searchParams}:{searchParams:Promise
        <form action={reviewBinatuRow} style={{display:'grid',gap:12}}>
         <input type="hidden" name="batch" value={selected}/><input type="hidden" name="row" value={current.id}/>
         <input type="hidden" name="decision" value="MATCHED"/>
-        {candidates.map(c=><label key={c.id} style={{background:'white',border:'1px solid #ddd6fe',padding:12,borderRadius:12}}>
+        {candidates.map(c=><label key={c.id} style={{background:'white',border:'1px solid #858b94',padding:12,borderRadius:12}}>
           <input type="radio" name="member" value={c.id} required/> <strong>{c.name}</strong> · Member #{c.number}
           <small style={{display:'block',marginLeft:23}}>Telepon: {c.phone||'—'} · Alamat: {c.address||'—'}</small>
         </label>)}
-        <button style={{minHeight:48,background:'#6d28d9',color:'white',border:0,borderRadius:12,fontWeight:750}}>Konfirmasi hanya pencocokan (tanpa poin)</button>
+        <button style={{minHeight:48,background:'#f7b801',color:'#22252a',border:0,borderRadius:12,fontWeight:700}}>Konfirmasi hanya pencocokan (tanpa poin)</button>
        </form>}
       </>}
       <form action={reviewBinatuRow} style={{display:'grid',gap:10,marginTop:18}}>

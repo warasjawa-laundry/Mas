@@ -14,7 +14,7 @@ test("member edit is a dedicated owner-only path and never reissues cards or mut
  assert.match(edit,/requireOwner\(\)/);
  assert.match(action,/requireOwner\(\)/);
  assert.match(edit,/action=\{updateMemberContact\}/);
- assert.match(list,/\/edit\`}>Ubah Data/);
+ assert.match(list,/href=\{`\/admin\/members\/\$\{m.id\}\/edit`\}>Ubah/);
  assert.match(detail,/Ubah Data/);
  assert.doesNotMatch(action,/laundry_record_visit|laundry_register_member|laundry_grant_manual_promotion|newCardToken|encryptCardToken/);
  assert.match(action,/normalizeWhatsapp/);
@@ -35,8 +35,8 @@ test("explicit customer confirmation is required; phone change defaults to revok
  assert.match(sql,/v_action='REVOKE' or v_phone is null or v_phone_changed/);
  assert.match(sql,/v_consent_at:=null/);
  assert.match(sql,/v_consent_at:=clock_timestamp\(\)/);
- assert.match(edit,/Wajib dicentang jika memilih Aktifkan/);
- assert.match(edit,/Mengubah nomor akan mencabut izin lama/);
+ assert.match(edit,/name="consentAction" value="KEEP"/);
+ assert.doesNotMatch(edit,/<select[^>]*name="consentAction"|name="customerConfirmed"/);
 });
 test("member revision and request ID guard against stale and duplicate submission",()=>{
  assert.match(sql,/member_edit_revision bigint not null default 0/);
@@ -61,5 +61,5 @@ test("WhatsApp action for missing consent leads to owner member edit instead of 
  assert.match(whatsapp,/props\.whatsappConsent/);
  assert.match(whatsapp,/props\.memberActive && validPhone && props\.whatsappConsent/);
  assert.match(css,/owner-edit-card/);
- assert.match(css,/@media\(max-width:600px\)/);
+ assert.match(css,/@media\s*\(max-width:\s*479px\)/);
 });

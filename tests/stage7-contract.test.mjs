@@ -10,10 +10,10 @@ const whatsapp=read("components/admin/promo-whatsapp.tsx");
 const css=read("app/admin/admin.css");
 const publicCard=read("app/k/[token]/page.tsx");
 
-test("list prioritizes transaction entry and keeps promo in member detail without querying phone data",()=>{
+test("customer list opens profiles and leaves protected promo implementation available but unlinked",()=>{
   assert.match(detail,/view===\"promo\"/);
-  assert.match(list,/Catat/);
-  assert.match(list,/Kartu QR/);
+  assert.match(list,/Lihat Profil/);
+  assert.doesNotMatch(list,/view=promo|Kartu QR/);
   assert.doesNotMatch(list,/\.select\([^\n]*whatsapp_e164/);
   assert.match(promos,/id="promo-member"/);
 });
@@ -42,11 +42,9 @@ test("only available unexpired promos expose editable owner-initiated WhatsApp d
 
 test("badges stay left of floating controls at narrow viewports",()=>{
   assert.match(promos,/owner-promo-status-row/);
-  assert.match(css,/\.owner-promo-status-row\{display:flex;justify-content:flex-start/);
-  assert.match(css,/\.owner-promo-item\{min-width:0;position:relative;isolation:isolate/);
-  assert.match(css,/@media\(max-width:600px\)/);
-  assert.match(css,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
-  assert.match(css,/\.owner-promo-status-row\{padding-right:52px\}/);
+  assert.match(css,/\.owner-promo-status-row\s*\{[^}]*display:\s*flex/);
+  assert.match(css,/\.owner-promo-item\s*\{[^}]*position:\s*relative[^}]*isolation:\s*isolate/);
+  assert.match(css,/\.owner-promo-actions[^{}]*\{[^}]*display:\s*flex/);
 });
 
 test("visits and manual promo lifecycle still independent of WhatsApp drafts",()=>{

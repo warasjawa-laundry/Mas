@@ -47,23 +47,23 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
  const canWrite=access.session.write_enabled;
  return <main className={styles.shell}>
   <Link href="/kasir/pesanan">← Daftar pesanan</Link>
-  <p className={styles.kicker}>MAS JAWA LAUNDRY · {access.session.username}</p>
+  <header className={styles.header}><div><p className={styles.kicker}>MAS JAWA LAUNDRY · {access.session.username}</p>
   <h1>{o.invoice_no}</h1>
-  <p><strong>{o.customer_name}</strong> · {new Date(o.created_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</p>
+  <p className={styles.muted}><strong>{o.customer_name}</strong> · {new Date(o.created_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</p></div><PrintButton/></header>
   {query.error&&<p className={styles.warning} role="alert">
    {query.error.includes('unconfirmed')?'Hasil transaksi belum terkonfirmasi. Periksa daftar pembayaran sebelum mencoba kembali dengan request yang SAMA.':
      'Perubahan belum terkonfirmasi. Periksa status nota sebelum mengulangi tindakan.'}
   </p>}
   {query.saved&&<p className={styles.ok} role="status">{query.saved==='payment'?'Pembayaran tercatat.':query.saved==='refund'?'Pengembalian penuh tercatat.':query.saved==='shift'?'Kas dibuka.':'Status tersimpan.'}</p>}
-  <PrintButton/>
+  <div className={styles.detailGrid}>
   <section className={styles.card} aria-labelledby="items-title"><h2 id="items-title">Rincian pesanan</h2>
    {o.items.map((i,j)=><div key={j} className={styles.item}><div>{i.service_name}<small>{(Number(i.quantity_milli)/1000).toLocaleString('id-ID')} {i.unit} × {money(i.price_idr)}</small></div><strong>{money(i.line_total_idr)}</strong></div>)}
    <div className={styles.item}><strong>Total tagihan</strong><strong>{money(o.total_idr)}</strong></div>
    {o.perfume&&<p>Parfum: {o.perfume}</p>}{o.notes&&<p>Catatan: {o.notes}</p>}
   </section>
-  <section className={styles.card} aria-labelledby="payment-title"><div className={styles.cardHeading}>
+  <section className={`${styles.card} ${styles.paymentCard}`} aria-labelledby="payment-title"><div className={styles.cardHeading}>
     <h2 id="payment-title">Pembayaran</h2><span className={styles.paymentBadge}>{f?labels[f.payment_status]:'Belum tersedia'}</span></div>
-   {!f?<p className={styles.warning}>Ringkasan finansial belum tersedia. Pembayaran tidak dapat dicatat hingga migrasi G5 diaktifkan.</p>:<>
+   {!f?<p className={styles.warning}>Ringkasan pembayaran belum tersedia. Pembayaran belum dapat dicatat.</p>:<>
     <div className={styles.paymentTotals}>
       <div><small>Total nota</small><strong>{money(f.total_idr)}</strong></div>
       <div><small>Sudah diterima</small><strong>{money(f.paid_idr)}</strong></div>
@@ -77,7 +77,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
       </div>)}
     </div>}
     {canCollect&&!f.shift_open&&<div className={styles.mutedPanel}>
-      <strong>Kas utama belum dibuka</strong><p className={styles.muted}>Buka kas agar setiap penerimaan ditautkan ke jurnal dan petugas. Saldo awal nol; pengelolaan shift lengkap tersedia pada G6.</p>
+      <strong>Kas utama belum dibuka</strong><p className={styles.muted}>Buka kas untuk mencatat penerimaan pada shift petugas. Saldo awal kas ini nol.</p>
       <form action={openCashierShift}><input type="hidden" name="orderId" value={o.id}/><input type="hidden" name="requestId" value={randomUUID()}/>
        <button className={styles.mainButton} disabled={!canWrite}>Buka kas utama</button></form>
     </div>}
@@ -92,7 +92,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
       </label>
       <label>Metode pembayaran<select name="method" defaultValue={wantsRetry?query.method:'CASH'}>
        <option value="CASH">Tunai</option><option value="NONCASH">Non-tunai (dikonfirmasi petugas)</option></select></label>
-      <p id="payment-help" className={styles.muted}>Poin member hanya diberikan sekali ketika seluruh tagihan sudah dibayar. Jangan terima pembayaran lagi jika transaksi sebelumnya belum jelas.</p>
+      <p id="payment-help" className={styles.muted}>Cocokkan nominal dan metode dengan pembayaran yang diterima. Jangan terima pembayaran lagi jika transaksi sebelumnya belum jelas.</p>
       <button className={styles.mainButton} disabled={!canWrite||!f.shift_open}>Simpan pembayaran</button>
     </form>}
     {hasReceipts&&f.payment_status!=='REFUNDED'&&canRefund&&<details className={styles.refundPanel}>
@@ -101,7 +101,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
       <input type="hidden" name="orderId" value={o.id}/><input type="hidden" name="requestId" value={refundReq}/>
       <input type="hidden" name="expectedVersion" value={wantsRefundRetry?query.version??String(f.version):String(f.version)}/>
       <label>Alasan refund<input name="reason" minLength={3} maxLength={300} required defaultValue={''} placeholder="Alasan wajib dicatat"/></label>
-      <p className={styles.muted}>Semua pembayaran akan dikembalikan sesuai metode asal; poin yang telah diberikan akan dibatalkan. Jika hasil sebelumnya tidak diketahui, cocokkan jurnal dan ulangi hanya dengan alasan serta ID request yang sama.</p>
+      <p className={styles.muted}>Semua pembayaran akan dikembalikan sesuai metode asal. Jika hasil sebelumnya tidak diketahui, cocokkan jurnal dan ulangi hanya dengan alasan serta ID request yang sama.</p>
       <button type="submit" className={styles.dangerButton} disabled={!canWrite||!f.shift_open}>Konfirmasi refund penuh</button>
      </form>
     </details>}
@@ -110,13 +110,14 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
   </section>
   <section className={styles.card}><h2>Status cucian</h2>
    <p>Proses: <strong>{o.work_status==='READY'?'Siap diambil':o.work_status==='COLLECTED'?'Sudah diambil':'Antrian'}</strong></p>
-   <p className={styles.muted}>Status pengerjaan tidak memicu pembayaran atau poin.</p>
+   <p className={styles.muted}>Status pengerjaan dicatat terpisah dari pembayaran.</p>
    {target&&hasCashierGrant(access.session.permissions,'order_work')&&<form action={advanceWorkStatus}>
     <input name="orderId" type="hidden" value={o.id}/><input name="requestId" type="hidden" value={randomUUID()}/>
     <input name="target" type="hidden" value={target}/>
     <button className={styles.mainButton} type="submit" disabled={!canWrite}>Ubah ke {target==='READY'?'Siap Diambil':'Sudah Diambil'}</button>
    </form>}
   </section>
+  </div>
   {hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft invoice={o.invoice_no} customer={o.customer_name} workStatus={o.work_status} total={money(o.total_idr)}/>}
  </main>;
 }

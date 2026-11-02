@@ -4,7 +4,7 @@ import AdminNavigation from "@/components/admin/admin-navigation";
 import AdminHistoryGuard from "@/components/admin/admin-history-guard";
 
 export const metadata: Metadata = {
-  title: "Area Pemilik",
+  title: "Manajer | Mas Jawa Laundry",
   robots: { index: false, follow: false, nocache: true },
 };
 

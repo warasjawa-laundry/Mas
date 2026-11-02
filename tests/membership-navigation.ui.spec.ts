@@ -20,7 +20,9 @@ for(const width of [320,390,1440])test(`password visibility control has a usable
  const toggle=page.getByRole('button',{name:'Lihat password',exact:true});const box=(await toggle.boundingBox())!;
  expect(box.height).toBeGreaterThanOrEqual(44);expect(box.width).toBeGreaterThanOrEqual(44);
  const password=page.getByRole('textbox',{name:'Password',exact:true});await password.focus();
- await expect(password).toHaveCSS('outline-color','rgb(109, 40, 217)');
+ await expect(password).toHaveCSS('outline-color','rgb(34, 37, 42)');
+ await expect(password).toHaveCSS('outline-style','solid');
+ await expect(password).toHaveCSS('outline-width','3px');
  await toggle.click();await expect(page.locator('#owner-password')).toHaveAttribute('type','text');
  await page.getByRole('button',{name:'Sembunyikan password',exact:true}).click();await expect(page.locator('#owner-password')).toHaveAttribute('type','password');
 });

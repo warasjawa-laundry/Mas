@@ -8,9 +8,10 @@ test("all admin routes share mobile and desktop navigation with no extra auth ca
   const layout = source("app/admin/layout.tsx");
   const nav = source("components/admin/admin-navigation.tsx");
   assert.match(layout, /<AdminNavigation\s*\/>/);
-  assert.match(nav, /admin-shell-sidebar/);
-  assert.match(nav, /admin-shell-mobile/);
-  for (const href of ["/admin", "/admin/scan", "/admin/members", "/admin/settings"]) {
+  assert.match(nav, /binatu-sidebar/);
+  assert.match(nav, /binatu-bottom-nav/);
+  assert.doesNotMatch(nav, /href:\s*"\/admin\/scan"/);
+  for (const href of ["/admin", "/admin/members", "/admin/settings"]) {
     assert.ok(nav.includes(href), href);
   }
   assert.doesNotMatch(nav, /getUser\(|getClaims\(|requireOwner\(|\.from\(/);

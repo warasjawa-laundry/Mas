@@ -2,7 +2,6 @@
 import {useEffect,useRef,useState} from "react";
 import type {DurationOption} from "@/lib/pos/g7-catalog";
 import styles from "./wizard.module.css";
-/** Accessible mobile bottom sheet: Escape, focus loop, restore trigger focus. */
 export function DurationSheet({options,value,onSelect}:{options:DurationOption[];value:string;onSelect:(value:string)=>void}){
  const [open,setOpen]=useState(false);
  const trigger=useRef<HTMLButtonElement>(null);
@@ -10,6 +9,8 @@ export function DurationSheet({options,value,onSelect}:{options:DurationOption[]
  function close(){setOpen(false);queueMicrotask(()=>trigger.current?.focus())}
  useEffect(()=>{
   if(!open)return;
+  const overflow=document.body.style.overflow;
+  document.body.style.overflow='hidden';
   const target=dialog.current;
   target?.querySelector<HTMLButtonElement>("[data-duration-choice]")?.focus();
   function handle(e:KeyboardEvent){
@@ -22,14 +23,14 @@ export function DurationSheet({options,value,onSelect}:{options:DurationOption[]
    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
   }
   document.addEventListener("keydown",handle);
-  return ()=>document.removeEventListener("keydown",handle);
+  return ()=>{document.removeEventListener("keydown",handle);document.body.style.overflow=overflow};
  },[open]);
  const chosen=options.find(o=>o.value===value);
  return <div className={styles.durationPicker}>
-  <button ref={trigger} type="button" className={styles.durationTrigger} onClick={()=>setOpen(true)} aria-haspopup="dialog">
+  <button ref={trigger} type="button" className={styles.durationTrigger} onClick={()=>setOpen(true)} aria-haspopup="dialog" aria-expanded={open}>
    <span>Durasi dari katalog</span><strong>{chosen?.label??"Pilih durasi"}</strong><small>Ubah pilihan</small>
   </button>
-  <p className={styles.help}>Durasi berasal dari layanan Mas Jawa Laundry. Tarif yang ditampilkan mengikuti layanan tersebut—tidak ada biaya ekspres tambahan tersembunyi.</p>
+  <p className={styles.help}>Pilihan dan tarif mengikuti katalog layanan yang tersedia.</p>
   {open&&<div className={styles.sheetBackdrop} onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
    <div ref={dialog} role="dialog" aria-modal="true" aria-labelledby="duration-title" className={styles.sheet}>
     <div className={styles.sheetHandle} aria-hidden="true"/>

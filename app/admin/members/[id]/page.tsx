@@ -17,7 +17,25 @@ export default async function OwnerMember({params,searchParams}:Props){
  const {id}=await params,notice=await searchParams;
  if(!validId.test(id))notFound();
  const historyPage=historyPageNumber(notice.historyPage);
- const view=notice.promo||notice.promoError?"promo":notice.historyPage||notice.corrected||notice.error==="reason"||notice.error==="void"?"history":notice.view==="promo"||notice.view==="history"?notice.view:"transaction";
+ const transactionResult=notice.amountRecorded||notice.recorded||["amount","rules","save"].includes(notice.error??"");
+ const view=notice.promo||notice.promoError?"promo":notice.historyPage||notice.corrected||notice.error==="reason"||notice.error==="void"?"history":transactionResult?"transaction":notice.view==="promo"||notice.view==="history"||notice.view==="transaction"?notice.view:"profile";
+ if(view==="profile") {
+  const {data:member,error}=await timeAdmin("member.profile.query",()=>supabase.from("laundry_members")
+   .select("id,member_number,display_name,is_active,whatsapp_e164,address").eq("id",id).maybeSingle());
+  if(error)return <main className="admin-workspace"><section className="admin-content customer-profile"><h1>Profil Pelanggan</h1><p className="admin-error" role="alert">Data pelanggan belum dapat dimuat. Muat ulang halaman untuk mencoba lagi.</p><Link href="/admin/members" className="admin-logout">Data Pelanggan</Link></section></main>;
+  if(!member)notFound();
+  return <main className="admin-workspace">
+   <nav className="admin-breadcrumb" aria-label="Kembali"><Link href="/admin/members">← Data Pelanggan</Link></nav>
+   <section className="admin-content customer-profile">
+    <header className="customer-profile-heading"><div><h1>{member.display_name}</h1><p className="admin-hint">{memberNumber(member.member_number)}</p></div><span className="customer-status">{member.is_active?"Aktif":"Nonaktif"}</span></header>
+    <section className="customer-contact-panel" aria-labelledby="customer-contact-heading">
+     <h2 id="customer-contact-heading">Data Kontak</h2>
+     <dl><div><dt>Nama pelanggan</dt><dd>{member.display_name}</dd></div><div><dt>WhatsApp</dt><dd>{member.whatsapp_e164||"Belum diisi"}</dd></div><div><dt>Alamat</dt><dd>{member.address||"Belum diisi"}</dd></div></dl>
+     <Link prefetch={false} href={`/admin/members/${id}/edit`} className="admin-primary">Ubah Data Pelanggan</Link>
+    </section>
+   </section>
+  </main>;
+ }
  const pointYear=Number(new Intl.DateTimeFormat("en-US",{year:"numeric",timeZone:"Asia/Jakarta"}).format(new Date()));
  const [memberR,addsR,voidsR,historyR,promosR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
   supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent,address").eq("id",id).maybeSingle(),
