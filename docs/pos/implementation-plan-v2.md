@@ -395,3 +395,11 @@ Dokumentasi rinci: [G4 Nota Laundry](./g4-order-verification.md). Dalam satu pak
 - Migrasi QA menambahkan sesi `DIRECT_ID` yang menjaga identitas staff asli, dua digest token dan revoke owner. Throttle login global dibatasi tetapi tidak setara autentikasi kuat; risiko brute-force/DoS tetap blocker G8.
 - Tes rollback SQL, tes Node, audit security QA dan tes regresi CI dalam **satu PR**. Tidak ada migrasi produksi, aktivasi pembayaran/poin, proyek Vercel baru, atau perubahan koneksi Git.
 - Receipt: [G3 direct ID verification](./g3-direct-id-login-verification.md).
+
+
+## 20. Koreksi terpadu Argon POS + scan barcode (2 November 2026)
+- Klarifikasi owner: area admin lama diubah menjadi shell POS; Owner dan Karyawan memakai bahasa visual yang sama seperti prototipe Argon dan 25 screenshot Binatu, dibedakan hak akses server/DB. Login terpadu di /admin/login dengan dua tab (Owner ID+password; Karyawan MAS-XXXX tanpa password). Route /kasir tetap login langsung kompatibel.
+- Homepage owner memakai komponen PosBoard yang juga digunakan kasir; tidak menggunakan nota contoh fiktif. Owner tetap memiliki fungsi member, scan kartu, impor Binatu, pengaturan dan manajemen kasir. Kasir menggunakan order-board RPC dan flow nota existing yang dibatasi izinnya.
+- Kamera menggunakan BrowserMultiFormatReader untuk QR dan barcode, galeri decode QR lama dengan fallback barcode lokal, server memverifikasi token QR melalui digest kartu dan nomor barcode MJL/angka lewat RPC member lookup scoped; scan tidak membuat visit/nota/pembayaran/poin.
+- HTML Argon adalah referensi visual, bukan backend: data pelanggan, multiplier tarif dan durasi, demo login, pembayaran dan klaim WA terkirim tidak diimpor. Semua tarif dan ledger dari sistem asli.
+- G8 tetap NO-GO: owner POS write, UAT 25 layar/perangkat, backup/restore, migrasi DB dan aktivasi produksi tetap memerlukan bukti dan persetujuan terpisah. Cek Vercel Production SHA karena koneksi Git masih berbeda dari source main.

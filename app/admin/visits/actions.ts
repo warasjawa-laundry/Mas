@@ -54,3 +54,14 @@ export async function correctOwnerVisit(formData:FormData) {
   if(error||!match)redirect("/admin/members/"+memberId+"?error=void");
   redirect("/admin/members/"+memberId+"?corrected=1");
 }
+
+import {normalizeMemberBarcode} from "@/lib/pos/member-code";
+/** Owner-only, read-only lookup; scan does not record a visit, order, payment or points. */
+export async function resolveOwnerScannedBarcode(text:string):Promise<{id:string;number:string;name:string}|null>{
+ const {supabase}=await requireOwner();
+ const number=normalizeMemberBarcode(text);if(!number)return null;
+ const {data,error}=await supabase.from("laundry_members").select("id,member_number,display_name")
+  .eq("member_number",Number(number)).eq("is_active",true).maybeSingle();
+ if(error||!data||typeof data.id!=="string"||!uuidRe.test(data.id))return null;
+ return {id:data.id,number:"MJL-"+String(data.member_number).padStart(6,"0"),name:data.display_name};
+}

@@ -1,7 +1,8 @@
 "use client";
 import {useEffect,useRef,useState,type ChangeEvent} from "react";
 import {decodeLaundryQrImage} from "@/lib/laundry/qr-image";
-import {resolveCashierMemberQr} from "./qr-actions";
+import {decodeLaundryBarcodeImage} from "@/lib/laundry/barcode-image";
+import {resolveCashierMemberCode} from "./qr-actions";
 import styles from "./wizard.module.css";
 type Controls={stop:()=>void};
 const formats=new Set(["image/png","image/jpeg","image/webp","image/gif","image/avif"]);
@@ -20,7 +21,7 @@ export function CashierQrScanner({onMember,disabled}:{onMember:(number:string,na
   if(!alive.current||busyRef.current)return;
   busyRef.current=true;setBusy(true);setError("");stop();
   try{
-   const result=await resolveCashierMemberQr(raw);
+   const result=await resolveCashierMemberCode(raw);
    if(!alive.current)return;
    if(result)onMember(result.memberNumber,result.displayName);
    else setError("Kartu tidak valid, dicabut, atau member tidak aktif. Gunakan nomor member manual.");
@@ -32,9 +33,9 @@ export function CashierQrScanner({onMember,disabled}:{onMember:(number:string,na
   if(!navigator.mediaDevices?.getUserMedia){setError("Kamera tidak tersedia. Gunakan galeri.");return}
   const id=++generation.current;setBusy(true);setError("");
   try{
-   const {BrowserQRCodeReader}=await import("@zxing/browser/esm/readers/BrowserQRCodeReader");
+   const {BrowserMultiFormatReader}=await import("@zxing/browser/esm/readers/BrowserMultiFormatReader");
    if(!alive.current||generation.current!==id||!video.current)return;
-   const reader=new BrowserQRCodeReader();
+   const reader=new BrowserMultiFormatReader();
    const scan=await reader.decodeFromVideoDevice(undefined,video.current,(result,_error,control)=>{
     if(result&&!busyRef.current){control.stop();void resolve(result.getText())}
    });
@@ -52,18 +53,19 @@ export function CashierQrScanner({onMember,disabled}:{onMember:(number:string,na
   }
   stop();setBusy(true);busyRef.current=true;setError("");
   try{
-   const decoded=await decodeLaundryQrImage(file);
+   let decoded:string;
+   try{decoded=await decodeLaundryQrImage(file)}catch{decoded=await decodeLaundryBarcodeImage(file)}
    busyRef.current=false;
    if(alive.current)await resolve(decoded);
-  }catch{if(alive.current)setError("QR tidak terbaca. Gunakan foto yang lebih jelas atau ketik nomor member.");}
+  }catch{if(alive.current)setError("Barcode/QR tidak terbaca. Gunakan foto lebih jelas atau ketik nomor member.");}
   finally{busyRef.current=false;if(alive.current)setBusy(false)}
  }
- return <div className={styles.qrPanel} aria-label="Scan QR kartu member">
+ return <div className={styles.qrPanel} aria-label="Scan barcode atau QR kartu member">
   <div className={styles.qrActions}>
    <button type="button" disabled={busy||disabled} onClick={()=>running?stop():void start()}>
-    {running?"Tutup Kamera":"Scan QR Kamera"}
+    {running?"Tutup Kamera":"Scan Barcode / QR Kamera"}
    </button>
-   <label className={styles.galleryPick}>Pilih Foto QR
+   <label className={styles.galleryPick}>Pilih Foto Barcode / QR
     <input type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" disabled={busy||disabled}
       onChange={e=>{void gallery(e)}}/>
    </label>
@@ -71,6 +73,6 @@ export function CashierQrScanner({onMember,disabled}:{onMember:(number:string,na
   {error&&<p className={styles.warn} role="alert">{error}</p>}
   {busy&&<p role="status" className={styles.help}>Memeriksa QR…</p>}
   <video ref={video} className={running?styles.qrVideo:styles.qrHidden} autoPlay muted playsInline aria-label="Kamera untuk QR member"/>
-  <p className={styles.help}>QR hanya memilih member, tidak mencatat poin. Gambar dibaca di HP dan tidak diunggah.</p>
+  <p className={styles.help}>Scan QR atau barcode MJL hanya memilih member, tidak mencatat poin. Gambar dibaca di HP dan tidak diunggah.</p>
  </div>;
 }

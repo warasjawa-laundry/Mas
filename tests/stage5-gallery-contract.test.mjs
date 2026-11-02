@@ -29,7 +29,7 @@ test("invalid and oversized files are refused and the picker supports retry", ()
 });
 
 test("camera and gallery share the same owner lookup, never write a visit", () => {
-  assert.match(scan, /BrowserQRCodeReader/);
+  assert.match(scan, /BrowserMultiFormatReader/);
   assert.match(scan, /decodeFromVideoDevice/);
   assert.match(scan, /await onDecoded\(text\)/);
   assert.match(scan, /resolveOwnerScannedCard\(text\)/);
@@ -39,7 +39,7 @@ test("camera and gallery share the same owner lookup, never write a visit", () =
 });
 
 test("phone UI has an accessible gallery action and no hidden image upload", () => {
-  assert.match(scan, /aria-label="Pilih screenshot QR dari galeri"/);
+  assert.match(scan, /aria-label="Pilih screenshot QR atau barcode dari galeri"/);
   assert.match(scan, /type="button"[\s\S]*?Pilih Foto QR/);
   assert.match(css, /\.owner-gallery-button/);
   assert.match(css, /\.owner-gallery-hint/);

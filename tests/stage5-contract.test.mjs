@@ -10,7 +10,7 @@ const ownerHub=read("app/admin/scan/page.tsx");
 
 test("scanner resolves a member and NEVER writes a visit automatically",()=>{
  assert.match(scan,/resolveOwnerScannedCard/);
- assert.match(scan,/BrowserQRCodeReader/);
+ assert.match(scan,/BrowserMultiFormatReader/);
  assert.doesNotMatch(scan,/recordOwnerVisit|laundry_record_visit|\.insert\(/);
  assert.match(ownerHub,/<ScanCard\/>/);
 });
@@ -48,8 +48,8 @@ test("scanner has no redundant member or settings links beneath QR controls",()=
  assert.doesNotMatch(ownerHub,/owner-secondary-actions|\+ Tambah Member|Lihat Daftar Member|Kelola Member|Ubah Password/);
  assert.match(ownerHub,/Kembali ke Ringkasan/);
  const navigation=read("components/admin/admin-navigation.tsx");
- assert.match(navigation,/href: "\/admin\/members", label: "Member"/);
- assert.match(navigation,/href: "\/admin\/settings", label: "Pengaturan"/);
+ assert.match(navigation,/href:"\/admin\/members",label:"Pelanggan"/);
+ assert.match(navigation,/href:"\/admin\/settings",label:"Pengaturan"/);
  const scanner=read("components/admin/scan-card.tsx");
  assert.match(scanner,/Cari Member Manual/);
 });

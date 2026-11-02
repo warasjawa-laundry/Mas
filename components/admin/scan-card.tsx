@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import Link from "next/link";
 import { decodeLaundryQrImage } from "@/lib/laundry/qr-image";
+import {decodeLaundryBarcodeImage} from "@/lib/laundry/barcode-image";
 import { useRouter } from "next/navigation";
-import { resolveOwnerScannedCard } from "@/app/admin/visits/actions";
+import { resolveOwnerScannedCard, resolveOwnerScannedBarcode } from "@/app/admin/visits/actions";
 
 type CameraControls = { stop: () => void };
 const MAX_GALLERY_BYTES = 12 * 1024 * 1024;
@@ -63,7 +64,7 @@ export default function ScanCard() {
     setError("");
 
     try {
-      const member = await resolveOwnerScannedCard(text);
+      const member = await resolveOwnerScannedCard(text) ?? await resolveOwnerScannedBarcode(text);
       if (!aliveRef.current) return;
       if (!member) {
         setError("Kartu tidak ditemukan atau sudah tidak aktif. Coba gambar lain atau cari member manual.");
@@ -93,10 +94,10 @@ export default function ScanCard() {
     const attempt = ++cameraAttemptRef.current;
     setStarting(true);
     try {
-      const { BrowserQRCodeReader } = await import("@zxing/browser/esm/readers/BrowserQRCodeReader");
+      const { BrowserMultiFormatReader } = await import("@zxing/browser/esm/readers/BrowserMultiFormatReader");
       if (!videoRef.current || !aliveRef.current || cameraAttemptRef.current !== attempt) return;
 
-      const reader = new BrowserQRCodeReader();
+      const reader = new BrowserMultiFormatReader();
       const controls = await reader.decodeFromVideoDevice(undefined, videoRef.current, (result, _err, control) => {
         if (result && !scanLock.current) {
           control.stop();
@@ -138,7 +139,8 @@ export default function ScanCard() {
     workInProgress.current = true;
     const attempt = new AbortController(); imageAttempt.current = attempt;
     try {
-      const text = await decodeLaundryQrImage(file, attempt.signal);
+      let text:string;
+      try{text=await decodeLaundryQrImage(file,attempt.signal)}catch{text=await decodeLaundryBarcodeImage(file)}
       if (!aliveRef.current) return;
       await onDecoded(text);
     } catch {
@@ -155,8 +157,8 @@ export default function ScanCard() {
   return (
     <section className="owner-scanner" aria-labelledby="scan-title">
       <div className="owner-scanner-heading">
-        <h2 id="scan-title">Scan Kartu</h2>
-        <p>Arahkan kamera ke QR atau pilih foto kartu dari galeri. Scan hanya membuka data member, bukan mencatat transaksi.</p>
+        <h2 id="scan-title">Scan Barcode / QR Member</h2>
+        <p>Arahkan kamera ke barcode atau QR member, atau pilih foto dari galeri. Scan hanya membuka data member, bukan mencatat transaksi.</p>
       </div>
       {error && <p className="admin-error" role="alert">{error}</p>}
       <div className="owner-scan-actions">
@@ -172,7 +174,7 @@ export default function ScanCard() {
           className="sr-only"
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
-          aria-label="Pilih screenshot QR dari galeri"
+          aria-label="Pilih screenshot QR atau barcode dari galeri"
           onChange={(event) => void scanScreenshot(event)}
           tabIndex={-1}
         />
@@ -182,7 +184,7 @@ export default function ScanCard() {
           onClick={() => galleryInputRef.current?.click()}
           disabled={loading || starting}
         >
-          {loading ? "Memeriksa QR…" : "Pilih Foto QR"}
+          {loading ? "Memeriksa QR…" : "Pilih Foto QR / Barcode"}
         </button>
         <Link href="/admin/members" className="admin-logout">Cari Member Manual</Link>
       </div>
