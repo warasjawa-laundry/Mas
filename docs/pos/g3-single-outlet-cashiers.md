@@ -1,3 +1,5 @@
+> **Koreksi berlaku 2 Nov 2026:** syarat owner pairing yang dijelaskan di bawah adalah **riwayat desain**, bukan lagi login kasir saat ini. Kasir langsung memasukkan ID 4 angka `MAS-XXXX` tanpa password atau aktivasi perangkat. Lihat [G3 direct ID login](./g3-direct-id-login-verification.md) dan Implementation Plan V2 terbaru. Produksi tetap NO-GO sampai review keamanan dan migrasi disetujui.
+
 # POS G3 — satu outlet, kasir tanpa password, dikelola owner
 
 **Tanggal:** 1 November 2026. **Keputusan terbaru owner:** bukan aplikasi multi-outlet dan pegawai kasir tidak memerlukan ID/password. Satu-satunya login tetap pada pemilik melalui `/admin/login` (mekanisme lama tidak diubah).

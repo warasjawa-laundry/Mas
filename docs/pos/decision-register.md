@@ -1,3 +1,10 @@
+## Owner correction — 2 November 2026 (latest, supersedes pairing requirement)
+
+- Owner tetap login ID/password. Kasir login **hanya** menggunakan ID pola `MAS-0000` (empat digit), nomor otomatis saat owner membuat kasir, **tanpa password dan tanpa aktivasi perangkat**. `MAS-0000` dicadangkan; ID valid yang dialokasikan `MAS-0001`–`MAS-9999`.
+- Owner mengatur kemampuan petugas dan dapat revoke sesi. Implementasi memakai dua token sesi acak 256-bit terpisah maksimal 12 jam, bukan cookie owner.
+- Tidak menganggap 4-digit ID sebagai autentikasi kuat. Throttle global 10 permintaan/menit dengan 5 menit lock, maksimum lima sesi per staff; risiko brute-force, ID disclosure dan DoS harus ditinjau sebelum pembayaran produksi. Tidak ada perubahan database produksi dan G8 tetap NO-GO.
+- [QA receipt](./g3-direct-id-login-verification.md) dan pembaruan `implementation-plan-v2.md` ikut dalam PR tunggal.
+
 # POS decisions and implementation ledger
 
 ## User decisions
@@ -22,7 +29,7 @@ The user separately approved a clean Mumbai QA project in organization `irwtmqba
 | G1 QA schema/code isolation | New QA active, 17 migrations and 8 SQL tests done, guard added; Preview N/A by owner decision, authenticated UAT/restore remain pending |
 | Nominal contract for G2/G4 | BigInt utility implemented; focused red/green tests and independent review completed |
 | G2 RBAC/financial schema and legacy bridge | **Partial QA:** 17 POS tables, deny-by-default + RLS, 5 immutable triggers, read-only outlet RPC, actor FK now auth.users; SQL rollback regression passed. Authenticated owner/cashier UAT, payment RPC, production rollout and approval still pending. |
-| G3 owner login + cashier MAS-XXXX | **Partial QA:** satu outlet MJL, owner CRUD+izin, username urut tidak reuse, per-device paired username login, token sesi kedua, lockout/revoke, SQL+Node tests. Physical real-auth UAT, production migration and financial actor bridge pending. |
+| G3 owner login + cashier MAS-XXXX | **Partial QA updated 2 Nov:** satu outlet, owner CRUD+izin, 4-digit ID unik, direct ID-only login tanpa pairing, dua token sesi 12h, global throttle+revoke; SQL rollback/Node tests. Real-auth UAT, security sign-off, prod schema/cutover tetap pending. |
 | G4 create/read/work notes | **Implemented in isolated QA:** staff actor FK bridge, singleton invoice counter, member-number/guest, catalog-authoritative pricing, immutable command result, order list/detail, status transitions and HTML print. SQL rollback passes; still missing physical QR UAT, discount/delivery rules, concurrent race evidence, production migration authorization. |\n| G5 | QA payment/refund + points code merged in PR #23, live production database unchanged; real concurrency/UAT pending |\n| G6 | QA cash/report/shift/CSV/WA manual implemented (Paket B); production write OFF; physical UAT/pilot pending |\n| G6b | QA owner-only Excel import/review implemented (Paket B); historical posting and point backfill explicitly disabled |\n| G7–G8 | Physical UAT, backup/restore, reconciled cutover and pilot not complete |
 
 ## Owner decision: sequential cashier usernames (1 November 2026)

@@ -10,47 +10,48 @@ import {
   cashierCookieOptions, cashierLoginCookieOptions,
 } from "@/lib/pos/cashier-device";
 
-/** Username-only entry, but only on an active owner-paired physical device. */
+/** Owner supplies the four-digit MAS ID; a device pairing is NOT required.
+ * Only the database validates identity, grants, shared attempt limit and expiry.
+ * Four digits are low-entropy; POS financial launch remains blocked by G8. */
 export async function loginCashier(form: FormData) {
   const jar = await cookies();
-  const deviceToken = jar.get(CASHIER_DEVICE_COOKIE)?.value;
   const username = normalizeCashierUsername(form.get("username"));
-  if (!validCashierDeviceToken(deviceToken)) redirect("/kasir?error=device");
   if (!username) redirect("/kasir?error=invalid");
   const client = await createOwnerClient();
   if (!client) redirect("/kasir?error=unavailable");
+  const deviceToken = newCashierDeviceToken();
   const loginToken = newCashierDeviceToken();
-  const { data, error } = await client.rpc("laundry_pos_cashier_login", {
-    p_device_token: deviceToken,
+  const { data, error } = await client.rpc("laundry_pos_cashier_direct_id_login", {
     p_username: username,
+    p_device_token: deviceToken,
     p_login_token: loginToken,
   });
   if (error || data !== true) redirect("/kasir?error=invalid");
+  // The two opaque session secrets are issued after successful DB confirmation.
+  // Both expire after twelve hours, never in localStorage/client JavaScript.
+  jar.set(CASHIER_DEVICE_COOKIE, deviceToken, { ...cashierCookieOptions, maxAge: 12 * 60 * 60 });
   jar.set(CASHIER_LOGIN_COOKIE, loginToken, cashierLoginCookieOptions);
   redirect("/kasir");
 }
 
-/** Log out the cashier, keep this approved workstation paired for next shift. */
+/** Revoke both session credentials at logout. */
 export async function leaveCashier() {
   const jar = await cookies();
   const loginToken = jar.get(CASHIER_LOGIN_COOKIE)?.value;
-  if (validCashierDeviceToken(loginToken)) {
-    const client = await createOwnerClient();
-    if (client) await client.rpc("laundry_pos_cashier_logout", { p_login_token: loginToken });
+  const deviceToken = jar.get(CASHIER_DEVICE_COOKIE)?.value;
+  const client = await createOwnerClient();
+  if (client && validCashierDeviceToken(loginToken)) {
+    await client.rpc("laundry_pos_cashier_logout", { p_login_token: loginToken });
   }
-  jar.set(CASHIER_LOGIN_COOKIE, "", { ...cashierLoginCookieOptions, maxAge: 0 });
-  redirect("/kasir");
-}
-
-/** Explicit unlink for a lost/reassigned workstation; owner can also revoke. */
-export async function disconnectCashierDevice() {
-  const jar = await cookies();
-  const token = jar.get(CASHIER_DEVICE_COOKIE)?.value;
-  if (validCashierDeviceToken(token)) {
-    const client = await createOwnerClient();
-    if (client) await client.rpc("laundry_pos_cashier_end_session", { p_token: token });
+  if (client && validCashierDeviceToken(deviceToken)) {
+    await client.rpc("laundry_pos_cashier_end_session", { p_token: deviceToken });
   }
   jar.set(CASHIER_LOGIN_COOKIE, "", { ...cashierLoginCookieOptions, maxAge: 0 });
   jar.set(CASHIER_DEVICE_COOKIE, "", { ...cashierCookieOptions, maxAge: 0 });
   redirect("/kasir");
+}
+
+/** Same explicit logout behavior for legacy bookmarked device-disconnect link. */
+export async function disconnectCashierDevice() {
+  await leaveCashier();
 }

@@ -1,6 +1,6 @@
 # UAT G7 — Mas Jawa Laundry POS (2 Nov 2026)
 
-**STATUS: IN PROGRESS / NO-GO untuk transaksi produksi.** Dokumen ini adalah daftar uji manual, bukan klaim bahwa pemilik/pegawai atau HP Android sudah diuji. Gunakan perangkat milik outlet satu-satunya, data sintetis dan sesi kasir yang telah dipair oleh owner. **Jangan mencatat pembayaran pelanggan nyata sebelum G8 disetujui.**
+**STATUS: IN PROGRESS / NO-GO untuk transaksi produksi.** Dokumen ini adalah daftar uji manual, bukan klaim bahwa pemilik/pegawai atau HP Android sudah diuji. Gunakan perangkat milik outlet satu-satunya, data sintetis dan login ID kasir tanpa pairing; jangan gunakan data pelanggan sebenarnya untuk uji. **Jangan mencatat pembayaran pelanggan nyata sebelum G8 disetujui.**
 
 ## Peta 25 referensi Binatu (commit c17b043)
 | Screenshot | Fungsi | Posisi di Mas Jawa / status |
@@ -13,7 +13,7 @@
 | 15–17 | Rincian nota, status kerja, siap ambil | `/kasir/pesanan/[id]` tersedia; periksa di HP nyata |
 | 18–20 | WA dan bayar | Draf WA salin manual, DP/lunas/refund kode QA; kirim otomatis tidak ada |
 | 21–22 | Periode/mutasi kas | `/kasir/kas`, `/kasir/laporan`: kode QA; uji hitung uang fisik dan CSV |
-| 23–25 | Manajer/kasir/akun petugas | Login owner/password dan kasir MAS-XXXX pada perangkat dipair; UAT izin/revoke belum dilakukan |
+| 23–25 | Manajer/kasir/akun petugas | Login owner ID/password dan kasir ID MAS-XXXX tanpa pairing/password; UAT rate-limit, izin/revoke belum dilakukan |
 
 **Kriteria desain:** hierarki, lokasi CTA, tab, sheet, kartu, scrolling dan label seperti referensi; warna/identitas menggunakan Mas Jawa (aksen kuning untuk POS), tanpa logo/aset Binatu. Audit ini *source-based*, **bukan klaim 25/25 visual pass**. Rujukan: [README referensi](https://github.com/warasjawa-laundry/Mas/tree/c17b043d2a2480adbe0bcd05d39d961c398db603/docs/references/binatu).
 
@@ -21,7 +21,7 @@
 | No | Skenario | Expected | Bukti / penanggung jawab |
 |---|---|---|---|
 | 1 | Android Chrome, keyboard angka/desimal, layar kecil & rotation | Tombol +/- 44px, sticky total tidak menutup input | Pending owner/staff |
-| 2 | Login owner→pair perangkat→MAS-0001; revoke di tengah sesi | Kasir cabut/revoke ditolak pada RPC baru | Pending |
+| 2 | Login owner membuat ID kasir; karyawan langsung MAS-0001 tanpa pairing; revoke sesi di tengah transaksi | Kasir cabut/revoke ditolak pada RPC baru | Pending |
 | 3 | Kamera QR aktif, kamera ditolak, screenshot dari galeri, URL QR palsu | Kartu valid memilih nomor; invalid/revoked gagal; tidak ada poin | Pending |
 | 4 | Member sama nama, nomor member dan poin saat lunas | Identitas tidak otomatis ditebak; ADD sekali | Pending |
 | 5 | DP, lunas, dua pembayaran bersamaan, jaringan putus setelah commit | Retry UUID sama; tak ada receipt/poin ganda | Pending fisik; race CI terpisah |
@@ -43,3 +43,10 @@
 - Tekan Escape dan Tab/Shift+Tab pada bottom sheet durasi memakai keyboard, tutup sheet harus mengembalikan fokus ke tombol pembuka. Periksa zoom 200% dan 320px HP.
 - Bandingkan parfum preset/kustom; pastikan semua opsi harga non-layanan (ongkir/diskon) **tidak mempengaruhi total** dan tidak dikirim ke RPC G4 sebelum disahkan owner.
 - Saat QA database belum terpasang, lihat pesan kesalahan yang jelas, tidak menyimpan transaksi diam-diam. Semua skenario ini **belum ditandatangani oleh kasir/owner nyata**.
+
+### Gate keamanan login karyawan empat angka (perubahan 2 Nov 2026)
+
+- [ ] Login kasir ID-only `MAS-XXXX` tanpa pairing pada Android nyata dan browser desktop, sementara admin tetap memakai ID/password.
+- [ ] Salah ID, ID nonaktif, pencabutan semua sesi, dua token cookie hilang, 12 jam kedaluwarsa, dan max lima sesi teruji.
+- [ ] Rate limit seluruh outlet 10 percobaan/menit / lock 5 menit; ukur denial-of-service dan dokumentasikan risiko penyamaran akibat ID empat angka mudah ditebak.
+- [ ] Owner menyetujui kontrol identitas yang memadai sebelum POS finansial diaktifkan. Tanpa ini tetap G8 NO-GO.
