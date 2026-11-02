@@ -54,7 +54,8 @@ test("G8 UX uses per-service duration with three-step wizard and real catalog pr
  const editor=source("components/admin/service-editor.tsx");
  assert.match(editor,/name="duration"/);
  const settings=source("app/admin/settings/services/page.tsx");
- assert.match(settings,/s.duration\|\|"Durasi belum diatur"/);
+ assert.match(settings,/className="mj-service-duration-col"/);
+ assert.match(settings,/s.duration\|\|"Belum diatur"/);
  const picker=source("app/kasir/pesanan/baru/member-name-picker.tsx");
  assert.match(picker,/400\)/); // 400 ms debounce
  assert.match(picker,/onPick\(row\)/);

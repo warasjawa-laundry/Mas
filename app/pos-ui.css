@@ -128,3 +128,15 @@
 .binatu-service-content .service-settings-list>li>details>summary>span:first-child{min-width:0}
 .binatu-service-content .service-settings-list>li>details>summary>span:last-child{text-align:right;white-space:nowrap}
 @media(max-width:480px){.binatu-service-content .service-settings-list>li>details>summary{align-items:center;flex-wrap:wrap}.binatu-service-content .service-settings-list>li>details>summary>span:last-child{margin-left:auto}}
+
+/* Explicit three-column catalog summary: service | duration | price. */
+.binatu-service-content .service-settings-list>li>details>summary{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(95px,.9fr) minmax(105px,.9fr);align-items:center;gap:12px}
+.binatu-service-content .service-settings-list>li>details>summary>span:last-child{max-width:none;min-width:0;margin:0;text-align:right;white-space:normal}
+.binatu-service-content .service-settings-list .mj-service-duration-col{display:grid;align-content:center;gap:5px;min-width:0}
+.binatu-service-content .service-settings-list .mj-service-duration-col small{font-size:10px;color:#59616f;font-weight:500}
+.binatu-service-content .service-settings-list .mj-service-duration-col strong{font-size:12px;font-weight:700;color:#6d4e00;overflow-wrap:anywhere}
+@media(max-width:480px){
+ .binatu-service-content .service-settings-list>li>details>summary{grid-template-columns:minmax(0,1.25fr) minmax(70px,.8fr) minmax(85px,.9fr);gap:8px;padding:12px}
+ .binatu-service-content .service-settings-list .mj-service-duration-col strong{font-size:11px}
+ .binatu-service-content .service-settings-list>li>details>summary>span:last-child{font-size:12px}
+}
