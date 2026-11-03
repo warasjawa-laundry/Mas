@@ -163,7 +163,7 @@ for(const width of [320,390,1440])test(`package workflow has four steps, filters
  await mount(page,width,'owner',true);
  await page.getByLabel('Nama pelanggan').fill('Pelanggan Paket QA');
  if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
- await page.getByLabel('Reguler · 2 hari',{exact:true}).check();
+ await page.getByLabel('Reguler · 48 jam',{exact:true}).check();
  await expect(page.getByLabel('Estimasi selesai').first()).toHaveText('02/01/2027 - 23:30 WIB');
  if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
  await expect(page.getByLabel('Jumlah Cuci Express',{exact:true})).toHaveCount(0);
@@ -175,7 +175,7 @@ for(const width of [320,390,1440])test(`package workflow has four steps, filters
  await expect(page.getByRole('alert')).toContainText('mengosongkan pilihan layanan');
  await expect(page.locator('[name=items]')).toHaveValue(/cccccccc/);
  await page.getByRole('button',{name:'Pertahankan pilihan',exact:true}).click();
- await expect(page.getByLabel('Reguler · 2 hari',{exact:true})).toBeChecked();
+ await expect(page.getByLabel('Reguler · 48 jam',{exact:true})).toBeChecked();
  await page.getByLabel('Express · 6 jam',{exact:true}).click();
  await page.getByRole('button',{name:'Ganti paket dan pilih ulang',exact:true}).click();
  await expect(page.getByLabel('Estimasi selesai').first()).toHaveText('01/01/2027 - 05:30 WIB');
