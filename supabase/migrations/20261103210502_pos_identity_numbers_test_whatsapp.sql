@@ -64,13 +64,13 @@ revoke all on function laundry_private.pos_retire_test_order(uuid) from public,a
 
 -- Owner requested namespaces: member display 0, invoice 1, cashier 2.
 -- Preserve UUIDs and old cashier labels; existing physical card tokens are untouched.
-lock table public.laundry_pos_outlets in exclusive mode;
-lock table public.laundry_pos_staff in exclusive mode;
 alter table public.laundry_pos_staff add column previous_username text;
-alter table public.laundry_pos_staff disable trigger pos_cashier_username_immutable;
 do $renumber$
 declare s record; n integer;
 begin
+ lock table public.laundry_pos_outlets in exclusive mode;
+ lock table public.laundry_pos_staff in exclusive mode;
+ alter table public.laundry_pos_staff disable trigger pos_cashier_username_immutable;
  for s in select staff_id,username from public.laundry_pos_staff where username !~ '^MAS-2[0-9]{3}$' order by created_at,staff_id loop
   select min(i) into n from generate_series(2001,2999) i where not exists(select 1 from public.laundry_pos_staff where username='MAS-'||i::text);
   if n is null then raise exception 'cashier_username_limit';end if;
@@ -78,8 +78,8 @@ begin
   update public.laundry_pos_cashier_devices set revoked_at=clock_timestamp() where staff_id=s.staff_id and revoked_at is null;
  end loop;
  update public.laundry_pos_outlets set last_cashier_number=coalesce((select max(substring(username from 5)::integer-2000) from public.laundry_pos_staff),0) where singleton_key=1;
+ alter table public.laundry_pos_staff enable trigger pos_cashier_username_immutable;
 end $renumber$;
-alter table public.laundry_pos_staff enable trigger pos_cashier_username_immutable;
 
 create or replace function laundry_private.pos_owner_save_cashier(
  p_staff_id uuid,p_display_name text,p_permissions jsonb,p_active boolean
