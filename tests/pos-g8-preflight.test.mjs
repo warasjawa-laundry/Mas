@@ -12,7 +12,7 @@ test("current G8 receipt fails closed; no invented sign-off",()=>{
 });
 test("unverified false cannot be replaced by a name-only record",()=>{
  const forged=structuredClone(receipt);
- forged.productionPosTables=20;forged.productionOutletCount=1;
+ forged.productionPosTables=22;forged.productionOutletCount=1;
  forged.reviewedMainSha="a".repeat(40);forged.deployedProductionSha="a".repeat(40);
  forged.evidence=Object.fromEntries(Object.keys(receipt.evidence).map(name=>[name,{verified:true,reference:"",reviewer:"Owner"}]));
  assert.equal(evaluatePosG8(forged).ready,false);
@@ -34,7 +34,7 @@ test("G8 never passes without owner-actor writes, service-duration policy and ca
   assert.ok(blockers.some(y=>y.includes(x)),x);
  }
  const r=structuredClone(receipt);
- r.status="GO";r.productionPosTables=20;r.productionOutletCount=1;
+ r.status="GO";r.productionPosTables=22;r.productionOutletCount=1;
  assert.ok(evaluatePosG8(r).blockers.some(x=>x.includes("GO_CANDIDATE")));
 });
 test("QA audit receipt cannot be misinterpreted as Production readiness",()=>{
@@ -46,7 +46,7 @@ test("QA audit receipt cannot be misinterpreted as Production readiness",()=>{
 
 function candidate(){
  const r=structuredClone(receipt);
- r.status="GO_CANDIDATE";r.productionPosTables=20;r.productionOutletCount=1;
+ r.status="GO_CANDIDATE";r.productionPosTables=22;r.productionOutletCount=1;
  r.reviewedMainSha="a".repeat(40);r.deployedProductionSha=r.reviewedMainSha;
  r.evidence=Object.fromEntries(Object.keys(r.evidence).map(name=>[name,{
   verified:true,reference:"evidence/actual-reviewed-receipt",reviewer:"Reviewer",
@@ -75,4 +75,12 @@ test("database finance gate is independently verified off",()=>{
  assert.equal(evaluatePosG8(r).ready,false);
  delete r.productionFinanceEnabledOutlets;
  assert.equal(evaluatePosG8(r).ready,false);
+});
+
+// Package and family tables are required by the current application schema.
+test("package schema readiness requires 22 tables and rejects the old 20-table contract",()=>{
+ const current=candidate();current.productionPosTables=22;
+ assert.equal(evaluatePosG8(current).ready,true);
+ current.productionPosTables=20;
+ assert.equal(evaluatePosG8(current).ready,false);
 });

@@ -18,8 +18,8 @@ export function evaluatePosG8(receipt){
  if(!/^[0-9a-f]{40}$/.test(receipt.reviewedMainSha||""))blockers.push("missing pinned reviewed main SHA");
  if(!/^[0-9a-f]{40}$/.test(receipt.deployedProductionSha||"")||
    receipt.reviewedMainSha!==receipt.deployedProductionSha)blockers.push("deployed SHA not equal reviewed main");
- if(receipt.productionPosTables!==20||receipt.productionWriteEnabledOutlets!==0)
-  blockers.push("production POS schema not verified as 20 tables with zero writes enabled");
+ if(receipt.productionPosTables!==22||receipt.productionWriteEnabledOutlets!==0)
+  blockers.push("production POS schema not verified as 22 tables with zero writes enabled");
  if(receipt.productionOutletCount!==1)blockers.push("exactly one production outlet required");
  if(receipt.productionFinanceEnabledOutlets!==0)blockers.push("production finance gate not independently verified off");
  for(const name of required){

@@ -1,5 +1,8 @@
 # Eksekusi tambahan layanan, paket dan WhatsApp
 
+> **Bukti terkini — 3 November 2026:** source `a502c0bce9638990d314db0f033a48df464b2e9f` lulus [release CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889142) dan [database CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889081): 284 Node, TypeScript, build, 93 browser; replay semua migrasi, SQL rollback, race dua koneksi dan restore sintetis PASS. Seluruh 1.546 fingerprint schema/RLS/hak efektif aplikasi QA identik dengan replay CI. Deployment existing Production `mas`, `dpl_9RVoM9zYWJT4dg1a8PMF2oeyDbFA`, READY pada SHA tersebut dan domain masjawalaundry.web.id. Production POS **0 tabel**, baseline legacy tetap sama; QA **22/22 RLS**, write/finance/package-mode OFF dan tidak ada transaksi/customer sintetis tersisa. **G8 NO-GO**, external evidence dan approval Production belum ada. Koreksi preflight terakhir mengubah kontrak 20 menjadi 22 tabel, dengan tes regresi red→green; tidak mengubah flag atau bukti bisnis. Paragraf checkpoint sebelumnya adalah histori, bukan status terkini. Lihat [receipt rilis](./release-20261103.md).
+
+
 Keputusan Owner 3 November 2026: jam kalender; durasi disimpan Owner, tanpa menetapkan 72/24/6 sebagai tarif/durasi resmi. Template asli diberikan Owner di chat; nilai transaksi contoh tidak diimpor. Empat tahap menggantikan kontrak tiga tahap untuk katalog paket baru.
 
 Dependensi: main c262a7f; database CI PASS pada run 41590525640, release CI menunggu. PR #30 diabaikan.

@@ -5,8 +5,8 @@
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "0fe995db640de6249bd9389fe674a6853ab4d5bd",
-  "deployedProductionSha": "0fe995db640de6249bd9389fe674a6853ab4d5bd",
+  "reviewedMainSha": "a502c0bce9638990d314db0f033a48df464b2e9f",
+  "deployedProductionSha": "a502c0bce9638990d314db0f033a48df464b2e9f",
   "productionPosTables": 0,
   "productionOutletCount": 0,
   "productionWriteEnabledOutlets": 0,
@@ -132,13 +132,23 @@
   },
   "productionFinanceEnabledOutlets": 0,
   "automatedLocalCheckpoint": {
-    "nodeTests": 284,
+    "nodeTests": 285,
     "browserFixtureTests": 93,
     "typecheck": "PASS",
     "build": "PASS",
-    "ci": "PENDING",
+    "ci": "PASS at a502c0b",
     "physicalUat": "PHYSICAL_UAT_REQUIRED",
-    "latestStableCiSha": "c262a7f2b9b25677b4ff1a9452a228d194a35c6c",
-    "additionalPackageCi": "PENDING"
+    "latestStableCiSha": "a502c0bce9638990d314db0f033a48df464b2e9f",
+    "additionalPackageCi": "PASS"
+  },
+  "releaseTechnicalReceipt": {
+    "sourceSha": "a502c0bce9638990d314db0f033a48df464b2e9f",
+    "vercelDeploymentId": "dpl_9RVoM9zYWJT4dg1a8PMF2oeyDbFA",
+    "ready": true,
+    "releaseCiRun": 41595889142,
+    "databaseCiRun": 41595889081,
+    "semanticSchemaEntries": 1546,
+    "semanticSchemaDifferences": 0,
+    "externalEvidenceStillRequired": true
   }
 }

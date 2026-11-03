@@ -1,13 +1,16 @@
 # Master audit POS G0–G8 — 2 November 2026
 
+> **Bukti terkini — 3 November 2026:** source `a502c0bce9638990d314db0f033a48df464b2e9f` lulus [release CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889142) dan [database CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889081): 284 Node, TypeScript, build, 93 browser; replay semua migrasi, SQL rollback, race dua koneksi dan restore sintetis PASS. Seluruh 1.546 fingerprint schema/RLS/hak efektif aplikasi QA identik dengan replay CI. Deployment existing Production `mas`, `dpl_9RVoM9zYWJT4dg1a8PMF2oeyDbFA`, READY pada SHA tersebut dan domain masjawalaundry.web.id. Production POS **0 tabel**, baseline legacy tetap sama; QA **22/22 RLS**, write/finance/package-mode OFF dan tidak ada transaksi/customer sintetis tersisa. **G8 NO-GO**, external evidence dan approval Production belum ada. Koreksi preflight terakhir mengubah kontrak 20 menjadi 22 tabel, dengan tes regresi red→green; tidak mengubah flag atau bukti bisnis. Paragraf checkpoint sebelumnya adalah histori, bukan status terkini. Lihat [receipt rilis](./release-20261103.md).
+
+
 > **Checkpoint 3 November 2026: implementasi aman dan QA selesai secara lokal; CI paket tambahan belum selesai.** 284 tes Node, TypeScript, build Next.js dan 93 tes browser PASS (fixture sintetis, bukan real Auth/physical UAT). Regresi SQL QA lulus secara kolektif, semua perubahan transaksi di-rollback. Lima migrasi tambahan 20261103070000–074000 QA saja; flags write/finance/package-mode tetap OFF. Main c262a7f sudah lulus kedua CI; paket tambahan akan memperoleh SHA dan bukti CI/deployment tersendiri. Matriks di bawah adalah baseline historis; tabel status terkini berikut mengesampingkan kata PROVISIONAL/pending lama yang telah ditutup oleh bukti ini. G8 tetap NO-GO.
 
 | Gate | Status aktual | Bukti implementasi/QA | Acceptance tersisa |
 | --- | --- | --- | --- |
-| G0 | PARTIAL | Baseline main diinspeksi, inventaris schema dan checksums legacy, sumber/revisi tercatat | Inventory/reconciliation bisnis Owner dan SHA final release |
-| G1 | PARTIAL | Owner Auth, current cashier session/revoke/permissions dan negative SQL tests | Real-session UAT, mitigasi identity ID-only sebelum finance |
-| G2 | PARTIAL | Migrasi additive canonical, 22 tabel POS RLS, direct-write aplikasi ditolak | Final replay/semantic schema comparison, Production migration approval |
-| G3 | PARTIAL | Owner katalog keluarga/paket/tarif, kalender Owner, revisi dan immutable note snapshots | Durasi/tarif resmi Owner dan real-session UAT |
+| G0 | PARTIAL | Baseline main diinspeksi, inventaris schema dan checksums legacy, sumber/revisi tercatat | Inventory/reconciliation bisnis Owner; SHA release sudah terverifikasi |
+| G1 | PARTIAL | Guard isolasi QA/runner, credential-negative tests, restore sintetis dan semantic parity PASS | Actual approved backup/restore dan real-session isolation UAT; Preview N/A oleh keputusan Owner |
+| G2 | PARTIAL | Migrasi additive canonical, 22 tabel POS RLS, direct-write aplikasi ditolak | Replay/semantic parity sudah PASS; Production migration approval dan real Auth UAT |
+| G3 | PARTIAL | Owner ID/password; MAS-XXXX, izin/revoke tiap RPC dan negative SQL; Owner katalog paket/tarif | Mitigasi impersonation ID-only, durasi/tarif resmi Owner, real-session/device UAT |
 | G4 | PARTIAL | Owner actor, wizard 4 tahap, satu paket, authoritative quote, UUID retry, status/history, handover guard | Perangkat nyata, real login lifecycle dan jaringan |
 | G5 | PARTIAL | DP/full/refund, points once, cash atomik, negative/concurrency source fixtures | Pilot finansial disetujui, actual reconciliation, identity mitigation |
 | G6 | PARTIAL | Cash/shift/report, receipt template/verified recipient/current ledger, import review append-only tanpa posting | Physical cash/print/WA, actual Binatu reconciliation dan cutoff |
