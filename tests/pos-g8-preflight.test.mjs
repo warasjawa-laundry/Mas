@@ -6,7 +6,8 @@ const receipt=JSON.parse(readFileSync(new URL("../docs/pos/g8-readiness.json",im
 test("current G8 receipt fails closed; no invented sign-off",()=>{
  const result=evaluatePosG8(receipt);
  assert.equal(result.ready,false);
- assert.ok(result.blockers.some(x=>x.includes("production POS schema")));
+ assert.equal(receipt.productionPosTables,22);
+ assert.equal(result.blockers.some(x=>x.includes("production POS schema")),false);
  assert.ok(result.blockers.some(x=>x.includes("restoreRehearsal")));
  assert.ok(result.blockers.some(x=>x.includes("physicalQrUat")));
 });
@@ -37,8 +38,8 @@ test("G8 never passes without owner-actor writes, service-duration policy and ca
  r.status="GO";r.productionPosTables=22;r.productionOutletCount=1;
  assert.ok(evaluatePosG8(r).blockers.some(x=>x.includes("GO_CANDIDATE")));
 });
-test("QA audit receipt cannot be misinterpreted as Production readiness",()=>{
- assert.equal(receipt.productionPosTables,0);
+test("matching Production and QA schemas cannot substitute for financial UAT",()=>{
+ assert.equal(receipt.productionPosTables,22);
  assert.equal(receipt.qaReadOnlyReceipt.posTables,22);
  assert.equal(receipt.qaReadOnlyReceipt.writeEnabledOutlets,0);
  assert.equal(receipt.evidence.ownerPosWriteUat.verified,false);
