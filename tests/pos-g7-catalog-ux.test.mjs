@@ -54,8 +54,15 @@ test("Package wizard uses four steps and real catalog pricing",()=>{
  const editor=source("components/admin/service-editor.tsx");
  assert.match(editor,/name="duration"/);
  const settings=source("app/admin/settings/services/page.tsx");
- assert.match(settings,/className="mj-service-duration-col"/);
- assert.match(settings,/s.duration\|\|"Belum diatur"/);
+ assert.match(settings,/PackageCatalogEditor/);
+ assert.doesNotMatch(settings,/<ServiceEditor|s\.duration\|\|"Belum diatur"/);
+ assert.match(settings,/editor sementara tidak ditampilkan/);
+ const packageEditor=source("components/admin/package-catalog-editor.tsx");
+ assert.match(packageEditor,/settings\.families\.map/);
+ assert.match(packageEditor,/name=\{'price-'\+p\.code\}/);
+ assert.match(packageEditor,/packageDuration\(p\.duration_minutes\)/);
+ assert.doesNotMatch(packageEditor,/<legend>\{p\.name\} · \{p\.duration_minutes/);
+ assert.match(form,/!packageWorkflow&&<span className=\{styles\.serviceDuration\}/);
  const picker=source("app/kasir/pesanan/baru/member-name-picker.tsx");
  assert.match(picker,/400\)/); // 400 ms debounce
  assert.match(picker,/onPick\(row\)/);

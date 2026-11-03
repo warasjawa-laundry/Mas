@@ -133,14 +133,14 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
      {pendingPackage&&<div role="alert"><p>Mengganti paket akan mengosongkan pilihan layanan. Periksa tarif paket baru sebelum menambah layanan.</p><button type="button" className={styles.back} onClick={()=>setPendingPackage("")}>Pertahankan pilihan</button><button type="button" className={styles.primary} onClick={()=>{setPackageCode(pendingPackage);setQuantities({});setPendingPackage("");}}>Ganti paket dan pilih ulang</button></div>}
     </section>}
     <section className={`${styles.panel} ${styles.catalogPanel} ${step!==servicesStep?styles.mobileHidden:''}`} aria-labelledby="services-title">
-     <div className={styles.sectionHeading}><h2 id="services-title">Pilih layanan & durasi</h2><span>{String(servicesStep+1).padStart(2,"0")}</span></div>
+     <div className={styles.sectionHeading}><h2 id="services-title">{packageWorkflow?"Pilih layanan":"Pilih layanan & durasi"}</h2><span>{String(servicesStep+1).padStart(2,"0")}</span></div>
      <label className={styles.search}><span>Cari layanan</span><input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari nama layanan / paket"/></label>
      <div className={styles.categories} aria-label="Kategori layanan"><button type="button" aria-pressed={!activeCategory} onClick={()=>setCategory('')}>Semua</button>{categories.map(c=><button type="button" key={c} aria-pressed={activeCategory===c} onClick={()=>setCategory(c)}>{c||'Lainnya'}</button>)}</div>
      <p className={styles.help}>Ketik jumlah tepat atau gunakan + / −. Gunakan titik untuk desimal, maksimal 3 angka pada kg dan meter.</p>
      {visible.length===0?<p className={styles.empty}>Tidak ada layanan yang cocok. Ubah pencarian atau kategori.</p>:<div className={styles.services}>{visible.map(s=>{
       const error=quantityError(s);
       return <div key={s.id} className={styles.service} data-selected={!!quantities[s.id]}>
-       <div className={styles.serviceInfo}><strong>{s.name}</strong><small>{s.package_name||s.category}</small><span className={styles.serviceDuration}><span aria-hidden="true">◷</span> {s.duration||"Durasi belum ditentukan"}</span><span>{money(s.price_idr)} <small>/ {s.unit}</small></span></div>
+       <div className={styles.serviceInfo}><strong>{s.name}</strong><small>{s.package_name||s.category}</small>{!packageWorkflow&&<span className={styles.serviceDuration}><span aria-hidden="true">◷</span> {s.duration||"Durasi belum ditentukan"}</span>}<span>{money(s.price_idr)} <small>/ {s.unit}</small></span></div>
        <div className={styles.quantity}><button type="button" aria-label={`Kurangi ${s.name}`} disabled={!quantities[s.id]} onClick={()=>adjust(s,-1)}>−</button><input aria-label={`Jumlah ${s.name}`} aria-invalid={!!error} aria-describedby={error?`quantity-${s.id}`:undefined} inputMode={s.unit==='pcs'||s.unit==='satuan'?'numeric':'decimal'} placeholder="0" value={quantities[s.id]??""} onChange={e=>changeQuantity(s.id,e.target.value.slice(0,12))}/><button type="button" aria-label={`Tambah ${s.name}`} onClick={()=>adjust(s,1)}>+</button></div>
        {error&&<p id={`quantity-${s.id}`} className={styles.quantityError}>{error}</p>}
       </div>})}</div>}
@@ -150,7 +150,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
     <div className={styles.summaryHead}><h2 id="summary-title">Atur & rincian pesanan</h2><p>{packageWorkflow?"Satu paket durasi untuk seluruh layanan pada nota.":"Durasi mengikuti masing-masing layanan yang dipilih."}</p></div>
     <div className={styles.summaryBody}>
      <div className={styles.customerSummary}><small>Pelanggan</small><strong>{customerValid?customerLabel:'Belum dipilih'}</strong></div>
-     {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{s.duration||"Durasi belum ditentukan"} · {quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
+     {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{!packageWorkflow&&`${s.duration||"Durasi belum ditentukan"} · `}{quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
      {chosen.length>30&&<p role="alert" className={styles.warn}>Maksimal 30 layanan per nota. Kurangi pilihan layanan.</p>}
      {packageWorkflow&&etaPreview}
      <label className={styles.field}>Parfum (opsional)<input value={perfume} onChange={e=>setPerfume(e.target.value)} maxLength={80} placeholder="Tanpa parfum / nama parfum"/></label>

@@ -49,3 +49,12 @@ Owner memilih memakai katalog paket yang sudah dikerjakan. Wizard Owner/kasir se
 Bukti lokal sebelum integrasi: 5 tes kalender/durasi dan 8 tes browser wizard PASS; dua tes baru dijalankan RED sebelum implementasi. Suite final/CI/deployment dicatat pada output receipt setelah verifikasi. G8 tetap NO-GO sampai bukti eksternal tersedia.
 
 Verifikasi lokal akhir estimasi kalender: 290/290 Node, TypeScript, build dan 93/93 browser PASS. Fixture SSR lama sempat gagal karena dependensi helper baru belum dimuat; ditambah import helper aktual, assertions HTML escaping dan disabled submission tetap. Screenshot konfirmasi 320px diperiksa, tidak overflow; kontrol paket/regresi transaksi tetap lulus. CI/deployment SHA baru menunggu pemeriksaan pasca-integrasi.
+
+
+## Koreksi tampilan katalog paket — 3 November 2026
+
+Owner menegaskan bahwa label lama `1–3 hari` / `1–2 hari` pada **kartu layanan** tidak sesuai flow baru. Reguler, Ekspres dan Kilat adalah tiga **paket global**, masing-masing mempunyai durasi kalender yang dikonfigurasi Owner sekali. Satu layanan memiliki tarif/ketersediaan per paket, bukan tiga kartu lama dengan durasi rentang.
+
+Perbaikan source: `/admin/settings/services` hanya merender editor paket baru saat RPC tersedia; editor lama tidak lagi dimunculkan bersamaan dan gagal-muat RPC ditampilkan sebagai error fail-closed. Sembilan record lama tetap aman dan tersedia hanya sebagai opsi pemetaan di form pembuatan keluarga layanan. Wizard paket menyembunyikan pengulangan durasi pada kartu dan ringkasan item; pilihan paket dan estimasi akhir tetap menampilkan informasi waktu. Katalog lama dan data keuangan tidak diubah. Pengujian source dan browser disesuaikan.
+
+Audit Supabase read-only sebelum patch: Production dan QA masing-masing 22/22 tabel publik POS memakai RLS; tidak ada direct app DML grants; masing-masing 0 order/payment dan 0 keluarga layanan. Production tetap `write_enabled=true`, `finance_enabled=true`, `package_workflow_enabled=false`, 0 paket aktif, 0 kasir aktif. QA ketiga flag OFF. Security Advisor: INFO RLS-no-policy (default deny); WARN executable SECURITY DEFINER perlu peninjauan per fungsi; Production juga WARN leaked-password-protection disabled. Keadaan itu **bukan bukti keamanan G8 lengkap** dan tidak diubah dalam patch UI ini. Durasi/tarif Production tetap menunggu nilai resmi Owner dan physical UAT/restore/identity-review G8 belum terpenuhi. Tidak ada SQL UPDATE, migrasi, seeding, aktivasi atau perubahan izin Production oleh koreksi ini.
