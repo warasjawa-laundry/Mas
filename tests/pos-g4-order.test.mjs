@@ -8,11 +8,11 @@ const service='33333333-3333-4333-8333-333333333333';
 const req='44444444-4444-4444-8444-444444444444';
 function form(fields={}){
  const f=new FormData();
- for(const [k,v] of Object.entries({requestId:req,kind:'guest',guestName:'Tamu QA',memberNumber:'',perfume:'',notes:'',items:JSON.stringify([{service_id:service,quantity:'1.255',revision:4}]),...fields}))f.set(k,v);
+ for(const [k,v] of Object.entries({requestId:req,kind:'guest',guestName:'Tamu QA',memberNumber:'',perfume:'',notes:'',deliveryCode:'NONE',deliveryRevision:'1',items:JSON.stringify([{service_id:service,quantity:'1.255',revision:4}]),...fields}))f.set(k,v);
  return f;
 }
 test('G4 guest payload allows ID/qty/revision only and never trusts client price/actor',()=>{
- assert.deepEqual(parseG4OrderForm(form()),{requestId:req,guestName:'Tamu QA',memberNumber:null,items:[{service_id:service,quantity:'1.255',revision:4}],perfume:null,notes:null});
+ assert.deepEqual(parseG4OrderForm(form()),{requestId:req,guestName:'Tamu QA',memberNumber:null,items:[{service_id:service,quantity:'1.255',revision:4}],perfume:null,notes:null,deliveryCode:'NONE',deliveryRevision:1});
  assert.equal(parseG4OrderForm(form({items:JSON.stringify([{service_id:service,quantity:'2',revision:1,priceIdr:'1'}])})),null);
  assert.equal(parseG4OrderForm(form({items:JSON.stringify([{service_id:service,quantity:'2',revision:1,actor_id:'owner'}])})),null);
 });
@@ -35,4 +35,16 @@ test('catalog units share exact integer IDR contract with backend',()=>{
   {priceIdr:'15000',quantity:'2',unit:posUnitFromCatalog('M')},
  ]);
  assert.equal(p.totalIdr,'37530');assert.equal(formatIdr(p.totalIdr),'Rp37.530');
+});
+test('delivery code and revision are accepted but client-supplied delivery amount never enters the payload',()=>{
+ const payload=parseG4OrderForm(form({deliveryCode:'NEAR',deliveryRevision:'7',deliveryAmount:'1'}));
+ assert.equal(payload?.deliveryCode,'NEAR');assert.equal(payload?.deliveryRevision,7);
+ assert.equal('deliveryAmount' in payload,false);
+ for(const bad of ['WRONG','', 'NEAR;DROP'])assert.equal(parseG4OrderForm(form({deliveryCode:bad})),null);
+ for(const bad of ['0','1.5','-1','NaN'])assert.equal(parseG4OrderForm(form({deliveryRevision:bad})),null);
+ assert.equal(parseG4OrderForm(form({perfume:'Pilihan palsu'})),null);
+});
+test('delivery charges are included in integer IDR totals',()=>{
+ const totals=calculateOrderTotals([{priceIdr:'5000',quantity:'2',unit:'kg'}],{deliveryIdr:'3000'});
+ assert.equal(totals.subtotalIdr,'10000');assert.equal(totals.feesIdr,'3000');assert.equal(totals.totalIdr,'13000');
 });

@@ -16,6 +16,7 @@ import {resolveOwnerPosMemberCode} from "@/app/admin/pesanan/member-actions";
 import type {CommandActionResult} from "@/lib/pos/command-recovery";
 
 export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number;duration_package_code?:string};
+export type DeliveryOption={code:string;name:string;amount_idr:number;revision:number};
 const money=(n:string|number|bigint)=>formatIdr(n);
 const legacySteps=["Pelanggan","Layanan","Konfirmasi"];
 
@@ -24,8 +25,8 @@ function CreateOrderButton({disabled}:{disabled:boolean}){
  return <button className={styles.primary} disabled={disabled||pending} aria-busy={pending} type="submit">{pending?'Menyimpan pesanan…':'Buat pesanan'}</button>;
 }
 
-export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction,packageWorkflow=false,serverTime}:{
- services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";
+export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction,packageWorkflow=false,serverTime,lockReason}:{
+ services:CatalogService[];deliveryOptions?:DeliveryOption[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";lockReason?:string;
  createAction?:(form:FormData)=>Promise<CommandActionResult>;
  packageWorkflow?:boolean;serverTime?:string;recoveryKey?:string;recoverAction?:(requestId:string)=>Promise<CommandActionResult>;
 }){
@@ -61,6 +62,8 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
  const lookupSequence=useRef(0);
  const [quantities,setQuantities]=useState<Record<string,string>>({});
  const [perfume,setPerfume]=useState("");
+ const [deliveryCode,setDeliveryCode]=useState("NONE");
+ const selectedDelivery=deliveryOptions.find(d=>d.code===deliveryCode);
  const [notes,setNotes]=useState("");
  const [search,setSearch]=useState("");
  const [category,setCategory]=useState("");
@@ -72,8 +75,8 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
  const chosen=useMemo(()=>available.filter(s=>(quantities[s.id]??"")!==""),[available,quantities]);
  const quote=useMemo(()=>{
   if(!chosen.length||chosen.length>30)return null;
-  try{return calculateOrderTotals(chosen.map(s=>({priceIdr:String(s.price_idr),quantity:quantities[s.id],unit:posUnitFromCatalog(s.unit)})))}catch{return null}
- },[chosen,quantities]);
+  try{return selectedDelivery?calculateOrderTotals(chosen.map(s=>({priceIdr:String(s.price_idr),quantity:quantities[s.id],unit:posUnitFromCatalog(s.unit)})),{deliveryIdr:String(selectedDelivery.amount_idr)}):null}catch{return null}
+ },[chosen,quantities,selectedDelivery]);
  const customerValid=customerType==="guest"?name.trim().length>=2:/^[1-9][0-9]{0,11}$/.test(member)&&memberName.length>0;
  const customerLabel=customerType==='guest'?name.trim():memberName||`Member MJL #${member}`;
  const items=JSON.stringify(chosen.map(s=>({service_id:s.id,quantity:quantities[s.id],revision:Number(s.revision)})));
@@ -153,16 +156,33 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
      {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{!packageWorkflow&&`${s.duration||"Durasi belum ditentukan"} · `}{quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
      {chosen.length>30&&<p role="alert" className={styles.warn}>Maksimal 30 layanan per nota. Kurangi pilihan layanan.</p>}
      {packageWorkflow&&etaPreview}
-     <label className={styles.field}>Parfum (opsional)<input value={perfume} onChange={e=>setPerfume(e.target.value)} maxLength={80} placeholder="Tanpa parfum / nama parfum"/></label>
+     <label className={styles.field}>Parfum
+      <select value={perfume} onChange={e=>setPerfume(e.target.value)}>
+       <option value="">Tidak</option>
+       {["Akasia","Junjung Buih","Lavender","Ocean","Sakura"].map(name=><option key={name} value={name}>{name}</option>)}
+      </select>
+     </label>
+     <label className={styles.field}>Antar-jemput
+      <select value={deliveryCode} onChange={e=>setDeliveryCode(e.target.value)} disabled={deliveryOptions.length===0}>
+       {deliveryOptions.map(d=><option key={d.code} value={d.code}>{d.name} · {money(d.amount_idr)}</option>)}
+      </select>
+      <small>Tarif berasal dari Supabase dan diverifikasi ulang saat nota disimpan.</small>
+     </label>
+     {deliveryOptions.length===0&&<p role="alert" className={styles.warn}>Pilihan antar-jemput belum tersedia dari database. Nota tidak dapat dibuat sebelum tarif dimuat.</p>}
      <label className={styles.field}>Catatan cucian (opsional)<textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={500} rows={3} placeholder="Catatan untuk proses laundry"/></label>
-     <div className={styles.unavailableAdjustments}><div><span>Antar / jemput</span><strong>Belum tersedia</strong></div><div><span>Diskon</span><strong>Belum tersedia</strong></div><p className={styles.help}>Total saat ini hanya harga layanan. Harga disahkan kembali saat nota disimpan.</p></div>
+     <div className={styles.unavailableAdjustments}>
+      <div><span>Subtotal layanan</span><strong>{quote?money(quote.subtotalIdr):'—'}</strong></div>
+      <div><span>Antar-jemput · {selectedDelivery?.name??'Belum tersedia'}</span><strong>{selectedDelivery?money(selectedDelivery.amount_idr):'—'}</strong></div>
+      <div><span>Diskon</span><strong>Belum tersedia</strong></div>
+      <p className={styles.help}>Subtotal layanan ditambah biaya antar-jemput. Harga akhir divalidasi oleh Supabase sebelum nota tersimpan.</p>
+     </div>
     </div>
     <div className={styles.summaryFooter}><div className={styles.total}><span>Total tagihan</span><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
      {!customerValid&&<p className={styles.help}>Lengkapi pelanggan sebelum membuat nota.</p>}
-     {!canWrite&&<p className={styles.warn} role="status">Transaksi POS masih dikunci. Nota belum dapat dibuat.</p>}
+     {!canWrite&&<p className={styles.warn} role="status">{lockReason??"Transaksi POS masih dikunci. Nota belum dapat dibuat."}</p>}
      <RecoverableForm action={createAction??createCashierOrder} recoveryKey={recoveryKey} recoverAction={recoverAction} onRecoveryPendingChange={setRecoveryPending}>
-      <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="kind" value={customerType}/><input type="hidden" name="guestName" value={customerType==='guest'?name.trim():""}/><input type="hidden" name="memberNumber" value={customerType==='member'?member:""}/><input type="hidden" name="items" value={items}/><input type="hidden" name="perfume" value={perfume}/><input type="hidden" name="notes" value={notes}/>
-      <CreateOrderButton disabled={!canWrite||!quote||!customerValid}/>
+      <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="kind" value={customerType}/><input type="hidden" name="guestName" value={customerType==='guest'?name.trim():""}/><input type="hidden" name="memberNumber" value={customerType==='member'?member:""}/><input type="hidden" name="items" value={items}/><input type="hidden" name="perfume" value={perfume}/><input type="hidden" name="notes" value={notes}/><input type="hidden" name="deliveryCode" value={selectedDelivery?.code??""}/><input type="hidden" name="deliveryRevision" value={selectedDelivery?.revision??""}/>
+      <CreateOrderButton disabled={!canWrite||!quote||!customerValid||!selectedDelivery}/>
      </RecoverableForm>
     </div>
    </aside>

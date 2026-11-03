@@ -506,3 +506,13 @@ Perubahan visual terisolasi pada `/admin/settings/services`: ringkasan Reguler/E
 - Pada wizard Tambah Pesanan yang dipakai Owner dan Kasir, paket tampil sebagai **Reguler · 72 jam**, **Ekspres · 24 jam**, dan **Kilat · 6 jam** mengikuti durasi resmi yang telah tersimpan; label `4320/1440/360 menit` tidak lagi ditampilkan kepada pengguna.
 - Perubahan hanya pada formatter label di frontend. Perhitungan estimasi, RPC, snapshot nota, serta penyimpanan durasi dalam menit kalender tetap sama. Nilai pecahan jam ditampilkan dalam jam desimal berformat Indonesia (dengan penanda perkiraan jika perlu pembulatan), bukan disalahartikan sebagai jam bulat.
 - Uji regresi durasi dan wizard ditambah. Tidak ada migrasi, perubahan tarif, aktivasi paket, ataupun penulisan database pada pekerjaan ini.
+
+
+## Pilihan parfum, antar-jemput dan diagnosis kunci POS — 3 November 2026
+
+- Wizard Owner/Kasir kini memilih **Parfum** melalui dropdown terbatas (Tidak, Akasia, Junjung Buih, Lavender, Ocean, Sakura), bukan teks bebas. Kolom catatan tetap terpisah.
+- Antar-jemput menggunakan pilihan **Tidak Rp0, Gratis Rp0, Dekat Rp3.000, Jauh Rp7.000** berdasarkan referensi screenshot Owner. Nominal/versi opsi diambil dari Supabase melalui RPC katalog berotorisasi; browser hanya mengirim kode dan revisi, **bukan** harga. RPC baru menghitung ulang dengan tabel konfigurasi private yang terkunci, memvalidasi revision, kemudian menyimpan snapshot nominal, satu baris adjustment, serta total faktur atomik dan idempotent. Nota WhatsApp mencantumkan subtotal layanan, antar-jemput, dan total aktual yang diambil lagi dari DB. Harga lama dan nota lama tidak diubah.
+- Status kunci ditemukan: Production sebelumnya write_enabled=true, finance_enabled=true, 14 keluarga/31 varian aktif, **package_workflow_enabled=false**. UI sekarang menunjukkan penyebabnya dan link langsung ke Pengaturan Layanan & Harga untuk Owner. **Tidak ada perubahan flag otomatis**; langkah aktivasi paket harus dilakukan Owner sesudah review tarif dan kesiapan UAT/G8. Status keseluruhan G8 tetap NO_GO.
+- Migrasi additive `20261103203800_pos_delivery_fee_authoritative.sql`: opsi harga hanya dalam `laundry_private`, snapshot baru di `laundry_pos_orders`; fungsi lama tetap ada demi kompatibilitas histori dan retry lama. QA divalidasi sebelum release, produksi menunggu verifikasi gate untuk migrasi. Tidak ada penghapusan transaksi/histori atau pengubahan skema login.
+
+- Tambahan regresi browser paket: pilihan parfum Sakura dan antar-jemput Dekat menaikkan total fixture Rp7.500 → Rp10.500; payload hanya kode/revisi. Fixture SQL memastikan tarif tabel private, snapshot, RPC dan pembatasan akses Owner.

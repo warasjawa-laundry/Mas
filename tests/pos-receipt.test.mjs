@@ -27,3 +27,11 @@ test('inconsistent money and premature ready/collected receipts fail closed',()=
  assert.throws(()=>buildReceipt({...receipt,remaining:'0'}));assert.throws(()=>buildReceipt({...receipt,work_status:'QUEUED'}));
  assert.throws(()=>buildReceipt({...receipt,kind:'COLLECTED',work_status:'COLLECTED'}));
 });
+
+test('delivery fee is displayed separately and reconciled into WhatsApp total',()=>{
+ const billed={...receipt,total:'22600',remaining:'12600',service_subtotal:'19600',fees_idr:'3000',discount_idr:'0',delivery:{code:'NEAR',name:'Dekat',amount_idr:'3000'}};
+ const txt=buildReceipt(billed);
+ assert.match(txt,/Total Layanan : Rp19.600/);assert.match(txt,/Antar-Jemput \(Dekat\) : Rp3.000/);
+ assert.match(txt,/Total Tagihan : Rp22.600/);assert.match(txt,/Sisa Tagihan : Rp12.600/);
+ assert.throws(()=>buildReceipt({...billed,total:'19600',remaining:'9600'}),/Total nota dan biaya tambahan/);
+});

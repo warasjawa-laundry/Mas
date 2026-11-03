@@ -2,7 +2,7 @@ export type ReceiptKind='NEW'|'READY'|'COLLECTED';
 export type ReceiptContact={phone:string|null;address:string;verified_at:string|null};
 export type ReceiptData={invoice:string;customer:string;actor:string;collector?:string|null;created_at:string;due_at:string|null;ready_at:string|null;collected_at:string|null;
  work_status:string;kind:ReceiptKind;package:string|null;minutes:number|null;perfume:string|null;notes:string|null;
- total:string;paid:string;refunded:string;remaining:string;status:string;contact:ReceiptContact|null;
+ total:string;service_subtotal?:string;fees_idr?:string;discount_idr?:string;delivery?:{code:string;name:string;amount_idr:string}|null;paid:string;refunded:string;remaining:string;status:string;contact:ReceiptContact|null;
  member:{year:number;balance:string;awarded:number;projected:number|null}|null;
  settings:{revision:number;config:Record<string,string>};
  items:{name:string;package:string|null;duration:string|null;quantity_milli:number;unit:string;price:string;subtotal:string}[]};
@@ -26,6 +26,15 @@ export function buildReceipt(r:ReceiptData){
  for(const key of ['total','paid','refunded','remaining'] as const)if(!/^(0|[1-9]\d{0,15})$/.test(r[key]))throw Error('Nominal nota tidak valid');
  const total=BigInt(r.total),paid=BigInt(r.paid),refund=BigInt(r.refunded),remaining=BigInt(r.remaining);
  if(total<paid-refund||remaining!==total-paid+refund||refund>paid)throw Error('Rincian pembayaran belum konsisten');
+ if(r.delivery){
+  if(!/^(0|[1-9]\d{0,15})$/.test(r.delivery.amount_idr)||
+     !r.delivery.name||!r.delivery.code||
+     (r.fees_idr!==undefined&&BigInt(r.delivery.amount_idr)>BigInt(r.fees_idr)))throw Error('Tarif antar-jemput tidak valid');
+ }
+ if(r.service_subtotal!==undefined&&(!/^(0|[1-9]\d{0,15})$/.test(r.service_subtotal)||
+    (r.fees_idr!==undefined&&r.discount_idr!==undefined&&
+    total!==BigInt(r.service_subtotal)-BigInt(r.discount_idr)+BigInt(r.fees_idr))))
+  throw Error('Total nota dan biaya tambahan tidak konsisten');
  if(r.kind==='READY'&&r.work_status!=='READY'||r.kind==='COLLECTED'&&(r.work_status!=='COLLECTED'||r.status!=='PAID'||remaining!==BigInt(0)||!r.collected_at))throw Error('Status nota belum sesuai draf');
  const c=r.settings.config;const title=r.kind==='NEW'?c.new_title:r.kind==='READY'?c.ready_title:c.collected_title;
  const lines=[c.outlet_name,c.address,c.contact,'',title,'',r.invoice,`Pelanggan : ${r.customer}`,
@@ -40,7 +49,9 @@ export function buildReceipt(r:ReceiptData){
    `${(item.quantity_milli/1000).toLocaleString('id-ID',{maximumFractionDigits:3})} ${item.unit} x ${money(item.price)} = ${money(item.subtotal)}`);
  }
  lines.push(divider,`Parfum : ${r.perfume||'Tidak dicatat'}`);if(r.notes)lines.push(`Catatan : ${r.notes}`);
- lines.push(divider,`Total Layanan : ${money(r.total)}`,divider,'PEMBAYARAN',`Total : ${money(r.total)}`,
+ lines.push(divider,`Total Layanan : ${money(r.service_subtotal??r.total)}`);
+ if(r.delivery&&r.delivery.code!=='NONE')lines.push(`Antar-Jemput (${r.delivery.name}) : ${money(r.delivery.amount_idr)}`);
+ lines.push(`Total Tagihan : ${money(r.total)}`,divider,'PEMBAYARAN',`Total : ${money(r.total)}`,
   `Sudah Dibayar : ${money(r.paid)}`,`Sisa Tagihan : ${money(r.remaining)}`,
   `Status : ${{PAID:'LUNAS',PARTIAL:'DP / BELUM LUNAS',UNPAID:'BELUM BAYAR',REFUNDED:'REFUND',ZERO_TOTAL:'TAGIHAN NOL — REVIEW DIPERLUKAN'}[r.status]??'Belum diketahui'}`);
  if(refund>BigInt(0))lines.push(`Refund : ${money(refund)}`);

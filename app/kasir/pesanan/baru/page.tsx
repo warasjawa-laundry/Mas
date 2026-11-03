@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { cashierRpcAccess } from "@/lib/pos/g4-server";
 import { hasCashierGrant } from "@/lib/pos/cashier-permissions";
-import { OrderForm,type CatalogService } from "./order-form";
+import { OrderForm,type CatalogService,type DeliveryOption } from "./order-form";
 import styles from "./wizard.module.css";
 import {commandRecoveryKey} from "@/lib/pos/command-recovery";
 import {recoverCashierCommand} from "../recovery-actions";
@@ -15,6 +15,10 @@ export default async function NewCashierOrder({searchParams}:{searchParams:Promi
  if(!access)redirect("/kasir");
  const {data,error}=await access.client.rpc("laundry_pos_package_catalog",access.tokens);
  const {error:reason}=await searchParams;
+ const deliveryOptions=(Array.isArray(data?.delivery_options)?data.delivery_options:[]) as DeliveryOption[];
+ const lockReason=data?.enabled!==true?"Katalog paket belum diaktifkan Owner untuk nota baru."
+  :deliveryOptions.length===0?"Tarif antar-jemput tidak tersedia dari Supabase. Nota ditahan untuk mencegah salah hitung."
+  :"Transaksi belum diizinkan. Hubungi Owner untuk memeriksa izin Kasir dan konfigurasi POS.";
  return <main className={styles.shell}>
   <div className={`${styles.pagePattern} binatu-pattern`} aria-hidden="true"/>
   <Link href="/kasir/pesanan">← Daftar pesanan</Link>
@@ -23,7 +27,7 @@ export default async function NewCashierOrder({searchParams}:{searchParams:Promi
   {reason&&<p className={styles.warn} role="alert">{reason==='unconfirmed'?'Penyimpanan belum terkonfirmasi. Sebelum mencoba lagi, periksa Daftar Pesanan agar tidak membuat duplikat.':
    reason==='disabled'?'Transaksi belum diaktifkan.':'Form tidak valid, periksa data pelanggan dan kuantitas.'}</p>}
   {error?<p className={styles.warn} role="alert">Katalog POS belum tersedia di database aktif. Tidak ada transaksi yang dibuat.</p>:
-   <OrderForm packageWorkflow serverTime={new Date().toISOString()} services={(Array.isArray(data?.services)?data.services:[]) as CatalogService[]} requestId={randomUUID()} canWrite={access.session.write_enabled&&data?.enabled===true} canLookup={hasCashierGrant(access.session.permissions,"member_lookup")}
+   <OrderForm packageWorkflow serverTime={new Date().toISOString()} services={(Array.isArray(data?.services)?data.services:[]) as CatalogService[]} deliveryOptions={deliveryOptions} lockReason={lockReason} requestId={randomUUID()} canWrite={access.session.write_enabled&&data?.enabled===true&&deliveryOptions.length>0} canLookup={hasCashierGrant(access.session.permissions,"member_lookup")}
     recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'CREATE_ORDER')} recoverAction={recoverCashierCommand.bind(null,'CREATE_ORDER',null)}/>}
  </main>;
 }

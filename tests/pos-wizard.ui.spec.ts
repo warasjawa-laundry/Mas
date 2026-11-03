@@ -13,6 +13,7 @@ const services=[
  {id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',category:'Kiloan',package_name:'Express',name:'Cuci Express',price_idr:6000,unit:'kg',duration:'6 jam',revision:3,duration_package_code:'EXPRESS'},
  {id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',category:'Satuan',package_name:'Reguler',name:'Setrika Satuan',price_idr:4000,unit:'pcs',duration:'2 hari',revision:7,duration_package_code:'REGULAR'},
 ];
+const deliveryOptions=[{code:'NONE',name:'Tidak',amount_idr:0,revision:1},{code:'FREE',name:'Gratis',amount_idr:0,revision:1},{code:'NEAR',name:'Dekat',amount_idr:3000,revision:1},{code:'FAR',name:'Jauh',amount_idr:7000,revision:1}];
 const cssSource=readFileSync('app/kasir/pesanan/baru/wizard.module.css','utf8');
 const classNames=[...new Set([...cssSource.matchAll(/\.([a-zA-Z_][\w-]*)/g)].map(x=>x[1]))];
 const classMap=Object.fromEntries(classNames.map(name=>[name,'posFixture_'+name]));
@@ -47,7 +48,7 @@ test.beforeAll(async()=>{
  import React from 'react';import {createRoot} from 'react-dom/client';
  import {OrderForm} from './order-form.cjs';
  const role=window.posFixtureRole||'cashier';
- createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role,serverTime:"2026-12-31T16:30:00.000Z",packageWorkflow:window.posPackageWorkflow||false}));
+ createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},deliveryOptions:${JSON.stringify(deliveryOptions)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role,serverTime:"2026-12-31T16:30:00.000Z",packageWorkflow:window.posPackageWorkflow||false}));
  `);
  const alias:Record<string,string>={
   'next/navigation':path.resolve('tests/pos-fixture-navigation.cjs'),
@@ -184,11 +185,15 @@ for(const width of [320,390,1440])test(`package workflow has four steps, filters
  await expect(page.getByLabel('Jumlah Setrika Satuan',{exact:true})).toHaveCount(0);
  await page.getByLabel('Jumlah Cuci Express',{exact:true}).fill('1.25');
  if(width<1024)await page.getByRole('button',{name:'Atur pesanan',exact:true}).click();
- await expect(page.getByRole('complementary').locator('.'+classMap.total)).toHaveText(/Total tagihanRp\s*7\.500/);
+ await page.getByLabel('Parfum').selectOption('Sakura');
+ await page.getByLabel('Antar-jemput').selectOption('NEAR');
+ await expect(page.getByRole('complementary').locator('.'+classMap.total)).toHaveText(/Total tagihanRp\s*10\.500/);
  await noOverflow(page);
  await page.getByRole('button',{name:'Buat pesanan',exact:true}).click();
  const payload=await page.evaluate(()=>(window as any).posFixture.creates[0]);
  expect(JSON.parse(payload.items)).toEqual([{service_id:services[0].id,revision:3,quantity:'1.25'}]);
+ expect(payload.deliveryCode).toBe('NEAR');expect(payload.deliveryRevision).toBe('1');
+ expect(payload.perfume).toBe('Sakura');
  await page.evaluate(()=>(window as any).posFixture.finishCreate());
  await expect(page.getByRole('alert')).toContainText('Nota belum terkonfirmasi');
  await page.screenshot({path:`artifacts/screenshots/pos-package-wizard-${width}.png`,fullPage:true});
