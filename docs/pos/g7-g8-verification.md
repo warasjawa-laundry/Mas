@@ -51,3 +51,5 @@ Browser 320/390/1440 px memeriksa tautan kartu, recipient confirmation dan water
 Replay CI kini mencakup 42 migrasi dan fixture retire setelah synthetic restore. Produksi bukan lokasi fixture write; hanya satu UUID nota dummy lama dihapus/diarsipkan atas izin khusus Owner. Checkpoint 1 nota/payment di atas adalah snapshot sebelum operasi ini. Lihat [master audit](./master-audit-20261102.md) untuk hasil integritas dan batas kewenangan.
 
 CI 41668917004 pada c957d22 menolak top-level LOCK TABLE saat psql autocommit replay. Penguncian serta disable/rename/enable username trigger dipindahkan ke satu DO atomik; schema hasil API QA/Production tetap sama dan tidak menjalankan ulang retire. Perbaikan packaging ini wajib dibuktikan oleh replay CI berikutnya.
+
+Replay migrasi dan seluruh fixture SQL pada e0140e7 lulus, tetapi CI 41669192881 menemukan loop for tergandakan saat fixture retire ditambahkan pada script synthetic restore. Loop diperbaiki menjadi satu daftar regresi dan diperiksa dengan bash -n sebelum CI berikutnya; cakupan fixture tidak dikurangi.
