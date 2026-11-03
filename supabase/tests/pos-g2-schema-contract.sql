@@ -60,11 +60,20 @@ begin
   raise exception 'G2 accepted invalid code';
  exception when check_violation then null; end;
 
+ -- Keep the five existing immutable-journal triggers, plus the pilot point guard.
  select count(*) into v_bad from pg_trigger t join pg_class c on c.oid=t.tgrelid
- join pg_namespace n on n.oid=c.relnamespace where n.nspname='public'
+ join pg_namespace n on n.oid=c.relnamespace
+ join pg_proc p on p.oid=t.tgfoid where n.nspname='public'
  and c.relname in ('laundry_pos_payments','laundry_pos_cash_ledger','laundry_pos_point_links','laundry_pos_order_events','laundry_pos_commands')
+ and p.proname='pos_reject_journal_changes'
  and t.tgenabled='O' and not t.tgisinternal;
  if v_bad<>5 then raise exception 'G2 immutable journal trigger count %',v_bad; end if;
+ if not exists(select 1 from pg_trigger t join pg_class c on c.oid=t.tgrelid
+    join pg_proc p on p.oid=t.tgfoid
+    where c.oid='public.laundry_pos_point_links'::regclass
+      and t.tgname='pos_test_point_guard' and p.proname='pos_test_point_guard'
+      and t.tgenabled='O' and not t.tgisinternal)
+ then raise exception 'Pilot point guard absent or disabled'; end if;
 end;
 $g2$;
 rollback;
