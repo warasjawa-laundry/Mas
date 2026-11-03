@@ -13,6 +13,7 @@ import styles from "./wizard.module.css";
 import RecoverableForm from "@/components/admin/recoverable-form";
 import {resolveCashierMemberCode} from "./qr-actions";
 import {resolveOwnerPosMemberCode} from "@/app/admin/pesanan/member-actions";
+import PointSimulationPreview from "@/components/pos/point-simulation-preview";
 import type {CommandActionResult} from "@/lib/pos/command-recovery";
 
 export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number;duration_package_code?:string};
@@ -181,6 +182,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
     <div className={styles.summaryFooter}><div className={styles.total}><span>Total tagihan</span><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
      {!customerValid&&<p className={styles.help}>{pilotTestOnly?"Gunakan pelanggan umum dummy bernama UJI - Nama Dummy untuk melanjutkan.":"Lengkapi pelanggan sebelum membuat nota."}</p>}
      {!canWrite&&<p className={styles.warn} role="status">{lockReason??"Transaksi POS masih dikunci. Nota belum dapat dibuat."}</p>}
+     {pilotTestOnly&&quote&&selectedDelivery&&<PointSimulationPreview role={role} items={items} deliveryCode={selectedDelivery.code} deliveryRevision={selectedDelivery.revision} total={quote.totalIdr.toString()}/>}
      <RecoverableForm action={createAction??createCashierOrder} recoveryKey={recoveryKey} recoverAction={recoverAction} onRecoveryPendingChange={setRecoveryPending}>
       <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="kind" value={customerType}/><input type="hidden" name="guestName" value={customerType==='guest'?name.trim():""}/><input type="hidden" name="memberNumber" value={customerType==='member'?member:""}/><input type="hidden" name="items" value={items}/><input type="hidden" name="perfume" value={perfume}/><input type="hidden" name="notes" value={notes}/><input type="hidden" name="deliveryCode" value={selectedDelivery?.code??""}/><input type="hidden" name="deliveryRevision" value={selectedDelivery?.revision??""}/>
       <CreateOrderButton disabled={!canWrite||!quote||!customerValid||!selectedDelivery}/>

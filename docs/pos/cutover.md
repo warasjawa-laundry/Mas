@@ -21,3 +21,7 @@ Duplicate receipt/award, salah identitas, kas/piutang tidak reconcile, akses tak
 ## Perubahan identitas dan kontak pilot — 3 November 2026
 
 Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.
+
+## Simulasi poin bukan cutover
+
+RPC/helper simulasi poin hanya membaca katalog, nota/pembayaran dan aturan periode. Label SIMULASI — TIDAK DIBUKUKAN tidak menjadi poin aktual atau saldo member. Task simulasi tidak mengarsipkan/menghapus/reset data dummy; prosedur akhir pilot, rekonsiliasi dan G8 tetap terpisah. Deploy code setelah CI dan dua fungsi read-only QA/Production diverifikasi; jangan mengubah flags atau ledger untuk menguji tampilan.

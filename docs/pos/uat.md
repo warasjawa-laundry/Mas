@@ -25,3 +25,15 @@ Catat perangkat, tanggal/jam, actor/role, skenario, expected/actual dan reviewer
 ## Perubahan identitas dan kontak pilot — 3 November 2026
 
 Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.
+
+## Tambahan penerimaan simulasi poin
+
+| Skenario | Expected | Bukti |
+| --- | --- | --- |
+| Konfirmasi Owner/Kasir HP/desktop | Harga/item/ongkir diverifikasi backend, poin dari rules/revisi/periode yang tampil |105 browser termasuk9 tambahan PASS; physical UAT tetap REQUIRED |
+| Detail unpaid/DP/paid/refund | Perkiraan, menunggu, simulasi setelah lunas, dibatalkan; selalu TIDAK DIBUKUKAN | SQL QA dan browser PASS; login manusia belum signoff |
+| Rules hilang/berubah dan tahun2026/2027 | Unavailable bukan0; revisi terlihat; paid memakai periode receipt akhir WIB | SQL rollback PASS; timestamp masa depan hanya fixture sintetis |
+| Print/WA | POIN SIMULASI tanpa saldo asli; marker uji tetap tercetak, tidak auto-send | Browser print emulation/formatter PASS; printer/WA asli PHYSICAL_UAT_REQUIRED |
+| Member sintetis QA75.000 | DP25.000 tanpa points, lunas50.000 award sekali/retry, refund VOID sekali dan saldo0 | RPC/ledger/balance/history SQL PASS, rollback |
+
+Tidak ada reset data dummy Production pada task ini. Receipt final memuat hash dataset dan CI/deployment exact SHA; G8 tetap NO_GO.

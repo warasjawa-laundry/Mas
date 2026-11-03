@@ -1,9 +1,10 @@
+import {readPointSimulation,pointSimulationLines,pointSimulationMatchesPayment,type PointSimulation} from './point-simulation.ts';
 export type ReceiptKind='NEW'|'READY'|'COLLECTED';
 export type ReceiptContact={phone:string|null;address:string;verified_at:string|null};
 export type ReceiptData={is_test_order?:boolean;invoice:string;customer:string;actor:string;collector?:string|null;created_at:string;due_at:string|null;ready_at:string|null;collected_at:string|null;
  work_status:string;kind:ReceiptKind;package:string|null;minutes:number|null;perfume:string|null;notes:string|null;
  total:string;service_subtotal?:string;fees_idr?:string;discount_idr?:string;delivery?:{code:string;name:string;amount_idr:string}|null;paid:string;refunded:string;remaining:string;status:string;contact:ReceiptContact|null;
- member:{year:number;balance:string;awarded:number;projected:number|null}|null;
+ member:{year:number;balance:string;awarded:number;projected:number|null}|null;point_simulation?:PointSimulation|null;
  settings:{revision:number;config:Record<string,string>};
  items:{name:string;package:string|null;duration:string|null;quantity_milli:number;unit:string;price:string;subtotal:string}[]};
 const money=(n:string|bigint)=>'Rp'+BigInt(n).toLocaleString('id-ID');
@@ -64,6 +65,11 @@ export function buildReceipt(r:ReceiptData){
    m.projected!==null?`Poin Transaksi : ${m.projected} poin (menunggu pelunasan)`:'Poin transaksi belum dibukukan',
    `Total Poin Aktif : ${m.balance} poin`);
   if(m.projected!==null){lines.push(`Perkiraan Total Setelah Lunas : ${BigInt(m.balance)+BigInt(m.projected)} poin`,'Perkiraan memakai aturan periode saat ini; diperiksa ulang saat pelunasan.');}
+ }
+ if(r.is_test_order){
+  const simulation=readPointSimulation(r.point_simulation);
+  if(r.point_simulation&&!pointSimulationMatchesPayment(simulation,{total_idr:r.total,paid_idr:r.paid,refunded_idr:r.refunded,payment_status:r.status}))throw Error('Simulasi dan pembayaran berbeda; baca ulang nota');
+  lines.push(divider,...(simulation?pointSimulationLines(simulation):['POIN SIMULASI','SIMULASI — TIDAK DIBUKUKAN','Simulasi poin belum tersedia. Baca ulang setelah koneksi tersedia.']));
  }
  if(r.kind==='READY')lines.push(divider,`Halo Kak ${r.customer},`,'Cucian Kakak sudah selesai dan siap diambil di '+c.outlet_name+'.',
   r.status==='PAID'?'Pembayaran sudah lunas. Cucian dapat diambil.':r.status==='PARTIAL'?`Mohon melunasi ${money(r.remaining)} sebelum cucian diserahkan.`:

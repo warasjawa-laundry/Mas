@@ -1,3 +1,5 @@
+import PointSimulation from "@/components/pos/point-simulation";
+import {readPointSimulation,pointSimulationMatchesPayment} from "@/lib/pos/point-simulation";
 import Link from "next/link";
 import OrderCharges,{type OrderDelivery} from "@/components/pos/order-charges";
 import TestOrderNotice from "@/components/pos/test-order-notice";
@@ -25,10 +27,11 @@ const labels:Record<string,string>={UNPAID:"Belum bayar",PARTIAL:"Bayar sebagian
 export default async function OwnerInvoice({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{saved?:string}>}){
  const [{id},query]=await Promise.all([params,searchParams]);if(!uuid.test(id))notFound();
  const {supabase,user}=await requireOwner();
- const [detail,financial,capabilities]=await Promise.all([
+ const [detail,financial,capabilities,simulation]=await Promise.all([
   supabase.rpc("laundry_pos_owner_order_detail",{p_order_id:id}),
   supabase.rpc("laundry_pos_owner_financial",{p_order_id:id}),
   supabase.rpc("laundry_pos_owner_capabilities"),
+  supabase.rpc("laundry_pos_point_simulation",{p_order_id:id}),
  ]);
  const row=!detail.error&&detail.data&&typeof detail.data.id==="string"?detail.data as Row:null;
  const finance:Finance|null=!financial.error&&financial.data&&typeof financial.data.payment_status==="string"
@@ -89,6 +92,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <PendingSubmit className={styles.dangerButton} disabled={!canFinance||!finance.shift_open} label="Konfirmasi refund penuh"/></>}</RecoverableForm>
  </>}
  </section>
+ <>{row.is_test_order&&<PointSimulation data={!simulation.error&&pointSimulationMatchesPayment(readPointSimulation(simulation.data),finance)?readPointSimulation(simulation.data):null}/>}</>
  <section className={styles.card}><h2>Status cucian</h2><p className={styles.muted}>Serah terima hanya setelah lunas. Nota gratis, refund dan sengketa memerlukan kebijakan terpisah.</p><p><strong>{row.work_status==="PROCESSING"?"Diproses":row.work_status==="READY"?"Siap diambil":row.work_status==="COLLECTED"?"Sudah diambil":"Antrian"}</strong></p>
  <RecoverableForm action={advanceOwnerWork} className={target?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'SET_WORK',id)} recoverAction={recoverOwnerOperation.bind(null,'SET_WORK',id)}>

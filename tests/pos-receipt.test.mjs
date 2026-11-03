@@ -47,3 +47,19 @@ test('test receipts never resemble a real payment receipt or expose bank instruc
  assert.match(text,/No Handphone : \+6280000000000/);
  assert.throws(()=>buildReceipt({...testReceipt,member:receipt.member}));
 });
+
+test('pilot receipt distinguishes estimated, settled and cancelled simulation points without a member balance',()=>{
+ const simulation={booked:false,total_idr:'19600',paid_idr:'10000',refunded_idr:'0',points:5,rule_available:true,program_year:2026,rule_revision:2,state:'PARTIAL',persisted_order:true};
+ const r={...receipt,is_test_order:true,kind:'NEW',member:null,point_simulation:simulation};
+ const text=buildReceipt(r);
+ assert.match(text,/POIN SIMULASI/);assert.match(text,/SIMULASI.*TIDAK DIBUKUKAN/);
+ assert.match(text,/\+5 poin/);assert.match(text,/menunggu pelunasan/i);assert.doesNotMatch(text,/Total Poin Aktif|Poin Transaksi : \+/);
+ const paid={...r,status:'PAID',paid:'19600',remaining:'0',point_simulation:{...simulation,state:'PAID',paid_idr:'19600'}};
+ assert.match(buildReceipt(paid),/Poin simulasi setelah pelunasan/i);
+ const refund={...paid,status:'REFUNDED',refunded:'19600',remaining:'19600',point_simulation:{...simulation,state:'REFUNDED',paid_idr:'19600',refunded_idr:'19600'}};
+ assert.match(buildReceipt(refund),/Simulasi poin dibatalkan/);
+ assert.doesNotMatch(buildReceipt(refund),/\+5 poin/);
+ assert.match(buildReceipt({...r,point_simulation:{...simulation,rule_available:false,rule_revision:null,points:null}}),/Aturan poin.*belum tersedia/i);
+ assert.throws(()=>buildReceipt({...r,point_simulation:{...simulation,booked:true}}));
+ assert.throws(()=>buildReceipt({...r,point_simulation:{...simulation,state:'PAID'}}));
+});

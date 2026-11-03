@@ -59,3 +59,7 @@
 .receiptActions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.receiptConfirm{display:flex;align-items:flex-start;gap:10px;margin:16px 0;line-height:1.6;min-height:44px}.receiptConfirm input{flex-shrink:0;margin-top:5px;width:18px;height:18px}
 
 .testNotice{margin:16px 0;line-height:1.6}.testNotice p{margin:6px 0 0}
+
+.simulationPoints{margin-block:12px;min-width:0;border-left:4px solid #f7b801;overflow-wrap:anywhere}
+.simulationPoints h2{font-size:15px}
+.simulationLabel{display:inline-block;background:#fff3c4;color:#332800;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.5}

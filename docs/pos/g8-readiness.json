@@ -5,8 +5,8 @@
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "4ed5e407c6760aa66c09949bff20f556b296932e",
-  "deployedProductionSha": "4ed5e407c6760aa66c09949bff20f556b296932e",
+  "reviewedMainSha": "cf7a7997b7a4da655c58b205bcc4c6111f08be9f",
+  "deployedProductionSha": "cf7a7997b7a4da655c58b205bcc4c6111f08be9f",
   "productionPosTables": 22,
   "productionOutletCount": 1,
   "productionWriteEnabledOutlets": 1,
@@ -210,7 +210,7 @@
     "activationReceiptIsHistorical": true
   },
   "productionPilotTestOnly": true,
-  "productionTestOrderCount": 0,
+  "productionTestOrderCount": 2,
   "currentReview": {
     "baselineMainSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
     "canonicalMigrationCount": 41,
@@ -223,7 +223,7 @@
     "fullPostgresRestoreRehearsal": false
   },
   "currentProductionReceipt": {
-    "observedDuringReview": "2026-11-03",
+    "observedDuringReview": "2026-11-03T16:54:25Z",
     "pilotTestOnly": true,
     "packageWorkflowEnabled": true,
     "writeEnabled": true,
@@ -231,11 +231,11 @@
     "activePackages": 3,
     "activeFamilies": 14,
     "activeTariffs": 31,
-    "activeCashiers": 0,
-    "orders": 0,
-    "testOrders": 0,
-    "payments": 0,
-    "cashRows": 0,
+    "activeCashiers": 1,
+    "orders": 2,
+    "testOrders": 2,
+    "payments": 2,
+    "cashRows": 2,
     "pointLinks": 0,
     "directWriteGrants": 0,
     "members": 785,
@@ -243,7 +243,8 @@
     "legacyEvents": 21,
     "legacyAmounts": 19,
     "existingTestDataPreserved": "Snapshot preserved in private archive; operational test rows removed with explicit Owner authorization",
-    "archivedTestOrders": 1
+    "archivedTestOrders": 1,
+    "pointSimulationTaskPreservesDummyData": true
   },
   "identityAndPilotContactChange": {
     "baselineSha": "4ed5e407c6760aa66c09949bff20f556b296932e",
@@ -260,5 +261,19 @@
     "authorizedOldTestOrdersRetired": 1,
     "legacyHashesUnchanged": true,
     "realFinancialGoLive": false
+  },
+  "pointSimulation": {
+    "baselineMainSha": "cf7a7997b7a4da655c58b205bcc4c6111f08be9f",
+    "migration": "20261103210503_pos_readonly_point_simulation.sql",
+    "canonicalMigrations": 43,
+    "mode": "READ_ONLY_NO_POSTING",
+    "qaSyntheticActualPoints": "PASS_ROLLBACK",
+    "qaSimulationAndAcl": "PASS_ROLLBACK",
+    "localNodeTests": 305,
+    "localBrowserTests": 105,
+    "realOwnerPhysicalUat": false,
+    "productionDataCleanupAuthorized": false,
+    "releasePolicy": "Apply necessary read-only functions only after CI; record deployment SHA and integrity in final receipt",
+    "g8RealGo": false
   }
 }

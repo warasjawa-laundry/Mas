@@ -17,7 +17,7 @@ const deliveryOptions=[{code:'NONE',name:'Tidak',amount_idr:0,revision:1},{code:
 const cssSource=readFileSync('app/kasir/pesanan/baru/wizard.module.css','utf8');
 const classNames=[...new Set([...cssSource.matchAll(/\.([a-zA-Z_][\w-]*)/g)].map(x=>x[1]))];
 const classMap=Object.fromEntries(classNames.map(name=>[name,'posFixture_'+name]));
-const fixtureCss=cssSource.replace(/\.([a-zA-Z_][\w-]*)/g,(match,name)=>classMap[name]?'.'+classMap[name]:match);
+const fixtureCss=cssSource.replace(/\.([a-zA-Z_][\w-]*)/g,(match,name)=>classMap[name]?'.'+classMap[name]:match)+'\n'+readFileSync('app/kasir/pesanan/orders.module.css','utf8');
 
 test.describe.configure({mode:'serial'});
 test.beforeAll(async()=>{
@@ -28,12 +28,15 @@ test.beforeAll(async()=>{
   money:'lib/pos/money.ts','catalog-units':'lib/pos/catalog-units.ts',
   'ui-quantity':'lib/pos/ui-quantity.ts','g4-order':'lib/pos/g4-order.ts',
   'command-recovery':'lib/pos/command-recovery.ts',eta:'lib/pos/eta.ts',
+  'point-preview':'components/pos/point-simulation-preview.tsx','point-card':'components/pos/point-simulation.tsx','point-data':'lib/pos/point-simulation.ts',
  };
  for(const [name,file] of Object.entries(files))writeFileSync(path.join(fixtureDir,name+'.cjs'),ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText);
  writeFileSync(path.join(fixtureDir,'styles.cjs'),'exports.default='+JSON.stringify(classMap));
+ writeFileSync(path.join(fixtureDir,'orders-styles.cjs'),'exports.default=new Proxy({},{get:(_,key)=>key});');
  writeFileSync(path.join(fixtureDir,'controls.cjs'),`
+ exports.previewPointSimulation=async(...args)=>{state.pointReads.push(args);return window.posPointReply||{data:null,error:'Synthetic rule not configured'}};
  exports.MemberNamePicker=()=>null;exports.CashierQrScanner=()=>null;
- const state=window.posFixture={lookups:[],creates:[],successes:0};
+ const state=window.posFixture={lookups:[],creates:[],successes:0,pointReads:[]};
  const lookup=(role,number)=>new Promise(resolve=>state.lookups.push({role,number,resolve}));
  exports.resolveOwnerPosMemberCode=number=>lookup('owner',number);
  exports.resolveCashierMemberCode=number=>lookup('cashier',number);
@@ -52,6 +55,9 @@ test.beforeAll(async()=>{
  `);
  const alias:Record<string,string>={
   'next/navigation':path.resolve('tests/pos-fixture-navigation.cjs'),
+  '@/components/pos/point-simulation-preview':path.join(fixtureDir,'point-preview.cjs'),'./point-simulation':path.join(fixtureDir,'point-card.cjs'),
+  '@/lib/pos/point-simulation':path.join(fixtureDir,'point-data.cjs'),'@/app/kasir/pesanan/point-simulation-actions':path.join(fixtureDir,'controls.cjs'),
+  '@/app/kasir/pesanan/orders.module.css':path.join(fixtureDir,'orders-styles.cjs'),
   './wizard.module.css':path.join(fixtureDir,'styles.cjs'),
   '../actions':path.join(fixtureDir,'controls.cjs'),
   './member-name-picker':path.join(fixtureDir,'controls.cjs'),
@@ -212,4 +218,25 @@ test('test-only pilot rejects member selection and requires a clearly marked dum
  await expect(next).toBeEnabled();
  await next.click();
  await expect(page.getByRole('heading',{name:'Pilih paket durasi'})).toBeVisible();
+});
+
+for(const width of [320,390,1440])for(const role of ['owner','cashier'])test(`pilot authoritative point preview in confirmation for ${role} at ${width}px`,async({page})=>{
+ await mount(page,width,role,true,true);
+ await page.evaluate(()=>{(window as any).posPointReply={data:{booked:false,total_idr:'75000',paid_idr:'0',refunded_idr:'0',points:5,rule_available:true,program_year:2026,rule_revision:2,state:'ESTIMATE',persisted_order:false},error:''};});
+ await page.getByPlaceholder('UJI - Nama Dummy').fill('UJI - Synthetic points');
+ if(width<=900)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
+ await page.getByRole('radio',{name:/Express/}).check();
+ if(width<=900)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
+ await page.getByLabel('Jumlah Cuci Express',{exact:true}).fill('12');
+ if(width<=900)await page.getByRole('button',{name:'Atur pesanan',exact:true}).click();
+ await page.getByRole('combobox',{name:/Antar-jemput/}).selectOption('NEAR');
+ const card=page.getByRole('region',{name:'Simulasi poin member'});
+ await expect(card).toContainText('+5 poin');await expect(card).toContainText('75.000');
+ await expect(card).toContainText('TIDAK DIBUKUKAN');
+ expect(await page.evaluate(()=>(window as any).posFixture.pointReads.at(-1)[0])).toBe(role);
+ await page.evaluate(()=>{(window as any).posPointReply={data:{booked:false,total_idr:'75000',paid_idr:'0',refunded_idr:'0',points:null,rule_available:false,program_year:2027,rule_revision:null,state:'ESTIMATE',persisted_order:false},error:''};});
+ await page.getByRole('button',{name:'Perbarui simulasi poin'}).click();
+ await expect(card).toContainText('Aturan poin periode 2027 belum tersedia');await expect(card).not.toContainText('+0 poin');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+ mkdirSync('artifacts/screenshots',{recursive:true});await page.screenshot({path:`artifacts/screenshots/point-wizard-${role}-${width}.png`,fullPage:true});
 });

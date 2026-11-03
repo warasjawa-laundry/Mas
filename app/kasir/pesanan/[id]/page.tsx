@@ -1,3 +1,5 @@
+import PointSimulation from "@/components/pos/point-simulation";
+import {readPointSimulation,pointSimulationMatchesPayment} from "@/lib/pos/point-simulation";
 import Link from "next/link";
 import OrderCharges,{type OrderDelivery} from "@/components/pos/order-charges";
 import TestOrderNotice from "@/components/pos/test-order-notice";
@@ -32,9 +34,10 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
  if(!uuid.test(id))notFound();
  const access=await cashierRpcAccess("order_view");
  if(!access)redirect("/kasir");
- const [detail,summary]=await Promise.all([
+ const [detail,summary,simulation]=await Promise.all([
    access.client.rpc("laundry_pos_g4_order_detail",{...access.tokens,p_order_id:id}),
    access.client.rpc("laundry_pos_g5_financial",{...access.tokens,p_order_id:id}),
+   access.client.rpc("laundry_pos_point_simulation",{...access.tokens,p_order_id:id}),
  ]);
  if(detail.error||!detail.data||typeof detail.data!=="object"||!detail.data.id){
   return <main className={styles.shell}><Link href="/kasir/pesanan">← Daftar pesanan</Link><p role="alert" className={styles.warning}>Nota tidak ditemukan atau modul belum tersedia.</p></main>;
@@ -145,6 +148,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
     </details>}
    </RecoverableForm>}
   </section>
+  <>{o.is_test_order&&<PointSimulation data={!simulation.error&&pointSimulationMatchesPayment(readPointSimulation(simulation.data),f)?readPointSimulation(simulation.data):null}/>}</>
   <section className={styles.card}><OrderTimeline events={o.events??[]}/></section></div>
   {o.lifecycle_status==='CONFIRMED'&&hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft key={o.id} role="cashier" orderId={o.id} isTestOrder={o.is_test_order===true} workStatus={o.work_status} version={f?.version??0}/>}
  </main>;

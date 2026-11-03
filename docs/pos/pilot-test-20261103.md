@@ -24,3 +24,13 @@ Uji regresi otomatis bukan pengganti UAT autentikasi riil, kamera, printer, What
 
 ## Status pelaksanaan yang telah diverifikasi
 Tanggal: 3 November 2026. Guard QA dan Production terpasang; perintah negatif di QA dan Production di-rollback dan tidak membuat nota. CI kode `ae5da9d7` PASS; domain Vercel utama menggunakan deployment `dpl_4it5WrLmQenBArhqFkgjXrzFxJKC` READY. Mode test `pilot_test_only` dan katalog paket **sudah ON** di Production (bukan sekadar rencana). Semua transaksi yang dibuat setelahnya tetap data dummy dan G8 NO_GO. Lihat [receipt aktivasi](./pilot-activation-20261103.md).
+
+## Uji simulasi poin
+
+1. Gunakan guest UJI - saja; jangan memilih/membuat member Production. Pada Konfirmasi lihat SIMULASI POIN MEMBER dan total + ongkir dari backend. Ini bukan saldo member.
+2. Coba DP, pelunasan dan refund dengan uang simulasi; lihat perkiraan/menunggu pelunasan, poin simulasi setelah lunas, lalu dibatalkan. Semua berlabel TIDAK DIBUKUKAN; jumlah point-link test harus tetap0.
+3. Bila aturan tidak ada atau katalog berubah, jangan menganggap unavailable sebagai0 poin. Muat ulang katalog/preview. Versi/periode terlihat; simulasi dapat mengikuti rules baru, poin aktual historis tetap snapshot.
+4. Print/draf WA memuat POIN SIMULASI dan marker nota uji. Pengiriman tetap manual ke penguji yang mengonfirmasi, bukan pelanggan asli.
+5. Test poin aktual hanya di QA dengan member sintetis:75.000, DP25.000, lunas50.000, same-UUID retry dan full refund. Fixture rollback sudah PASS, bukan bukti perangkat/uang nyata.
+
+Migrasi43 hanya menambahkan RPC/helper read-only; lihat implementation plan dan receipt rilis. Task ini tidak menghapus/reset dummy existing atau mengubah G8/flags.

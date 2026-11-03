@@ -68,6 +68,7 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
  const quantities=await import(helper.href);
  const modules={
   'react':require('react'),'react-dom':require('react-dom'),'react/jsx-runtime':require('react/jsx-runtime'),
+  '@/components/pos/point-simulation-preview':{default:()=>null},
   '@/lib/pos/money':money,'@/lib/pos/catalog-units':units,'@/lib/pos/g4-order':order,
   '@/lib/pos/g7-catalog':catalog,'@/lib/pos/ui-quantity':quantities,
   '@/lib/pos/eta':await import('../lib/pos/eta.ts'),
