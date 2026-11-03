@@ -14,6 +14,18 @@ function load(path,mocks,extra={}){
   {require:n=>mocks[n]??realRequire(n),exports,URL,process:{env:{SUPABASE_URL:'https://synthetic.invalid',SUPABASE_PUBLISHABLE_KEY:'synthetic-only'}},...extra});
  return exports;
 }
+test('login Next prefetch bypasses the logout proxy at route matching, while admin pages stay matched',()=>{
+ const {getMiddlewareMatchers}=realRequire('next/dist/build/analysis/get-page-static-info');
+ const {getMiddlewareRouteMatcher}=realRequire('next/dist/shared/lib/router/utils/middleware-route-matcher');
+ const {config}=load('proxy.ts',{'next/server':realRequire('next/server'),'@supabase/ssr':{},
+  '@/lib/supabase/qa-preview-isolation':{},'@/lib/admin/entry-pass':{}});
+ const matches=getMiddlewareRouteMatcher(getMiddlewareMatchers(config.matcher,{}));
+ const prefetch={headers:{'next-router-prefetch':'1',rsc:'1'}};
+ assert.equal(matches('/admin/login',prefetch,{}),false);
+ assert.equal(matches('/admin/login',{headers:{rsc:'1'}},{}),true);
+ for(const path of ['/admin','/admin/pos/kasir','/admin/members','/admin/leave'])
+  assert.equal(matches(path,prefetch,{}),true,path);
+});
 test('login prefetch does not revoke owner before the cashier save POST',async()=>{
  const previous=process.env.LAUNDRY_CARD_ENCRYPTION_KEY;
  process.env.LAUNDRY_CARD_ENCRYPTION_KEY='synthetic-only-prefetch-test-key-at-least-32';

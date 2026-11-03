@@ -57,3 +57,5 @@ Replay migrasi dan seluruh fixture SQL pada e0140e7 lulus, tetapi CI 41669192881
 ## Koreksi sesi sebelum Simpan Kasir — 3 November 2026
 
 RED di source dan probe HTTP Production terkonfirmasi: GET login dengan header Next prefetch mengirim Set-Cookie penghapusan Owner. Tes baru menjalankan proxy, pemeriksa Owner dan save action berurutan dengan Auth/RPC sintetis: Next/purpose/sec-purpose prefetch mempertahankan sesi, save mencapai RPC sekali, intentional login mencabut sesi dan write berikutnya ditolak. Seluruh 300 Node lokal PASS; TypeScript/build dan regresi browser diverifikasi pada integrasi. Ini tidak diklaim sebagai real Auth UAT pengguna.
+
+Probe HTTP setelah deployment bae120a menunjukkan Purpose/Sec-Purpose prefetch aman, tetapi Next prefetch masih menerima cookie penghapusan. Routing matcher kini mengecualikan hanya GET login-prefetch pada level pencocokan route; route admin lainnya, login normal dan logout tetap melewati proxy. Tes memakai compiler matcher Next yang terpasang, bukan regex tiruan. Jumlah Node menjadi 301; probe Production berikutnya wajib memeriksa ketiga header prefetch dan actual login.

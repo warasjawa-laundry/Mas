@@ -104,4 +104,8 @@ export async function proxy(request:NextRequest){
  await supabase.auth.getClaims();
  return response;
 }
-export const config={matcher:["/admin/:path*"]};
+export const config={matcher:[
+ "/admin",
+ "/admin/((?!login$).*)",
+ {source:"/admin/login",missing:[{type:"header",key:"next-router-prefetch",value:"1"}]}
+]};
