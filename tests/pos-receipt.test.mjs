@@ -42,6 +42,8 @@ test('test receipts never resemble a real payment receipt or expose bank instruc
  assert.match(text,/NOTA UJI - SIMULASI/);assert.match(text,/BUKAN BUKTI PEMBAYARAN/);
  assert.match(text,/PEMBAYARAN SIMULASI/);
  assert.doesNotMatch(text,/Bank QA|Wallet QA|Pembayaran di awal/);
- assert.equal(receiptWhatsAppUrl(testReceipt.contact,text,true),null);
+ assert.match(receiptWhatsAppUrl(testReceipt.contact,text,true),/^https:\/\/wa.me\/6280000000000/);
+ assert.equal(receiptWhatsAppUrl(null,text,true),null);
+ assert.match(text,/No Handphone : \+6280000000000/);
  assert.throws(()=>buildReceipt({...testReceipt,member:receipt.member}));
 });

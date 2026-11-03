@@ -23,7 +23,7 @@ export default async function OwnerLogin({searchParams}:Props){
    {message&&<p className="admin-error" role="alert">{message}</p>}
    {success&&<p className="admin-success" role="status">{success}</p>}
    {cashier?<form action={loginCashier} className="admin-form"><label htmlFor="login-cashier-id">ID Kasir</label>
-    <input id="login-cashier-id" type="text" name="username" placeholder="MAS-0001" autoComplete="off" maxLength={8} pattern="MAS-[0-9]{4}" required/>
+    <input id="login-cashier-id" type="text" name="username" placeholder="MAS-2001" autoComplete="off" maxLength={8} pattern="MAS-[0-9]{4}" required/>
     <button className="admin-primary" type="submit">Masuk Kasir</button></form>:
     <form action={loginOwner} className="admin-form" autoComplete="off">
      <label htmlFor="owner-id">ID Pengguna</label><input id="owner-id" name="loginId" type="text" autoComplete="username" defaultValue="masjawalaundry" required maxLength={64}/>

@@ -36,7 +36,7 @@ export function MemberNamePicker({onPick,disabled,role="cashier"}:{onPick:(membe
   {results.length>0&&<ul className={styles.memberResults}>
     {results.map(row=><li key={row.memberNumber}><button type="button" disabled={disabled}
       onClick={()=>{onPick(row);setQuery("");setResults([])}}>
-      <strong>{row.displayName}</strong><span>MJL-{row.memberNumber.padStart(6,"0")}</span>
+      <strong>{row.displayName}</strong><span>MJL-0{row.memberNumber.padStart(5,"0")}</span>
      </button></li>)}
    </ul>}
  </section>;

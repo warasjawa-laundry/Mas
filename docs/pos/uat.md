@@ -21,3 +21,7 @@ Production hanya boleh dipakai untuk latihan `UJI - Nama Dummy`, uang simulasi d
 | Akhir pilot dan restore | Full backup/restore sah, jurnal simulasi ditangani, pilot OFF/test orders 0, saldo awal diterima | OPERATOR_OWNER_EVIDENCE_REQUIRED |
 
 Catat perangkat, tanggal/jam, actor/role, skenario, expected/actual dan reviewer privat. Jangan menyimpan credential/raw QR/PII pada report publik. Jangan memberi PASS berdasarkan counts database saja atau membuat tanda tangan. Histori Binatu tidak diperlukan untuk rilis awal; bila impor dipilih, lakukan reconciliation batch terpisah.
+
+## Perubahan identitas dan kontak pilot — 3 November 2026
+
+Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.

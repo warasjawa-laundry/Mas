@@ -17,3 +17,7 @@ Histori Binatu dan backfill poin tidak diperlukan pada rilis awal. Jika dipilih 
 ## Kondisi STOP
 
 Duplicate receipt/award, salah identitas, kas/piutang tidak reconcile, akses tak sah, hasil command tak dapat dipastikan, atau hilangnya data lama. Hentikan command baru, simpan request UUID/log non-PII dan rekonsiliasi sebelum forward fix. Jangan mengaktifkan sistem nominal lama/Binatu bersamaan tanpa cutoff karena berisiko mencatat dua kali.
+
+## Perubahan identitas dan kontak pilot — 3 November 2026
+
+Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.

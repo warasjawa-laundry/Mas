@@ -21,7 +21,7 @@ Checkpoint diperbarui 3 November 2026 terhadap main baseline `fe04ef7` dan perub
 | WhatsApp | Watermark simulasi, tanpa bank/payment notice nyata; tidak ada contact form/wa.me pada nota uji; normal receipt DP/lunas/points tetap diuji pada 320/390/1440 |
 | Data Production | Apply hanya definisi pembaca/guard; before/after flags dan counts nota/payment/cash/point-link sama; member/kartu/event/nominal hash sama |
 
-Migrasi canonical `20261103210501_pos_pilot_receipt_boundary.sql` diuji QA sebelum Production. QA juga mempunyai receipt koreksi metadata ongkir saat pengembangan; schema final dibandingkan secara semantic, bukan menyalin timestamp history. 1.594 entries Production=QA, 0 selisih dalam scope comparator. RLS 22/22, direct DML aplikasi 0.
+Migrasi canonical `20261103210501_pos_pilot_receipt_boundary.sql` diuji QA sebelum Production. QA juga mempunyai receipt koreksi metadata ongkir saat pengembangan; schema final dibandingkan secara semantic, bukan menyalin timestamp history. 1.594 entri pada checkpoint review sebelumnyaes Production=QA, 0 selisih dalam scope comparator. RLS 22/22, direct DML aplikasi 0.
 
 ## Hasil lokal dan CI
 
@@ -41,3 +41,11 @@ Hasil CI final terikat commit integrasi melalui GitHub checks. Tidak mengisi sig
 Real login Owner/kasir, expiry/revoke/two-tab/network-loss, scanner Android/camera/gallery, printer fisik, WA aplikasi asli, cash count, 25-screen visual signoff, real backup/restore dan rekonsiliasi/arsip jurnal uji. Satu nota/payment pilot yang terlihat di database tidak cukup untuk menandatangani seluruh perjalanan pengguna.
 
 UAT Production tetap guest dummy dan uang simulasi. Member/poin nyata diuji di QA dengan data sintetis. Jika hasil command tidak pasti, lookup UUID dan rekonsiliasi; jangan menerima pembayaran ulang atau membuat UUID baru. Pemilik acceptance tersisa ada pada [master audit](./master-audit-20261102.md).
+
+## Regresi lanjutan nomor, kasir, kartu dan WhatsApp — 3 November 2026
+
+299 Node, typecheck/build dan 96 browser lokal PASS. Tujuh regresi SQL relevan QA PASS dengan rollback, termasuk namespace invoice/cashier, DP/lunas/poin, receipt, retire/retry dan penolakan nota normal. Tes redirect membuktikan signed one-use entry grant dibuat sebelum success/error redirect; halaman menampilkan ID berdasarkan UUID hasil RPC dan daftar terotorisasi. Ini belum menggantikan login Owner manusia.
+
+Browser 320/390/1440 px memeriksa tautan kartu, recipient confirmation dan watermark print. Test awal menemukan tinggi row 320 px bertambah setelah tautan kartu; label/padding diperbaiki tanpa menaikkan batas tes. Pengaman lama yang menutup semua kontak uji diubah atas permintaan Owner: kontak penguji terverifikasi dapat dipakai untuk wa.me, tetap simulasi, tanpa pengiriman otomatis atau bank nyata. Aplikasi WA/perangkat asli tetap PHYSICAL_UAT_REQUIRED.
+
+Replay CI kini mencakup 42 migrasi dan fixture retire setelah synthetic restore. Produksi bukan lokasi fixture write; hanya satu UUID nota dummy lama dihapus/diarsipkan atas izin khusus Owner. Checkpoint 1 nota/payment di atas adalah snapshot sebelum operasi ini. Lihat [master audit](./master-audit-20261102.md) untuk hasil integritas dan batas kewenangan.

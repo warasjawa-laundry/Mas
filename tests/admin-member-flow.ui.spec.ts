@@ -32,7 +32,8 @@ for(const width of [320,390,1440])test(`customer directory and retained legacy p
  const row=page.locator(".member-directory-list>li").first();
  expect((await row.boundingBox())!.height).toBeLessThan(width<480?190:130);
  await expect(row.getByRole("link",{name:"Ubah data Nama Contoh",exact:true})).toHaveAttribute("href",/\/edit$/);
- await expect(row.locator('a[href*="view=promo"],a[href*="/card"]')).toHaveCount(0);
+ await expect(row.getByRole('link',{name:'Kartu member Nama Contoh',exact:true})).toHaveAttribute('href',/\/card$/);
+ await expect(row.locator('a[href*="view=promo"]')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
  mkdirSync("artifacts/screenshots",{recursive:true});await page.screenshot({path:`artifacts/screenshots/member-directory-${width}.png`,fullPage:true});
  await page.setContent(shell(`<h1>Nama Contoh</h1><p class="admin-hint">MJL-000006 · Member aktif</p>${renderToStaticMarkup(Nav({memberId,view:"promo"}))}${renderToStaticMarkup(Promos({memberId,memberName:"Nama Contoh",requestId:"synthetic",memberActive:true,whatsappPhone:null,whatsappConsent:false,loadFailed:false,promos:[{id:"synthetic-promo",title:"Diskon cuci 10%",terms:"Sekali untuk layanan reguler",status:"AVAILABLE",created_at:"2026-10-17T00:00:00Z",expires_at:null}]}))}`));

@@ -10,3 +10,7 @@ Pilot Production tetap dummy-only; real G8 NO_GO. [Master audit](./master-audit-
 6. Restore backup yang menimpa live database memerlukan rencana dan approval data spesifik: target terisolasi, scope Auth/Storage, RPO/RTO dan rekonsiliasi data setelah backup. Backup DPAPI 13 tabel aplikasi bukan izin restore penuh atau pengganti bukti PostgreSQL restore.
 
 Arsip/reset simulasi menuju Januari 2027 memerlukan prosedur yang disetujui dan bukti saldo awal. Satu nota/payment/cash row yang sudah ada pada review dipertahankan. Riwayat sebelum pembaruan tersedia pada Git fe04ef7.
+
+## Perubahan identitas dan kontak pilot — 3 November 2026
+
+Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.

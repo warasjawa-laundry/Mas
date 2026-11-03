@@ -126,7 +126,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
        <CashierQrScanner role={role} disabled={false} onMember={pickMember}/>
        <MemberNamePicker role={role} disabled={false} onPick={row=>pickMember(row.memberNumber,row.displayName)}/>
        </>}
-       {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-{member.padStart(6,"0")}</span></p>}</>}
+       {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-0{member.padStart(5,"0")}</span></p>}</>}
      <p className={styles.help}>Periksa identitas pelanggan. Data akan diverifikasi kembali saat nota dibuat.</p>
     </section>
     {packageWorkflow&&<section className={`${styles.panel} ${step!==1?styles.mobileHidden:''}`} aria-labelledby="package-title">

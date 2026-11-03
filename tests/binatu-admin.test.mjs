@@ -63,13 +63,14 @@ test("default customer profile shows contact data without deferred panels or the
   assert.ok(nodes(tree).some(node => node.href === `/admin/members/${memberId}/edit`));
 });
 
-test("directory exposes customer detail and edit without deferred links", () => {
+test("directory exposes profile, edit and restored member card", () => {
   const tree = load("components/admin/member-directory-list.tsx")({members:[member]});
   const links = nodes(tree).map(node => node.href).filter(Boolean);
   assert.ok(links.includes(`/admin/members/${memberId}`));
   assert.ok(links.includes(`/admin/members/${memberId}/edit`));
-  assert.ok(links.every(href => !/card|promo|scan|history/.test(href)));
-  assert.doesNotMatch(JSON.stringify(tree), /Catat|Kartu QR|Promo/);
+  assert.ok(links.every(href => !/promo|scan|history/.test(href)));
+  assert.ok(links.includes(`/admin/members/${memberId}/card`));
+  assert.doesNotMatch(JSON.stringify(tree), /Catat|Promo/);
 });
 
 test("customer profile distinguishes unavailable data, missing customers, and empty contacts", async () => {

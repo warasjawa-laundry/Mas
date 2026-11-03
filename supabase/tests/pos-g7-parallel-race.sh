@@ -13,8 +13,8 @@ insert into public.laundry_owner_accounts(auth_user_id,is_active) values('$owner
 select set_config('request.jwt.claim.sub','$owner',false);
 select public.laundry_pos_owner_save_cashier(null,'G7 Race Cashier',
  '{"order_view":true,"order_create":true,"member_lookup":true,"payment_collect":true,"cash_view":true,"cash_entry":true}'::jsonb,true);
-select public.laundry_pos_owner_pair_cashier((select staff_id from public.laundry_pos_staff where username='MAS-0001'),'$device');
-select public.laundry_pos_cashier_login('$device','MAS-0001','$login');
+select public.laundry_pos_owner_pair_cashier((select staff_id from public.laundry_pos_staff where username='MAS-2001'),'$device');
+select public.laundry_pos_cashier_login('$device','MAS-2001','$login');
 insert into public.laundry_members(member_number,display_name,created_by) overriding system value
  values(777777701,'G7 Member Race','$owner');
 select set_config('request.jwt.claim.sub','',false);

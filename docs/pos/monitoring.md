@@ -16,3 +16,7 @@ Source kondisi operasional: [audit teknis G8](./g8-audit-20261102.md). Productio
 Log hanya request UUID, order UUID bila diperlukan, operation, error class dan timestamp. Jangan mencetak password, bearer/QR raw, HP/alamat, isi receipt atau data pelanggan pada log monitoring. Membuka WA bukan bukti pesan terkirim.
 
 Pada cutover riil kumpulkan bukti dua shift tertutup, saldo pembukaan dan reviewer. Preflight mensyaratkan pilot OFF/test orders 0 serta semua evidence; proses arsip harus direview, bukan DELETE/TRUNCATE ad hoc. Full backup/restore, real Auth dan physical UAT tetap dibutuhkan.
+
+## Perubahan identitas dan kontak pilot — 3 November 2026
+
+Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.

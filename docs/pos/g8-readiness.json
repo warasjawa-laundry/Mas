@@ -5,8 +5,8 @@
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
-  "deployedProductionSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
+  "reviewedMainSha": "4ed5e407c6760aa66c09949bff20f556b296932e",
+  "deployedProductionSha": "4ed5e407c6760aa66c09949bff20f556b296932e",
   "productionPosTables": 22,
   "productionOutletCount": 1,
   "productionWriteEnabledOutlets": 1,
@@ -210,7 +210,7 @@
     "activationReceiptIsHistorical": true
   },
   "productionPilotTestOnly": true,
-  "productionTestOrderCount": 1,
+  "productionTestOrderCount": 0,
   "currentReview": {
     "baselineMainSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
     "canonicalMigrationCount": 41,
@@ -232,16 +232,33 @@
     "activeFamilies": 14,
     "activeTariffs": 31,
     "activeCashiers": 0,
-    "orders": 1,
-    "testOrders": 1,
-    "payments": 1,
-    "cashRows": 1,
+    "orders": 0,
+    "testOrders": 0,
+    "payments": 0,
+    "cashRows": 0,
     "pointLinks": 0,
     "directWriteGrants": 0,
     "members": 785,
     "cards": 18,
     "legacyEvents": 21,
     "legacyAmounts": 19,
-    "existingTestDataPreserved": true
+    "existingTestDataPreserved": "Snapshot preserved in private archive; operational test rows removed with explicit Owner authorization",
+    "archivedTestOrders": 1
+  },
+  "identityAndPilotContactChange": {
+    "baselineSha": "4ed5e407c6760aa66c09949bff20f556b296932e",
+    "canonicalMigrationCount": 42,
+    "migration": "20261103210502_pos_identity_numbers_test_whatsapp.sql",
+    "qaRollback": "PASS",
+    "nodeTests": 299,
+    "browserTests": 96,
+    "memberPrefix": "MJL-0",
+    "invoicePrefix": "NOTA-1",
+    "cashierPrefix": "MAS-2",
+    "testRecipientContactAllowed": true,
+    "automaticWhatsAppSending": false,
+    "authorizedOldTestOrdersRetired": 1,
+    "legacyHashesUnchanged": true,
+    "realFinancialGoLive": false
   }
 }

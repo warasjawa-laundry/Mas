@@ -15,20 +15,20 @@ begin
    raise exception 'direct_login_acl_drift';end if;
  if public.laundry_pos_cashier_direct_id_login('MAS-0000',v_device,v_login) then
    raise exception 'reserved_zero_login_passed';end if;
- if public.laundry_pos_cashier_direct_id_login('MAS-0001',v_device,v_login) then
+ if public.laundry_pos_cashier_direct_id_login('MAS-2001',v_device,v_login) then
    raise exception 'nonexistent_cashier_accepted';end if;
  insert into auth.users(id,aud,role) values(v_owner,'authenticated','authenticated');
  insert into public.laundry_owner_accounts(auth_user_id,is_active) values(v_owner,true);
  perform pg_catalog.set_config('request.jwt.claim.sub',v_owner::text,true);
  v_staff:=public.laundry_pos_owner_save_cashier(null,'Kasir QA Tanpa Pair',
    '{"order_view":true,"order_create":true,"payment_collect":true}'::jsonb,true);
- if (select username from public.laundry_pos_staff where staff_id=v_staff)<>'MAS-0001' then
+ if (select username from public.laundry_pos_staff where staff_id=v_staff)<>'MAS-2001' then
    raise exception 'four_digit_employee_id_invalid';end if;
  perform pg_catalog.set_config('request.jwt.claim.sub','',true);
- if not public.laundry_pos_cashier_direct_id_login('MAS-0001',v_device,v_login) then
+ if not public.laundry_pos_cashier_direct_id_login('MAS-2001',v_device,v_login) then
    raise exception 'id_only_login_rejected';end if;
  if not exists(select 1 from public.laundry_pos_cashier_logged_in(v_device,v_login)
-   where staff_id=v_staff and username='MAS-0001' and not write_enabled) then
+   where staff_id=v_staff and username='MAS-2001' and not write_enabled) then
    raise exception 'two_token_session_missing';end if;
  if not exists(select 1 from public.laundry_pos_cashier_devices
    where token_digest=extensions.digest(v_device,'sha256') and issued_by is null and login_origin='DIRECT_ID'
@@ -42,7 +42,7 @@ begin
    if public.laundry_pos_cashier_direct_id_login('MAS-9999',repeat('A',43),repeat('B',43)) then
       raise exception 'guess_accepted';end if;
  end loop;
- if public.laundry_pos_cashier_direct_id_login('MAS-0001',repeat('C',43),repeat('E',43)) then
+ if public.laundry_pos_cashier_direct_id_login('MAS-2001',repeat('C',43),repeat('E',43)) then
    raise exception 'global_guess_limit_bypassed';end if;
  select attempts into v_throttle from laundry_private.pos_cashier_id_login_throttle where singleton=1;
  if v_throttle<>10 or not exists(select 1 from laundry_private.pos_cashier_id_login_throttle

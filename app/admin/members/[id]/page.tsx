@@ -30,6 +30,7 @@ export default async function OwnerMember({params,searchParams}:Props){
     <header className="customer-profile-heading"><div><h1>{member.display_name}</h1><p className="admin-hint">{memberNumber(member.member_number)}</p></div><span className="customer-status">{member.is_active?"Aktif":"Nonaktif"}</span></header>
     <section className="customer-contact-panel" aria-labelledby="customer-contact-heading">
      <h2 id="customer-contact-heading">Data Kontak</h2>
+     <Link prefetch={false} href={`/admin/members/${id}/card`} className="admin-logout">Kartu Member</Link>
      <dl><div><dt>Nama pelanggan</dt><dd>{member.display_name}</dd></div><div><dt>WhatsApp</dt><dd>{member.whatsapp_e164||"Belum diisi"}</dd></div><div><dt>Alamat</dt><dd>{member.address||"Belum diisi"}</dd></div></dl>
      <Link prefetch={false} href={`/admin/members/${id}/edit`} className="admin-primary">Ubah Data Pelanggan</Link>
     </section>

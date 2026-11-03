@@ -15,7 +15,7 @@ begin
  v_staff:=public.laundry_pos_owner_save_cashier(null,'Kasir G7 Search',
  '{"order_view":true,"order_create":true,"member_lookup":true}'::jsonb,true);
  perform public.laundry_pos_owner_pair_cashier(v_staff,v_device);
- if not public.laundry_pos_cashier_login(v_device,'MAS-0001',v_login) then
+ if not public.laundry_pos_cashier_login(v_device,'MAS-2001',v_login) then
   raise exception 'G7 synthetic search login failed';end if;
  insert into public.laundry_members(member_number,display_name,created_by) overriding system value
  values(777777711,'Mawar G7 Same Name',v_owner),

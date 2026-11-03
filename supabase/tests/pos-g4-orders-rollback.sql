@@ -27,7 +27,7 @@ begin
  v_staff:=public.laundry_pos_owner_save_cashier(null,'Kasir Nota QA',
   '{"order_view":true,"order_create":true,"order_work":true,"member_lookup":true}'::jsonb,true);
  v_device:=public.laundry_pos_owner_pair_cashier(v_staff,v_token);
- if not public.laundry_pos_cashier_login(v_token,'MAS-0001',v_login) then
+ if not public.laundry_pos_cashier_login(v_token,'MAS-2001',v_login) then
   raise exception 'G4 username login missing';end if;
  perform pg_catalog.set_config('request.jwt.claim.sub','',true);
  insert into public.laundry_services(id,category,package_name,name,price_idr,unit,duration)
@@ -50,9 +50,9 @@ begin
  update public.laundry_pos_outlets set write_enabled=true where id=v_outlet;
  v_result:=public.laundry_pos_g4_create_order(v_token,v_login,v_req,'Tamu QA',null,v_items,'Melati','QA');
  v_order:=(v_result->>'order_id')::uuid;
- if v_result->>'invoice_no'<>'MJL-000001' or v_result->>'total_idr'<>'37530' then
+ if v_result->>'invoice_no'<>'NOTA-100001' or v_result->>'total_idr'<>'37530' then
   raise exception 'G4 exact IDR error %',v_result;end if;
- if (public.laundry_pos_g4_order_detail(v_token,v_login,v_order)->>'invoice_no')<>'MJL-000001' then
+ if (public.laundry_pos_g4_order_detail(v_token,v_login,v_order)->>'invoice_no')<>'NOTA-100001' then
   raise exception 'G4 detail cannot show invoice'; end if;
  if (select count(*) from public.laundry_pos_order_items where order_id=v_order)<>2 then
   raise exception 'G4 missing item lines';end if;

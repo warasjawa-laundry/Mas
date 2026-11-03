@@ -12,7 +12,8 @@ const publicCard=read("app/k/[token]/page.tsx");
 
 test("customer list opens profiles and leaves protected promo implementation available but unlinked",()=>{
   assert.match(detail,/view===\"promo\"/);
-  assert.match(list,/Lihat Profil/);
+  assert.match(list,/Lihat profil/);
+  assert.match(list,/Kartu Member/);
   assert.doesNotMatch(list,/view=promo|Kartu QR/);
   assert.doesNotMatch(list,/\.select\([^\n]*whatsapp_e164/);
   assert.match(promos,/id="promo-member"/);

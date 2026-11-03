@@ -48,7 +48,7 @@ export function decryptCardToken(hex: string) {
   return decryptCardWithKeys(hex,primary,legacy);
 }
 export function memberNumber(value: number | string) {
-  return "MJL-" + String(value).padStart(6, "0");
+  return "MJL-0" + String(value).padStart(5, "0");
 }
 export function publicCardOrigin() {
   return cardOriginForEnvironment(

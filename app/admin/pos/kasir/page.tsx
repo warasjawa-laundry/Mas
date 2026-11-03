@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PendingSubmit from "@/components/admin/pending-submit";
 import { site } from "@/lib/site";
 import { requireOwner } from "@/lib/supabase/owner";
 import { CASHIER_PERMISSIONS, hasCashierGrant, type CashierGrants } from "@/lib/pos/cashier-permissions";
@@ -34,7 +35,8 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
   ]);
   const unavailable = Boolean(result.error);
   const cashiers = (Array.isArray(result.data) ? result.data : []) as CashierRow[];
-  const message = params.saved ? "Kasir berhasil disimpan. ID kasir tersedia pada daftar." : params.removed ?
+  const savedCashier = cashiers.find(c => c.staff_id === params.saved);
+  const message = savedCashier ? `Kasir ${savedCashier.display_name} berhasil disimpan. ID kasir: ${savedCashier.username}.` : params.removed ?
     "Kasir telah dihapus dari daftar aktif dan semua perangkatnya dicabut." :
     params.revoked ? "Seluruh akses perangkat kasir sudah dicabut." : null;
 
@@ -48,7 +50,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
     <div className={`admin-content ${styles.wrap}`}>
     <section className={styles.location}>
       <div><span>Outlet</span><strong>Mas Jawa Laundry</strong><p>{site.address}, {site.shortAddress}</p></div>
-      <p className={styles.loginHint}>Kasir masuk menggunakan ID MAS-XXXX tanpa password atau aktivasi perangkat. ID dibuat saat Anda menyimpan kasir baru.</p>
+      <p className={styles.loginHint}>Kasir masuk menggunakan ID MAS-2XXX tanpa password atau aktivasi perangkat. ID dibuat saat Anda menyimpan kasir baru.</p>
     </section>
     {unavailable ? <p className="admin-error" role="alert">Data kasir belum dapat dimuat. Muat ulang halaman atau hubungi pengelola.</p> : <>
       {message && <p className="admin-success" role="status">{message}</p>}
@@ -60,7 +62,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
           <label htmlFor="new-cashier-name">Nama kasir</label>
           <input id="new-cashier-name" type="text" name="name" required maxLength={100} minLength={2} autoComplete="off" />
           <PermissionFields prefix="new" grants={{order_view:true,order_create:true,member_lookup:true,receipt_print:true}} />
-          <button type="submit" className="admin-primary">Simpan Kasir</button>
+          <PendingSubmit label="Simpan Kasir" className="admin-primary"/>
         </form>
       </section>
       <section aria-labelledby="cashier-list" className={styles.list}>
@@ -76,7 +78,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
               <label htmlFor={`cashier-name-${c.staff_id}`}>Nama</label>
               <input id={`cashier-name-${c.staff_id}`} type="text" name="name" required minLength={2} maxLength={100} defaultValue={c.display_name} />
               <PermissionFields grants={c.permissions} prefix={c.staff_id} />
-              <button type="submit" className="admin-primary">Simpan hak akses</button>
+              <PendingSubmit label="Simpan hak akses" className="admin-primary"/>
             </form>
             <div className={styles.actions}>
               <form action={revokeCashierDevices}>
@@ -96,7 +98,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
       <aside className={styles.accessNote} aria-labelledby="cashier-access-note"><h2 id="cashier-access-note">Akses dan sesi kasir</h2>
         <p>Kasir membuka <Link href="/admin/login?role=kasir">halaman masuk kasir</Link> dengan ID miliknya. Anda dapat mengubah izin atau mencabut seluruh sesi kapan saja. Sesi berlaku maksimal 12 jam.</p>
         <p>ID empat angka mudah ditebak. Bagikan hanya kepada pegawai. Sistem membatasi percobaan masuk dan mencatat sesi. Kasir tidak dapat mengelola akun manajer, data pelanggan, atau poin melalui hak admin.</p>
-        <p>Pembayaran produksi tetap belum aktif.</p>
+        <p>Status pembayaran mengikuti pengaturan outlet. Nota uji selalu berlabel simulasi.</p>
       </aside>
     </>}
     <div className="admin-shortcuts"><Link href="/admin/settings">← Kembali ke Pengaturan</Link></div>

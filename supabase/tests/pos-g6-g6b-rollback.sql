@@ -20,7 +20,7 @@ begin
  v_staff:=public.laundry_pos_owner_save_cashier(null,'Kasir G6 Synthetic',
    '{"order_view":true,"order_create":true,"member_lookup":true,"payment_collect":true,"cash_view":true,"cash_entry":true,"reports_view":true}'::jsonb,true);
  perform public.laundry_pos_owner_pair_cashier(v_staff,v_device);
- if not public.laundry_pos_cashier_login(v_device,'MAS-0001',v_login) then
+ if not public.laundry_pos_cashier_login(v_device,'MAS-2001',v_login) then
   raise exception 'G6 login failed';end if;
  insert into public.laundry_members(id,member_number,display_name,created_by) overriding system value
  values(v_member,876543210,'Uji Pelanggan G6',v_owner);

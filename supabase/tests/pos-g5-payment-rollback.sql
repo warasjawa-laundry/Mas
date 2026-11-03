@@ -31,7 +31,7 @@ begin
  v_staff:=public.laundry_pos_owner_save_cashier(null,'Kasir G5 QA',
   '{"order_view":true,"order_create":true,"order_work":true,"member_lookup":true,"payment_collect":true,"refund_full":true}'::jsonb,true);
  perform public.laundry_pos_owner_pair_cashier(v_staff,device);
- if not public.laundry_pos_cashier_login(device,'MAS-0001',login) then
+ if not public.laundry_pos_cashier_login(device,'MAS-2001',login) then
  raise exception 'G5 synthetic login not available';end if;
  insert into public.laundry_members(id,member_number,display_name,created_by) overriding system value
  values(v_member,987654321,'Member G5 Synthetic',v_owner);
@@ -152,7 +152,7 @@ begin
  other_staff:=public.laundry_pos_owner_save_cashier(null,'Kasir Tanpa Refund',
     '{"order_view":true,"payment_collect":true}'::jsonb,true);
  perform public.laundry_pos_owner_pair_cashier(other_staff,other_device);
- if not public.laundry_pos_cashier_login(other_device,'MAS-0002',other_login) then
+ if not public.laundry_pos_cashier_login(other_device,'MAS-2002',other_login) then
  raise exception 'G5 second staff login failed';end if;
  perform pg_catalog.set_config('request.jwt.claim.sub','',true);
  begin

@@ -8,7 +8,7 @@ begin
  perform set_config('request.jwt.claim.sub',owner_id::text,true);
  staff:=public.laundry_pos_owner_save_cashier(null,'Cash recovery QA','{"cash_entry":true,"cash_view":true,"payment_collect":true}'::jsonb,true);
  perform public.laundry_pos_owner_pair_cashier(staff,device);
- if not public.laundry_pos_cashier_login(device,'MAS-0001',login) then raise exception 'login failed';end if;
+ if not public.laundry_pos_cashier_login(device,'MAS-2001',login) then raise exception 'login failed';end if;
  update public.laundry_pos_outlets set write_enabled=true,finance_enabled=true;
  perform public.laundry_pos_g5_open_shift(device,login,gen_random_uuid());
  perform public.laundry_pos_g6_cash_entry(device,login,req,'IN','10000','Synthetic opening');

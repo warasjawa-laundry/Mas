@@ -266,3 +266,7 @@
   .mj-card-preview { width: 85.6mm !important; max-width: none !important; margin: 0 !important; break-inside: avoid; }
   .mj-card { width: 85.6mm !important; height: 53.98mm !important; aspect-ratio: auto; margin: 0 !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; box-shadow: none; break-inside: avoid; }
 }
+
+@media(max-width:480px) {
+  .member-directory-actions .member-directory-record, .member-directory-actions .member-directory-edit { padding-inline:.5rem; }
+}

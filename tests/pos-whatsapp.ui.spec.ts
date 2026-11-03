@@ -35,24 +35,27 @@ for(const width of [320,390,1440])test(`WhatsApp reads fresh DP/settled points a
  await expect(page.locator('pre')).toContainText('Sisa Tagihan : Rp0');await expect(page.locator('pre')).toContainText('Total Poin Aktif : 9 poin');
  await expect(page.locator('a[href^="https://wa.me/"]')).toHaveCount(0);
  await page.getByRole('checkbox',{name:/Saya memeriksa penerima/}).check();
- await expect(page.getByRole('link',{name:'Buka WhatsApp — kirim manual'})).toHaveAttribute('href',/^https:\/\/wa.me\/6280000000000\?text=/);
+ await expect(page.getByRole('link',{name:/^Buka WhatsApp/})).toHaveAttribute('href',/^https:\/\/wa.me\/6280000000000\?text=/);
  expect(await page.evaluate(()=>(window as any).reads)).toBe(2);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
  mkdirSync('artifacts/screenshots',{recursive:true});await page.screenshot({path:`artifacts/screenshots/pos-whatsapp-${width}.png`,fullPage:true});
 });
 
-for(const width of [320,1440])test(`pilot receipt stays marked in print and cannot open WhatsApp at ${width}px`,async({page})=>{
+for(const width of [320,1440])test(`pilot receipt stays marked in print and opens only a confirmed test recipient at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:900});page.on('pageerror',error=>{throw error});
  const css=readFileSync('app/kasir/pesanan/orders.module.css','utf8');
  await page.route('**/*',route=>route.request().url()==='http://127.0.0.1:3000/receipt-fixture'?route.fulfill({contentType:'text/html',body:`<style>body{margin:0;font-family:Arial}*{box-sizing:border-box}${css}</style><main class="shell"><div id="root"></div></main>`}):route.abort());
  await page.goto('http://127.0.0.1:3000/receipt-fixture');
  await page.evaluate(()=>{(window as any).receipt={is_test_order:true,invoice:'MJL-QA-TEST',customer:'uji - QA Guest',actor:'QA Owner',created_at:'2026-11-03T10:00:00Z',due_at:null,ready_at:null,collected_at:null,work_status:'READY',package:'QA',minutes:360,perfume:null,notes:null,total:'7000',service_subtotal:'4000',fees_idr:'3000',discount_idr:'0',delivery:{code:'NEAR',name:'Dekat',amount_idr:'3000'},paid:'7000',refunded:'0',remaining:'0',status:'PAID',contact:{phone:'+6280000000000',address:'QA address',verified_at:'2026-11-03T10:00:00Z'},member:null,settings:{revision:1,config:{outlet_name:'QA Laundry',address:'QA',contact:'QA',new_title:'QA',ready_title:'QA',collected_title:'QA',terms:'QA terms',payment_notice:'Bayar sungguhan',bank:'Bank QA',ewallet:'Wallet QA',cs:'QA CS'}},items:[{name:'QA service',package:'QA',duration:'6 jam',quantity_milli:1000,unit:'kg',price:'4000',subtotal:'4000'}]};});
  await page.addScriptTag({path:bundle});
- await expect(page.getByText('Verifikasi nomor & alamat penerima',{exact:true})).toHaveCount(0);
+ await page.getByText('Verifikasi nomor & alamat penerima',{exact:true}).click();
+ await expect(page.getByLabel('Nomor WhatsApp')).toBeVisible();
  await page.getByRole('button',{name:'Baca draf Nota Baru',exact:true}).click();
  await expect(page.locator('pre')).toContainText('BUKAN BUKTI PEMBAYARAN NYATA');
  await expect(page.locator('pre')).not.toContainText('Bank QA');
  await expect(page.locator('a[href^="https://wa.me/"]')).toHaveCount(0);
+ await page.getByRole('checkbox',{name:/Saya memeriksa penerima/}).check();
+ await expect(page.getByRole('link',{name:/^Buka WhatsApp/})).toHaveAttribute('href',/^https:\/\/wa.me\/6280000000000\?text=/);
  await expect(page.getByRole('group',{name:'Rincian biaya'})).toContainText(/Subtotal layananRp\s*4\.000/);
  await expect(page.getByRole('group',{name:'Rincian biaya'})).toContainText(/Antar-jemput \(Dekat\)Rp\s*3\.000/);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);

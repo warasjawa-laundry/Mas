@@ -94,7 +94,7 @@ begin
  then raise exception 'ambiguous duration invented ETA or cashier actor lost'; end if;
  update public.laundry_pos_invoice_counters set last_sequence=999999 where laundry_pos_invoice_counters.outlet_id=outlet_id;
  if (public.laundry_pos_g4_create_order(device_token,login_token,gen_random_uuid(),
-   'Large Invoice',null,items,null,null)->>'invoice_no')<>'MJL-1000000'
+   'Large Invoice',null,items,null,null)->>'invoice_no')<>'NOTA-11000000'
  then raise exception 'invoice truncated beyond six digits'; end if;
  if laundry_private.pos_duration_minutes('6 jam',null)<>360
  or laundry_private.pos_duration_minutes('2 hari',null)<>2880

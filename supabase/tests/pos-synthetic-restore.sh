@@ -23,6 +23,7 @@ fingerprint laundry_qa_ci >"$tmp/before"
 fingerprint laundry_qa_restore_ci >"$tmp/after"
 diff -u "$tmp/before" "$tmp/after"
 for regression in pos-pilot-receipt-boundary-rollback.sql pos-owner-duration-rollback.sql pos-owner-operations-rollback.sql pos-import-audit-rollback.sql pos-cashier-recovery-rollback.sql pos-package-workflow-rollback.sql pos-whatsapp-receipts-rollback.sql 20261017_stage10_role_isolation_rollback.sql; do
+for regression in pos-retire-test-notes-rollback.sql pos-owner-duration-rollback.sql pos-owner-operations-rollback.sql pos-import-audit-rollback.sql pos-cashier-recovery-rollback.sql pos-package-workflow-rollback.sql pos-whatsapp-receipts-rollback.sql 20261017_stage10_role_isolation_rollback.sql; do
  psql -X --dbname=laundry_qa_restore_ci -v ON_ERROR_STOP=1 -f "supabase/tests/$regression" >/dev/null
 done
 psql -X --dbname=laundry_qa_restore_ci -v ON_ERROR_STOP=1 >/dev/null <<'SQL'

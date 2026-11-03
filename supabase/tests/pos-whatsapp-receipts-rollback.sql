@@ -56,7 +56,7 @@ begin
  then raise exception 'receipt ACL leak';end if;
  cashier:=public.laundry_pos_owner_save_cashier(null,'WA QA Cashier','{"whatsapp_draft":true}',true);
  device:=public.laundry_pos_owner_pair_cashier(cashier,device_token);
- if not public.laundry_pos_cashier_login(device_token,'MAS-0001',login_token) then raise exception 'WA QA login failed';end if;
+ if not public.laundry_pos_cashier_login(device_token,'MAS-2001',login_token) then raise exception 'WA QA login failed';end if;
  perform set_config('request.jwt.claim.sub','',true);
  if public.laundry_pos_whatsapp_receipt(order_id,'NEW',device_token,login_token)->>'invoice' is null then raise exception 'authorized cashier cannot read receipt';end if;
  perform set_config('request.jwt.claim.sub',owner_id::text,true);

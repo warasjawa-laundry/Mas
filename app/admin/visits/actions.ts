@@ -19,7 +19,7 @@ export async function resolveOwnerScannedCard(text: string): Promise<{id:string;
   if(error || !Array.isArray(data) || data.length !== 1) return null;
   const row=data[0];
   if(!uuidRe.test(row.member_id)) return null;
-  return {id:row.member_id,number:"MJL-"+String(row.member_number).padStart(6,"0"),name:row.display_name};
+  return {id:row.member_id,number:"MJL-0"+String(row.member_number).padStart(5,"0"),name:row.display_name};
 }
 
 export async function recordOwnerVisit(formData:FormData) {
@@ -63,5 +63,5 @@ export async function resolveOwnerScannedBarcode(text:string):Promise<{id:string
  const {data,error}=await supabase.from("laundry_members").select("id,member_number,display_name")
   .eq("member_number",Number(number)).eq("is_active",true).maybeSingle();
  if(error||!data||typeof data.id!=="string"||!uuidRe.test(data.id))return null;
- return {id:data.id,number:"MJL-"+String(data.member_number).padStart(6,"0"),name:data.display_name};
+ return {id:data.id,number:"MJL-0"+String(data.member_number).padStart(5,"0"),name:data.display_name};
 }

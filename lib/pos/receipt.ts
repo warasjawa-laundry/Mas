@@ -18,14 +18,14 @@ export function normalizeReceiptPhone(raw:string){
  return /^\+[1-9][0-9]{7,14}$/.test(phone)?phone:null;
 }
 export function receiptWhatsAppUrl(contact:ReceiptContact|null,text:string,isTestOrder=false){
- if(isTestOrder)return null;
+
  if(!contact?.verified_at||!contact.phone||!/^\+[1-9][0-9]{7,14}$/.test(contact.phone))return null;
  const url='https://wa.me/'+contact.phone.slice(1)+'?text='+encodeURIComponent(text);
  return url.length<=8000?url:null;
 }
 export function buildReceipt(r:ReceiptData){
  if(r.is_test_order&&r.member)throw Error("Nota uji tidak boleh terhubung dengan member");
- const contact=r.is_test_order?null:r.contact;
+ const contact=r.contact;
  for(const key of ['total','paid','refunded','remaining'] as const)if(!/^(0|[1-9]\d{0,15})$/.test(r[key]))throw Error('Nominal nota tidak valid');
  const total=BigInt(r.total),paid=BigInt(r.paid),refund=BigInt(r.refunded),remaining=BigInt(r.remaining);
  if(total<paid-refund||remaining!==total-paid+refund||refund>paid)throw Error('Rincian pembayaran belum konsisten');
@@ -40,7 +40,7 @@ export function buildReceipt(r:ReceiptData){
   throw Error('Total nota dan biaya tambahan tidak konsisten');
  if(r.kind==='READY'&&r.work_status!=='READY'||r.kind==='COLLECTED'&&(r.work_status!=='COLLECTED'||r.status!=='PAID'||remaining!==BigInt(0)||!r.collected_at))throw Error('Status nota belum sesuai draf');
  const c=r.settings.config;const title=r.kind==='NEW'?c.new_title:r.kind==='READY'?c.ready_title:c.collected_title;
- const lines=[...(r.is_test_order?["NOTA UJI - SIMULASI", "BUKAN BUKTI PEMBAYARAN NYATA", "Jangan terima uang sungguhan atau kirim kepada pelanggan.", ""]:[]),c.outlet_name,c.address,c.contact,'',title,'',r.invoice,`Pelanggan : ${r.customer}`,
+ const lines=[...(r.is_test_order?["NOTA UJI - SIMULASI", "BUKAN BUKTI PEMBAYARAN NYATA", "Khusus penguji. Jangan terima uang sungguhan.", ""]:[]),c.outlet_name,c.address,c.contact,'',title,'',r.invoice,`Pelanggan : ${r.customer}`,
   `No Handphone : ${contact?.phone??'Belum diverifikasi'}`,`Alamat : ${contact?.address||'Belum diverifikasi'}`,`Kasir : ${r.actor}`,
   `Layanan : ${r.package??'Lihat rincian layanan'}${r.minutes?` (${r.minutes%60===0?r.minutes/60+' jam':r.minutes+' menit'})`:''}`,
   `Masuk : ${date(r.created_at)}`,`Est Selesai : ${date(r.due_at)}`];
