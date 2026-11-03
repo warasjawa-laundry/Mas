@@ -48,6 +48,8 @@ test("Package wizard uses four steps and real catalog pricing",()=>{
  assert.doesNotMatch(form,/DurationSheet|setDuration|servicesForDuration/);
  assert.match(form,/s.duration\|\|"Durasi belum ditentukan"/);
  assert.match(form,/MemberNamePicker/);
+ assert.match(form,/formatDurationHours\(p\.duration\)/);
+ assert.doesNotMatch(form,/\{p\.name\} · \{p\.duration\}/);
  assert.match(form,/step<summaryStep/);
  assert.match(form,/Total saat ini hanya harga layanan/);
  assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\}/);

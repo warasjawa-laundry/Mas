@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {durationMinutes,estimateCompletion,formatEta} from '../lib/pos/eta.ts';
+import {durationMinutes,estimateCompletion,formatDurationHours,formatEta} from '../lib/pos/eta.ts';
 
 test('calendar ETA reads the full timestamp and rolls into the next year in WIB',()=>{
  const due=estimateCompletion('2026-12-31T16:30:00.000Z',360);
@@ -26,4 +26,14 @@ test('invalid inputs never show a made-up date or depend on the browser timezone
  for(const minutes of [null,undefined,0,-1,1.5,525601,Infinity])assert.equal(estimateCompletion('2026-01-01T00:00:00Z',minutes),null);
  for(const timestamp of ['',null,'invalid','2026-01-01T10:00:00'])assert.equal(estimateCompletion(timestamp,60),null);
  assert.equal(formatEta(null),'Belum dapat dihitung');
+});
+
+test('duration package labels use hours while preserving exact calendar minutes',()=>{
+ assert.equal(formatDurationHours('4320 menit'),'72 jam');
+ assert.equal(formatDurationHours('1440 menit'),'24 jam');
+ assert.equal(formatDurationHours('360 menit'),'6 jam');
+ assert.equal(formatDurationHours('90 menit'),'1,5 jam');
+ assert.equal(formatDurationHours('61 menit'),'≈1,02 jam');
+ assert.equal(formatDurationHours('bad'),'Durasi belum diatur');
+ assert.equal(durationMinutes('4320 menit'),4320);
 });

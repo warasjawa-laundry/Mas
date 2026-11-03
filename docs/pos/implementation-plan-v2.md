@@ -499,3 +499,10 @@ Audit Supabase read-only sebelum patch: Production dan QA masing-masing 22/22 ta
 ## Perapihan khusus UI Layanan & Harga — 3 November 2026
 
 Perubahan visual terisolasi pada `/admin/settings/services`: ringkasan Reguler/Ekspres/Kilat ditampilkan sebagai kartu dengan durasi dan status yang terbaca, dan 1 kartu per keluarga layanan menampilkan harga tiap paket atau "Tidak tersedia" tanpa perlu membuka formulir. Kontrol `Ubah`/ `Tambah` dibuat jelas, marker segitiga bawaan browser disembunyikan tetapi mekanisme `details/summary` tetap keyboard-accessible. Form tambah/edit tetap memakai action server, revision, validasi, pilihan pemetaan katalog legacy dan izin Owner semula. Template WhatsApp tetap dapat diedit; layout responsif memakai token warna dan tipografi POS yang sudah ada. Tidak ada migrasi, perubahan harga, penghapusan record legacy, atau aktivasi katalog melalui patch ini. Status G8 tetap mengikuti evidence terpisah.
+
+
+## Koreksi tampilan jam pada pilihan paket — 3 November 2026
+
+- Pada wizard Tambah Pesanan yang dipakai Owner dan Kasir, paket tampil sebagai **Reguler · 72 jam**, **Ekspres · 24 jam**, dan **Kilat · 6 jam** mengikuti durasi resmi yang telah tersimpan; label `4320/1440/360 menit` tidak lagi ditampilkan kepada pengguna.
+- Perubahan hanya pada formatter label di frontend. Perhitungan estimasi, RPC, snapshot nota, serta penyimpanan durasi dalam menit kalender tetap sama. Nilai pecahan jam ditampilkan dalam jam desimal berformat Indonesia (dengan penanda perkiraan jika perlu pembulatan), bukan disalahartikan sebagai jam bulat.
+- Uji regresi durasi dan wizard ditambah. Tidak ada migrasi, perubahan tarif, aktivasi paket, ataupun penulisan database pada pekerjaan ini.

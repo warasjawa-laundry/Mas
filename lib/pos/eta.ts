@@ -5,6 +5,16 @@ export function durationMinutes(label:string):number|null{
  return minutes>=1&&minutes<=525600?minutes:null;
 }
 
+/** Present an authoritative calendar duration in hours without changing stored minutes. */
+export function formatDurationHours(label:string):string{
+ const minutes=durationMinutes(label);
+ if(minutes===null)return 'Durasi belum diatur';
+ const hours=minutes/60;
+ const rounded=Math.round(hours*100)/100;
+ const approximate=Math.abs(rounded*60-minutes)>0.000001;
+ return `${approximate?'≈':''}${new Intl.NumberFormat('id-ID',{maximumFractionDigits:2}).format(hours)} jam`;
+}
+
 export function estimateCompletion(start:string|null,minutes:number|null|undefined):string|null{
  if(!start||!/(Z|[+-]\d{2}:\d{2})$/i.test(start)||typeof minutes!=="number"||!Number.isInteger(minutes)||minutes<1||minutes>525600)return null;
  const timestamp=Date.parse(start);

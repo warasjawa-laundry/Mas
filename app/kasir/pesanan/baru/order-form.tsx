@@ -4,7 +4,7 @@ import {useFormStatus} from "react-dom";
 import {calculateOrderTotals} from "@/lib/pos/money";
 import {posUnitFromCatalog} from "@/lib/pos/catalog-units";
 import {canAdvanceOrderStep,stepQuantity} from "@/lib/pos/ui-quantity";
-import {durationMinutes,estimateCompletion,formatEta} from "@/lib/pos/eta";
+import {durationMinutes,estimateCompletion,formatDurationHours,formatEta} from "@/lib/pos/eta";
 import {formatIdr} from "@/lib/pos/g4-order";
 import {createCashierOrder} from "../actions";
 import {MemberNamePicker} from "./member-name-picker";
@@ -128,7 +128,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
     {packageWorkflow&&<section className={`${styles.panel} ${step!==1?styles.mobileHidden:''}`} aria-labelledby="package-title">
      <div className={styles.sectionHeading}><h2 id="package-title">Pilih paket durasi</h2><span>02</span></div>
      <p className={styles.help}>Estimasi memakai jam kalender sejak nota dibuat.</p>
-     {packages.length===0?<p className={styles.warn}>Paket belum dikonfigurasi Owner. Tarif contoh tidak digunakan.</p>:<div className={styles.segment}>{packages.map(p=><label key={p.code}><input type="radio" name="duration-package" checked={packageCode===p.code} onChange={()=>choosePackage(p.code)}/>{p.name} · {p.duration}</label>)}</div>}
+     {packages.length===0?<p className={styles.warn}>Paket belum dikonfigurasi Owner. Tarif contoh tidak digunakan.</p>:<div className={styles.segment}>{packages.map(p=><label key={p.code}><input type="radio" name="duration-package" checked={packageCode===p.code} onChange={()=>choosePackage(p.code)}/>{p.name} · {formatDurationHours(p.duration)}</label>)}</div>}
      {etaPreview}
      {pendingPackage&&<div role="alert"><p>Mengganti paket akan mengosongkan pilihan layanan. Periksa tarif paket baru sebelum menambah layanan.</p><button type="button" className={styles.back} onClick={()=>setPendingPackage("")}>Pertahankan pilihan</button><button type="button" className={styles.primary} onClick={()=>{setPackageCode(pendingPackage);setQuantities({});setPendingPackage("");}}>Ganti paket dan pilih ulang</button></div>}
     </section>}
