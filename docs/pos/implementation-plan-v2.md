@@ -1,5 +1,7 @@
 # POS Mas Jawa Laundry Implementation Plan V2 — revisi eksekusi 1 Nov 2026
 
+> Status terkini dan sisa acceptance direkonsiliasi pada [master audit](./master-audit-20261102.md), [audit G8](./g8-audit-20261102.md), [verifikasi](./g7-g8-verification.md) dan [receipt](./release-20261103.md). Checkpoint bertanggal di bawah adalah histori; pilot dummy aktif tidak berarti real G8 GO.
+
 > **Aktivasi konfigurasi Production — 3 November 2026, 15:47 WIB.** Atas instruksi eksplisit pengguna, outlet MJL sekarang write_enabled=true dan finance_enabled=true. Ini perubahan konfigurasi, bukan bukti G8 lulus. Package workflow masih false, paket/keluarga layanan aktif 0 dan kasir aktif 0; UI buat nota tetap memerlukan konfigurasi paket Owner melalui Pengaturan Layanan & Harga. Tidak menetapkan durasi/tarif rekaan atau mengubah izin kasir. Verifikasi sesudah aktivasi: orders/payments/cash/point-links 0, direct app DML grants 0. Histori Binatu/backfill tetap tidak dijalankan. Status readiness tetap NO_GO karena bukti UAT/identitas/restore belum lengkap; checker preflight tidak dilonggarkan. Lihat [receipt aktivasi](./financial-activation-20261103.md). Checkpoint OFF sebelumnya adalah histori sebelum aktivasi ini.
 
 
@@ -535,3 +537,10 @@ Perubahan visual terisolasi pada `/admin/settings/services`: ringkasan Reguler/E
 - Alur Owner/Kasir dibuka untuk **uji dummy saja**: gunakan Pelanggan umum bernama `UJI - Nama Dummy`. Dilarang menggunakan member asli, nomor HP pelanggan, WhatsApp sungguhan, uang asli atau menganggap bukti UAT ini sebagai G8 GO.
 - Owner/kasir real Auth, kamera HP, printer, WA, pelunasan, poin member di QA, restore penuh, keamanan ID kasir dan arsip/reset test ledger **belum dibuktikan** pada checkpoint ini. G8 tetap `NO_GO` dan laporan Production berisi data tes sampai cutover dibersihkan secara terkontrol.
 - Receipt: [aktivasi mode uji](./pilot-activation-20261103.md). Tindakan selanjutnya UAT fisik dengan Owner tanpa data pelanggan dan melengkapi evidence.
+
+
+## Rekonsiliasi empat dokumen G8 dan sisa implementasi — 3 November 2026
+
+Audit teknis, master audit, verifikasi G7/G8 dan receipt rilis direkonsiliasi langsung terhadap main fe04ef7; checkpoint lama dipadatkan dengan rujukan Git history. Tidak ada audit tambahan. B01–B04 pada master audit membedakan pekerjaan selesai dan bukti eksternal yang masih terbuka.
+
+Perbaikan: preflight mensyaratkan pilot explicit OFF dan test-order-count 0 untuk live riil; marker DB/snapshot ongkir diteruskan ke detail Owner/Kasir/receipt; watermark simulasi tetap tercetak; bank/payment notice dan pengiriman WA tidak ditawarkan pada nota uji; DB menolak kontak untuk nota uji. Migrasi additive 21210501 diuji QA lalu Production, tanpa mengubah flags/harga/customer/ledger. Lokal 297 Node, TypeScript/build dan 96 browser PASS; CI integrasi wajib memeriksa tree ini. Pilot existing tetap aktif, 1 nota/1 payment/1 cash row dipertahankan, 0 POS point-link; G8 riil tetap NO_GO. Full Auth/device/backup restore dan rekonsiliasi akhir pilot tetap memerlukan bukti nyata.

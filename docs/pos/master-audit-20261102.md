@@ -1,142 +1,75 @@
-# Master audit POS G0–G8 — 2 November 2026
+# Master audit POS G0–G8
 
-> **Aktivasi konfigurasi Production — 3 November 2026, 15:47 WIB.** Atas instruksi eksplisit pengguna, outlet MJL sekarang write_enabled=true dan finance_enabled=true. Ini perubahan konfigurasi, bukan bukti G8 lulus. Package workflow masih false, paket/keluarga layanan aktif 0 dan kasir aktif 0; UI buat nota tetap memerlukan konfigurasi paket Owner melalui Pengaturan Layanan & Harga. Tidak menetapkan durasi/tarif rekaan atau mengubah izin kasir. Verifikasi sesudah aktivasi: orders/payments/cash/point-links 0, direct app DML grants 0. Histori Binatu/backfill tetap tidak dijalankan. Status readiness tetap NO_GO karena bukti UAT/identitas/restore belum lengkap; checker preflight tidak dilonggarkan. Lihat [receipt aktivasi](./financial-activation-20261103.md). Checkpoint OFF sebelumnya adalah histori sebelum aktivasi ini.
+Status diperbarui 3 November 2026 terhadap baseline main `fe04ef7` dan perubahan teruji pada paket ini. **Pilot dummy aktif; G8 untuk transaksi pelanggan nyata tetap NO_GO.** Ini menggantikan checkpoint lama pada dokumen yang sama. Riwayat sebelum rekonsiliasi tersedia pada [versi fe04ef7](https://github.com/warasjawa-laundry/Mas/blob/fe04ef7f1a9f7d65baece7373a708e730586d058/docs/pos/master-audit-20261102.md).
 
+## Kondisi yang benar-benar diperiksa
 
-> **Production schema migrated — 3 November 2026.** Seluruh 21 migrasi POS source17430c0 telah diterapkan melalui konektor Supabase pada hncfyfvqtlnvqyfrydzb setelah izin schema eksplisit Owner. Production kini22/22 tabel POS ber-RLS,1 outlet; write_enabled=false, finance_enabled=false, package_workflow_enabled=false; orders/payments/cash/point-links 0 dan direct app DML grants 0. Seluruh1.546 fingerprint schema yang dibandingkan identik dengan QA, dan13 tabel lama pada kolom asalnya memiliki jumlah/hash identik. Backup logis13 tabel publik aplikasi dibuat terenkripsi DPAPI lokal sesudah3 migrasi pertama dan sebelum18 sisanya; decrypt/readback PASS, bukan full PostgreSQL restore/Auth/Storage backup. **G8 NO-GO untuk aktivasi finansial** sampai bukti keamanan/UAT/restore yang tersisa terpenuhi. Histori Binatu/backfill tidak diperlukan pada scope awal keputusan Owner; member/poin lama dipakai langsung. Checkpoint lama yang menyebut Production0tabel atau migrasi menunggu izin adalah histori yang telah digantikan receipt ini. Lihat [receipt migrasi](./production-migration-20261103.md).
+- Repo `warasjawa-laundry/Mas`, branch main; proyek Vercel existing `mas` dan domain `masjawalaundry.web.id`. PR #30 tidak digunakan atau diubah.
+- Production `hncfyfvqtlnvqyfrydzb` dan QA `cwxsbgfjynwxqalwonae` ACTIVE_HEALTHY. Keduanya mempunyai 22 tabel POS publik dengan RLS dan tanpa direct app DML grant. Metadata 1.594 entri yang dibandingkan sama, termasuk fungsi/konfigurasi, kolom/constraint, RLS flags dan hak efektif anon/authenticated. Scope ini tidak mencakup seluruh objek provider/Auth/Storage.
+- Production: write, finance, package-workflow dan pilot-test-only ON. Tiga paket, 14 keluarga layanan dan 31 tarif aktif telah tersedia. Kasir aktif 0. Pada snapshot verifikasi terakhir ada 1 nota berpenanda uji, 1 pembayaran dan 1 cash row; POS point-links 0. Nota/pembayaran ini sudah ada sebelum migrasi pengaman pada review ini, dipertahankan tanpa penghapusan atau posting ulang.
+- QA: flags write/finance/package/pilot OFF, data pelanggan Production tidak disalin; fixture rollback selesai tanpa nota/payment/cash/point-link tersisa. Katalog non-PII tersedia untuk QA.
+- Production mempertahankan 785 member, 18 kartu, 21 event dan 19 catatan nominal lama. Hash member/kartu/event/nominal sebelum dan sesudah migrasi pengaman sama. Review ini tidak mengubah flag, tarif, member, ledger atau izin kasir.
+- Backup lokal 13 tabel publik aplikasi terenkripsi DPAPI masih dapat didekripsi dan diverifikasi. Backup tersebut bergantung pada profil Windows pengguna; Auth, Storage dan arsip private tidak termasuk. Full PostgreSQL restore/RPO/RTO belum dibuktikan.
 
+## Scope yang berlaku
 
-> **Bukti terkini — 3 November 2026:** source `a502c0bce9638990d314db0f033a48df464b2e9f` lulus [release CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889142) dan [database CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889081): 284 Node, TypeScript, build, 93 browser; replay semua migrasi, SQL rollback, race dua koneksi dan restore sintetis PASS. Seluruh 1.546 fingerprint schema/RLS/hak efektif aplikasi QA identik dengan replay CI. Deployment existing Production `mas`, `dpl_9RVoM9zYWJT4dg1a8PMF2oeyDbFA`, READY pada SHA tersebut dan domain masjawalaundry.web.id. Production POS **0 tabel**, baseline legacy tetap sama; QA **22/22 RLS**, write/finance/package-mode OFF dan tidak ada transaksi/customer sintetis tersisa. **G8 NO-GO**, external evidence dan approval Production belum ada. Koreksi preflight terakhir mengubah kontrak 20 menjadi 22 tabel, dengan tes regresi red→green; tidak mengubah flag atau bukti bisnis. Paragraf checkpoint sebelumnya adalah histori, bukan status terkini. Lihat [receipt rilis](./release-20261103.md).
+Wizard Pelanggan → Durasi → Layanan → Konfirmasi memakai satu paket per nota dan jam kalender. Owner mengatur paket/tarif; harga, ongkir, revisi dan estimasi final disahkan database. UI Argon tetap digunakan. Histori Binatu/backfill bukan kebutuhan rilis awal; database member dan ledger poin lama digunakan langsung. Impor preview tetap tersedia tanpa posting uang/poin otomatis.
 
+Pilot sekarang hanya untuk guest dummy bernama `UJI - ...`, bukan pelanggan/member nyata atau uang nyata. Penanda `is_test_order` berasal dari DB dan immutable. Menonaktifkan pilot, menghapus data uji atau membuka cutover riil bukan bagian dari review ini.
 
-> **Checkpoint 3 November 2026: implementasi aman dan QA selesai secara lokal; CI paket tambahan belum selesai.** 284 tes Node, TypeScript, build Next.js dan 93 tes browser PASS (fixture sintetis, bukan real Auth/physical UAT). Regresi SQL QA lulus secara kolektif, semua perubahan transaksi di-rollback. Lima migrasi tambahan 20261103070000–074000 QA saja; flags write/finance/package-mode tetap OFF. Main c262a7f sudah lulus kedua CI; paket tambahan akan memperoleh SHA dan bukti CI/deployment tersendiri. Matriks di bawah adalah baseline historis; tabel status terkini berikut mengesampingkan kata PROVISIONAL/pending lama yang telah ditutup oleh bukti ini. G8 tetap NO-GO.
+## Matriks gate dan sisa acceptance
 
-| Gate | Status aktual | Bukti implementasi/QA | Acceptance tersisa |
+| Gate | Implementasi/bukti yang sudah ada | Status aktual | Sisa yang relevan |
 | --- | --- | --- | --- |
-| G0 | PARTIAL | Baseline main diinspeksi, inventaris schema dan checksums legacy, sumber/revisi tercatat | Inventory/reconciliation bisnis Owner; SHA release sudah terverifikasi |
-| G1 | PARTIAL | Guard isolasi QA/runner, credential-negative tests, restore sintetis dan semantic parity PASS | Actual approved backup/restore dan real-session isolation UAT; Preview N/A oleh keputusan Owner |
-| G2 | PARTIAL | Migrasi additive canonical, 22 tabel POS RLS, direct-write aplikasi ditolak | Replay/semantic parity sudah PASS; Production migration approval dan real Auth UAT |
-| G3 | PARTIAL | Owner ID/password; MAS-XXXX, izin/revoke tiap RPC dan negative SQL; Owner katalog paket/tarif | Mitigasi impersonation ID-only, durasi/tarif resmi Owner, real-session/device UAT |
-| G4 | PARTIAL | Owner actor, wizard 4 tahap, satu paket, authoritative quote, UUID retry, status/history, handover guard | Perangkat nyata, real login lifecycle dan jaringan |
-| G5 | PARTIAL | DP/full/refund, points once, cash atomik, negative/concurrency source fixtures | Pilot finansial disetujui, actual reconciliation, identity mitigation |
-| G6 | PARTIAL | Cash/shift/report, receipt template/verified recipient/current ledger, import review append-only tanpa posting | Physical cash/print/WA, actual Binatu reconciliation dan cutoff |
-| G7 | PARTIAL | Argon dipertahankan, 93 browser fixtures, mobile package/WA 320/390/1440 | PHYSICAL_UAT_REQUIRED, 25-screen Owner signoff |
-| G8 | BLOCKED | Fail-closed preflight, rollback/monitoring, synthetic restore/race di CI stable | Actual backup/restore RPO/RTO, external evidence dan financial cutover approval |
+| G0 | Baseline source, proyek, domain dan snapshot aggregate direkonsiliasi | DONE untuk baseline review ini | SHA hasil integrasi/CI/deployment diperiksa pada penutupan paket |
+| G1 | Isolasi QA, negative environment tests, restore sintetis CI | PARTIAL | Restore backup aktual pada target sah, RPO/RTO dan real-session isolation UAT |
+| G2 | Schema sudah di Production/QA; RLS, ACL, actor, immutable journal, lock/idempotency dan SQL rollback/race tersedia | PARTIAL | Real Auth acceptance lintas role dan bukti restore penuh; schema tidak perlu dipasang ulang |
+| G3 | Owner ID/password, MAS-XXXX, Owner kelola izin dan revoke; katalog paket aktif | PARTIAL | Mitigasi known-ID impersonation/DoS dan UAT sesi/perangkat; throttle bukan autentikasi kuat |
+| G4 | Wizard empat tahap, lookup/scan/member QA, snapshot/ETA, ongkir otoritatif, cancel/status/handover | PARTIAL | Real Auth/network-loss dan scanner/print fisik; member sengaja tidak dipakai dalam pilot Production |
+| G5 | DP/lunas/full refund, cash dan points once pada QA, two-connection races | PARTIAL | Real financial reconciliation/signoff; pembayaran pilot bukan penerimaan uang nyata |
+| G6 | Shift/kas/report/export, receipt/WA dan actor timeline | PARTIAL | Hitung kas/printer/WA fisik, opening balance dan penutupan shift; identifikasi seluruh jurnal simulasi |
+| G6b | Parser/preview/review audit impor tersedia | Tidak menjadi gate rilis awal | Rekonsiliasi Binatu diperlukan hanya bila impor/open receivable dipilih kemudian |
+| G7 | Regresi browser, mobile/keyboard/print emulation, Argon dipertahankan | PARTIAL / PHYSICAL_UAT_REQUIRED | Android camera/gallery, printer, WA dan 25-screen Owner signoff |
+| G8 | Schema terpasang, pilot terbatas dan checker fail-closed | NO_GO untuk live riil | Semua acceptance eksternal di bawah serta penghentian/pembersihan pilot yang disetujui |
 
-A01–A06 di tabel historis: koreksi kode tersedia dan tercakup tes recovery/parser/print/SQL; real network-loss UAT serta race timestamp akhir tetap disebut terpisah, bukan diklaim PASS fisik. Durasi kalender dan template resmi telah diputuskan Owner; keduanya bukan pertanyaan yang masih menunggu. Finance dan historical-import posting tidak diaktifkan.
+## Temuan lama: pekerjaan yang tidak diulang
 
+| ID | Status koreksi source | Batas bukti |
+| --- | --- | --- |
+| A01–A03 | Recovery mempertahankan UUID, form dan lookup terotorisasi; payload berbeda ditolak sebagai conflict | Network-loss/re-auth fisik tetap UAT; tidak mengklaim semua input tidak bisa diedit |
+| A04 | Cancelled/unknown import tidak MATCHED; footer mismatch ditolak; review append-only | Format subtotal yang tidak didukung ditolak; histori Binatu di luar scope awal |
+| A05 | Tombol print kasir mengikuti capability | Browser tetap dapat mencetak data sah yang sudah terlihat |
+| A06 | Shared core memakai occurrence yang konsisten untuk receipt/amount/point/report | Boundary waktu dan rekonsiliasi operasional tetap diperiksa dalam UAT |
+| A07–A10 | Owner actor sendiri, snapshot harga/durasi, family/package dan handover guard sudah terhubung | Tidak perlu membangun ulang order/payment/catalog |
+| A11–A12 | Receipt membaca ledger terkini, kontak berotorisasi dan settings berversi | Batas nota pilot diperkuat pada B02–B03 di bawah |
+| A13–A16 | Canonical replay, semantic metadata, comparator ACL restore, router fixture dan kontrak 22 tabel diperbaiki | History timestamp provider bukan source of truth; jangan copy history QA |
+| A17–A18 | Risiko ID-only dan evidence eksternal tetap terbuka | Tidak ditutup oleh aktivasi flags, SQL set_config atau hasil sintetis |
 
-> **Checkpoint terkini sebelum final CI (2 Nov 2026): PROVISIONAL / G8 NO-GO.** Root mengonfirmasi ketiga migrasi canonical telah diterapkan **QA saja**: `20261102190000_pos_owner_creation_duration_snapshots.sql`, `20261102193000_pos_owner_operations_shared_cores.sql`, `20261102210000_pos_import_review_audit.sql`. Fixture owner duration, owner operations, import audit dan regresi existing G5/G6/G2 PASS setelah apply. `write_enabled=false` dan `finance_enabled=false`. Lima browser test wizard sintetis PASS pada 320/390/1440px memakai mocks; ini bukan real Auth atau PHYSICAL_UAT. Synthetic restore dan race tambahan menunggu CI yang akan datang, **belum PASS**. Final tree/CI dan deployment paket baru belum disertifikasi. Produksi tetap 0 tabel POS; tidak ada mutasi produksi. Lihat [master audit](./master-audit-20261102.md) untuk dependensi dan bukti penutupan.
+## Koreksi yang dikerjakan pada review ini
 
-**Status keseluruhan: PARTIAL; G8 NO-GO / BLOCKED.** Dokumen ini mengonsolidasikan audit baseline `main` `0fe995db640de6249bd9389fe674a6853ab4d5bd` dan paket perubahan lokal yang sedang diuji. **PROVISIONAL: final validation, final diff review, CI dan SHA hasil merge belum selesai.** PASS checkpoint tidak menjadi PASS untuk tree akhir. Tidak ada izin migrasi produksi, perubahan Auth produksi, aktivasi transaksi, posting impor, atau cutover dari dokumen ini.
+| ID | Temuan terverifikasi | Penyelesaian |
+| --- | --- | --- |
+| B01 | Empat dokumen mengulang checkpoint yang saling bertentangan: Production 0 tabel, katalog belum aktif, wizard tiga tahap | Dokumen yang sama direkonsiliasi; receipt migrasi/aktivasi dan Git history tetap menjadi riwayat |
+| B02 | Preflight dapat menerima kandidat dengan pilot aktif atau test orders tersisa | Harus explicit pilot=false dan test-order-count=0; unknown/string/null ditolak, evidence finansial tetap wajib |
+| B03 | DTO receipt tidak membawa marker uji; penanda halaman bergantung pada prefix nama dan warning kasir tersembunyi saat print | Marker DB diteruskan ke Owner/Kasir/receipt; notice tetap tercetak; receipt uji diberi watermark, tanpa bank/payment notice nyata; kontak uji ditolak DB dan tautan WA tidak ditawarkan |
+| B04 | Ongkir sudah masuk total DB tetapi tidak diteruskan ke detail nota | DTO dan kedua halaman menampilkan subtotal, snapshot ongkir serta total; rumus harga tidak diubah. Owner juga melihat parfum/catatan tersimpan |
 
-## Cara membaca bukti dan prioritas
+Migrasi additive `20261103210501_pos_pilot_receipt_boundary.sql` hanya mengubah metadata pembaca dan menolak insert kontak pada nota uji. Sudah diuji di QA lalu diterapkan Production; flags serta nilai existing tidak berubah. Tidak ada tes pembayaran Production yang dijalankan oleh review ini.
 
-`IMPLEMENTED_QA` berarti jalur kode/SQL ada dan bukti sintetis tersedia, bukan operasional live. `PARTIAL` berarti ada lingkup atau acceptance terbuka. `BLOCKED` memerlukan bukti/keputusan eksternal. `PHYSICAL_UAT_REQUIRED` tidak dapat ditutup oleh source assertion, emulasi browser atau tes SQL. Hanya root task yang menggabungkan bukti akhir boleh mengubah status provisional setelah memeriksa hasil nyata.
+## Bukti otomatis dan batasnya
 
-P0 memblokir keselamatan release; P1 memblokir alur inti/rekonsiliasi; P2 mengoreksi kontrol, ketahanan dan kelengkapan. Dependensi berurutan: G0 identitas/baseline → G1 isolasi/restore → G2 kontrak/ACL → G3 identitas/izin → G4 order/snapshot → G5 uang/poin → G6 kas/laporan dan G6b histori → G7 integrasi/UAT → G8 approval/migrasi/pilot. G6b tidak boleh menjadi jalan pintas ke ledger live.
+297 tes Node, TypeScript, build dan 96 browser lokal PASS. SQL QA baru membuktikan marker Owner/Kasir, snapshot ongkir, pembayaran simulasi, penolakan kontak test dan receipt normal tanpa false-positive prefix. Fixture receipt/points/revoke yang sudah ada juga PASS. RED marker/ongkir sebelum perbaikan direproduksi; satu setup awal parfum `Tidak` ditolak sebagaimana kontrak (opsi tanpa parfum mengirim null), lalu fixture memakai Sakura. Tidak menurunkan validasi untuk membuat test hijau.
 
-## Bukti pada checkpoint ini
-
-- Root memverifikasi source main `0fe995d`, Vercel Production existing `mas` READY, SHA sama dan domain benar. Git connection `unyilhm1-hue/mas` dipertahankan. Bukti ini hanya berlaku baseline tersebut, bukan perubahan lokal yang belum merge/deploy.
-- Root memverifikasi proyek produksi dan QA ACTIVE_HEALTHY. Produksi: 785 member, 18 kartu, 21 event, 19 amount snapshots dan **0 tabel POS**. QA: 20 tabel POS publik RLS, tanpa direct write role aplikasi dan tanpa data legacy pelanggan. Tabel audit private tambahan harus diinventarisasi terpisah; angka 20 bukan jumlah semua objek database.
-- Sembilan regresi POS QA existing dilaporkan PASS. Migrasi `20261102190000_pos_owner_creation_duration_snapshots.sql` diterapkan **QA saja** sebagai `pos_owner_creation_duration_snapshots`; fixture baru beserta G4/G5/G6 dan katalog dilaporkan PASS. Checkpoint Node 268 PASS; baseline Playwright 78 PASS dan build PASS. Perubahan setelah checkpoint **FINAL_VALIDATION_PENDING**; tidak ada klaim CI final.
-- Migrasi lokal `20261102193000_pos_owner_operations_shared_cores.sql` menambahkan owner operations/shared core dan `finance_enabled=false`; telah diterapkan QA; fixture owner ops PASS. Filename canonical aktual 20261102193000 menjadi acuan, bukan nama rencana 20261102200000. Final CI pending.
-- `20261102210000_pos_import_review_audit.sql` dan fixture audit impor: dry-run dilaporkan PASS; telah diterapkan QA; fixture import audit PASS. Final CI pending. Tidak diterapkan ke produksi.
-
-## Matriks gate saat ini
-
-| Gate | Lingkup dan jalur nyata | Kriteria yang sudah didukung bukti | Pekerjaan/bukti untuk menutup | Dependensi dan status |
-| --- | --- | --- | --- | --- |
-| G0 | Repo/SHA/domain/proyek, baseline schema/ledger, inventaris UI dan dokumen keputusan | Baseline root di atas; `baseline.md`, `evidence-manifest.md`, keputusan D01–D11 | Pin tree final dan deployed SHA setelah merge; snapshot konsisten final beserta migration/function/grant hashes; rekonsiliasi perubahan bisnis sah; bukti privat tersedia untuk reviewer | Pangkal semua gate. PARTIAL; baseline terverifikasi, release final pending |
-| G1 | `lib/supabase/qa-preview-isolation.ts`, registry key/origin dan key kartu QA; runner SQL sintetis | Guard fail-closed dan proyek QA terpisah; tidak memakai pelanggan produksi | Restore rehearsal nyata, scope credential negatif dan QA auth/card roundtrip; bukti bahwa runner tidak menyentuh produksi; prosedur UAT aman tanpa website staging | G0. PARTIAL; restore BLOCKED. Preview N/A atas keputusan owner |
-| G2 | Skema G2/G3/G5, RLS/grants, FK/XOR actor, append-only journals, counter tunggal | 20 tabel POS publik RLS; direct writes ditolak; staff bukan owner/Auth palsu; jurnal uang/point/command dilindungi | Inventaris objek private baru, ACL PUBLIC/anon/authenticated/service role; negative authenticated roles; lock graph termasuk legacy dan katalog; migration-history reconciliation; restore/rollback DDL | G0/G1. IMPLEMENTED_QA / PARTIAL; migrasi produksi BLOCKED |
-| G3 | `/admin/login` Owner ID+password dan Karyawan MAS-XXXX; `/kasir`; owner cashier CRUD/revoke; dua cookie/token | ID unik berurutan non-recycle, status/izin dicek DB, TTL max 12 jam, throttle global, sesi dicabut | Real Auth owner+kasir; revoke saat aksi, expiry/two-tab/refresh; review known-ID impersonation dan DoS throttle; owner menerima kontrol identitas sebelum finance | G2. PARTIAL / PHYSICAL_UAT_REQUIRED; identity-risk approval BLOCKED |
-| G4 | Wizard bersama Pelanggan→Layanan→Konfirmasi, katalog existing, nama/nomor/QR/barcode, order board/detail; owner create baru | Harga/qty/revisi dihitung server integer; unique UUID/counter; owner/staff XOR; mixed duration snapshots dan ETA known-only QA; tidak backfill histori | Recovery unknown commit melewati reload/re-auth, same-UUID owner race, catalog/member deactivation interleaving; ETA policy owner; cancellation command, adjustment/ongkir/diskon dengan kontrak izin bila masuk pilot | G2/G3. IMPLEMENTED_QA / PARTIAL; owner UI final validation pending |
-| G5 | DP/pelunasan, receipt+cash+legacy ADD/amount/link atomik, full refund/VOID; owner finance/shared core lokal | G5 rollback dan existing 2-connection payment race; missing rule/inactive member/fraction/overpay/guest/zero diuji; finance switch baru default OFF | QA shared core dan actor owner/staff; two-session payment-vs-close/refund/legacy VOID/rule/year boundary; receipt/change/evidence semantics; fault injection tiap write; point timestamp parity; network-loss UAT | G2–G4 dan identity review. PARTIAL; FINANCE BLOCKED, PHYSICAL_UAT_REQUIRED |
-| G6 | `/kasir/kas`, `/kasir/laporan`, CSV dan draft WA; owner operations lokal | Kas cash terpisah noncash, counted/discrepancy reason, journal append-only, export >300 ditolak, formula escaping; SQL rollback | Final shared core QA; opening cash policy, shift ownership/handover; unknown cash retry/re-auth; payment-close race; laporan occurrence clock/program year/cancellation as-of; owner endpoints+UI wiring penuh; physical count/WA consent/print | G5. PARTIAL / PHYSICAL_UAT_REQUIRED |
-| G6b | `/admin/pos/import`, bounded XLSX/CSV, owner per-row paid review, hash/invoice conflict, audit private baru | No posting orders/payments/points; owner identity manual; 200 rows/1.5MB; parser batas aktif; cancellation/footer hardening lokal dan audit dry-run | Audit QA applied; final negative ACL/parser tests; section-aware footer/cancel variants; real Binatu owner reconciliation; identitas member ganda; revision/retry audit; opening receivable batch disetujui terpisah | G1/G2 dan G0 file evidence. PARTIAL; historical posting DISABLED |
-| G7 | Shell Argon/Binatu dan navigasi role, 25 screenshot, scan kontekstual, keyboard/mobile/print | Baseline Playwright 78 dan source/parser/race tests; final wizard tests sedang dikerjakan | 320/360/390/768/1024/1440, zoom200%, keyboard/focus/contrast; Android real camera/gallery permission/revoke; owner+cashier full lifecycle; 25-screen signoff; network unknown, printer dan kas fisik | G3–G6b. PARTIAL / PHYSICAL_UAT_REQUIRED |
-| G8 | Preflight pinned SHA/evidence, cutover/rollback/monitoring, restore dan owner approval | Receipt default NO_GO; checker fail-closed diperketat lokal, belum bukti readiness | Fresh SHA-bound independently reviewed evidence, actual restore, reconciled saldo/piutang/poin, real auth/hardware, owner identity/ETA/visual/cutover approval, full production migration approval lalu pilot monitoring | Semua gate. BLOCKED / NO-GO; tidak ada production POS schema |
-
-## Temuan audit dan status koreksi
-
-Temuan berikut berasal dari source baseline dan bukan klaim bahwa tree lokal saat ini masih memiliki bug yang sama. Root sedang memperbaikinya; status baru hanya ditutup dengan behavioral evidence pada final tree.
-
-| ID / prioritas | Baseline masalah dan dampak | Perubahan aman / status sekarang | Bukti penutupan yang wajib |
-| --- | --- | --- | --- |
-| A01 P1 | Cash action membuang UUID/payload pada UNKNOWN lalu render UUID baru; risiko kas IN/OUT ganda | Local action sekarang mempertahankan form/error; root mengerjakan recovery. PROVISIONAL | Putus respons setelah/belum commit, identical UUID+payload retry, reload/re-auth, maksimal satu cash ledger; hasil bisa ditemukan tanpa menebak jurnal |
-| A02 P1 | Create order membuang draft/UUID pada error; risiko nota kedua dan kehilangan input | Owner/cashier return recoverable state; root wizard recovery lokal. PROVISIONAL | Lost response, stale catalog, invalid qty, Back/Next, refresh/re-auth; satu invoice per request dan isian tetap benar |
-| A03 P2 | Refund retry menyimpan UUID/version tetapi menghilangkan reason yang masuk digest | Root recovery form lokal. PROVISIONAL | Exact reason/payload retained dan immutable selama UNKNOWN, same UUID replay; changed payload conflict ditampilkan definitif |
-| A04 P2 | Parser mengabaikan footer dan cancelled PAID menjadi LAINNYA yang bisa MATCHED | Parser lokal menandai cancellation UNKNOWN dan memeriksa footer; SQL guard/audit baru applied QA; fixture PASS, final CI pending | Footer salah ditolak; multiple sections/subtotals tidak ditafsirkan global keliru; cancelled/unknown tak MATCHED; legacy invalid row bisa dikarantina; tanpa receipt/point |
-| A05 P2 | receipt_print grant diabaikan oleh PrintButton unconditional | Root permission guard lokal. PROVISIONAL | Permission false tidak menawarkan print action/receipt route; true berfungsi; akui browser dapat mencetak konten yang sudah terlihat |
-| A06 P2 | Link.created_at berbeda dari timestamp receipt/ADD saat menunggu rule lock; laporan berpindah periode | Backend ops agent menangani canonical timestamp. FINAL_VALIDATION_PENDING | Cross-WIB-midnight two-session rule lock; receipt, amount, ADD/link dan report sama occurrence time/year, termasuk refund tahun berikut |
-
-Prioritas P0 release: jangan menyalakan `write_enabled`/`finance_enabled`, menerapkan produksi atau mengklaim G8 GO sebelum approval dan bukti eksternal. Tidak ditemukan P0 exploit terkonfirmasi dari audit read-only baseline; ketiadaan P0 bukan sertifikasi keamanan.
-
-## Review migrasi baru
-
-### Owner create dan duration snapshots
-
-Core private tidak dapat dipanggil role aplikasi; wrapper owner memanggil active owner check; cashier memeriksa order_create dan member_lookup bila memilih member. Outlet lock mendahului service share locks; counter dan replay recheck serial. Actor owner dan staff dipertahankan XOR. Snapshot item baru tidak berubah akibat edit katalog; histori lama tidak diisi ETA rekaan. Unknown/range duration menghasilkan PENDING/null; known elapsed minutes memakai max per-item pada order. Fixture QA memeriksa stale catalog, flag-off replay, cross-actor denial, actor XOR, snapshot dan invoice melewati enam digit.
-
-Review lanjutan: ACL negatif, cross-actor lookup dan recovery berdasarkan izin operasi diuji pada fixture SQL. Race dua koneksi tetap menunggu CI. Item snapshot dilindungi ACL/RLS dan ketiadaan update RPC, belum trigger immutable seperti lima jurnal. Pastikan old due_at non-null tidak disalahartikan sebagai PENDING sesudah default kolom baru.
-
-### Audit impor
-
-`20261102210000_pos_import_review_audit.sql` memberi audit private append-only dengan FK source/actor/member, RLS dan revoke all; trigger melarang perubahan field sumber dan mencatat perubahan keputusan oleh owner. Tidak ada jalur posting finansial. Dry-run fixture memeriksa dua keputusan, identical retry tanpa audit ganda, unknown PAID ditolak, audit immutable dan tidak ada uang/poin.
-
-Guard PAID dengan status mentah tak dikenal menolak INSERT/MATCHED, tetapi row lama boleh dikarantina CONFLICT/SKIPPED; fixture QA lulus. Parser menolak cancelled dan footer tak cocok; subtotal per-section belum didukung tanpa contoh sah.
-
-## Pekerjaan berurutan dan acceptance
-
-1. **P1 recovery & identity UI (G3/G4/G5/G6):** selesaikan pending command identity, freeze exact payload, typed definitive/UNKNOWN state, recovery setelah re-auth dan pilihan member eksplisit. Owner UI harus memanggil owner endpoint; jangan menumpang token kasir.
-2. **P1 finance core integration (G2/G5/G6):** review shared core ACL/actor/lock graph, finance flag default false, satu timestamp event, opening/close policy; QA DDL+fixtures dan race dua koneksi. Jangan mengubah guard legacy menjadi permissive.
-3. **P2 import integrity (G6b):** final parser+audit SQL, sumber immutable, review history append-only, cancelled/footer/section/duplicate/revision/legacy invalid quarantine; data sintetis saja. Real historical reconciliation memerlukan owner.
-4. **P2 contract completion (G4/G6):** cancellation, diskon/ongkir/ETA, program-year reporting dan physical cash scope ditetapkan. Bila fitur sengaja tidak masuk pilot, tampilkan unavailable dan catat persetujuan scope, bukan tandai implemented.
-5. **Final automated gate (G0–G7):** Node/typecheck/build/Playwright final, SQL ACL/rollback fixtures, race/fault injection, diff review dan CI pada SHA final. Laporkan perintah, count, exit status dan commit; jangan menyalin checkpoint sebagai hasil terbaru.
-6. **External gate (G1/G3/G7/G8):** restore rehearsal, real owner/cashier Auth, Android QR/barcode/gallery, physical count/print, 25 screenshot owner review, actual Binatu/opening receivable reconciliation, identity-risk+ETA approval. Status sampai bukti tersedia: BLOCKED / PHYSICAL_UAT_REQUIRED.
-7. **Release terpisah (G8):** owner menyetujui rencana migrasi produksi dan cutoff; preflight fresh SHA/evidence; backup, maintenance/reconciliation, schema migration flag-off, validasi tanpa money live, explicit cutover GO, monitoring shift/poin/refund. Satu domain/proyek; tidak reconnect Git dan tidak menyentuh PR #30.
-
-## Bukti yang tidak boleh diganti dengan klaim
-
-Real Auth berarti sesi Supabase owner dan sesi dua-token kasir sungguhan dengan izin/revoke diuji, bukan set_config JWT di SQL superuser. Restore berarti restore backup aktual ke target aman dan rekonsiliasi, bukan checksum. Concurrency berarti koneksi terpisah dengan commit dan interleaving terkontrol, bukan satu rollback fixture. Physical UAT berarti perangkat dan uang/printer nyata, bukan Playwright. Visual parity berarti 25 layar ditinjau owner pada viewport sepadan, bukan string test. G8 GO memerlukan semua itu serta persetujuan eksplisit; master audit ini tetap NO-GO.
-
+CI menjalankan replay canonical seluruh migrasi, fixture SQL, restore sintetis dan race dua koneksi. Fixture baru juga dijalankan sesudah restore. Hasil lokal/CI tidak menggantikan login manusia, physical UAT, backup restore penuh atau rekonsiliasi kas nyata. Bukti final CI dan SHA tersedia pada commit integrasi, bukan dikarang dari checkpoint lama.
 
 ## Tindakan eksternal wajib dan pemilik bukti
 
-| Tindakan | Penanggung jawab | Bukti penutupan (belum tersedia) |
+| Tindakan | Pemilik | Bukti penutupan |
 | --- | --- | --- |
-| Pilih kontrol identitas kasir sebelum finance | Owner + reviewer keamanan/operator jaringan | Keputusan tertulis: trusted workplace network dengan pembatasan akses yang dibuktikan, atau kontrol identitas lebih kuat; negative test dari jaringan/perangkat tak berhak, impersonation/revoke/expiry. Throttle tidak memperbaiki penyamaran memakai ID yang sudah diketahui; persetujuan risiko saja tanpa kontrol teruji bukan PASS |
-| Backup dan restore produksi aman | Operator database + Owner | Backup aktual, restore ke target aman, checksum/ledger reconciliation, waktu/RPO/RTO, reviewer. Synthetic CI restore bukan restore produksi |
-| Real Auth owner/kasir + Android | Owner dan kasir pilot + tester | Sesi nyata, role/revoke/timeout, Android kamera/galeri/barcode/QR, jaringan putus dan retry; timestamp/perangkat/hasil privat |
-| Kas fisik/print/WA dan visual 25 layar | Owner dan kasir pilot | Count opening/receipts/refund/close, hasil print perangkat nyata, consent draf WA, per-screen owner signoff pada viewport sepadan |
-| Rekonsiliasi finansial/histori | Owner + pemeriksa keuangan | Nota unik, kas/piutang cutoff WIB, ADD/VOID/poin, Binatu cancelled/lunas/duplicate, saldo awal dan perbedaan nol atau disetujui dengan jejak |
-| Migrasi dan cutover | Owner + operator release/database | Approval schema terpisah, fresh reviewed/deployed SHA, baseline before/after, kedua flag OFF saat migrasi; approval pilot/aktivasi terpisah dan monitoring/stop procedure |
+| Kendalikan risiko MAS-XXXX | Owner + reviewer/operator keamanan | Kontrol yang benar-benar diterapkan dan negative test known-ID impersonation, revoke/expiry/DoS; bukan persetujuan risiko saja |
+| Backup/restore penuh | DBA/operator + Owner | Target restore sah, Auth/Storage scope, execution log, checksums, RPO/RTO dan reviewer; jangan menyalin PII ke QA sembarangan |
+| Real Auth dan perangkat | Owner/kasir/tester | Login→nota→DP/lunas/refund, lost response/retry, izin/revoke, QR/barcode/gallery, printer/WA dan signoff 25 layar |
+| Rekonsiliasi dan akhir pilot | Owner + pemeriksa keuangan/operator | Klasifikasi/arsip seluruh nota/jurnal simulasi, shift/kas/poin/opening balance dan cutoff. Jangan DELETE/TRUNCATE ledger; pertahankan member/kartu |
+| Cutover riil | Owner + operator release | Pilot OFF, test orders dibereskan, evidence SHA-bound diterima dan approval peluncuran; tidak otomatis karena flags sudah ON |
 
-Seluruh baris tetap BLOCKED / PHYSICAL_UAT_REQUIRED sampai bukti nyata tersedia. Source dan synthetic mocks tidak dapat mengisi bukti ini.
-
-## Checkpoint integrasi 3 November 2026
-
-280 tes Node PASS; TypeScript dan build PASS; 14 tes browser fixture PASS pada 320/390/1440px. Lima migrasi canonical baru QA saja. Recovery menyimpan UUID saja, memulihkan hasil aktor yang sama dan memeriksa izin tiap operasi. Cancel owner/kasir meminta alasan/versi, menolak dana belum direfund. Synthetic restore, race dua koneksi dan deployment SHA baru menunggu CI; status gate tidak dinaikkan.
-
-Tambahan rencana v1.1 diterima: empat tahap, satu paket per nota, paket global dan WA dinamis. Audit ulang dan implementasi dilaksanakan setelah paket ini stabil; lihat service-duration-whatsapp-plan-v1.1.md. Tarif contoh bukan konfigurasi resmi.
-
-CI b6153db: replay semua migrasi dan regresi SQL PASS; synthetic restore FAIL pada representasi ACL owner (explicit default vs NULL), bukan perubahan hak aplikasi/data. Comparator diperbaiki untuk acldefault; hasil ulang masih menunggu.
-
-
-## Tambahan terverifikasi lokal — 3 November 2026
-
-Keputusan Owner terbaru: wizard **Pelanggan → Durasi → Layanan → Konfirmasi**, satu paket per nota, **jam kalender**; durasi dan tarif resmi diisi Owner. Ini menggantikan kontrak tiga tahap/mixed-duration untuk katalog paket yang diaktifkan. Snapshot nota lama tidak dibackfill atau diubah.
-
-Lima migrasi tambahan 20261103070000–074000 telah diterapkan QA saja. Keluarga layanan satu record + tarif per paket; pemetaan opsional record lama mempertahankan service ID; paket default nonaktif/tanpa durasi/tanpa tarif contoh. Tombol aktivasi katalog tidak mengubah write_enabled atau finance_enabled.
-
-Nota memakai harga/revisi otoritatif; backend menolak campuran paket pada mode paket. Diproses, ready_at, collected_at, histori aktor, tab Sudah Diambil dan detail pembatalan tersedia. Trigger database menolak serah terima Belum Bayar, DP, refund dan tagihan nol; tidak ada override.
-
-Template WA asli Owner tersimpan sebagai konfigurasi berotorisasi dan berversi. Nota/Siap/Sudah Diambil membaca ulang receipt dan ledger periode aktual, menyembunyikan poin untuk guest, membedakan perkiraan dengan saldo aktif. Kontak diverifikasi untuk nota dengan audit aktor; link wa.me hanya sesudah pemeriksaan penerima. Tidak ada pengiriman otomatis atau status SENT. Sumber URL: https://faq.whatsapp.com/5913398998672934.
-
-23 fixture SQL regresi QA lulus secara kolektif; satu pemeriksaan jumlah tabel G5 awal gagal karena 20 menjadi 22 dan diperbarui ke 22 tanpa mengurangi RLS/ACL. Tambahan uji menolak unpaid/DP/refund/zero handover, menguji posting poin/lunas, ID kontak idempotent, revoke izin WA dan histori aktor. 284 tes Node dan TypeScript lulus; build dan suite browser final dijalankan kembali pada tree akhir. Fixture browser bukan real Auth atau uji Android/print fisik.
-
-CI main c262a7f lulus: Audit Release Gate dan Stage 10 PostgreSQL Concurrency QA (run 41590525471 / 41590525640). CI/deployment **paket tambahan** harus diverifikasi pada SHA berikutnya; belum dinyatakan PASS di checkpoint ini. Production belum dimigrasi. G8 tetap NO-GO.
-
-Advisor QA: default-deny RLS INFO disengaja; 3 anonymous dan 9 authenticated SECURITY DEFINER RPC exposure warnings pada tambahan awal ditinjau sebagai endpoint yang berotorisasi, bukan akses publik tanpa pemeriksaan. Negative auth/revoke fixtures lulus; kontrol identitas ID-only kasir tetap blocker sebelum finance. Tidak menyatakan advisor bersih. Raw ACL provider berbeda dari CI; fingerprint membandingkan definisi, RLS dan hak efektif anon/authenticated/kolom. Perbedaan semantic tersisa harus dijelaskan sesudah artefak CI final tersedia.
+Keputusan pilot pada main menyebut target operasional Januari 2027 dan riwayat kas/poin lama sebagai data dummy yang perlu ditinjau sebelum peluncuran. Ini tidak mengizinkan review ini menghapusnya. Sisa di tabel ini tidak dapat diberi PASS oleh agen tanpa tindakan/bukti nyata.

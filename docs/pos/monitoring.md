@@ -1,26 +1,18 @@
-# G8 monitoring satu outlet (owner operational checklist)
+# Monitoring POS dan pilot
 
-> **Aktivasi konfigurasi Production — 3 November 2026, 15:47 WIB.** Atas instruksi eksplisit pengguna, outlet MJL sekarang write_enabled=true dan finance_enabled=true. Ini perubahan konfigurasi, bukan bukti G8 lulus. Package workflow masih false, paket/keluarga layanan aktif 0 dan kasir aktif 0; UI buat nota tetap memerlukan konfigurasi paket Owner melalui Pengaturan Layanan & Harga. Tidak menetapkan durasi/tarif rekaan atau mengubah izin kasir. Verifikasi sesudah aktivasi: orders/payments/cash/point-links 0, direct app DML grants 0. Histori Binatu/backfill tetap tidak dijalankan. Status readiness tetap NO_GO karena bukti UAT/identitas/restore belum lengkap; checker preflight tidak dilonggarkan. Lihat [receipt aktivasi](./financial-activation-20261103.md). Checkpoint OFF sebelumnya adalah histori sebelum aktivasi ini.
+Source kondisi operasional: [audit teknis G8](./g8-audit-20261102.md). Production saat ini pilot dummy, bukan penerimaan uang nyata; jangan menafsirkan flags ON atau status PAID nota uji sebagai G8 GO.
 
+| Pantau | Tindakan |
+| --- | --- |
+| Flags write/finance/package/pilot dan SHA domain | Bandingkan dengan rencana yang disetujui; jangan otomatis melepas pilot |
+| Nota uji tanpa marker atau terkait member | STOP command baru dan investigasi; marker DB harus immutable, guest-only |
+| POS point-link untuk nota uji | Harus ditolak DB; jangan membetulkan dengan ADD/VOID manual tanpa rekonsiliasi |
+| Kontak/tautan WA nota uji | Kontak baru ditolak, receipt contact null dan UI tanpa link kirim. POS_TEST_CONTACT_FORBIDDEN adalah penolakan yang disengaja; jangan bypass guard |
+| Duplicate UUID/digest conflict/overpay atau hasil tidak pasti | Lookup request semula, periksa ledger, jangan buat UUID/pembayaran kedua |
+| Cash/receipt/refund/shift totals | Rekonsiliasi; jurnal simulasi tidak menjadi kas awal riil. Identifikasi juga cash IN/OUT yang tidak terhubung nota |
+| RLS/grant/actor drift | Bandingkan canonical metadata dan negative auth tests, jangan mengandalkan menu tersembunyi |
+| Nota lama, snapshot harga/ongkir/durasi dan saldo member | Perubahan katalog tidak boleh mengubah riwayat |
 
-> **Production schema migrated — 3 November 2026.** Seluruh 21 migrasi POS source17430c0 telah diterapkan melalui konektor Supabase pada hncfyfvqtlnvqyfrydzb setelah izin schema eksplisit Owner. Production kini22/22 tabel POS ber-RLS,1 outlet; write_enabled=false, finance_enabled=false, package_workflow_enabled=false; orders/payments/cash/point-links 0 dan direct app DML grants 0. Seluruh1.546 fingerprint schema yang dibandingkan identik dengan QA, dan13 tabel lama pada kolom asalnya memiliki jumlah/hash identik. Backup logis13 tabel publik aplikasi dibuat terenkripsi DPAPI lokal sesudah3 migrasi pertama dan sebelum18 sisanya; decrypt/readback PASS, bukan full PostgreSQL restore/Auth/Storage backup. **G8 NO-GO untuk aktivasi finansial** sampai bukti keamanan/UAT/restore yang tersisa terpenuhi. Histori Binatu/backfill tidak diperlukan pada scope awal keputusan Owner; member/poin lama dipakai langsung. Checkpoint lama yang menyebut Production0tabel atau migrasi menunggu izin adalah histori yang telah digantikan receipt ini. Lihat [receipt migrasi](./production-migration-20261103.md).
+Log hanya request UUID, order UUID bila diperlukan, operation, error class dan timestamp. Jangan mencetak password, bearer/QR raw, HP/alamat, isi receipt atau data pelanggan pada log monitoring. Membuka WA bukan bukti pesan terkirim.
 
-
-> **Bukti terkini — 3 November 2026:** source `a502c0bce9638990d314db0f033a48df464b2e9f` lulus [release CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889142) dan [database CI](https://github.com/warasjawa-laundry/Mas/actions/runs/41595889081): 284 Node, TypeScript, build, 93 browser; replay semua migrasi, SQL rollback, race dua koneksi dan restore sintetis PASS. Seluruh 1.546 fingerprint schema/RLS/hak efektif aplikasi QA identik dengan replay CI. Deployment existing Production `mas`, `dpl_9RVoM9zYWJT4dg1a8PMF2oeyDbFA`, READY pada SHA tersebut dan domain masjawalaundry.web.id. Production POS **0 tabel**, baseline legacy tetap sama; QA **22/22 RLS**, write/finance/package-mode OFF dan tidak ada transaksi/customer sintetis tersisa. **G8 NO-GO**, external evidence dan approval Production belum ada. Koreksi preflight terakhir mengubah kontrak 20 menjadi 22 tabel, dengan tes regresi red→green; tidak mengubah flag atau bukti bisnis. Paragraf checkpoint sebelumnya adalah histori, bukan status terkini. Lihat [receipt rilis](./release-20261103.md).
-
-
-> **Checkpoint terkini sebelum final CI (2 Nov 2026): PROVISIONAL / G8 NO-GO.** Root mengonfirmasi ketiga migrasi canonical telah diterapkan **QA saja**: `20261102190000_pos_owner_creation_duration_snapshots.sql`, `20261102193000_pos_owner_operations_shared_cores.sql`, `20261102210000_pos_import_review_audit.sql`. Fixture owner duration, owner operations, import audit dan regresi existing G5/G6/G2 PASS setelah apply. `write_enabled=false` dan `finance_enabled=false`. Lima browser test wizard sintetis PASS pada 320/390/1440px memakai mocks; ini bukan real Auth atau PHYSICAL_UAT. Synthetic restore dan race tambahan menunggu CI yang akan datang, **belum PASS**. Final tree/CI dan deployment paket baru belum disertifikasi. Produksi tetap 0 tabel POS; tidak ada mutasi produksi. Lihat [master audit](./master-audit-20261102.md) untuk dependensi dan bukti penutupan.
-
-**Jalankan hanya setelah migrasi disahkan dan pilot aktif. Saat 2 Nov 2026 POS produksi belum ada.** Tidak ada automasi monitoring yang sudah dibuat.
-
-Per setiap shift owner mengecek: 1) kas tunai harapan = opening + cash receipt + non-sale IN − refund cash − non-sale OUT; 2) seluruh receipt memiliki satu command UUID dan cash entry immutable; 3) tidak ada pembayaran melewati sisa tagihan; 4) semua ADD POS memiliki satu amount snapshot dan satu `laundry_pos_point_links`; 5) VOID refund terkait ADD yang sama; 6) jumlah piutang as-of period dan hist Binatu tidak tercatat ganda; 7) login kasir yang dicabut tidak memposting; 8) tabel RLS dan grant tidak berubah; 9) domain Vercel mengarah ke SHA `main` yang disetujui.
-
-**Tanggapan:** mismatch sekecil Rp1, duplicate award/receipt, mapping member salah atau privilege leak = STOP write, simpan bukti privat, rekonsiliasi dan rujuk [rollback](./rollback.md). Jangan perbaiki ledger dengan UPDATE/DELETE raw. Gunakan laporan CSV periode WIB, audit request ID, catatan hitung uang fisik dan evidence owner.
-
-
-**Pemilik tindakan eksternal:** Owner bersama reviewer keamanan/operator jaringan memilih dan menguji trusted workplace network yang benar-benar dibatasi atau kontrol identitas lebih kuat; ID-only known-ID impersonation tidak diselesaikan throttle. Operator DB membuktikan backup/restore produksi aman dan RPO/RTO; Owner+kasir/tester membuktikan real Auth, Android, uang/print dan visual; Owner+pemeriksa keuangan menandatangani cutoff/saldo/piutang/poin; Owner+operator release memberi approval schema dan cutover secara terpisah. Bukti/reviewer/timestamp privat wajib; semua masih BLOCKED sampai tersedia. [Daftar acceptance dan penanggung jawab](./master-audit-20261102.md#tindakan-eksternal-wajib-dan-pemilik-bukti).
-
-
-### Tambahan 3 November 2026
-
-Pantau POS_SINGLE_PACKAGE_REQUIRED, stale catalog/revision, contact_request_conflict, POS_HANDOVER_REQUIRES_SETTLED_PAYMENT dan kegagalan baca receipt. Jangan mencatat nomor HP, alamat, isi pesan, QR/token atau kredensial di log. wa.me opened/copied bukan delivery. Pantau jumlah point ADD/VOID vs pelunasan/refund dan periode program.
+Pada cutover riil kumpulkan bukti dua shift tertutup, saldo pembukaan dan reviewer. Preflight mensyaratkan pilot OFF/test orders 0 serta semua evidence; proses arsip harus direview, bukan DELETE/TRUNCATE ad hoc. Full backup/restore, real Auth dan physical UAT tetap dibutuhkan.

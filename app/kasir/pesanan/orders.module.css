@@ -57,3 +57,5 @@
 @media print{.shell{padding:0;max-width:100%;font-size:12px}.shell a,.shell button,.warning,.paymentForm,.refundPanel,.mutedPanel{display:none!important}.detailGrid{display:block}.card{border:0;padding:8px 0;margin:0;break-inside:avoid}.shell h1{font-size:23px}.paymentTotals strong{font-size:14px}.header{margin:0 0 12px}.paymentBadge{border:1px solid #bbb}}
 
 .receiptActions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.receiptConfirm{display:flex;align-items:flex-start;gap:10px;margin:16px 0;line-height:1.6;min-height:44px}.receiptConfirm input{flex-shrink:0;margin-top:5px;width:18px;height:18px}
+
+.testNotice{margin:16px 0;line-height:1.6}.testNotice p{margin:6px 0 0}

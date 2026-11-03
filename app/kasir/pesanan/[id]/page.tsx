@@ -1,4 +1,6 @@
 import Link from "next/link";
+import OrderCharges,{type OrderDelivery} from "@/components/pos/order-charges";
+import TestOrderNotice from "@/components/pos/test-order-notice";
 import { randomUUID } from "node:crypto";
 import { notFound,redirect } from "next/navigation";
 import { cashierRpcAccess } from "@/lib/pos/g4-server";
@@ -17,7 +19,7 @@ import {recoverCashierCommand} from "../recovery-actions";
 import OrderTimeline,{type OrderEvent} from "@/components/pos/order-timeline";
 export const dynamic="force-dynamic";
 type Item={service_name:string;unit:string;quantity_milli:number;price_idr:number;line_total_idr:number;duration?:string;package_name?:string;due_at?:string|null};
-type Order={id:string;invoice_no:string;customer_name:string;total_idr:string;work_status:string;lifecycle_status:string;created_at:string;perfume:string|null;notes:string|null;created_staff_id:string;items:Item[];events?:OrderEvent[];due_at?:string|null};
+type Order={is_test_order:boolean;service_subtotal_idr?:string;delivery?:OrderDelivery|null;id:string;invoice_no:string;customer_name:string;total_idr:string;work_status:string;lifecycle_status:string;created_at:string;perfume:string|null;notes:string|null;created_staff_id:string;items:Item[];events?:OrderEvent[];due_at?:string|null};
 type Receipt={id:string;type:'RECEIPT'|'REFUND';method:'CASH'|'NONCASH';amount_idr:string;at:string};
 type Finance={order_id:string;total_idr:string;paid_idr:string;refunded_idr:string;remaining_idr:string;payment_status:'UNPAID'|'PARTIAL'|'PAID'|'REFUNDED'|'ZERO_TOTAL';version:number;shift_open:boolean;finance_enabled?:boolean;receipts:Receipt[]};
 type Search={error?:string;saved?:string;retry?:string;amount?:string;method?:string;version?:string;retryRefund?:string;reason?:string};
@@ -61,17 +63,17 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
      'Perubahan belum terkonfirmasi. Periksa status nota sebelum mengulangi tindakan.'}
   </p>}
   {query.saved&&<p className={styles.ok} role="status">{query.saved==='payment'?'Pembayaran tercatat.':query.saved==='refund'?'Pengembalian penuh tercatat.':query.saved==='shift'?'Kas dibuka.':query.saved==='cancelled'?'Nota dibatalkan.':'Status tersimpan.'}</p>}
-  {o.customer_name.startsWith('UJI - ')&&<p className={styles.warning} role="status"><strong>NOTA UJI.</strong> Jangan menerima pembayaran sungguhan, mengirim WhatsApp ke pelanggan, atau menggunakan member asli pada transaksi tes.</p>}
+  <TestOrderNotice isTestOrder={o.is_test_order===true}/>
   {o.lifecycle_status==='CANCELLED'&&<p className={styles.warning} role="status">Nota dibatalkan. Riwayat transaksi tetap tersimpan.</p>}
   <div className={styles.detailGrid}>
   <section className={styles.card} aria-labelledby="items-title"><h2 id="items-title">Rincian pesanan</h2>
    {o.items.map((i,j)=><div key={j} className={styles.item}><div>{i.service_name}{i.package_name?" · "+i.package_name:""}<small>{i.duration||"Durasi belum tercatat"} · {(Number(i.quantity_milli)/1000).toLocaleString('id-ID')} {i.unit} × {money(i.price_idr)}</small>{i.due_at&&<small>Estimasi {new Date(i.due_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</small>}</div><strong>{money(i.line_total_idr)}</strong></div>)}
    <p>Estimasi seluruh pesanan selesai: <strong>{o.due_at?new Date(o.due_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})+' WIB':'Belum pasti'}</strong></p>
-   <div className={styles.item}><strong>Total tagihan</strong><strong>{money(o.total_idr)}</strong></div>
+   <OrderCharges subtotal={o.service_subtotal_idr} delivery={o.delivery} total={o.total_idr}/>
    {o.perfume&&<p>Parfum: {o.perfume}</p>}{o.notes&&<p>Catatan: {o.notes}</p>}
   </section>
   <section className={`${styles.card} ${styles.paymentCard}`} aria-labelledby="payment-title"><div className={styles.cardHeading}>
-    <h2 id="payment-title">Pembayaran</h2><span className={styles.paymentBadge}>{f?labels[f.payment_status]:'Belum tersedia'}</span></div>
+    <h2 id="payment-title">{o.is_test_order?"Simulasi pembayaran":"Pembayaran"}</h2><span className={styles.paymentBadge}>{f?labels[f.payment_status]:'Belum tersedia'}</span></div>
    {!f?<p className={styles.warning}>Ringkasan pembayaran belum tersedia. Pembayaran belum dapat dicatat.</p>:<>
     <div className={styles.paymentTotals}>
       <div><small>Total nota</small><strong>{money(f.total_idr)}</strong></div>
@@ -144,6 +146,6 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
    </RecoverableForm>}
   </section>
   <section className={styles.card}><OrderTimeline events={o.events??[]}/></section></div>
-  {o.lifecycle_status==='CONFIRMED'&&hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft key={o.id} role="cashier" orderId={o.id} workStatus={o.work_status} version={f?.version??0}/>}
+  {o.lifecycle_status==='CONFIRMED'&&hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft key={o.id} role="cashier" orderId={o.id} isTestOrder={o.is_test_order===true} workStatus={o.work_status} version={f?.version??0}/>}
  </main>;
 }

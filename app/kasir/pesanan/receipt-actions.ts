@@ -11,7 +11,7 @@ export async function prepareOrderReceipt(role:'owner'|'cashier',orderId:string,
  if(!commandUuid.test(orderId)||!['NEW','READY','COLLECTED'].includes(kind))return {error:'Nota atau jenis pesan tidak valid.'};
  const auth=await access(role);if(!auth)return {error:'Masuk kembali dengan identitas dan izin WhatsApp yang sesuai.'};
  const {data,error}=await auth.client.rpc('laundry_pos_whatsapp_receipt',{...auth.tokens,p_order_id:orderId,p_kind:kind});
- if(error||!data)return {error:'Draf terbaru belum dapat dibaca. Periksa koneksi dan status nota.'};
+ if(error||!data||typeof data.is_test_order!=='boolean')return {error:'Draf terbaru belum dapat dibaca. Periksa koneksi dan status nota.'};
  try{return {error:'',data,text:buildReceipt(data)}}catch{return {error:'Data pembayaran atau status nota belum lengkap. Draf tidak dibuat.'};}
 }
 export async function verifyOrderContact(role:'owner'|'cashier',orderId:string,form:FormData){

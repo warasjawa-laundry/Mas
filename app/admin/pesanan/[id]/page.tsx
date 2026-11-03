@@ -1,4 +1,6 @@
 import Link from "next/link";
+import OrderCharges,{type OrderDelivery} from "@/components/pos/order-charges";
+import TestOrderNotice from "@/components/pos/test-order-notice";
 import {randomUUID} from "node:crypto";
 import {notFound} from "next/navigation";
 import {requireOwner} from "@/lib/supabase/owner";
@@ -15,7 +17,7 @@ import OrderTimeline,{type OrderEvent} from "@/components/pos/order-timeline";
 export const dynamic="force-dynamic";
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type Item={service_name:string;unit:string;quantity_milli:number;price_idr:string|number;line_total_idr:string|number;duration?:string;package_name?:string;due_at?:string|null};
-type Row={id:string;invoice_no:string;customer_name:string;created_at:string;total_idr:string|number;work_status:string;payment_status:string;items:Item[];events?:OrderEvent[];lifecycle_status?:string;due_at?:string|null};
+type Row={perfume?:string|null;notes?:string|null;is_test_order:boolean;service_subtotal_idr?:string;delivery?:OrderDelivery|null;id:string;invoice_no:string;customer_name:string;created_at:string;total_idr:string|number;work_status:string;payment_status:string;items:Item[];events?:OrderEvent[];lifecycle_status?:string;due_at?:string|null};
 type Receipt={id:string;type:string;method:string;amount_idr:string;at:string};
 type Finance={total_idr:string;paid_idr:string;refunded_idr:string;remaining_idr:string;payment_status:string;version:number;shift_open:boolean;receipts:Receipt[]};
 const date=(value:string)=>new Date(value).toLocaleString("id-ID",{timeZone:"Asia/Jakarta"})+" WIB";
@@ -44,7 +46,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <RecoverableForm action={advanceOwnerWork} recoveryKey={commandRecoveryKey('owner',user.id,'SET_WORK',id)} recoverAction={recoverOwnerOperation.bind(null,'SET_WORK',id)}>{null}</RecoverableForm></>:<>
  <div className={styles.header}><p><strong>{row.customer_name}</strong> · {date(row.created_at)}</p><PrintButton/></div>
  {query.saved&&<p className={styles.ok} role="status">Perubahan sudah dikonfirmasi database.</p>}
- {row.customer_name.startsWith('UJI - ')&&<p className="binatu-inline-notice" role="status"><strong>NOTA UJI.</strong> Transaksi dan pembayaran pada nota ini adalah simulasi. Jangan terima uang sungguhan atau mengirim WhatsApp kepada pelanggan.</p>}
+ <TestOrderNotice isTestOrder={row.is_test_order===true}/>
  {!canWrite&&<p className="binatu-inline-notice" role="status">Perubahan pesanan masih dikunci. Riwayat yang tersedia tetap dapat dibaca.</p>}
  {!canFinance&&<p className="binatu-inline-notice" role="status">Pembayaran, refund, dan buku kas belum diaktifkan.</p>}
  <div className={styles.detailGrid}>
@@ -52,9 +54,10 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  {row.items.map((item,i)=><div className={styles.item} key={i}><div>{item.service_name}{item.package_name?" · "+item.package_name:""}
  <small>{item.duration||"Durasi belum tercatat"} · {(item.quantity_milli/1000).toLocaleString("id-ID")} {item.unit} × {formatIdr(item.price_idr)}</small>
  {item.due_at&&<small>Estimasi {date(item.due_at)}</small>}</div><strong>{formatIdr(item.line_total_idr)}</strong></div>)}
+ <p>Parfum: {row.perfume||"Tidak dicatat"}</p>{row.notes&&<p>Catatan: {row.notes}</p>}
  <p>Estimasi seluruh pesanan selesai: <strong>{row.due_at?date(row.due_at):"Belum pasti"}</strong></p>
- <div className={styles.item}><strong>Total nota</strong><strong>{formatIdr(row.total_idr)}</strong></div></section>
- <section className={`${styles.card} ${styles.paymentCard}`}><div className={styles.cardHeading}><h2>Pembayaran</h2>
+ <OrderCharges subtotal={row.service_subtotal_idr} delivery={row.delivery} total={row.total_idr}/></section>
+ <section className={`${styles.card} ${styles.paymentCard}`}><div className={styles.cardHeading}><h2>{row.is_test_order?"Simulasi pembayaran":"Pembayaran"}</h2>
  <span className={styles.paymentBadge}>{labels[finance?.payment_status||row.payment_status]||"Belum tersedia"}</span></div>
  {!finance?<p className={styles.warning}>Ringkasan pembayaran belum tersedia.</p>:<>
  <div className={styles.paymentTotals}><div><small>Total nota</small><strong>{formatIdr(finance.total_idr)}</strong></div>
@@ -71,7 +74,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <RecoverableForm action={collectOwnerPayment} className={showPay?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'PAYMENT',id)} recoverAction={recoverOwnerOperation.bind(null,'PAYMENT',id)}>
  {showPay&&<>
- <h3>Terima pembayaran</h3><input type="hidden" name="requestId" value={randomUUID()}/><input type="hidden" name="orderId" value={id}/>
+ <h3>{row.is_test_order?"Catat simulasi pembayaran":"Terima pembayaran"}</h3><input type="hidden" name="requestId" value={randomUUID()}/><input type="hidden" name="orderId" value={id}/>
  <input type="hidden" name="expectedVersion" value={String(finance.version)}/>
  <label>Jumlah pembayaran (Rp)<input name="amountIdr" inputMode="numeric" required pattern="[1-9][0-9]*" maxLength={10} defaultValue={finance.remaining_idr}/></label>
  <label>Metode pembayaran<select name="method"><option value="CASH">Tunai</option><option value="NONCASH">Non-tunai (sudah diterima)</option></select></label>
@@ -99,7 +102,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <label>Alasan pembatalan<input name="reason" required minLength={3} maxLength={300}/></label>
  <PendingSubmit className={styles.dangerButton} disabled={!canWrite} label="Konfirmasi pembatalan"/></>}</RecoverableForm>
  {finance&&!cancellable&&<p className={styles.warning}>Ada dana diterima. Lakukan refund penuh sebelum membatalkan pesanan.</p>}
- </section><section className={styles.card}><OrderTimeline events={row.events??[]}/></section></div>{row.lifecycle_status==="CONFIRMED"&&<WhatsAppDraft key={id} role="owner" orderId={id} workStatus={row.work_status} version={finance?.version??0}/>}</>}
+ </section><section className={styles.card}><OrderTimeline events={row.events??[]}/></section></div>{row.lifecycle_status==="CONFIRMED"&&<WhatsAppDraft key={id} role="owner" orderId={id} isTestOrder={row.is_test_order===true} workStatus={row.work_status} version={finance?.version??0}/>}</>}
  <Link className="binatu-button binatu-button-soft" href="/admin">Kembali ke Pesanan</Link>
  </PosWorkspace>;
 }

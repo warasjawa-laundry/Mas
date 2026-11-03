@@ -1,6 +1,6 @@
 export type ReceiptKind='NEW'|'READY'|'COLLECTED';
 export type ReceiptContact={phone:string|null;address:string;verified_at:string|null};
-export type ReceiptData={invoice:string;customer:string;actor:string;collector?:string|null;created_at:string;due_at:string|null;ready_at:string|null;collected_at:string|null;
+export type ReceiptData={is_test_order?:boolean;invoice:string;customer:string;actor:string;collector?:string|null;created_at:string;due_at:string|null;ready_at:string|null;collected_at:string|null;
  work_status:string;kind:ReceiptKind;package:string|null;minutes:number|null;perfume:string|null;notes:string|null;
  total:string;service_subtotal?:string;fees_idr?:string;discount_idr?:string;delivery?:{code:string;name:string;amount_idr:string}|null;paid:string;refunded:string;remaining:string;status:string;contact:ReceiptContact|null;
  member:{year:number;balance:string;awarded:number;projected:number|null}|null;
@@ -17,12 +17,15 @@ export function normalizeReceiptPhone(raw:string){
  let phone=raw.trim().replace(/[ ()-]/g,'');if(phone.startsWith('0'))phone='+62'+phone.slice(1);else if(!phone.startsWith('+'))phone='+'+phone;
  return /^\+[1-9][0-9]{7,14}$/.test(phone)?phone:null;
 }
-export function receiptWhatsAppUrl(contact:ReceiptContact|null,text:string){
+export function receiptWhatsAppUrl(contact:ReceiptContact|null,text:string,isTestOrder=false){
+ if(isTestOrder)return null;
  if(!contact?.verified_at||!contact.phone||!/^\+[1-9][0-9]{7,14}$/.test(contact.phone))return null;
  const url='https://wa.me/'+contact.phone.slice(1)+'?text='+encodeURIComponent(text);
  return url.length<=8000?url:null;
 }
 export function buildReceipt(r:ReceiptData){
+ if(r.is_test_order&&r.member)throw Error("Nota uji tidak boleh terhubung dengan member");
+ const contact=r.is_test_order?null:r.contact;
  for(const key of ['total','paid','refunded','remaining'] as const)if(!/^(0|[1-9]\d{0,15})$/.test(r[key]))throw Error('Nominal nota tidak valid');
  const total=BigInt(r.total),paid=BigInt(r.paid),refund=BigInt(r.refunded),remaining=BigInt(r.remaining);
  if(total<paid-refund||remaining!==total-paid+refund||refund>paid)throw Error('Rincian pembayaran belum konsisten');
@@ -37,8 +40,8 @@ export function buildReceipt(r:ReceiptData){
   throw Error('Total nota dan biaya tambahan tidak konsisten');
  if(r.kind==='READY'&&r.work_status!=='READY'||r.kind==='COLLECTED'&&(r.work_status!=='COLLECTED'||r.status!=='PAID'||remaining!==BigInt(0)||!r.collected_at))throw Error('Status nota belum sesuai draf');
  const c=r.settings.config;const title=r.kind==='NEW'?c.new_title:r.kind==='READY'?c.ready_title:c.collected_title;
- const lines=[c.outlet_name,c.address,c.contact,'',title,'',r.invoice,`Pelanggan : ${r.customer}`,
-  `No Handphone : ${r.contact?.phone??'Belum diverifikasi'}`,`Alamat : ${r.contact?.address||'Belum diverifikasi'}`,`Kasir : ${r.actor}`,
+ const lines=[...(r.is_test_order?["NOTA UJI - SIMULASI", "BUKAN BUKTI PEMBAYARAN NYATA", "Jangan terima uang sungguhan atau kirim kepada pelanggan.", ""]:[]),c.outlet_name,c.address,c.contact,'',title,'',r.invoice,`Pelanggan : ${r.customer}`,
+  `No Handphone : ${contact?.phone??'Belum diverifikasi'}`,`Alamat : ${contact?.address||'Belum diverifikasi'}`,`Kasir : ${r.actor}`,
   `Layanan : ${r.package??'Lihat rincian layanan'}${r.minutes?` (${r.minutes%60===0?r.minutes/60+' jam':r.minutes+' menit'})`:''}`,
   `Masuk : ${date(r.created_at)}`,`Est Selesai : ${date(r.due_at)}`];
  if(r.kind==='READY')lines.push(`Selesai : ${date(r.ready_at)}`,'','STATUS CUCIAN : SIAP DIAMBIL');
@@ -51,7 +54,7 @@ export function buildReceipt(r:ReceiptData){
  lines.push(divider,`Parfum : ${r.perfume||'Tidak dicatat'}`);if(r.notes)lines.push(`Catatan : ${r.notes}`);
  lines.push(divider,`Total Layanan : ${money(r.service_subtotal??r.total)}`);
  if(r.delivery&&r.delivery.code!=='NONE')lines.push(`Antar-Jemput (${r.delivery.name}) : ${money(r.delivery.amount_idr)}`);
- lines.push(`Total Tagihan : ${money(r.total)}`,divider,'PEMBAYARAN',`Total : ${money(r.total)}`,
+ lines.push(`Total Tagihan : ${money(r.total)}`,divider,r.is_test_order?'PEMBAYARAN SIMULASI':'PEMBAYARAN',`Total : ${money(r.total)}`,
   `Sudah Dibayar : ${money(r.paid)}`,`Sisa Tagihan : ${money(r.remaining)}`,
   `Status : ${{PAID:'LUNAS',PARTIAL:'DP / BELUM LUNAS',UNPAID:'BELUM BAYAR',REFUNDED:'REFUND',ZERO_TOTAL:'TAGIHAN NOL — REVIEW DIPERLUKAN'}[r.status]??'Belum diketahui'}`);
  if(refund>BigInt(0))lines.push(`Refund : ${money(refund)}`);
@@ -66,7 +69,7 @@ export function buildReceipt(r:ReceiptData){
   r.status==='PAID'?'Pembayaran sudah lunas. Cucian dapat diambil.':r.status==='PARTIAL'?`Mohon melunasi ${money(r.remaining)} sebelum cucian diserahkan.`:
   r.status==='UNPAID'?`Mohon melakukan pembayaran ${money(r.remaining)} sebelum cucian diserahkan.`:'Hubungi petugas untuk pemeriksaan nota.',
   'Pengambilan hanya dapat dilakukan setelah pembayaran lunas.','Terima kasih telah mempercayakan cucian kepada kami.');
- if(r.kind==='NEW')lines.push('',c.terms,c.payment_notice,c.bank,c.ewallet);
+ if(r.kind==='NEW'&&!r.is_test_order)lines.push('',c.terms,c.payment_notice,c.bank,c.ewallet);
  if(r.kind==='COLLECTED')lines.push('Terima kasih telah menggunakan jasa '+c.outlet_name+'.');
  lines.push('',c.cs);return lines.filter(v=>v!==undefined).join('\n');
 }

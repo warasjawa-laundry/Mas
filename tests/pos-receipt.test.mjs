@@ -35,3 +35,13 @@ test('delivery fee is displayed separately and reconciled into WhatsApp total',(
  assert.match(txt,/Total Tagihan : Rp22.600/);assert.match(txt,/Sisa Tagihan : Rp12.600/);
  assert.throws(()=>buildReceipt({...billed,total:'19600',remaining:'9600'}),/Total nota dan biaya tambahan/);
 });
+
+test('test receipts never resemble a real payment receipt or expose bank instructions',()=>{
+ const testReceipt={...receipt,is_test_order:true,kind:'NEW',status:'PAID',paid:'19600',remaining:'0',member:null};
+ const text=buildReceipt(testReceipt);
+ assert.match(text,/NOTA UJI - SIMULASI/);assert.match(text,/BUKAN BUKTI PEMBAYARAN/);
+ assert.match(text,/PEMBAYARAN SIMULASI/);
+ assert.doesNotMatch(text,/Bank QA|Wallet QA|Pembayaran di awal/);
+ assert.equal(receiptWhatsAppUrl(testReceipt.contact,text,true),null);
+ assert.throws(()=>buildReceipt({...testReceipt,member:receipt.member}));
+});

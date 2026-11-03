@@ -5,8 +5,8 @@
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "682d5024a1a0d8dcb69824dcf2b687bda8304f14",
-  "deployedProductionSha": "682d5024a1a0d8dcb69824dcf2b687bda8304f14",
+  "reviewedMainSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
+  "deployedProductionSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
   "productionPosTables": 22,
   "productionOutletCount": 1,
   "productionWriteEnabledOutlets": 1,
@@ -104,56 +104,43 @@
     "rlsEnabled": 22,
     "outlets": 1,
     "writeEnabledOutlets": 0,
+    "financeEnabledOutlets": 0,
     "orders": 0,
     "payments": 0,
     "posPoints": 0,
     "cashRows": 0,
     "importRows": 0,
-    "ownerReadOnlyRpc": 2,
-    "anonOwnerBoardExecute": false,
-    "authOwnerBoardExecute": true,
-    "qaOwnerMigration": "pos_owner_readonly_ui_pr31_qa",
     "verifiedAt": "2026-11-03",
-    "financeEnabledOutlets": 0,
-    "privateReviewAuditRows": 0,
-    "appliedSourceMigrations": [
-      "20261102190000_pos_owner_creation_duration_snapshots.sql",
-      "20261102193000_pos_owner_operations_shared_cores.sql",
-      "20261102210000_pos_import_review_audit.sql",
-      "20261102213000_pos_import_audit_fk_indexes.sql",
-      "20261102214000_pos_cashier_finance_recovery.sql",
-      "20261103070000_pos_package_catalog.sql",
-      "20261103071000_pos_package_orders_handover.sql",
-      "20261103072000_pos_whatsapp_receipts.sql",
-      "20261103073000_pos_receipt_catalog_boundaries.sql",
-      "20261103074000_pos_operational_history.sql"
-    ],
-    "ownerPosRpc": 20
+    "pilotTestOnly": false,
+    "packageWorkflowEnabled": false,
+    "receiptBoundaryFixture": "PASS_ROLLBACK"
   },
   "productionFinanceEnabledOutlets": 1,
   "automatedLocalCheckpoint": {
-    "nodeTests": 290,
-    "browserFixtureTests": 93,
+    "nodeTests": 297,
+    "browserFixtureTests": 96,
     "typecheck": "PASS",
     "build": "PASS",
-    "ci": "PASS at 17430c0",
+    "ci": "REQUIRED_ON_INTEGRATION_COMMIT",
     "physicalUat": "PHYSICAL_UAT_REQUIRED",
-    "latestStableCiSha": "17430c0f608249a1d151840ac23eadb960f2cadb",
+    "latestStableCiSha": "ae5da9d7d372988ba483209c2532c1858f63d958",
     "additionalPackageCi": "PASS"
   },
   "releaseTechnicalReceipt": {
-    "sourceSha": "17430c0f608249a1d151840ac23eadb960f2cadb",
-    "vercelDeploymentId": "dpl_3KMZzYTkGUBTWwhsz2aMeZUxLxnm",
+    "sourceSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
+    "vercelDeploymentId": "dpl_DzXBTpfJwHhmrtK2kGJNr7nh3oD8",
     "ready": true,
-    "releaseCiRun": 41599471224,
-    "databaseCiRun": 41599471321,
-    "semanticSchemaEntries": 1546,
+    "releaseCiRun": 41653046151,
+    "databaseCiRun": 41653046216,
+    "semanticSchemaEntries": 1594,
     "semanticSchemaDifferences": 0,
     "externalEvidenceStillRequired": true,
     "productionSchemaApplied": true,
     "productionSchemaPosTables": 22,
     "legacyTablesCompared": 13,
-    "legacyDifferences": 0
+    "legacyDifferences": 0,
+    "ciSourceSha": "ae5da9d7d372988ba483209c2532c1858f63d958",
+    "ciScope": "baseline code; integration commit runs required checks for changes in this package"
   },
   "productionSchemaReceipt": {
     "date": "2026-11-03",
@@ -171,7 +158,8 @@
     "backupScope": "13 public application tables encrypted locally with Windows DPAPI CurrentUser; excludes Auth/Storage/private archives",
     "backupReadback": "PASS",
     "fullPostgresRestoreRehearsal": false,
-    "financialActivation": true
+    "financialActivation": false,
+    "receiptKind": "HISTORICAL_BASE_POS_SCHEMA_MIGRATION"
   },
   "initialReleaseScope": {
     "historicalBinatuImportRequired": false,
@@ -179,7 +167,7 @@
     "reuseExistingMemberDatabase": true,
     "reuseExistingPointLedger": true
   },
-  "activationStatus": "FINANCIAL_FLAGS_ENABLED_CATALOG_NOT_CONFIGURED",
+  "activationStatus": "PILOT_TEST_ONLY_ACTIVE",
   "productionActivationReceipt": {
     "activatedAtUtc": "2026-11-03T08:47:38.219378Z",
     "activatedAtWib": "2026-11-03T15:47:38.219378+07:00",
@@ -195,7 +183,8 @@
     "cashRows": 0,
     "pointLinks": 0,
     "directWriteGrants": 0,
-    "g8EvidenceWaivedOrInvented": false
+    "g8EvidenceWaivedOrInvented": false,
+    "receiptKind": "HISTORICAL_FINANCIAL_FLAG_ACTIVATION"
   },
   "pilotTestScope": {
     "targetStart": "2026-11-03",
@@ -213,6 +202,46 @@
     "productionOrdersAtActivation": 0,
     "productionMembersAtActivation": 785,
     "productionPosPointLinksAtActivation": 0,
-    "realFinancialGoLive": false
+    "realFinancialGoLive": false,
+    "productionTestOrdersAtReview": 1,
+    "productionPaymentsAtReview": 1,
+    "productionCashRowsAtReview": 1,
+    "receiptBoundaryMigration": "supabase/migrations/20261103210501_pos_pilot_receipt_boundary.sql",
+    "activationReceiptIsHistorical": true
+  },
+  "productionPilotTestOnly": true,
+  "productionTestOrderCount": 1,
+  "currentReview": {
+    "baselineMainSha": "fe04ef7f1a9f7d65baece7373a708e730586d058",
+    "canonicalMigrationCount": 41,
+    "productionGuardMigrationApplied": true,
+    "qaGuardFixture": "PASS_ROLLBACK",
+    "normalReceiptRegression": "PASS_ROLLBACK",
+    "legacyMemberCardEventAmountHashesUnchanged": true,
+    "newProductionTransactionsByReview": 0,
+    "auditDocumentsUpdatedInPlace": 4,
+    "fullPostgresRestoreRehearsal": false
+  },
+  "currentProductionReceipt": {
+    "observedDuringReview": "2026-11-03",
+    "pilotTestOnly": true,
+    "packageWorkflowEnabled": true,
+    "writeEnabled": true,
+    "financeEnabled": true,
+    "activePackages": 3,
+    "activeFamilies": 14,
+    "activeTariffs": 31,
+    "activeCashiers": 0,
+    "orders": 1,
+    "testOrders": 1,
+    "payments": 1,
+    "cashRows": 1,
+    "pointLinks": 0,
+    "directWriteGrants": 0,
+    "members": 785,
+    "cards": 18,
+    "legacyEvents": 21,
+    "legacyAmounts": 19,
+    "existingTestDataPreserved": true
   }
 }

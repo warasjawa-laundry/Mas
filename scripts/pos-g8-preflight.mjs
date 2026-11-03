@@ -22,6 +22,8 @@ export function evaluatePosG8(receipt){
   blockers.push("production POS schema not verified as 22 tables with zero writes enabled");
  if(receipt.productionOutletCount!==1)blockers.push("exactly one production outlet required");
  if(receipt.productionFinanceEnabledOutlets!==0)blockers.push("production finance gate not independently verified off");
+ if(receipt.productionPilotTestOnly!==false)blockers.push("dummy pilot must be explicitly verified off before real go-live");
+ if(receipt.productionTestOrderCount!==0)blockers.push("test orders must be reconciled and archived before real go-live");
  for(const name of required){
   const entry=receipt.evidence?.[name];
   if(entry?.verified!==true||typeof entry?.reference!=="string"||entry.reference.length<12||

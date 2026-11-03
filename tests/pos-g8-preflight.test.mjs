@@ -53,6 +53,7 @@ function candidate(){
  r.status="GO_CANDIDATE";r.productionPosTables=22;r.productionOutletCount=1;
  r.productionWriteEnabledOutlets=0;r.productionFinanceEnabledOutlets=0;
  r.financePostingEnabled=false;r.importBackfillEnabled=false;
+ r.productionPilotTestOnly=false;r.productionTestOrderCount=0;
  r.reviewedMainSha="a".repeat(40);r.deployedProductionSha=r.reviewedMainSha;
  r.evidence=Object.fromEntries(Object.keys(r.evidence).map(name=>[name,{
   verified:true,reference:"evidence/actual-reviewed-receipt",reviewer:"Reviewer",
@@ -89,4 +90,17 @@ test("package schema readiness requires 22 tables and rejects the old 20-table c
  assert.equal(evaluatePosG8(current).ready,true);
  current.productionPosTables=20;
  assert.equal(evaluatePosG8(current).ready,false);
+});
+
+test("real go-live rejects an active or unverified dummy pilot and any remaining test orders",()=>{
+ const clean=candidate();clean.productionPilotTestOnly=false;clean.productionTestOrderCount=0;
+ assert.equal(evaluatePosG8(clean).ready,true);
+ for(const value of [true,undefined,null,0,'false']){
+  const bad=structuredClone(clean);bad.productionPilotTestOnly=value;
+  assert.equal(evaluatePosG8(bad).ready,false,String(value));
+ }
+ for(const value of [1,-1,undefined,null,'0']){
+  const bad=structuredClone(clean);bad.productionTestOrderCount=value;
+  assert.equal(evaluatePosG8(bad).ready,false,String(value));
+ }
 });
