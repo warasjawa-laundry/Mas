@@ -41,9 +41,10 @@ test('G5 SQL ensures cash/points/refund atomic journaling, no owner impersonatio
 });
 test('Server actions preserve request UUID across uncertain payment/refund responses',()=>{
  const actions=readFileSync('app/kasir/pesanan/payment-actions.ts','utf8');
- assert.match(actions,/payment-unconfirmed/);
- assert.match(actions,/retry:payload.requestId/);
- assert.match(actions,/refund-unconfirmed/);
+ assert.match(actions,/p_request_id:payload.requestId/);
+ assert.match(actions,/confirmed:true,redirectTo/);
+ assert.doesNotMatch(actions,/new URLSearchParams/);
+ assert.match(actions,/alasan dan ID permintaan yang sama/);
  assert.match(actions,/cashierRpcAccess\('payment_collect'\)/);
  assert.match(actions,/cashierRpcAccess\('refund_full'\)/);
  assert.doesNotMatch(actions,/service_role|actor_staff_id\s*:|price_idr\s*:/);

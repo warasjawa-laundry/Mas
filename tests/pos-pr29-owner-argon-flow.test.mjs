@@ -9,7 +9,8 @@ test("Owner POS routes use owner session without cashier login or synthetic staf
  assert.match(board,/detailBase = owner \? "\/admin\/pesanan\/"/);
  assert.doesNotMatch(board,/owner \? "\/admin\/login\?role=kasir"/);
  assert.match(owner,/role="owner"/);
- assert.match(owner,/createAction=\{ownerPosWriteLocked\}/);
+ assert.match(owner,/createAction=\{createOwnerOrder\}/);
+ assert.match(owner,/capabilities\.data\?\.write_enabled===true/);
  assert.doesNotMatch(owner,/cashierRpcAccess|loginCashier/);
 });
 test("Barcode and QR are in the customer step, owner lookup is authenticated and read only",()=>{
@@ -45,6 +46,7 @@ test("Owner POS writes remain disabled with read-only SQL actor authorization",(
  assert.match(sql,/grant execute on function public.laundry_pos_owner_order_board\(\) to authenticated/);
  assert.doesNotMatch(sql,/insert into|update public|delete from/i);
  const action=read("app/admin/pesanan/actions.ts");
- assert.match(action,/redirect\("\/admin\/pesanan\/baru\?error=disabled"\)/);
+ assert.match(action,/requireOwner\(\)/);
+ assert.match(action,/laundry_pos_owner_create_order/);
  assert.doesNotMatch(action,/cashierRpcAccess|createCashierOrder/);
 });

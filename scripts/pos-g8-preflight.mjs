@@ -21,13 +21,15 @@ export function evaluatePosG8(receipt){
  if(receipt.productionPosTables!==20||receipt.productionWriteEnabledOutlets!==0)
   blockers.push("production POS schema not verified as 20 tables with zero writes enabled");
  if(receipt.productionOutletCount!==1)blockers.push("exactly one production outlet required");
+ if(receipt.productionFinanceEnabledOutlets!==0)blockers.push("production finance gate not independently verified off");
  for(const name of required){
   const entry=receipt.evidence?.[name];
   if(entry?.verified!==true||typeof entry?.reference!=="string"||entry.reference.length<12||
-    typeof entry?.reviewer!=="string"||entry.reviewer.trim().length<2)
+    typeof entry?.reviewer!=="string"||entry.reviewer.trim().length<2||
+    entry.reviewedMainSha!==receipt.reviewedMainSha)
    blockers.push("missing independently reviewed evidence: "+name);
  }
- if(receipt.financePostingEnabled===true||receipt.importBackfillEnabled===true)
+ if(receipt.financePostingEnabled!==false||receipt.importBackfillEnabled!==false)
   blockers.push("financial writes/import posting must remain disabled during preflight");
  return {ready:blockers.length===0,blockers};
 }

@@ -30,10 +30,15 @@ function fromGrid(grid: string[][]): ImportRow[] {
  const header=grid[index].map(UPPER);
  const col=(x:string)=>header.indexOf(x);
  const result:ImportRow[]=[];
+ const footers:{total:string;paid:string}[]=[];
  for (let k=index+1;k<grid.length;k++) {
   const row=grid[k]; const invoice=textCell(row[col("NOTA")]);
   if(!invoice || UPPER(invoice)==="NOTA") continue;
-  if (/^(TOTAL|JUMLAH|GRAND TOTAL|SUBTOTAL)\b/i.test(invoice)) continue;
+  if (/^(TOTAL|JUMLAH|GRAND TOTAL|SUBTOTAL)\b/i.test(invoice)) {
+   const total=textCell(row[col("HARGA AKHIR")]),paid=textCell(row[col("SUDAH BAYAR")]);
+   if(total||paid)footers.push({total:money(total),paid:money(paid)});
+   continue;
+  }
   const customer=textCell(row[col("PELANGGAN")]);
   if(!customer || customer.length<2 || customer.length>120 || invoice.length>100 ||
      /[\x00-\x1f\x7f]/.test(customer+invoice)) throw new Error(`Baris ${k+1}: nota atau pelanggan tidak valid`);
@@ -47,12 +52,15 @@ function fromGrid(grid: string[][]): ImportRow[] {
   else if(raw.includes("SEBAGIAN")||raw.includes("DP"))payment="PARTIAL";
   else if(BigInt(paid)>BigInt(0) && BigInt(paid)<BigInt(total))payment="PARTIAL";
   const statusValue=UPPER(textCell(row[col("STATUS")]));
+  if(/BATAL|CANCEL|VOID/.test(statusValue))payment="UNKNOWN";
   const status:ImportRow["status"]=statusValue==="ANTRIAN"?"ANTRIAN":
      statusValue.includes("SIAP")?"SIAP_AMBIL":statusValue.includes("SELESAI")?"SELESAI":"LAINNYA";
   result.push({row:String(k+1),invoice,customer,payment,status,total,paid});
   if(result.length>MAX_ROWS)throw new Error(`Maksimum ${MAX_ROWS} nota per unggahan`);
  }
  if(!result.length)throw new Error("Tidak ada baris nota yang dapat ditinjau");
+ const totals=result.reduce((sum,row)=>({total:sum.total+BigInt(row.total),paid:sum.paid+BigInt(row.paid)}),{total:BigInt(0),paid:BigInt(0)});
+ if(footers.some(f=>BigInt(f.total)!==totals.total||BigInt(f.paid)!==totals.paid))throw new Error("Total footer tidak cocok; rekonsiliasi laporan sebelum impor");
  return result;
 }
 function parseCsv(bytes:Buffer):string[][]{

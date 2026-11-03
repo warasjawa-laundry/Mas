@@ -34,7 +34,7 @@ begin
   perform public.laundry_pos_g6_cash_entry(v_device,v_login,v_entry,'IN','5000','Uang kasir awal');
   raise exception 'G6 entry allowed while write disabled';
  exception when sqlstate '42501' then null;end;
- update public.laundry_pos_outlets set write_enabled=true where id=v_outlet;
+ update public.laundry_pos_outlets set write_enabled=true,finance_enabled=true where id=v_outlet;
  insert into public.laundry_services(id,category,package_name,name,price_idr,unit,duration)
  values(v_service,'Kiloan','','Cuci G6',25000,'kg','Reguler');
  v_resp:=public.laundry_pos_g4_create_order(v_device,v_login,gen_random_uuid(),'Tamu G6',null,

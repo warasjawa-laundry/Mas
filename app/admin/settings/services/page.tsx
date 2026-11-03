@@ -8,7 +8,12 @@ type Props={searchParams:Promise<{error?:string;saved?:string}>};
 export default async function ServiceSettings({searchParams}:Props){
  const {supabase}=await requireOwner();
  const notice=await searchParams;
- const {data,error}=await supabase.from("laundry_services").select("id,category,package_name,name,price_idr,unit,duration,position,is_visible,revision").order("position").order("id").limit(200);
+ const capability=await supabase.rpc("laundry_pos_owner_capabilities");
+ const durationSupport=!capability.error&&capability.data?.duration_support===true;
+ const query=durationSupport?
+  supabase.from("laundry_services").select("id,category,package_name,name,price_idr,unit,duration,position,is_visible,revision,duration_minutes"):
+  supabase.from("laundry_services").select("id,category,package_name,name,price_idr,unit,duration,position,is_visible,revision");
+ const {data,error}=await query.order("position").order("id").limit(200);
  const services=(data??[]) as Service[];
  const categories=[...new Set(services.map(s=>s.category))];
  const durations=[...new Set(services.map(s=>s.duration.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"id-ID"));
@@ -19,9 +24,9 @@ export default async function ServiceSettings({searchParams}:Props){
   {notice.saved==="1"&&<p className="admin-success" role="status">Layanan berhasil disimpan. Daftar harga di homepage diperbarui otomatis.</p>}
   {notice.error&&<p className="admin-error" role="alert">{messages[notice.error]??messages.save}</p>}
   {error?<p className="admin-error" role="alert">Daftar layanan belum dapat dimuat. Muat ulang halaman untuk mencoba lagi.</p>:<>
-   <details className="service-settings-add" open={services.length===0}><summary>+ Tambah layanan</summary><ServiceEditor service={{}} newId={randomUUID()} categories={categories} durations={durations}/></details>
+   <details className="service-settings-add" open={services.length===0}><summary>+ Tambah layanan</summary><ServiceEditor service={{}} newId={randomUUID()} categories={categories} durations={durations} durationSupport={durationSupport}/></details>
    <p className="member-note">{services.length} layanan · {services.filter(s=>s.is_visible).length} ditampilkan</p>
-   <ul className="service-settings-list">{services.map(s=><li key={s.id}><details><summary><span><strong>{s.name}</strong><small>{s.category}{s.package_name?" · "+s.package_name:""} · {s.is_visible?"Ditampilkan":"Disembunyikan"}</small></span><span className="mj-service-duration-col"><small>Durasi</small><strong>{s.duration||"Belum diatur"}</strong></span><span><small className="mj-price-heading">Harga / satuan</small>{formatPrice(s.price_idr,s.unit)}<small>Ubah</small></span></summary><ServiceEditor service={s} categories={categories} durations={durations}/></details></li>)}</ul>
+   <ul className="service-settings-list">{services.map(s=><li key={s.id}><details><summary><span><strong>{s.name}</strong><small>{s.category}{s.package_name?" · "+s.package_name:""} · {s.is_visible?"Ditampilkan":"Disembunyikan"}</small></span><span className="mj-service-duration-col"><small>Durasi</small><strong>{s.duration||"Belum diatur"}</strong></span><span><small className="mj-price-heading">Harga / satuan</small>{formatPrice(s.price_idr,s.unit)}<small>Ubah</small></span></summary><ServiceEditor service={s} categories={categories} durations={durations} durationSupport={durationSupport}/></details></li>)}</ul>
   </>}
   <Link href="/" prefetch={false} className="admin-logout">Lihat homepage (keluar admin)</Link>
  </div></PosWorkspace>;

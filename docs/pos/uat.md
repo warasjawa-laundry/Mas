@@ -1,13 +1,15 @@
 # UAT G7 — Mas Jawa Laundry POS (2 Nov 2026)
 
+> **Checkpoint terkini sebelum final CI (2 Nov 2026): PROVISIONAL / G8 NO-GO.** Root mengonfirmasi ketiga migrasi canonical telah diterapkan **QA saja**: `20261102190000_pos_owner_creation_duration_snapshots.sql`, `20261102193000_pos_owner_operations_shared_cores.sql`, `20261102210000_pos_import_review_audit.sql`. Fixture owner duration, owner operations, import audit dan regresi existing G5/G6/G2 PASS setelah apply. `write_enabled=false` dan `finance_enabled=false`. Lima browser test wizard sintetis PASS pada 320/390/1440px memakai mocks; ini bukan real Auth atau PHYSICAL_UAT. Synthetic restore dan race tambahan menunggu CI yang akan datang, **belum PASS**. Final tree/CI dan deployment paket baru belum disertifikasi. Produksi tetap 0 tabel POS; tidak ada mutasi produksi. Lihat [master audit](./master-audit-20261102.md) untuk dependensi dan bukti penutupan.
+
 **STATUS: IN PROGRESS / NO-GO untuk transaksi produksi.** Dokumen ini adalah daftar uji manual, bukan klaim bahwa pemilik/pegawai atau HP Android sudah diuji. Gunakan perangkat milik outlet satu-satunya, data sintetis dan login ID kasir tanpa pairing; jangan gunakan data pelanggan sebenarnya untuk uji. **Jangan mencatat pembayaran pelanggan nyata sebelum G8 disetujui.**
 
 ## Peta 25 referensi Binatu (commit c17b043)
 | Screenshot | Fungsi | Posisi di Mas Jawa / status |
 |---|---|---|
 | 01–02 | Pesanan & menu kasir | `/kasir`, `/kasir/pesanan`: tersedia secara kode; mobile bottom navigation/paritas piksel belum dibuktikan |
-| 03 | Pilih pelanggan | Form order: guest/member; nomor member; G7 menambahkan scanner QR. Nama-search belum setara |
-| 04 | Pilih durasi bottom sheet | **GAP:** durasi mengikuti layanan, belum ada bottom sheet 3 tingkat Reguler/Ekspres/Kilat |
+| 03 | Pilih pelanggan | Guest/member, nomor, QR/barcode dan pencarian nama prefix min 3; identitas dipilih manual, UAT fisik pending |
+| 04 | Durasi per layanan (keputusan Owner) | Wizard tiga tahap; tidak ada langkah Durasi terpisah. Mixed service snapshots/known-only ETA tersedia QA; signoff policy/perangkat pending |
 | 05–11 | Kartu layanan, +/- qty, sticky Lanjut | `/kasir/pesanan/baru` tersedia; G7 memperjelas warna kuning/tombol; belum screenshot-to-screenshot UAT |
 | 12–14 | Parfum, antar-jemput, diskon | Parfum/catatan tersedia; **GAP:** antar-jemput/ongkir dan diskon belum terimplementasi |
 | 15–17 | Rincian nota, status kerja, siap ambil | `/kasir/pesanan/[id]` tersedia; periksa di HP nyata |
@@ -39,8 +41,8 @@
 
 ## Instruksi uji tambahan — wizard G7 durasi/member
 
-- Bandingkan screenshot 03–04 dan 05–14: member nama sama harus bisa dipilih manual berdasarkan **nomor**, pencarian min 3 karakter, QR tidak membuat ADD. Pilih durasi satu per satu: daftar layanan/total harus menunjukkan harga katalog sebenarnya, tidak boleh ada pilihan layanan tersembunyi yang masih dihitung setelah ganti durasi.
-- Tekan Escape dan Tab/Shift+Tab pada bottom sheet durasi memakai keyboard, tutup sheet harus mengembalikan fokus ke tombol pembuka. Periksa zoom 200% dan 320px HP.
+- Bandingkan screenshot 03–04 dan 05–14: member nama sama harus bisa dipilih manual berdasarkan **nomor**, pencarian min 3 karakter, QR tidak membuat ADD. Pilih beberapa layanan berdurasi berbeda dalam satu nota: total harus memakai harga/revisi service masing-masing dan seluruh pilihan tetap terlihat.
+- Uji Tab/Shift+Tab, Enter, Back/Next dan focus/error di wizard tiga tahap; tidak ada bottom sheet durasi. Periksa zoom 200% dan 320px HP.
 - Bandingkan parfum preset/kustom; pastikan semua opsi harga non-layanan (ongkir/diskon) **tidak mempengaruhi total** dan tidak dikirim ke RPC G4 sebelum disahkan owner.
 - Saat QA database belum terpasang, lihat pesan kesalahan yang jelas, tidak menyimpan transaksi diam-diam. Semua skenario ini **belum ditandatangani oleh kasir/owner nyata**.
 
@@ -56,4 +58,9 @@
 - Uji Pelanggan → Layanan → Konfirmasi pada 320/360/390/768/1440px. Tidak boleh ada langkah Durasi terpisah atau filter durasi global yang menghilangkan layanan terpilih.
 - Pilih dua variasi layanan dengan paket/durasi berbeda di nota sama. Verifikasi kedua item, label durasi, dan tarif katalog yang tepat di konfirmasi.
 - Owner membuka Menu → Pengaturan → Layanan & Harga; ubah durasi pada layanan tertentu tanpa mengubah layanan lainnya. Uji datalist opsi hanya saran, input kustom tetap valid; harga historis tidak tertimpa.
-- Durasi tampil sebagai informasi katalog; sebelum G8 GO wajib putuskan kebijakan ETA tiap item, penyimpanan snapshot durasi pada nota, dan cetak janji tanggal selesai. Jangan janjikan perhitungan selesai otomatis sekarang.
+- Snapshot durasi/revisi dan ETA elapsed known-only per item tersedia QA; order memakai ETA maksimum bila semua item known. Range/blank tetap PENDING/null. Sebelum G8 GO wajib signoff kebijakan dan hasil cetak, termasuk layanan campuran; jangan menjanjikan ETA untuk label ambigu.
+
+
+## Gate identitas sebelum aktivasi finansial
+
+ID MAS empat angka adalah pengenal publik yang dapat diketahui orang lain. Throttle global hanya membatasi tebakan dan dapat menyebabkan DoS; ia **tidak mencegah impersonation bila ID sudah diketahui**. Owner bersama reviewer keamanan/operator jaringan wajib memilih dan menguji kontrol yang memadai, misalnya akses dari trusted workplace network yang benar-benar dibatasi atau identitas yang lebih kuat. Simpan keputusan, batas ancaman, negative test akses tak berhak dan reviewer sebagai bukti privat sebelum finance. Tidak ada perubahan kontrol tersebut yang dianggap telah diterapkan dari dokumen ini. Daftar siapa/bukti penutupan ada pada [master audit](./master-audit-20261102.md#tindakan-eksternal-wajib-dan-pemilik-bukti).

@@ -1,5 +1,7 @@
 # G8 Controlled Cutover — satu outlet MJL
 
+> **Checkpoint terkini sebelum final CI (2 Nov 2026): PROVISIONAL / G8 NO-GO.** Root mengonfirmasi ketiga migrasi canonical telah diterapkan **QA saja**: `20261102190000_pos_owner_creation_duration_snapshots.sql`, `20261102193000_pos_owner_operations_shared_cores.sql`, `20261102210000_pos_import_review_audit.sql`. Fixture owner duration, owner operations, import audit dan regresi existing G5/G6/G2 PASS setelah apply. `write_enabled=false` dan `finance_enabled=false`. Lima browser test wizard sintetis PASS pada 320/390/1440px memakai mocks; ini bukan real Auth atau PHYSICAL_UAT. Synthetic restore dan race tambahan menunggu CI yang akan datang, **belum PASS**. Final tree/CI dan deployment paket baru belum disertifikasi. Produksi tetap 0 tabel POS; tidak ada mutasi produksi. Lihat [master audit](./master-audit-20261102.md) untuk dependensi dan bukti penutupan.
+
 **Status per 2 Nov 2026: NO-GO.** Source POS sudah di GitHub `main`/Vercel `mas` namun database produksi belum memiliki tabel POS. Tidak ada keputusan owner untuk aktivasi transaksi produksi. Jangan menjalankan SQL, menyalakan flag, atau mengimpor data pelanggan dari dokumen ini tanpa approval eksplisit.
 
 ## Urutan wajib; tidak ada deployment staging
@@ -22,4 +24,7 @@
 
 ## Tambahan blocker pasca keputusan UI terbaru
 - Jangan GO jika penulisan nota oleh Owner belum memakai actor Owner pada RPC SQL tersendiri, jika durasi per item belum disimpan konsisten pada invoice/due date, atau jika risiko login karyawan ID empat angka belum di-review secara eksplisit.
-- Lihat hasil agregat QA dan Production pada [G8 audit aktual](./g8-audit-20261102.md). Migrasi read-only Owner yang sudah dijalankan hanya di QA tidak berarti migrasi Production boleh berjalan.
+- Lihat hasil agregat QA dan Production pada [G8 audit aktual](./g8-audit-20261102.md). Migrasi owner create/operations/audit yang sudah dijalankan hanya di QA tidak berarti migrasi Production boleh berjalan.
+
+
+**Pemilik tindakan eksternal:** Owner bersama reviewer keamanan/operator jaringan memilih dan menguji trusted workplace network yang benar-benar dibatasi atau kontrol identitas lebih kuat; ID-only known-ID impersonation tidak diselesaikan throttle. Operator DB membuktikan backup/restore produksi aman dan RPO/RTO; Owner+kasir/tester membuktikan real Auth, Android, uang/print dan visual; Owner+pemeriksa keuangan menandatangani cutoff/saldo/piutang/poin; Owner+operator release memberi approval schema dan cutover secara terpisah. Bukti/reviewer/timestamp privat wajib; semua masih BLOCKED sampai tersedia. [Daftar acceptance dan penanggung jawab](./master-audit-20261102.md#tindakan-eksternal-wajib-dan-pemilik-bukti).

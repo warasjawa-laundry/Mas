@@ -1,5 +1,9 @@
 # POS Mas Jawa Laundry Implementation Plan V2 — revisi eksekusi 1 Nov 2026
 
+> **Checkpoint 3 November 2026 sebelum CI integrasi:** lima migrasi canonical baru diterapkan QA saja (190000, 193000, 210000, 213000, 214000). Seluruh fixture SQL rollback terkait lulus; 280 tes Node, TypeScript, build Next.js dan 14 tes browser fixture lulus. Recovery UUID bertahan setelah refresh, dibatasi aktor/operasi, tanpa menyimpan payload pelanggan. Pembatalan owner/kasir dan pemulihan status terhubung UI/backend. Synthetic restore dan race dua koneksi menunggu CI; belum dinyatakan PASS. Production tidak dimigrasi; kedua switch QA OFF; G8 NO-GO. Tambahan rencana layanan/paket/WhatsApp diterima 3 November: audit ulang setelah integrasi ini stabil; perubahan flow empat tahap dan satu paket per nota menggantikan permintaan tiga tahap untuk fase tambahan.
+
+> **Status superseding 2 November 2026:** [Master audit G0–G8](./master-audit-20261102.md) adalah matriks scope, wiring nyata, acceptance, masalah, dependensi dan bukti penutupan terkini. Paragraf/status paket lama di bawah adalah histori checkpoint bila bertentangan dengan master audit atau keputusan owner terbaru. Teks pairing wajib, multi-outlet, wizard durasi terpisah, “G5 belum dibangun”, owner selalu read-only, atau PASS checkpoint lama tidak menyatakan kondisi tree final. **Master audit PROVISIONAL / final validation pending; G8 NO-GO, production POS 0 tabel, finance OFF.** Implementasi source/QA tidak mengotorisasi migrasi produksi atau cutover.
+
 > **For agentic workers:** implementasikan per task memakai skill executing-plans; gunakan subagent-driven-development hanya bila delegasi dipilih. Dokumen ini adalah masterplan review, bukan izin migrasi atau release. Setiap paket implementasi harus menyertakan subplan kode dan tes sebelum dikerjakan.
 
 **Goal:** mengembangkan area `/admin` yang ada menjadi kasir laundry, dengan nota, pembayaran, mutasi dan poin yang konsisten, tanpa kehilangan member, QR atau riwayat lama.
@@ -421,3 +425,27 @@ Dokumentasi rinci: [G4 Nota Laundry](./g4-order-verification.md). Dalam satu pak
 - Wizard Owner dan Karyawan bersama-sama memakai **Pelanggan → Layanan → Konfirmasi**. Setiap baris layanan menunjukkan paket, durasi, harga, dan satuan. Satu nota dapat memuat beberapa layanan dengan durasi yang berbeda; nominal dihitung dari harga per service ID/revisi seperti sebelumnya. Back/Next dan invalid quantity diverifikasi dengan test.
 - Backend G4 sudah menyimpan item dan snapshot harga tetapi belum menyimpan estimasi due_at/per-item duration secara penuh; jangan mengklaim janji tanggal selesai otomatis, tambahkan sebagai G8 business/UAT gate.
 - Schema dan Auth Production tetap tidak diubah. Keputusan untuk aktivasi finansial memerlukan UAT dan migrasi berizin yang terpisah dari release UI.
+
+
+## 23. Matriks master audit dan urutan penutupan — 2 November 2026
+
+Acuan terkini: [master-audit-20261102.md](./master-audit-20261102.md), termasuk per-gate lingkup, jalur source/UI/SQL, acceptance aktual, dependensi, masalah dan bukti yang dibutuhkan. Status bersifat **provisional**, final tree/CI belum disertifikasi.
+
+| Gate | Status terkini | Penutupan berikut dan dependensi |
+| --- | --- | --- |
+| G0 | PARTIAL; baseline main/deployment 0fe995d terverifikasi root | Pin source/tree/deployment final dan snapshot konsisten; mendasari seluruh gate |
+| G1 | PARTIAL; QA terpisah, restore BLOCKED | Restore nyata, credential-negative, real QA auth/card; bergantung G0 |
+| G2 | IMPLEMENTED_QA / PARTIAL | Review migrasi shared core/private audit, ACL/lock graph, history, restore; bergantung G1 |
+| G3 | PARTIAL / PHYSICAL_UAT_REQUIRED | Real Auth/revoke/expiry dan identity-risk owner approval; bergantung G2 |
+| G4 | IMPLEMENTED_QA / PARTIAL | Owner create+duration snapshots QA, recovery/UI final pending; ETA policy/cancel/adjustments belum full; bergantung G3 |
+| G5 | PARTIAL / FINANCE BLOCKED | Shared owner/staff core, independent finance gate OFF, timestamp/race/fault/network UAT; bergantung G4 dan identity review |
+| G6 | PARTIAL / PHYSICAL_UAT_REQUIRED | Owner ops integration, opening/close/cash/report reconciliation; bergantung G5 |
+| G6b | PARTIAL / NON-POSTING | Parser cancelled/footer+private audit final QA, real owner reconciliation; bergantung G1/G2 |
+| G7 | PARTIAL / PHYSICAL_UAT_REQUIRED | Final automated suite lalu real Android/auth/cash/print dan 25 layar signoff; bergantung G3–G6b |
+| G8 | BLOCKED / NO-GO | Restore, full reconciliation, fresh SHA-bound evidence dan approval migration/cutover; bergantung seluruh gate |
+
+Prioritas pengerjaan: P1 recovery exact UUID/payload dan owner workflow → P1 finance core/actor/lock/timestamp QA → P2 import source/audit/cancellation/footer → P2 kontrak cancellation/ETA/adjustments/reporting → final Node/typecheck/build/Playwright/SQL/race/CI → bukti eksternal → keputusan release terpisah. Kriteria penutupan rinci dan enam temuan baseline terdapat pada master audit.
+
+Checkpoint bukti root: produksi dan QA ACTIVE_HEALTHY; main dan Vercel READY SHA `0fe995d` domain benar. Produksi 785 member/18 kartu/21 event/19 amount dan **0 tabel POS**. QA 20 tabel POS publik RLS, zero direct write dan data legacy. Sembilan regresi POS existing PASS; owner-duration migration `20261102190000` applied QA dan fixture G4/G5/G6/catalog PASS. Node 268, baseline UI 78 dan build PASS hanya checkpoint. Migrasi owner ops/shared finance core aktual `20261102193000` serta import audit `20261102210000` sudah applied QA dengan fixture PASS; perubahan akhir menunggu receipt final root; jangan menganggap checkpoint ini sebagai PASS final tree/CI atau penerapan produksi.
+
+Semua izin produksi, real Auth/hardware, restore aktual, rekonsiliasi finansial, risiko ID kasir, visual owner signoff dan cutover approval tetap BLOCKED / PHYSICAL_UAT_REQUIRED. Tidak ada mutasi produksi dari paket audit ini. PR #30 tetap di luar scope.

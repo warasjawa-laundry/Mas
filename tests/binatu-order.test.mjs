@@ -73,6 +73,9 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
   '../actions':{createCashierOrder:async()=>{}},
   './member-search-actions':{findCashierMembers:async()=>[]},
   '@/app/admin/pesanan/member-actions':{findOwnerPosMembers:async()=>[]},
+  './qr-actions':{resolveCashierMemberCode:async()=>null},
+  'next/navigation':{unstable_rethrow:()=>{},useRouter:()=>({push(){},refresh(){}})},
+  '@/lib/pos/command-recovery':await import('../lib/pos/command-recovery.ts'),
   './cashier-qr-scanner':{CashierQrScanner:()=>null},
   './wizard.module.css':{default:new Proxy({},{get:(_target,key)=>String(key)})},
  };
@@ -83,6 +86,7 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
   return output.exports;
  }
  modules['./member-name-picker']=load('app/kasir/pesanan/baru/member-name-picker.tsx');
+ modules['@/components/admin/recoverable-form']=load('components/admin/recoverable-form.tsx');
  const {OrderForm}=load('app/kasir/pesanan/baru/order-form.tsx');
  const props={services:[{id:'test',category:'Test catalog',package_name:'',name:'<script>unsafe</script>',price_idr:8000,unit:'kg',duration:'3 hari',revision:1}],requestId:'test-request',canWrite:false,canLookup:false};
  const html=renderToStaticMarkup(React.createElement(OrderForm,props));

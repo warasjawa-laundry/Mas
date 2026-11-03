@@ -1,0 +1,2 @@
+create index pos_import_review_audit_owner_idx on laundry_private.pos_import_review_audit(owner_id);
+create index pos_import_review_audit_member_idx on laundry_private.pos_import_review_audit(member_id);

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-02",
+  "generatedAt": "2026-11-03",
   "status": "NO_GO",
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "99b3a39b5b18d007caca078582a6c1cc8a70ab1b",
-  "deployedProductionSha": "99b3a39b5b18d007caca078582a6c1cc8a70ab1b",
+  "reviewedMainSha": "0fe995db640de6249bd9389fe674a6853ab4d5bd",
+  "deployedProductionSha": "0fe995db640de6249bd9389fe674a6853ab4d5bd",
   "productionPosTables": 0,
   "productionOutletCount": 0,
   "productionWriteEnabledOutlets": 0,
@@ -22,67 +22,80 @@
     "qaSqlMigration": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "qaTwoConnectionRace": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "restoreRehearsal": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "realOwnerAuthUat": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "realCashierDeviceUat": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "physicalQrUat": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "financialReconciliation": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "legacyMemberParity": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "uiOwnerSignOff": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "cutoverOwnerApproval": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "ownerPosWriteUat": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "durationPolicySignOff": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     },
     "cashierIdentityRiskApproval": {
       "verified": false,
       "reference": "",
-      "reviewer": ""
+      "reviewer": "",
+      "reviewedMainSha": ""
     }
   },
   "qaReadOnlyReceipt": {
@@ -100,6 +113,25 @@
     "anonOwnerBoardExecute": false,
     "authOwnerBoardExecute": true,
     "qaOwnerMigration": "pos_owner_readonly_ui_pr31_qa",
-    "verifiedAt": "2026-11-02"
+    "verifiedAt": "2026-11-02",
+    "financeEnabledOutlets": 0,
+    "privateReviewAuditRows": 0,
+    "appliedSourceMigrations": [
+      "20261102190000_pos_owner_creation_duration_snapshots.sql",
+      "20261102193000_pos_owner_operations_shared_cores.sql",
+      "20261102210000_pos_import_review_audit.sql",
+      "20261102213000_pos_import_audit_fk_indexes.sql",
+      "20261102214000_pos_cashier_finance_recovery.sql"
+    ],
+    "ownerPosRpc": 20
+  },
+  "productionFinanceEnabledOutlets": 0,
+  "automatedLocalCheckpoint": {
+    "nodeTests": 280,
+    "browserFixtureTests": 14,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "ci": "PENDING",
+    "physicalUat": "PHYSICAL_UAT_REQUIRED"
   }
 }

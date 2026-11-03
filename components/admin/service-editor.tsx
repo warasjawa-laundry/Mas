@@ -4,14 +4,14 @@ import {formatPrice,type Service} from "@/lib/services/catalog";
 import {saveService} from "@/app/admin/settings/services/actions";
 import PendingSubmit from "@/components/admin/pending-submit";
 import {unstable_rethrow} from "next/navigation";
-type Props={service:Partial<Service>;newId?:string;categories:string[];durations?:string[]};
+type Props={service:Partial<Service>;newId?:string;categories:string[];durations?:string[];durationSupport?:boolean};
 async function saveWithRecovery(previous:{error:string},data:FormData){
  try{return await saveService(previous,data)}catch(failure){
   unstable_rethrow(failure);
   return {error:"Permintaan belum selesai. Periksa koneksi lalu coba lagi. Isian layanan tetap tersedia di formulir ini."};
  }
 }
-export default function ServiceEditor({service:s,newId,categories,durations=[]}:Props){
+export default function ServiceEditor({service:s,newId,categories,durations=[],durationSupport=false}:Props){
  const id=s.id??newId!;
  const [state,action,pending]=useActionState(saveWithRecovery,{error:""});
  return <form action={action} className="service-editor admin-form" onReset={event=>event.preventDefault()}>
@@ -27,6 +27,7 @@ export default function ServiceEditor({service:s,newId,categories,durations=[]}:
   <label htmlFor={"duration-"+id}>Durasi pengerjaan</label><input id={"duration-"+id} name="duration" list={"duration-options-"+id} defaultValue={s.duration??""} maxLength={80} placeholder="Contoh: 1–3 hari atau 6 jam"/>
   <datalist id={"duration-options-"+id}>{durations.map(d=><option value={d} key={d}/>)}</datalist>
   <small>Durasi melekat pada layanan ini, bukan pengaturan terpisah. Bisa berbeda untuk Reguler, Express, atau Kilat.</small>
+  {durationSupport&&<><label htmlFor={"minutes-"+id}>Estimasi pasti (menit, opsional)</label><input id={"minutes-"+id} name="duration_minutes" type="number" inputMode="numeric" min={1} max={525600} step={1} defaultValue={s.duration_minutes??""}/><small>Waktu berjalan sejak nota dibuat. Untuk durasi rentang, isi hanya setelah estimasi disepakati. Kosongkan jika belum pasti; label pasti seperti 6 jam dihitung otomatis.</small></>}
   <label htmlFor={"position-"+id}>Urutan tampil</label><input id={"position-"+id} name="position" type="number" min={0} max={9999} step={1} required defaultValue={s.position??100}/>
   <small>Angka lebih kecil tampil lebih awal. Layanan dalam kategori dan paket yang sama dikelompokkan otomatis.</small>
   <label className="service-visible"><input type="checkbox" name="is_visible" value="yes" defaultChecked={s.is_visible??true}/><span>Tampilkan di homepage</span></label>

@@ -1,18 +1,20 @@
 # Paket C G7/G8 technical verification — 2 November 2026
 
+> **Checkpoint terkini sebelum final CI (2 Nov 2026): PROVISIONAL / G8 NO-GO.** Root mengonfirmasi ketiga migrasi canonical telah diterapkan **QA saja**: `20261102190000_pos_owner_creation_duration_snapshots.sql`, `20261102193000_pos_owner_operations_shared_cores.sql`, `20261102210000_pos_import_review_audit.sql`. Fixture owner duration, owner operations, import audit dan regresi existing G5/G6/G2 PASS setelah apply. `write_enabled=false` dan `finance_enabled=false`. Lima browser test wizard sintetis PASS pada 320/390/1440px memakai mocks; ini bukan real Auth atau PHYSICAL_UAT. Synthetic restore dan race tambahan menunggu CI yang akan datang, **belum PASS**. Final tree/CI dan deployment paket baru belum disertifikasi. Produksi tetap 0 tabel POS; tidak ada mutasi produksi. Lihat [master audit](./master-audit-20261102.md) untuk dependensi dan bukti penutupan.
+
 **Verdict: G7 automated portion in progress; G8 CUTOVER BLOCKED.** Tidak melakukan migrasi produksi, write flags tetap off.
 
 ## Bukti telah diperiksa
 - Read-only prod Supabase `hncfyfvqtlnvqyfrydzb`: **785 member, 18 kartu, 21 visit events, 19 amount rows, 0 tabel POS** pada awal Paket C.
 - QA `cwxsbgfjynwxqalwonae`: 20 tabel POS, 0 enabled outlet, 0 order; migrasi G7 QR/board diterapkan dengan operasi khusus QA, regression synthetic rollback aktif/revoked/inactive, permission/revoke, fake device dan QR read-only **PASS**.
-- SQL G7 hanyalah dua fungsi pembaca yang membutuhkan token kasir; tidak memperluas izin tabel, tidak membuat ADD/pembayaran. Input URL QR validasi dan hash server; gambar tetap dibaca lokal.
+- Lingkup historis SQL G7 QR/board adalah fungsi pembaca yang membutuhkan token kasir; tidak memperluas izin tabel, tidak membuat ADD/pembayaran. Input URL QR validasi dan hash server; gambar tetap dibaca lokal.
 - Perbaikan UI G7: scanner kasir kamera/galeri (tidak auto award), tab pesanan aktif, warna kuning/identitas Mas Jawa. **Belum dikonfirmasi pada Android fisik**.
 - G7 race CI PostgreSQL 17 dijadwalkan dua koneksi (satu request UUID idempotent dan dua UUID berbeda untuk nota sama); bukti PASS hanya sah jika GitHub Action selesai sukses.
 - G8 preflight lint fail-closed untuk backup rehearsal, live owner/cashier UAT, physical QR, 25 visual, perpindahan saldo, owner approval dan SHA Production; config saat ini **NO-GO**.
 
 ## Temuan / blockers
 - QR kamera permission, gallery dari Android, scan kartu fisik dan offline recovery belum diuji pada HP pemilik.
-- 25 screenshot paritas menyeluruh belum ditandatangani; fitur bottom sheet durasi, diskon, ongkir, preset parfum dan member name search belum dipenuhi (lihat [audit UI](./ui-parity-audit.md)).
+- 25 screenshot paritas menyeluruh belum ditandatangani; wizard tiga tahap, pencarian nama dan preset parfum tersedia; diskon/ongkir masih diblokir sampai kontrak bisnis; visual dan perangkat nyata belum dipenuhi (lihat [audit UI](./ui-parity-audit.md)).
 - Tidak ada bukti backup→restore rehearsal untuk DB produksi; Supabase tool yang tersedia tidak menyediakan backup/restore di sesi ini.
 - Tidak ada approval eksplisit cutover owner, tarif/piutang Binatu masih butuh konfirmasi, dan DB produksi belum memiliki tabel POS.
 - Mutasi/close-shift fisik, WA consent, actual printer, regression old QR/member real hardware, post-commit network loss UAT belum terbukti.
@@ -33,4 +35,4 @@ Satu source repo `warasjawa-laundry/Mas` → satu PR batch → merge `main` sete
 
 ## Audit aktual susulan G8 — 2 November 2026
 - Bukti agregat terbaru dan QA RPC baca-saja Owner: [G8 audit aktual](./g8-audit-20261102.md). Tetap NO-GO. 20 tabel QA ber-RLS, direct write grant 0, QA owner RPC berhasil diterapkan; Production POS 0 tabel tanpa migrasi. Bukan tanda terima cutover.
-- Wizard baru tiga langkah dan durasi di tiap layanan mengikuti keputusan Owner; snapshot ETA belum tersedia, perlu rencana G8 per item sebelum invoice live.
+- Wizard baru tiga langkah dan durasi di tiap layanan mengikuti keputusan Owner; snapshot ETA per-item known-only kini tersedia QA melalui migrasi 190000; policy ETA, range/blank PENDING dan cetak perlu signoff G8 sebelum invoice live.

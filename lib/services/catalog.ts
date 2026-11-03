@@ -1,4 +1,4 @@
-export type Service={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;position:number;is_visible:boolean;revision:number};
+export type Service={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;duration_minutes?:number|null;position:number;is_visible:boolean;revision:number};
 export type PublishedService=Omit<Service,"is_visible"|"revision">;
 const clean=(v:FormDataEntryValue|null,max:number,required=false)=>{
  const s=typeof v==="string"?v.trim():"";
@@ -11,7 +11,10 @@ export function parseService(form:FormData){
  if(category===null||package_name===null||name===null||unit===null||duration===null||
  !/^(0|[1-9][0-9]{0,9})$/.test(price)||Number(price)>1_000_000_000||
  !/^[0-9]{1,4}$/.test(position))return null;
- return {category,package_name,name,unit,duration,price_idr:Number(price),position:Number(position),is_visible:form.get("is_visible")==="yes"};
+ const minutes=form.get("duration_minutes");
+ if(minutes!==null&&(typeof minutes!=="string"||(minutes!==""&&(!/^[1-9][0-9]{0,5}$/.test(minutes)||Number(minutes)>525600))))return null;
+ return {category,package_name,name,unit,duration,price_idr:Number(price),position:Number(position),is_visible:form.get("is_visible")==="yes",
+  ...(minutes===null?{}:{duration_minutes:minutes===""?null:Number(minutes)})};
 }
 export const formatPrice=(price:number,unit:string)=>"Rp"+new Intl.NumberFormat("id-ID").format(price)+"/"+unit;
 export function groupServices(services:PublishedService[]){

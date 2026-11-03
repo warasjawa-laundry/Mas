@@ -43,7 +43,7 @@ begin
  perform public.laundry_pos_g5_open_shift(device,login,shift_req);
  raise exception 'G5 opened shift while POS disabled';
  exception when sqlstate '42501' then null;end;
- update public.laundry_pos_outlets set write_enabled=true where id=v_outlet;
+ update public.laundry_pos_outlets set write_enabled=true,finance_enabled=true where id=v_outlet;
  result:=public.laundry_pos_g4_create_order(device,login,req,null,'987654321',
    jsonb_build_array(jsonb_build_object('service_id',v_service,'quantity','1','revision',1)),null,null);
  v_order:=(result->>'order_id')::uuid;

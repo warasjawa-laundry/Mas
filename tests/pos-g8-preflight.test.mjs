@@ -43,3 +43,36 @@ test("QA audit receipt cannot be misinterpreted as Production readiness",()=>{
  assert.equal(receipt.qaReadOnlyReceipt.writeEnabledOutlets,0);
  assert.equal(receipt.evidence.ownerPosWriteUat.verified,false);
 });
+
+function candidate(){
+ const r=structuredClone(receipt);
+ r.status="GO_CANDIDATE";r.productionPosTables=20;r.productionOutletCount=1;
+ r.reviewedMainSha="a".repeat(40);r.deployedProductionSha=r.reviewedMainSha;
+ r.evidence=Object.fromEntries(Object.keys(r.evidence).map(name=>[name,{
+  verified:true,reference:"evidence/actual-reviewed-receipt",reviewer:"Reviewer",
+  reviewedMainSha:r.reviewedMainSha,
+ }]));
+ return r;
+}
+test("preflight requires explicit false for every posting switch",()=>{
+ const r=candidate();assert.equal(evaluatePosG8(r).ready,true);
+ for(const key of ['financePostingEnabled','importBackfillEnabled']){
+  for(const value of [undefined,null,0,'false']){
+   const bad=structuredClone(r);bad[key]=value;
+   assert.equal(evaluatePosG8(bad).ready,false,key+': '+String(value));
+  }
+ }
+});
+test("evidence from a different code revision cannot authorize this release",()=>{
+ const r=candidate();
+ r.evidence.ownerPosWriteUat.reviewedMainSha="b".repeat(40);
+ assert.equal(evaluatePosG8(r).ready,false);
+ delete r.evidence.ownerPosWriteUat.reviewedMainSha;
+ assert.equal(evaluatePosG8(r).ready,false);
+});
+test("database finance gate is independently verified off",()=>{
+ const r=candidate();r.productionFinanceEnabledOutlets=1;
+ assert.equal(evaluatePosG8(r).ready,false);
+ delete r.productionFinanceEnabledOutlets;
+ assert.equal(evaluatePosG8(r).ready,false);
+});

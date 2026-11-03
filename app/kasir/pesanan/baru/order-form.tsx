@@ -9,6 +9,10 @@ import {createCashierOrder} from "../actions";
 import {MemberNamePicker} from "./member-name-picker";
 import {CashierQrScanner} from "./cashier-qr-scanner";
 import styles from "./wizard.module.css";
+import RecoverableForm from "@/components/admin/recoverable-form";
+import {resolveCashierMemberCode} from "./qr-actions";
+import {resolveOwnerPosMemberCode} from "@/app/admin/pesanan/member-actions";
+import type {CommandActionResult} from "@/lib/pos/command-recovery";
 
 export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number};
 const money=(n:string|number|bigint)=>formatIdr(n);
@@ -19,15 +23,20 @@ function CreateOrderButton({disabled}:{disabled:boolean}){
  return <button className={styles.primary} disabled={disabled||pending} aria-busy={pending} type="submit">{pending?'Menyimpan pesanan…':'Buat pesanan'}</button>;
 }
 
-export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction}:{
+export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction}:{
  services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";
- createAction?:(form:FormData)=>void|Promise<void>;
+ createAction?:(form:FormData)=>Promise<CommandActionResult>;
+ recoveryKey?:string;recoverAction?:(requestId:string)=>Promise<CommandActionResult>;
 }){
  const [step,setStep]=useState(0);
+ const [recoveryPending,setRecoveryPending]=useState(false);
  const [customerType,setCustomerType]=useState<"guest"|"member">("guest");
  const [name,setName]=useState("");
  const [member,setMember]=useState("");
  const [memberName,setMemberName]=useState("");
+ const [memberBusy,setMemberBusy]=useState(false);
+ const [memberError,setMemberError]=useState("");
+ const lookupSequence=useRef(0);
  const [quantities,setQuantities]=useState<Record<string,string>>({});
  const [perfume,setPerfume]=useState("");
  const [notes,setNotes]=useState("");
@@ -43,11 +52,24 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
   if(!chosen.length||chosen.length>30)return null;
   try{return calculateOrderTotals(chosen.map(s=>({priceIdr:String(s.price_idr),quantity:quantities[s.id],unit:posUnitFromCatalog(s.unit)})))}catch{return null}
  },[chosen,quantities]);
- const customerValid=customerType==="guest"?name.trim().length>=2:/^[1-9][0-9]{0,11}$/.test(member);
+ const customerValid=customerType==="guest"?name.trim().length>=2:/^[1-9][0-9]{0,11}$/.test(member)&&memberName.length>0;
  const customerLabel=customerType==='guest'?name.trim():memberName||`Member MJL #${member}`;
  const items=JSON.stringify(chosen.map(s=>({service_id:s.id,quantity:quantities[s.id],revision:Number(s.revision)})));
  const canContinue=canAdvanceOrderStep(step,customerValid,available.length>0,!!quote);
  function go(next:number){setStep(next);queueMicrotask(()=>title.current?.focus())}
+ function pickMember(number:string,label:string){
+  lookupSequence.current++;setMember(number);setMemberName(label);setMemberError("");setMemberBusy(false);
+ }
+ async function verifyMember(){
+  const sequence=++lookupSequence.current;setMemberBusy(true);setMemberError("");
+  try{
+   const result=await (role==='owner'?resolveOwnerPosMemberCode(member):resolveCashierMemberCode(member));
+   if(sequence!==lookupSequence.current)return;
+   if(result)pickMember(result.memberNumber,result.displayName);
+   else {setMemberName("");setMemberError("Member aktif tidak ditemukan. Periksa nomor atau pindai kartu.");}
+  }catch{if(sequence===lookupSequence.current)setMemberError("Pemeriksaan member belum berhasil. Coba kembali.");}
+  finally{if(sequence===lookupSequence.current)setMemberBusy(false);}
+ }
  function changeQuantity(id:string,value:string){setQuantities(prev=>({...prev,[id]:value}))}
  function adjust(s:CatalogService,direction:1|-1){
   try{changeQuantity(s.id,stepQuantity(quantities[s.id]??"",posUnitFromCatalog(s.unit),direction))}catch{return}
@@ -71,10 +93,12 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
       <label><input type="radio" name="customer-type" checked={customerType==='member'} onChange={()=>setCustomerType('member')}/> Member MJL</label>
      </div>
      {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder="Masukkan nama pelanggan"/><small>Minimal 2 karakter.</small></label>:
-      <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{setMember(e.target.value.replace(/\D/g,'').slice(0,12));setMemberName("")}} maxLength={12} placeholder="Nomor pada kartu member"/></label>
+      <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{lookupSequence.current++;setMember(e.target.value.replace(/\D/g,'').slice(0,12));setMemberName("");setMemberError("");setMemberBusy(false)}} maxLength={12} placeholder="Nomor pada kartu member"/></label>
+       {canLookup&&<button type="button" className={styles.back} disabled={memberBusy||!/^[1-9][0-9]{0,11}$/.test(member)} onClick={verifyMember}>{memberBusy?'Memeriksa member…':'Periksa nomor member'}</button>}
+       {memberError&&<p role="alert" className={styles.warn}>{memberError}</p>}
        {canLookup&&<>
-       <CashierQrScanner role={role} disabled={false} onMember={(number,label)=>{setMember(number);setMemberName(label)}}/>
-       <MemberNamePicker role={role} disabled={false} onPick={row=>{setMember(row.memberNumber);setMemberName(row.displayName)}}/>
+       <CashierQrScanner role={role} disabled={false} onMember={pickMember}/>
+       <MemberNamePicker role={role} disabled={false} onPick={row=>pickMember(row.memberNumber,row.displayName)}/>
        </>}
        {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-{member.padStart(6,"0")}</span></p>}</>}
      <p className={styles.help}>Periksa identitas pelanggan. Data akan diverifikasi kembali saat nota dibuat.</p>
@@ -93,7 +117,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
       </div>})}</div>}
     </section>
    </div>
-   <aside className={`${styles.summaryPanel} ${step!==2?styles.mobileHidden:''}`} aria-labelledby="summary-title">
+   <aside className={`${styles.summaryPanel} ${step!==2&&!recoveryPending?styles.mobileHidden:''}`} aria-labelledby="summary-title">
     <div className={styles.summaryHead}><h2 id="summary-title">Atur & rincian pesanan</h2><p>Durasi mengikuti masing-masing layanan yang dipilih.</p></div>
     <div className={styles.summaryBody}>
      <div className={styles.customerSummary}><small>Pelanggan</small><strong>{customerValid?customerLabel:'Belum dipilih'}</strong></div>
@@ -106,10 +130,10 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
     <div className={styles.summaryFooter}><div className={styles.total}><span>Total tagihan</span><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
      {!customerValid&&<p className={styles.help}>Lengkapi pelanggan sebelum membuat nota.</p>}
      {!canWrite&&<p className={styles.warn} role="status">Transaksi POS masih dikunci. Nota belum dapat dibuat.</p>}
-     <form action={createAction??createCashierOrder}>
+     <RecoverableForm action={createAction??createCashierOrder} recoveryKey={recoveryKey} recoverAction={recoverAction} onRecoveryPendingChange={setRecoveryPending}>
       <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="kind" value={customerType}/><input type="hidden" name="guestName" value={customerType==='guest'?name.trim():""}/><input type="hidden" name="memberNumber" value={customerType==='member'?member:""}/><input type="hidden" name="items" value={items}/><input type="hidden" name="perfume" value={perfume}/><input type="hidden" name="notes" value={notes}/>
       <CreateOrderButton disabled={!canWrite||!quote||!customerValid}/>
-     </form>
+     </RecoverableForm>
     </div>
    </aside>
   </div>

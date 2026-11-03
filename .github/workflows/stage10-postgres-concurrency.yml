@@ -1,5 +1,7 @@
 name: Stage 10 PostgreSQL Concurrency QA
 on:
+  push:
+    branches: [main]
   pull_request:
     paths:
       - "supabase/migrations/**"
@@ -65,7 +67,23 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-g6-g6b-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-g7-qr-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-g7-member-name-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-owner-duration-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-owner-operations-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-import-audit-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-cashier-recovery-rollback.sql
+      - name: Synthetic backup and restore rehearsal (no Production data)
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: bash supabase/tests/pos-synthetic-restore.sh
+      - name: Canonical application schema metadata
+        run: psql -XAt -v ON_ERROR_STOP=1 -f supabase/tests/pos-schema-fingerprint.sql > pos-schema-fingerprint.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pos-schema-fingerprint
+          path: pos-schema-fingerprint.json
+          retention-days: 7
       - name: Two independent connection concurrency tests
         run: |
           bash supabase/tests/stage10-postgres-parallel-race.sh
           bash supabase/tests/pos-g7-parallel-race.sh
+          bash supabase/tests/pos-owner-parallel-race.sh

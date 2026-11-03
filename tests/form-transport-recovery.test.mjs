@@ -9,7 +9,7 @@ const navigation=fixtureRequire('next/dist/client/components/unstable-rethrow.br
 function fixture(action){
  const out={exports:{}};const states=[];let cursor=0;
  const jsx=(type,props)=>({type,props});
- const mocks={'react':{useState(initial){const i=cursor++;if(!(i in states))states[i]=initial;return [states[i],v=>states[i]=v]}},'react/jsx-runtime':{jsx,jsxs:jsx},'next/navigation':navigation};
+ const mocks={'react':{useEffect(){},useRef(initial){const i=cursor++;if(!(i in states))states[i]={current:initial};return states[i]},useState(initial){const i=cursor++;if(!(i in states))states[i]=initial;return [states[i],v=>states[i]=v]}},'react/jsx-runtime':{jsx,jsxs:jsx},'next/navigation':{...navigation,useRouter:()=>({push(){},refresh(){}})},'@/lib/pos/command-recovery':{commandUuid:/^[a-f0-9-]{36}$/i}};
  runInNewContext(ts.transpileModule(readFileSync('components/admin/recoverable-form.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports:out.exports,module:out,require:n=>mocks[n]});
  return ()=>{cursor=0;return out.exports.default({action,children:'fields'})};
 }

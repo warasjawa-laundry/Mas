@@ -56,6 +56,13 @@ test('Importer bounds row count and fails suspicious money',()=>{
  assert.throws(()=>parseBinatuReport('many.csv',csv(lines)),/Maksimum 200/);
  assert.throws(()=>parseBinatuReport('bad.csv',csv([row(1,'BNT-1','Pelanggan QA','lunas - tunai',10000,15000)])),/melebihi total/);
 });
+test('Cancelled rows cannot become paid review candidates and footer must reconcile',()=>{
+ const cancelled=row(1,'BNT-CANCEL','Pelanggan QA','lunas - tunai',25000,25000).replace(',antrian,',',dibatalkan,');
+ assert.notEqual(parseBinatuReport('cancel.csv',csv([cancelled]))[0].payment,'PAID');
+ const valid=row(1,'BNT-1','Pelanggan QA','lunas - tunai',25000,25000);
+ assert.throws(()=>parseBinatuReport('footer.csv',csv([valid,row('','TOTAL','','',99999,25000)])),/total|rekonsiliasi/i);
+ assert.equal(parseBinatuReport('footer.csv',csv([valid,row('','TOTAL','','',25000,25000)])).length,1);
+});
 test('WIB reporting uses half-open UTC boundaries incl. month boundary',()=>{
  const v=reportingPeriod('2026-10-31','2026-11-02');
  assert.deepEqual(v,{p_start:'2026-10-30T17:00:00.000Z',p_end:'2026-11-01T17:00:00.000Z'});

@@ -14,6 +14,7 @@ test.beforeAll(async()=>{
   writeFileSync(path.join(fixtureDir,file+'.cjs'),ts.transpileModule(readFileSync('components/admin/'+file+'.tsx','utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText);
  }
  writeFileSync(path.join(fixtureDir,'catalog.cjs'),ts.transpileModule(readFileSync('lib/services/catalog.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText);
+ writeFileSync(path.join(fixtureDir,'command-recovery.cjs'),ts.transpileModule(readFileSync('lib/pos/command-recovery.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText);
  writeFileSync(path.join(fixtureDir,'service-action.cjs'),`exports.saveService=async()=>{await new Promise(r=>setTimeout(r,300));return {error:'Harga belum tersimpan. Coba lagi.'}};`);
  writeFileSync(path.join(fixtureDir,'entry.js'),`
  import React from 'react';import {createRoot} from 'react-dom/client';
@@ -29,7 +30,7 @@ test.beforeAll(async()=>{
  React.createElement(PendingSubmit,{label:'Simpan'})));
  `);
  await new Promise<void>((resolve,reject)=>{
-  const compiler=webpack({mode:'production',optimization:{minimize:false},entry:path.join(fixtureDir,'entry.js'),output:{path:fixtureDir,filename:'bundle.js'},resolve:{modules:[path.resolve('node_modules'),'node_modules'],alias:{'next/navigation':fixtureRequire.resolve('next/dist/client/components/unstable-rethrow.browser.js'),'@/components/admin/pending-submit':path.join(fixtureDir,'pending-submit.cjs'),'@/lib/services/catalog':path.join(fixtureDir,'catalog.cjs'),'@/app/admin/settings/services/actions':path.join(fixtureDir,'service-action.cjs')}}});
+  const compiler=webpack({mode:'production',optimization:{minimize:false},entry:path.join(fixtureDir,'entry.js'),output:{path:fixtureDir,filename:'bundle.js'},resolve:{modules:[path.resolve('node_modules'),'node_modules'],alias:{'next/navigation':path.resolve('tests/pos-fixture-navigation.cjs'),'@/lib/pos/command-recovery':path.join(fixtureDir,'command-recovery.cjs'),'@/components/admin/pending-submit':path.join(fixtureDir,'pending-submit.cjs'),'@/lib/services/catalog':path.join(fixtureDir,'catalog.cjs'),'@/app/admin/settings/services/actions':path.join(fixtureDir,'service-action.cjs')}}});
   compiler.run((error:Error|null,stats:{hasErrors:()=>boolean;toString:()=>string})=>compiler.close(()=>error?reject(error):stats.hasErrors()?reject(Error(stats.toString())):resolve()));
  });
 });

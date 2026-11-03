@@ -20,7 +20,7 @@ insert into public.laundry_members(member_number,display_name,created_by) overri
 select set_config('request.jwt.claim.sub','',false);
 insert into public.laundry_services(id,category,package_name,name,price_idr,unit,duration)
  values(gen_random_uuid(),'Kiloan','','G7 Race Service',93000,'kg','Reguler');
-update public.laundry_pos_outlets set write_enabled=true where code='MJL';
+update public.laundry_pos_outlets set write_enabled=true,finance_enabled=true where code='MJL';
 select public.laundry_pos_g4_create_order('$device','$login',gen_random_uuid(),null,'777777701',
  jsonb_build_array(jsonb_build_object('service_id',(select id from public.laundry_services where name='G7 Race Service'),'quantity','1','revision',1)),null,null);
 select public.laundry_pos_g4_create_order('$device','$login',gen_random_uuid(),'G7 Guest Race',null,
