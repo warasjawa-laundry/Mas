@@ -26,7 +26,7 @@ test.beforeAll(async()=>{
   'recoverable-form':'components/admin/recoverable-form.tsx',
   money:'lib/pos/money.ts','catalog-units':'lib/pos/catalog-units.ts',
   'ui-quantity':'lib/pos/ui-quantity.ts','g4-order':'lib/pos/g4-order.ts',
-  'command-recovery':'lib/pos/command-recovery.ts',
+  'command-recovery':'lib/pos/command-recovery.ts',eta:'lib/pos/eta.ts',
  };
  for(const [name,file] of Object.entries(files))writeFileSync(path.join(fixtureDir,name+'.cjs'),ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText);
  writeFileSync(path.join(fixtureDir,'styles.cjs'),'exports.default='+JSON.stringify(classMap));
@@ -47,7 +47,7 @@ test.beforeAll(async()=>{
  import React from 'react';import {createRoot} from 'react-dom/client';
  import {OrderForm} from './order-form.cjs';
  const role=window.posFixtureRole||'cashier';
- createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role,packageWorkflow:window.posPackageWorkflow||false}));
+ createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role,serverTime:"2026-12-31T16:30:00.000Z",packageWorkflow:window.posPackageWorkflow||false}));
  `);
  const alias:Record<string,string>={
   'next/navigation':path.resolve('tests/pos-fixture-navigation.cjs'),
@@ -59,7 +59,7 @@ test.beforeAll(async()=>{
   '@/app/admin/pesanan/member-actions':path.join(fixtureDir,'controls.cjs'),
   '@/components/admin/recoverable-form':path.join(fixtureDir,'recoverable-form.cjs'),
  };
- for(const name of ['money','catalog-units','ui-quantity','g4-order','command-recovery'])alias['@/lib/pos/'+name]=path.join(fixtureDir,name+'.cjs');
+ for(const name of ['money','catalog-units','ui-quantity','g4-order','command-recovery','eta'])alias['@/lib/pos/'+name]=path.join(fixtureDir,name+'.cjs');
  await new Promise<void>((resolve,reject)=>{
   const compiler=webpack({mode:'production',optimization:{minimize:false},entry:path.join(fixtureDir,'entry.js'),output:{path:fixtureDir,filename:'bundle.js'},resolve:{modules:[path.resolve('node_modules'),'node_modules'],alias}});
   compiler.run((error:Error|null,stats:{hasErrors:()=>boolean;toString:()=>string})=>compiler.close(()=>error?reject(error):stats.hasErrors()?reject(Error(stats.toString())):resolve()));
@@ -164,6 +164,7 @@ for(const width of [320,390,1440])test(`package workflow has four steps, filters
  await page.getByLabel('Nama pelanggan').fill('Pelanggan Paket QA');
  if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
  await page.getByLabel('Reguler · 2 hari',{exact:true}).check();
+ await expect(page.getByLabel('Estimasi selesai').first()).toHaveText('02/01/2027 - 23:30 WIB');
  if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
  await expect(page.getByLabel('Jumlah Cuci Express',{exact:true})).toHaveCount(0);
  await page.getByLabel('Jumlah Setrika Satuan',{exact:true}).fill('2');
@@ -175,6 +176,7 @@ for(const width of [320,390,1440])test(`package workflow has four steps, filters
  await expect(page.getByLabel('Reguler · 2 hari',{exact:true})).toBeChecked();
  await page.getByLabel('Express · 6 jam',{exact:true}).click();
  await page.getByRole('button',{name:'Ganti paket dan pilih ulang',exact:true}).click();
+ await expect(page.getByLabel('Estimasi selesai').first()).toHaveText('01/01/2027 - 05:30 WIB');
  await expect(page.locator('[name=items]')).toHaveValue('[]');
  if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
  await expect(page.getByLabel('Jumlah Setrika Satuan',{exact:true})).toHaveCount(0);

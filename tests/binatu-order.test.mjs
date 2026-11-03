@@ -70,6 +70,7 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
   'react':require('react'),'react-dom':require('react-dom'),'react/jsx-runtime':require('react/jsx-runtime'),
   '@/lib/pos/money':money,'@/lib/pos/catalog-units':units,'@/lib/pos/g4-order':order,
   '@/lib/pos/g7-catalog':catalog,'@/lib/pos/ui-quantity':quantities,
+  '@/lib/pos/eta':await import('../lib/pos/eta.ts'),
   '../actions':{createCashierOrder:async()=>{}},
   './member-search-actions':{findCashierMembers:async()=>[]},
   '@/app/admin/pesanan/member-actions':{findOwnerPosMembers:async()=>[]},

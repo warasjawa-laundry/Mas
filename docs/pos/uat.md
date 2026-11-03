@@ -72,3 +72,7 @@ ID MAS empat angka adalah pengenal publik yang dapat diketahui orang lain. Throt
 ### Tambahan 3 November 2026
 
 Uji tambahan: empat tahap, satu paket dan konfirmasi ganti paket; edit durasi/harga tidak mengubah nota lama; DP→pelunasan→poin ledger→WA baru; unpaid/DP/refund/zero tidak dapat diserahkan; histori aktor dan nota Sudah Diambil tetap dapat dicetak. Android kamera/galeri, WA terpasang dan printer nyata: PHYSICAL_UAT_REQUIRED.
+
+
+### Estimasi kalender otomatis
+Uji paket dari waktu masuk 31/12/2026 23:30 WIB: durasi 6 jam harus menjadi 01/01/2027 05:30 WIB, dan 2 hari menjadi 02/01/2027 23:30 WIB. Uji 31 Januari, Februari kabisat/nonkabisat, pergantian paket, serta perangkat dengan timezone berbeda; tampilan tetap WIB. Pratinjau boleh maju sebelum simpan, nota tersimpan memakai waktu final database. Uji fisik tetap PHYSICAL_UAT_REQUIRED.

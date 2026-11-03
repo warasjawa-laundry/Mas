@@ -23,7 +23,7 @@ export default async function NewCashierOrder({searchParams}:{searchParams:Promi
   {reason&&<p className={styles.warn} role="alert">{reason==='unconfirmed'?'Penyimpanan belum terkonfirmasi. Sebelum mencoba lagi, periksa Daftar Pesanan agar tidak membuat duplikat.':
    reason==='disabled'?'Transaksi belum diaktifkan.':'Form tidak valid, periksa data pelanggan dan kuantitas.'}</p>}
   {error?<p className={styles.warn} role="alert">Katalog POS belum tersedia di database aktif. Tidak ada transaksi yang dibuat.</p>:
-   <OrderForm packageWorkflow services={(Array.isArray(data?.services)?data.services:[]) as CatalogService[]} requestId={randomUUID()} canWrite={access.session.write_enabled&&data?.enabled===true} canLookup={hasCashierGrant(access.session.permissions,"member_lookup")}
+   <OrderForm packageWorkflow serverTime={new Date().toISOString()} services={(Array.isArray(data?.services)?data.services:[]) as CatalogService[]} requestId={randomUUID()} canWrite={access.session.write_enabled&&data?.enabled===true} canLookup={hasCashierGrant(access.session.permissions,"member_lookup")}
     recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'CREATE_ORDER')} recoverAction={recoverCashierCommand.bind(null,'CREATE_ORDER',null)}/>}
  </main>;
 }

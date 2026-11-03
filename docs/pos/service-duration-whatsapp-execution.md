@@ -34,3 +34,12 @@ Advisor QA: default-deny RLS INFO disengaja; 3 anonymous dan 9 authenticated SEC
 
 
 Checkpoint lokal final: 284/284 Node, TypeScript, build Next.js dan 93/93 browser PASS. Browser menguji komponen/route dan fixture sintetis; bukan bukti sesi bisnis nyata, WhatsApp terkirim atau physical UAT. Dua CI paket tambahan dan deployment SHA final masih harus diperiksa. Bukti aktual final disimpan pada release receipt terpisah setelah CI/deployment, tanpa mengubah persyaratan G8.
+
+
+## Estimasi tanggal dan jam otomatis — 3 November 2026
+
+Owner memilih memakai katalog paket yang sudah dikerjakan. Wizard Owner/kasir sekarang menampilkan waktu masuk pratinjau dan estimasi selesai otomatis pada pilihan Durasi serta Konfirmasi. Perhitungan: waktu server + menit kalender paket, tampil dd/mm/yyyy - HH:mm WIB; perubahan paket memperbarui estimasi. Perhitungan menangani pergantian hari, bulan, tahun dan tahun kabisat. Jam pratinjau memakai timestamp server dan elapsed monotonic browser; database tetap menentukan created_at/due_at final saat simpan. Tanggal estimasi dari browser tidak dikirim sebagai otoritas ke RPC. Durasi resmi tetap diatur Owner; label rentang/unitless tidak diubah menjadi durasi rekaan. Harga/identitas layanan dan snapshot nota lama tidak berubah. Tidak ada migrasi database atau aktivasi finansial dari perubahan ini.
+
+Bukti lokal sebelum integrasi: 5 tes kalender/durasi dan 8 tes browser wizard PASS; dua tes baru dijalankan RED sebelum implementasi. Suite final/CI/deployment dicatat pada output receipt setelah verifikasi. G8 tetap NO-GO sampai bukti eksternal tersedia.
+
+Verifikasi lokal akhir estimasi kalender: 290/290 Node, TypeScript, build dan 93/93 browser PASS. Fixture SSR lama sempat gagal karena dependensi helper baru belum dimuat; ditambah import helper aktual, assertions HTML escaping dan disabled submission tetap. Screenshot konfirmasi 320px diperiksa, tidak overflow; kontrol paket/regresi transaksi tetap lulus. CI/deployment SHA baru menunggu pemeriksaan pasca-integrasi.

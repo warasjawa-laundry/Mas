@@ -1,9 +1,10 @@
 "use client";
-import {useMemo,useRef,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import {useFormStatus} from "react-dom";
 import {calculateOrderTotals} from "@/lib/pos/money";
 import {posUnitFromCatalog} from "@/lib/pos/catalog-units";
 import {canAdvanceOrderStep,stepQuantity} from "@/lib/pos/ui-quantity";
+import {durationMinutes,estimateCompletion,formatEta} from "@/lib/pos/eta";
 import {formatIdr} from "@/lib/pos/g4-order";
 import {createCashierOrder} from "../actions";
 import {MemberNamePicker} from "./member-name-picker";
@@ -23,10 +24,10 @@ function CreateOrderButton({disabled}:{disabled:boolean}){
  return <button className={styles.primary} disabled={disabled||pending} aria-busy={pending} type="submit">{pending?'Menyimpan pesanan…':'Buat pesanan'}</button>;
 }
 
-export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction,packageWorkflow=false}:{
+export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction,packageWorkflow=false,serverTime}:{
  services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";
  createAction?:(form:FormData)=>Promise<CommandActionResult>;
- packageWorkflow?:boolean;recoveryKey?:string;recoverAction?:(requestId:string)=>Promise<CommandActionResult>;
+ packageWorkflow?:boolean;serverTime?:string;recoveryKey?:string;recoverAction?:(requestId:string)=>Promise<CommandActionResult>;
 }){
  const steps=packageWorkflow?["Pelanggan","Durasi","Layanan","Konfirmasi"]:legacySteps;
  const servicesStep=packageWorkflow?2:1,summaryStep=packageWorkflow?3:2;
@@ -36,6 +37,20 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
  const packages=useMemo(()=>[...new Map(services.filter(s=>s.duration_package_code).map(s=>[s.duration_package_code!,{code:s.duration_package_code!,name:s.package_name,duration:s.duration}])).values()],[services]);
  function choosePackage(code:string){if(code===packageCode)return;if(Object.values(quantities).some(Boolean)){setPendingPackage(code);return;}setPackageCode(code);}
 
+ const [previewTime,setPreviewTime]=useState<string|null>(serverTime??null);
+ useEffect(()=>{
+  const base=serverTime?Date.parse(serverTime):Date.now(),started=performance.now();
+  if(!Number.isFinite(base))return;
+  const update=()=>setPreviewTime(new Date(base+performance.now()-started).toISOString());
+  update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);
+ },[serverTime]);
+ const selectedPackage=packages.find(p=>p.code===packageCode);
+ const estimatedDue=estimateCompletion(previewTime,selectedPackage?durationMinutes(selectedPackage.duration):null);
+ const etaPreview=selectedPackage&&<div className={styles.etaPreview}>
+  <dl><div><dt>Masuk (pratinjau)</dt><dd><time dateTime={previewTime??undefined}>{formatEta(previewTime)}</time></dd></div>
+   <div><dt>Estimasi selesai</dt><dd><time dateTime={estimatedDue??undefined} aria-label="Estimasi selesai">{formatEta(estimatedDue)}</time></dd></div></dl>
+  <p className={styles.help}>Waktu final dihitung ulang saat nota disimpan. Jam kalender, termasuk malam dan hari libur.</p>
+ </div>;
  const [recoveryPending,setRecoveryPending]=useState(false);
  const [customerType,setCustomerType]=useState<"guest"|"member">("guest");
  const [name,setName]=useState("");
@@ -114,6 +129,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
      <div className={styles.sectionHeading}><h2 id="package-title">Pilih paket durasi</h2><span>02</span></div>
      <p className={styles.help}>Estimasi memakai jam kalender sejak nota dibuat.</p>
      {packages.length===0?<p className={styles.warn}>Paket belum dikonfigurasi Owner. Tarif contoh tidak digunakan.</p>:<div className={styles.segment}>{packages.map(p=><label key={p.code}><input type="radio" name="duration-package" checked={packageCode===p.code} onChange={()=>choosePackage(p.code)}/>{p.name} · {p.duration}</label>)}</div>}
+     {etaPreview}
      {pendingPackage&&<div role="alert"><p>Mengganti paket akan mengosongkan pilihan layanan. Periksa tarif paket baru sebelum menambah layanan.</p><button type="button" className={styles.back} onClick={()=>setPendingPackage("")}>Pertahankan pilihan</button><button type="button" className={styles.primary} onClick={()=>{setPackageCode(pendingPackage);setQuantities({});setPendingPackage("");}}>Ganti paket dan pilih ulang</button></div>}
     </section>}
     <section className={`${styles.panel} ${styles.catalogPanel} ${step!==servicesStep?styles.mobileHidden:''}`} aria-labelledby="services-title">
@@ -136,6 +152,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
      <div className={styles.customerSummary}><small>Pelanggan</small><strong>{customerValid?customerLabel:'Belum dipilih'}</strong></div>
      {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{s.duration||"Durasi belum ditentukan"} · {quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
      {chosen.length>30&&<p role="alert" className={styles.warn}>Maksimal 30 layanan per nota. Kurangi pilihan layanan.</p>}
+     {packageWorkflow&&etaPreview}
      <label className={styles.field}>Parfum (opsional)<input value={perfume} onChange={e=>setPerfume(e.target.value)} maxLength={80} placeholder="Tanpa parfum / nama parfum"/></label>
      <label className={styles.field}>Catatan cucian (opsional)<textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={500} rows={3} placeholder="Catatan untuk proses laundry"/></label>
      <div className={styles.unavailableAdjustments}><div><span>Antar / jemput</span><strong>Belum tersedia</strong></div><div><span>Diskon</span><strong>Belum tersedia</strong></div><p className={styles.help}>Total saat ini hanya harga layanan. Harga disahkan kembali saat nota disimpan.</p></div>
