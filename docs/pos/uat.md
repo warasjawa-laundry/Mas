@@ -82,3 +82,7 @@ Uji tambahan: empat tahap, satu paket dan konfirmasi ganti paket; edit durasi/ha
 
 ### Estimasi kalender otomatis
 Uji paket dari waktu masuk 31/12/2026 23:30 WIB: durasi 6 jam harus menjadi 01/01/2027 05:30 WIB, dan 2 hari menjadi 02/01/2027 23:30 WIB. Uji 31 Januari, Februari kabisat/nonkabisat, pergantian paket, serta perangkat dengan timezone berbeda; tampilan tetap WIB. Pratinjau boleh maju sebelum simpan, nota tersimpan memakai waktu final database. Uji fisik tetap PHYSICAL_UAT_REQUIRED.
+
+
+## UAT nyata dalam mode UJI (belum ditandatangani)
+Pada domain resmi saat `pilot_test_only=true`, gunakan Owner terlebih dahulu lalu Kasir tes dengan izin minimal; **tanpa kartu, nomor member, nomor HP asli, uang sungguhan atau pengiriman WA nyata**. Nama pelanggan wajib `UJI - Nama Dummy`. Periksa paket Reguler/Ekspres/Kilat, kategori tarif, parfum, ongkir Rp0/Rp3.000/Rp7.000, subtotal dan total Supabase; buat nota; cetak bertanda UJI, DP, lunas, refund, ready dan pengambilan hanya setelah lunas. Jalankan test negatif member ditolak (backend), pengulangan UUID tidak duplikat, perangkat HP, penghapusan sesi Kasir, dan rekonsiliasi shift tes. Catat hasil yang benar-benar dilakukan, waktu, reviewer, dan ID nota; jangan ubah G8 evidence menjadi PASS dari checklist yang belum dieksekusi.

@@ -48,7 +48,7 @@ test.beforeAll(async()=>{
  import React from 'react';import {createRoot} from 'react-dom/client';
  import {OrderForm} from './order-form.cjs';
  const role=window.posFixtureRole||'cashier';
- createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},deliveryOptions:${JSON.stringify(deliveryOptions)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role,serverTime:"2026-12-31T16:30:00.000Z",packageWorkflow:window.posPackageWorkflow||false}));
+ createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},deliveryOptions:${JSON.stringify(deliveryOptions)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role,serverTime:"2026-12-31T16:30:00.000Z",packageWorkflow:window.posPackageWorkflow||false,pilotTestOnly:window.posPilotTestOnly||false}));
  `);
  const alias:Record<string,string>={
   'next/navigation':path.resolve('tests/pos-fixture-navigation.cjs'),
@@ -67,13 +67,14 @@ test.beforeAll(async()=>{
  });
 });
 
-async function mount(page:Page,width=390,role='cashier',packageWorkflow=false){
+async function mount(page:Page,width=390,role='cashier',packageWorkflow=false,pilotTestOnly=false){
  page.on('pageerror',error=>{throw error});
  await page.setViewportSize({width,height:900});
  await page.route('**/*',route=>route.abort());
  await page.setContent(`<style>:root{--font-pos:Arial}body{margin:0;background:#f8f8f9}${fixtureCss}</style><main class="${classMap.shell}"><div id="root"></div></main>`);
  await page.evaluate(value=>{(window as any).posFixtureRole=value},role);
  await page.evaluate(value=>{(window as any).posPackageWorkflow=value},packageWorkflow);
+ await page.evaluate(value=>{(window as any).posPilotTestOnly=value},pilotTestOnly);
  await page.addScriptTag({path:bundle});
  await expect(page.getByRole('heading',{name:'Pilih pelanggan',exact:true})).toBeVisible();
 }
@@ -197,4 +198,18 @@ for(const width of [320,390,1440])test(`package workflow has four steps, filters
  await page.evaluate(()=>(window as any).posFixture.finishCreate());
  await expect(page.getByRole('alert')).toContainText('Nota belum terkonfirmasi');
  await page.screenshot({path:`artifacts/screenshots/pos-package-wizard-${width}.png`,fullPage:true});
+});
+
+test('test-only pilot rejects member selection and requires a clearly marked dummy guest',async({page})=>{
+ await mount(page,390,'owner',true,true);
+ await expect(page.getByText('MODE UJI — bukan nota pelanggan.')).toBeVisible();
+ await expect(page.getByRole('radio',{name:'Member MJL',exact:true})).toBeDisabled();
+ const name=page.getByLabel('Nama pelanggan');
+ const next=page.getByRole('button',{name:'Lanjut',exact:true});
+ await name.fill('Pelanggan Asli');
+ await expect(next).toBeDisabled();
+ await name.fill('UJI - Kasir Dummy');
+ await expect(next).toBeEnabled();
+ await next.click();
+ await expect(page.getByRole('heading',{name:'Pilih paket durasi'})).toBeVisible();
 });

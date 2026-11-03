@@ -24,7 +24,7 @@ export default async function OwnerNewOrder({searchParams}:{searchParams:Promise
    {!canWrite&&<div className="binatu-inline-notice" role="status"><p>{lockReason}</p>{data?.enabled!==true&&<a href="/admin/settings/services">Buka Layanan & Harga untuk aktivasi katalog</a>}<p>Scan dan pencarian member hanya membaca data; tidak memberikan poin.</p></div>}
    {params.error&&<p className="binatu-inline-notice" role="alert">Penyimpanan nota masih dikunci untuk melindungi data produksi.</p>}
    {error?<p className="binatu-inline-notice" role="alert">Katalog tidak dapat dimuat. Periksa koneksi dan coba kembali.</p>:
-    <OrderForm packageWorkflow serverTime={new Date().toISOString()} services={(data?.services??[]) as CatalogService[]} deliveryOptions={deliveryOptions} lockReason={lockReason} requestId={randomUUID()} canWrite={canWrite}
+    <OrderForm packageWorkflow pilotTestOnly={data?.pilot_test_only===true} serverTime={new Date().toISOString()} services={(data?.services??[]) as CatalogService[]} deliveryOptions={deliveryOptions} lockReason={lockReason} requestId={randomUUID()} canWrite={canWrite}
      canLookup role="owner" createAction={createOwnerOrder}
      recoveryKey={commandRecoveryKey('owner',user.id,'CREATE_ORDER')} recoverAction={recoverOwnerOrder}/>}
   </PosWorkspace>;

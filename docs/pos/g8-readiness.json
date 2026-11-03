@@ -196,5 +196,14 @@
     "pointLinks": 0,
     "directWriteGrants": 0,
     "g8EvidenceWaivedOrInvented": false
+  },
+  "pilotTestScope": {
+    "targetStart": "2026-11-03",
+    "targetGoLive": "2027-01",
+    "guardMigration": "supabase/migrations/20261103210500_pos_test_only_pilot.sql",
+    "onlyDummyGuest": true,
+    "protectRealMembers": true,
+    "isNotG8Go": true,
+    "requireCleanupBeforeLaunch": true
   }
 }

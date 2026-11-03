@@ -61,6 +61,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
      'Perubahan belum terkonfirmasi. Periksa status nota sebelum mengulangi tindakan.'}
   </p>}
   {query.saved&&<p className={styles.ok} role="status">{query.saved==='payment'?'Pembayaran tercatat.':query.saved==='refund'?'Pengembalian penuh tercatat.':query.saved==='shift'?'Kas dibuka.':query.saved==='cancelled'?'Nota dibatalkan.':'Status tersimpan.'}</p>}
+  {o.customer_name.startsWith('UJI - ')&&<p className={styles.warning} role="status"><strong>NOTA UJI.</strong> Jangan menerima pembayaran sungguhan, mengirim WhatsApp ke pelanggan, atau menggunakan member asli pada transaksi tes.</p>}
   {o.lifecycle_status==='CANCELLED'&&<p className={styles.warning} role="status">Nota dibatalkan. Riwayat transaksi tetap tersimpan.</p>}
   <div className={styles.detailGrid}>
   <section className={styles.card} aria-labelledby="items-title"><h2 id="items-title">Rincian pesanan</h2>

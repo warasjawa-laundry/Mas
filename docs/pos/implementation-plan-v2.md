@@ -516,3 +516,13 @@ Perubahan visual terisolasi pada `/admin/settings/services`: ringkasan Reguler/E
 - Migrasi additive `20261103203800_pos_delivery_fee_authoritative.sql`: opsi harga hanya dalam `laundry_private`, snapshot baru di `laundry_pos_orders`; fungsi lama tetap ada demi kompatibilitas histori dan retry lama. QA divalidasi sebelum release, produksi menunggu verifikasi gate untuk migrasi. Tidak ada penghapusan transaksi/histori atau pengubahan skema login.
 
 - Tambahan regresi browser paket: pilihan parfum Sakura dan antar-jemput Dekat menaikkan total fixture Rp7.500 → Rp10.500; payload hanya kode/revisi. Fixture SQL memastikan tarif tabel private, snapshot, RPC dan pembatasan akses Owner.
+
+
+## Pilot uji internal pra-operasional 2027 — keputusan 3 November 2026
+
+- **Target:** dapat menguji wizard nota, parfum, ongkir, DP/lunas, kas, refund, cetak, status siap/sudah diambil di domain resmi sekarang, **bukan** mengesahkan G8 GO atau menerima uang nyata.
+- Source migration `supabase/migrations/20261103210500_pos_test_only_pilot.sql` menambahkan `pilot_test_only` pada outlet dan `is_test_order` pada nota. Guard DB menolak order terkait `laundry_members` dan mewajibkan pelanggan umum dengan nama `UJI - Nama Dummy`. Marker nota tes tidak dapat dicabut/dialihkan ke member setelah dibuat. POS point-link untuk nota tes ditolak.
+- Saat pilot ON, UI Owner/Kasir melarang pilihan member dan menampilkan peringatan. Harga, ongkir, pembayaran dan receipt tetap melalui RPC otoritatif/idempotent, tetapi **semua pembayaran harus disimulasikan**, tidak boleh menerima uang riil, mengirim WA ke nomor nyata, atau mengubah poin member lama.
+- Pelanggan/member, nomor kartu dan identitas asli adalah data yang harus dilindungi. Histori transaksi, kas dan poin lama ditetapkan Owner sebagai **dummy**; penghapusan/koreksi tidak dilakukan saat pilot. Sebelum go-live awal 2027 wajib buat backup + uji restore, klasifikasikan/arsipkan semua nota `is_test_order`, reset ledger uji melalui prosedur yang disetujui, cek saldo awal member dan cash, serta sign-off.
+- Migrasi QA dan regresi negatif dilakukan terlebih dahulu; deploy UI hanya setelah CI lulus dan identitas SHA Vercel sama. Aktivasi pilot memerlukan audit state Production dan konfigurasi `pilot_test_only=true` **sebelum** `package_workflow_enabled=true` dalam satu transaksi; tidak buat kasir otomatis. Operator dapat menghentikan pilot melalui `write_enabled=false, finance_enabled=false` jika terjadi kejadian tidak pasti.
+- **G8 readiness tetap NO_GO.** Test pilot adalah bukti latihan, bukan backup/restore nyata atau physical Android UAT. Periksa [runbook pilot](./pilot-test-20261103.md), [UAT](./uat.md) dan [cutover](./cutover.md).

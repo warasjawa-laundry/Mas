@@ -25,8 +25,8 @@ function CreateOrderButton({disabled}:{disabled:boolean}){
  return <button className={styles.primary} disabled={disabled||pending} aria-busy={pending} type="submit">{pending?'Menyimpan pesanan…':'Buat pesanan'}</button>;
 }
 
-export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction,packageWorkflow=false,serverTime,lockReason}:{
- services:CatalogService[];deliveryOptions?:DeliveryOption[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";lockReason?:string;
+export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction,packageWorkflow=false,serverTime,lockReason,pilotTestOnly=false}:{
+ services:CatalogService[];deliveryOptions?:DeliveryOption[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";lockReason?:string;pilotTestOnly?:boolean;
  createAction?:(form:FormData)=>Promise<CommandActionResult>;
  packageWorkflow?:boolean;serverTime?:string;recoveryKey?:string;recoverAction?:(requestId:string)=>Promise<CommandActionResult>;
 }){
@@ -77,7 +77,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
   if(!chosen.length||chosen.length>30)return null;
   try{return selectedDelivery?calculateOrderTotals(chosen.map(s=>({priceIdr:String(s.price_idr),quantity:quantities[s.id],unit:posUnitFromCatalog(s.unit)})),{deliveryIdr:String(selectedDelivery.amount_idr)}):null}catch{return null}
  },[chosen,quantities,selectedDelivery]);
- const customerValid=customerType==="guest"?name.trim().length>=2:/^[1-9][0-9]{0,11}$/.test(member)&&memberName.length>0;
+ const customerValid=customerType==="guest"?(pilotTestOnly?/^UJI - \S.{1,}$/i.test(name.trim()):name.trim().length>=2):!pilotTestOnly&&/^[1-9][0-9]{0,11}$/.test(member)&&memberName.length>0;
  const customerLabel=customerType==='guest'?name.trim():memberName||`Member MJL #${member}`;
  const items=JSON.stringify(chosen.map(s=>({service_id:s.id,quantity:quantities[s.id],revision:Number(s.revision)})));
  const canContinue=packageWorkflow?(step===0?customerValid:step===1?!!packageCode:!!quote):canAdvanceOrderStep(step,customerValid,available.length>0,!!quote);
@@ -113,11 +113,12 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
    <div className={styles.catalogColumn}>
     <section className={`${styles.panel} ${styles.customerPanel} ${step!==0?styles.mobileHidden:''}`} aria-labelledby="customer-title">
      <div className={styles.sectionHeading}><h2 id="customer-title">Pilih pelanggan</h2><span>01</span></div>
+     {pilotTestOnly&&<p className={styles.warn} role="status"><strong>MODE UJI — bukan nota pelanggan.</strong> Gunakan nama dummy diawali <strong>UJI - </strong>. Member asli dan poin pelanggan tidak boleh digunakan. Pembayaran/uang kas yang dicatat hanya simulasi; jangan terima dana sungguhan atau kirim WhatsApp ke pelanggan.</p>}
      <div className={styles.segment}>
       <label><input type="radio" name="customer-type" checked={customerType==='guest'} onChange={()=>setCustomerType('guest')}/> Pelanggan umum</label>
-      <label><input type="radio" name="customer-type" checked={customerType==='member'} onChange={()=>setCustomerType('member')}/> Member MJL</label>
+      <label><input type="radio" name="customer-type" checked={customerType==='member'} disabled={pilotTestOnly} onChange={()=>setCustomerType('member')}/> Member MJL</label>
      </div>
-     {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder="Masukkan nama pelanggan"/><small>Minimal 2 karakter.</small></label>:
+     {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder={pilotTestOnly?"UJI - Nama Dummy":"Masukkan nama pelanggan"}/><small>{pilotTestOnly?"Wajib awalan UJI - dan nama dummy minimal 2 karakter. Nota ini diberi penanda tes di database.":"Minimal 2 karakter."}</small></label>:
       <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{lookupSequence.current++;setMember(e.target.value.replace(/\D/g,'').slice(0,12));setMemberName("");setMemberError("");setMemberBusy(false)}} maxLength={12} placeholder="Nomor pada kartu member"/></label>
        {canLookup&&<button type="button" className={styles.back} disabled={memberBusy||!/^[1-9][0-9]{0,11}$/.test(member)} onClick={verifyMember}>{memberBusy?'Memeriksa member…':'Periksa nomor member'}</button>}
        {memberError&&<p role="alert" className={styles.warn}>{memberError}</p>}
@@ -178,7 +179,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
      </div>
     </div>
     <div className={styles.summaryFooter}><div className={styles.total}><span>Total tagihan</span><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
-     {!customerValid&&<p className={styles.help}>Lengkapi pelanggan sebelum membuat nota.</p>}
+     {!customerValid&&<p className={styles.help}>{pilotTestOnly?"Gunakan pelanggan umum dummy bernama UJI - Nama Dummy untuk melanjutkan.":"Lengkapi pelanggan sebelum membuat nota."}</p>}
      {!canWrite&&<p className={styles.warn} role="status">{lockReason??"Transaksi POS masih dikunci. Nota belum dapat dibuat."}</p>}
      <RecoverableForm action={createAction??createCashierOrder} recoveryKey={recoveryKey} recoverAction={recoverAction} onRecoveryPendingChange={setRecoveryPending}>
       <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="kind" value={customerType}/><input type="hidden" name="guestName" value={customerType==='guest'?name.trim():""}/><input type="hidden" name="memberNumber" value={customerType==='member'?member:""}/><input type="hidden" name="items" value={items}/><input type="hidden" name="perfume" value={perfume}/><input type="hidden" name="notes" value={notes}/><input type="hidden" name="deliveryCode" value={selectedDelivery?.code??""}/><input type="hidden" name="deliveryRevision" value={selectedDelivery?.revision??""}/>

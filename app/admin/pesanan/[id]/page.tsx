@@ -44,6 +44,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <RecoverableForm action={advanceOwnerWork} recoveryKey={commandRecoveryKey('owner',user.id,'SET_WORK',id)} recoverAction={recoverOwnerOperation.bind(null,'SET_WORK',id)}>{null}</RecoverableForm></>:<>
  <div className={styles.header}><p><strong>{row.customer_name}</strong> · {date(row.created_at)}</p><PrintButton/></div>
  {query.saved&&<p className={styles.ok} role="status">Perubahan sudah dikonfirmasi database.</p>}
+ {row.customer_name.startsWith('UJI - ')&&<p className="binatu-inline-notice" role="status"><strong>NOTA UJI.</strong> Transaksi dan pembayaran pada nota ini adalah simulasi. Jangan terima uang sungguhan atau mengirim WhatsApp kepada pelanggan.</p>}
  {!canWrite&&<p className="binatu-inline-notice" role="status">Perubahan pesanan masih dikunci. Riwayat yang tersedia tetap dapat dibaca.</p>}
  {!canFinance&&<p className="binatu-inline-notice" role="status">Pembayaran, refund, dan buku kas belum diaktifkan.</p>}
  <div className={styles.detailGrid}>
