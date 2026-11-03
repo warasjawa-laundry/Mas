@@ -104,7 +104,7 @@ for(const width of [320,390,1440])test(`guest journey, exact mixed-duration tota
  await expect(summary).toContainText('6 jam · 1.25 kg');
  await expect(summary).toContainText('2 hari · 2 pcs');
  await expect(summary.locator('.'+classMap.total)).toHaveText(/Total tagihanRp\s*15\.500/);
- await page.getByLabel('Parfum (opsional)').fill('Tanpa parfum');
+ await page.getByLabel('Parfum').selectOption('Lavender');
  await page.getByLabel('Catatan cucian (opsional)').fill('Pisahkan warna');
  await noOverflow(page);
  await page.getByRole('button',{name:'Buat pesanan',exact:true}).click();
@@ -114,7 +114,7 @@ for(const width of [320,390,1440])test(`guest journey, exact mixed-duration tota
  await page.evaluate(()=>(window as any).posFixture.finishCreate());
  await expect(page.getByRole('alert')).toContainText('Nota belum terkonfirmasi');
  await expect(page.locator('[name=requestId]')).toHaveValue(requestId);
- await expect(page.getByLabel('Parfum (opsional)')).toHaveValue('Tanpa parfum');
+ await expect(page.getByLabel('Parfum')).toHaveValue('Lavender');
  await expect(page.getByLabel('Catatan cucian (opsional)')).toHaveValue('Pisahkan warna');
  const first=await page.evaluate(()=>(window as any).posFixture.creates[0]);
  expect(JSON.parse(first.items)).toEqual(services.map((s,i)=>({service_id:s.id,quantity:i?'2':'1.25',revision:s.revision})));
