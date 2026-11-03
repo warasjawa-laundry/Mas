@@ -7,12 +7,15 @@ test("current G8 receipt fails closed; no invented sign-off",()=>{
  const result=evaluatePosG8(receipt);
  assert.equal(result.ready,false);
  assert.equal(receipt.productionPosTables,22);
- assert.equal(result.blockers.some(x=>x.includes("production POS schema")),false);
+ assert.equal(receipt.productionWriteEnabledOutlets,1);
+ assert.equal(receipt.productionFinanceEnabledOutlets,1);
+ assert.equal(receipt.financePostingEnabled,true);
+ assert.ok(result.blockers.some(x=>x.includes("financial writes")));
  assert.ok(result.blockers.some(x=>x.includes("restoreRehearsal")));
  assert.ok(result.blockers.some(x=>x.includes("physicalQrUat")));
 });
 test("unverified false cannot be replaced by a name-only record",()=>{
- const forged=structuredClone(receipt);
+ const forged=candidate();
  forged.productionPosTables=22;forged.productionOutletCount=1;
  forged.reviewedMainSha="a".repeat(40);forged.deployedProductionSha="a".repeat(40);
  forged.evidence=Object.fromEntries(Object.keys(receipt.evidence).map(name=>[name,{verified:true,reference:"",reviewer:"Owner"}]));
@@ -26,7 +29,7 @@ test("different deploy commit or Vercel connection always blocks",()=>{
  assert.ok(evaluatePosG8(r).blockers.some(x=>x.includes("Vercel")));
 });
 test("no auto-enable switch: any live write during preflight is NO-GO",()=>{
- const r=structuredClone(receipt);r.financePostingEnabled=true;
+ const r=candidate();r.financePostingEnabled=true;
  assert.ok(evaluatePosG8(r).blockers.some(x=>x.includes("financial writes")));
 });
 test("G8 never passes without owner-actor writes, service-duration policy and cashier ID risk review",()=>{
@@ -48,6 +51,8 @@ test("matching Production and QA schemas cannot substitute for financial UAT",()
 function candidate(){
  const r=structuredClone(receipt);
  r.status="GO_CANDIDATE";r.productionPosTables=22;r.productionOutletCount=1;
+ r.productionWriteEnabledOutlets=0;r.productionFinanceEnabledOutlets=0;
+ r.financePostingEnabled=false;r.importBackfillEnabled=false;
  r.reviewedMainSha="a".repeat(40);r.deployedProductionSha=r.reviewedMainSha;
  r.evidence=Object.fromEntries(Object.keys(r.evidence).map(name=>[name,{
   verified:true,reference:"evidence/actual-reviewed-receipt",reviewer:"Reviewer",

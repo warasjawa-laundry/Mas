@@ -5,12 +5,12 @@
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "17430c0f608249a1d151840ac23eadb960f2cadb",
-  "deployedProductionSha": "17430c0f608249a1d151840ac23eadb960f2cadb",
+  "reviewedMainSha": "682d5024a1a0d8dcb69824dcf2b687bda8304f14",
+  "deployedProductionSha": "682d5024a1a0d8dcb69824dcf2b687bda8304f14",
   "productionPosTables": 22,
   "productionOutletCount": 1,
-  "productionWriteEnabledOutlets": 0,
-  "financePostingEnabled": false,
+  "productionWriteEnabledOutlets": 1,
+  "financePostingEnabled": true,
   "importBackfillEnabled": false,
   "productionReadOnlyBaseline": {
     "members": 785,
@@ -130,7 +130,7 @@
     ],
     "ownerPosRpc": 20
   },
-  "productionFinanceEnabledOutlets": 0,
+  "productionFinanceEnabledOutlets": 1,
   "automatedLocalCheckpoint": {
     "nodeTests": 290,
     "browserFixtureTests": 93,
@@ -171,12 +171,30 @@
     "backupScope": "13 public application tables encrypted locally with Windows DPAPI CurrentUser; excludes Auth/Storage/private archives",
     "backupReadback": "PASS",
     "fullPostgresRestoreRehearsal": false,
-    "financialActivation": false
+    "financialActivation": true
   },
   "initialReleaseScope": {
     "historicalBinatuImportRequired": false,
     "historicalPointBackfill": false,
     "reuseExistingMemberDatabase": true,
     "reuseExistingPointLedger": true
+  },
+  "activationStatus": "FINANCIAL_FLAGS_ENABLED_CATALOG_NOT_CONFIGURED",
+  "productionActivationReceipt": {
+    "activatedAtUtc": "2026-11-03T08:47:38.219378Z",
+    "activatedAtWib": "2026-11-03T15:47:38.219378+07:00",
+    "authorizedBy": "explicit user instruction in this chat",
+    "writeEnabled": true,
+    "financeEnabled": true,
+    "packageWorkflowEnabled": false,
+    "activePackages": 0,
+    "activeServiceFamilies": 0,
+    "activeCashiers": 0,
+    "orders": 0,
+    "payments": 0,
+    "cashRows": 0,
+    "pointLinks": 0,
+    "directWriteGrants": 0,
+    "g8EvidenceWaivedOrInvented": false
   }
 }
