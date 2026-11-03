@@ -40,7 +40,7 @@ export default function PackageCatalogEditor({settings,receipt}:{settings:Packag
    </RecoverableForm></details>)}
   <h2>Layanan &amp; Harga per Paket</h2><p className="admin-hint">Satu nama layanan, tiga pilihan paket. Aktifkan hanya paket yang memang tersedia dan isi tarif resmi Owner; harga dan durasi contoh tidak diisi otomatis.</p>
   {settings.legacy.length>0&&<p className="member-note">{settings.legacy.length} record katalog lama tetap tersimpan dan tidak diubah. Saat menambah layanan, Owner dapat memilih record lama untuk dipetakan ke tarif paket, tanpa menyalin harga secara otomatis.</p>}
-  {settings.families.length===0&&<p className="member-note">Belum ada layanan paket. Pilih Tambah layanan dengan paket untuk membuat satu layanan utama dan mengisi tarif tiap paket.</p>
+  {settings.families.length===0&&<p className="member-note">Belum ada layanan paket. Pilih Tambah layanan dengan paket untuk membuat satu layanan utama dan mengisi tarif tiap paket.</p>}
   <details><summary>+ Tambah layanan dengan paket</summary><FamilyForm family={{}} packages={settings.packages} legacy={settings.legacy}/></details>
   {settings.families.map(f=><details key={f.id}><summary>{f.name} · {f.category} · {f.unit} · {f.active?'Aktif':'Nonaktif'}</summary><FamilyForm family={f} packages={settings.packages}/></details>)}
   {!settings.enabled&&<RecoverableForm action={enablePackageWorkflow}><p>Aktifkan katalog paket hanya setelah durasi, harga, dan ketersediaan layanan disahkan Owner. Tindakan ini tidak mengubah flag transaksi maupun pembayaran Production.</p><PendingSubmit label="Gunakan katalog paket untuk nota baru"/></RecoverableForm>}
