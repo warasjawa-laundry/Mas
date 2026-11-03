@@ -96,7 +96,7 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
       </section>
       </div>
       <aside className={styles.accessNote} aria-labelledby="cashier-access-note"><h2 id="cashier-access-note">Akses dan sesi kasir</h2>
-        <p>Kasir membuka <Link href="/admin/login?role=kasir">halaman masuk kasir</Link> dengan ID miliknya. Anda dapat mengubah izin atau mencabut seluruh sesi kapan saja. Sesi berlaku maksimal 12 jam.</p>
+        <p>Kasir membuka <Link prefetch={false} href="/admin/login?role=kasir">halaman masuk kasir</Link> dengan ID miliknya. Anda dapat mengubah izin atau mencabut seluruh sesi kapan saja. Sesi berlaku maksimal 12 jam.</p>
         <p>ID empat angka mudah ditebak. Bagikan hanya kepada pegawai. Sistem membatasi percobaan masuk dan mencatat sesi. Kasir tidak dapat mengelola akun manajer, data pelanggan, atau poin melalui hak admin.</p>
         <p>Status pembayaran mengikuti pengaturan outlet. Nota uji selalu berlabel simulasi.</p>
       </aside>

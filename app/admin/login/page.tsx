@@ -14,8 +14,8 @@ export default async function OwnerLogin({searchParams}:Props){
   <div className="binatu-login-banner binatu-pattern" aria-hidden="true"/>
   <div className="binatu-login-brand"><span className="binatu-login-mark"><img src="/pos/laundry-mark.svg" width="36" height="36" alt=""/></span><div><strong>Mas Jawa Laundry</strong><span>Paiton</span></div></div>
   <nav className="binatu-login-tabs" aria-label="Pilih jenis login">
-   <Link href="/admin/login?role=owner" aria-current={!cashier?"page":undefined}>Manajer</Link>
-   <Link href="/admin/login?role=kasir" aria-current={cashier?"page":undefined}>Kasir</Link>
+   <Link prefetch={false} href="/admin/login?role=owner" aria-current={!cashier?"page":undefined}>Manajer</Link>
+   <Link prefetch={false} href="/admin/login?role=kasir" aria-current={cashier?"page":undefined}>Kasir</Link>
   </nav>
   <div className="binatu-login-fields">
    <h1 id="login-heading">{cashier?"Masuk Kasir":"Masuk Manajer"}</h1>

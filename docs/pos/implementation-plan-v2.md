@@ -552,3 +552,7 @@ Perbaikan: preflight mensyaratkan pilot explicit OFF dan test-order-count 0 untu
 - Kontak penguji sendiri yang menyetujui pesan kini boleh diverifikasi dan dipakai pada tautan wa.me. Marker simulasi, larangan member/point-link, pengecekan actor/izin/consent dan idempotency tetap berlaku. Pengguna menekan Kirim di WhatsApp, tanpa API auto-send. Ini memperbarui larangan seluruh kontak uji pada checkpoint sebelumnya.
 - Owner mengizinkan penghapusan nota uji lama. Satu nota dan payment/cash dummy telah dipindahkan dari operasional ke arsip private ber-checksum, command tombstone tetap ada; bukan izin menghapus member/kartu/poin atau sweep otomatis. Snapshot operasional 0 nota/payment/cash, arsip 1, 0 POS point-link; hash empat dataset legacy tetap sama, flags pilot tidak berubah.
 - Migrasi 20261103210502 diuji QA lalu Production. 299 Node, 96 browser, typecheck/build dan tujuh SQL QA PASS. CI replay 42 migrasi/restore sintetis/race tetap wajib. Scope, penjagaan restore/rollback dan bukti ada pada [master audit existing](./master-audit-20261102.md); G8 riil tetap NO_GO.
+
+## Koreksi sesi sebelum Simpan Kasir — 3 November 2026
+
+Bug lanjutan Simpan Kasir direproduksi: login-prefetch mencabut sesi sebelum action berjalan. Link login prefetch=false dan proxy tidak mengubah cookie/Auth untuk prefetch; actual login tetap reset. Regresi berurutan proxy → Owner verification → save → explicit login → deny write ditambahkan. Tidak ada migrasi atau dummy employee Production; G8 real Auth/physical acceptance tetap terbuka.

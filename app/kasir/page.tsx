@@ -14,11 +14,11 @@ export default async function CashierHome({searchParams}:{searchParams:Promise<{
  const [session,params]=await Promise.all([getCashierSession(),searchParams]);
  if(!session)return <main className="mj-login-screen">
   <section className="mj-login-card"><div className="mj-login-banner" aria-hidden="true"/><div className="mj-login-brand"><span className="mj-brand-mark"><img src="/pos/laundry-mark.svg" width="38" height="38" alt=""/></span><strong>Mas Jawa Laundry</strong></div>
-   <nav className="mj-login-tabs" aria-label="Jenis pengguna"><Link href="/admin/login?role=owner">MANAJER</Link><span aria-current="page">KASIR</span></nav>
+   <nav className="mj-login-tabs" aria-label="Jenis pengguna"><Link prefetch={false} href="/admin/login?role=owner">MANAJER</Link><span aria-current="page">KASIR</span></nav>
    <div className="mj-login-fields"><h1>Masuk Kasir</h1><p>Gunakan ID kasir yang diberikan manajer laundry.</p>
     {params.error&&<p role="alert" className="mj-pos-notice">{params.error==="unavailable"?"Login kasir belum tersedia pada database aktif.":"ID tidak dikenal, tidak aktif, atau terlalu banyak percobaan."}</p>}
     <form action={loginCashier}><label htmlFor="cashier-username">ID Kasir</label><input id="cashier-username" name="username" autoComplete="off" spellCheck={false} type="text" placeholder="MAS-2001" maxLength={8} pattern="MAS-[0-9]{4}" required/><button type="submit">Masuk</button></form>
-    <Link href="/admin/login?role=owner">Masuk sebagai pemilik</Link></div>
+    <Link prefetch={false} href="/admin/login?role=owner">Masuk sebagai pemilik</Link></div>
   </section>
  </main>;
  const jar=await cookies();

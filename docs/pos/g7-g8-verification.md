@@ -53,3 +53,7 @@ Replay CI kini mencakup 42 migrasi dan fixture retire setelah synthetic restore.
 CI 41668917004 pada c957d22 menolak top-level LOCK TABLE saat psql autocommit replay. Penguncian serta disable/rename/enable username trigger dipindahkan ke satu DO atomik; schema hasil API QA/Production tetap sama dan tidak menjalankan ulang retire. Perbaikan packaging ini wajib dibuktikan oleh replay CI berikutnya.
 
 Replay migrasi dan seluruh fixture SQL pada e0140e7 lulus, tetapi CI 41669192881 menemukan loop for tergandakan saat fixture retire ditambahkan pada script synthetic restore. Loop diperbaiki menjadi satu daftar regresi dan diperiksa dengan bash -n sebelum CI berikutnya; cakupan fixture tidak dikurangi.
+
+## Koreksi sesi sebelum Simpan Kasir — 3 November 2026
+
+RED di source dan probe HTTP Production terkonfirmasi: GET login dengan header Next prefetch mengirim Set-Cookie penghapusan Owner. Tes baru menjalankan proxy, pemeriksa Owner dan save action berurutan dengan Auth/RPC sintetis: Next/purpose/sec-purpose prefetch mempertahankan sesi, save mencapai RPC sekali, intentional login mencabut sesi dan write berikutnya ditolak. Seluruh 300 Node lokal PASS; TypeScript/build dan regresi browser diverifikasi pada integrasi. Ini tidak diklaim sebagai real Auth UAT pengguna.

@@ -41,6 +41,13 @@ export async function proxy(request:NextRequest){
  const path=request.nextUrl.pathname;
  const leave=path==="/admin/leave";
  const login=path==="/admin/login";
+ const loginPrefetch=login&&request.method==="GET"&&(
+   request.headers.get("next-router-prefetch")==="1"||
+   request.headers.get("purpose")==="prefetch"||
+   request.headers.get("sec-purpose")?.split(/[;,\s]+/).includes("prefetch")
+ );
+ // Link speculation is not a visit to login and must not revoke the current owner.
+ if(loginPrefetch)return NextResponse.next({request});
  const document=isDocumentEntry(request);
  const reenter=isPublicToAdminRouterEntry(request);
  const incomingEntry=request.cookies.get(ADMIN_ENTRY_COOKIE)?.value;
