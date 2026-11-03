@@ -95,3 +95,5 @@ Seluruh baris tetap BLOCKED / PHYSICAL_UAT_REQUIRED sampai bukti nyata tersedia.
 280 tes Node PASS; TypeScript dan build PASS; 14 tes browser fixture PASS pada 320/390/1440px. Lima migrasi canonical baru QA saja. Recovery menyimpan UUID saja, memulihkan hasil aktor yang sama dan memeriksa izin tiap operasi. Cancel owner/kasir meminta alasan/versi, menolak dana belum direfund. Synthetic restore, race dua koneksi dan deployment SHA baru menunggu CI; status gate tidak dinaikkan.
 
 Tambahan rencana v1.1 diterima: empat tahap, satu paket per nota, paket global dan WA dinamis. Audit ulang dan implementasi dilaksanakan setelah paket ini stabil; lihat service-duration-whatsapp-plan-v1.1.md. Tarif contoh bukan konfigurasi resmi.
+
+CI b6153db: replay semua migrasi dan regresi SQL PASS; synthetic restore FAIL pada representasi ACL owner (explicit default vs NULL), bukan perubahan hak aplikasi/data. Comparator diperbaiki untuk acldefault; hasil ulang masih menunggu.

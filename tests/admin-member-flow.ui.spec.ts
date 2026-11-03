@@ -9,7 +9,7 @@ const realRequire=createRequire(process.cwd()+"/package.json");
 function component(path:string,extra:Record<string,unknown>={}){
  const source=ts.transpileModule(readFileSync(path,"utf8"),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText;
  const output={exports:{} as {default:(p:Record<string,unknown>)=>ReactNode}};
- const mocks:Record<string,unknown>={"next/link":{default:({prefetch,...p}:Record<string,unknown>)=>createElement("a",p)},"@/lib/laundry/card":{memberNumber:(n:number)=>"MJL-"+String(n).padStart(6,"0")},...extra};
+ const mocks:Record<string,unknown>={"next/navigation":{useRouter:()=>({push:()=>{},refresh:()=>{}})},"next/link":{default:({prefetch,...p}:Record<string,unknown>)=>createElement("a",p)},"@/lib/laundry/card":{memberNumber:(n:number)=>"MJL-"+String(n).padStart(6,"0")},...extra};
  runInNewContext(source,{require:(n:string)=>mocks[n]??realRequire(n),exports:output.exports,module:output,Intl,Date});return output.exports.default;
 }
 const Directory=component("components/admin/member-directory-list.tsx");

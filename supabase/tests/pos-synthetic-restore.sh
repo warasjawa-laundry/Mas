@@ -17,7 +17,7 @@ fingerprint(){
   printf '%s ' "$table"
   psql -XAt --dbname="$database" -v ON_ERROR_STOP=1 -c "select count(*)||':'||md5(coalesce(string_agg(to_jsonb(t)::text,'' order by to_jsonb(t)::text),'')) from $table t"
  done
- psql -XAt --dbname="$database" -v ON_ERROR_STOP=1 -c "select n.nspname,c.relname,c.relrowsecurity,coalesce(c.relacl::text,'') from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','auth','laundry_private') and c.relkind='r' order by 1,2"
+ psql -XAt --dbname="$database" -v ON_ERROR_STOP=1 -c "select n.nspname,c.relname,c.relrowsecurity,coalesce(c.relacl,pg_catalog.acldefault('r',c.relowner))::text from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','auth','laundry_private') and c.relkind='r' order by 1,2"
 }
 fingerprint laundry_qa_ci >"$tmp/before"
 fingerprint laundry_qa_restore_ci >"$tmp/after"
