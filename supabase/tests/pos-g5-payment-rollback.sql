@@ -16,7 +16,7 @@ declare
 begin
  select id into strict v_outlet from public.laundry_pos_outlets where code='MJL' and not write_enabled;
  if (select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace
- where n.nspname='public' and c.relname like 'laundry_pos_%' and c.relkind='r' and c.relrowsecurity)<>20 then
+ where n.nspname='public' and c.relname like 'laundry_pos_%' and c.relkind='r' and c.relrowsecurity)<>22 then
  raise exception 'G5 RLS protection count mismatch';end if;
  if has_table_privilege('anon','public.laundry_pos_payments','insert')
  or has_table_privilege('authenticated','public.laundry_pos_point_links','insert') then

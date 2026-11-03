@@ -10,18 +10,16 @@ export const metadata={title:"Tambah Pesanan Manajer | Mas Jawa Laundry",robots:
 export default async function OwnerNewOrder({searchParams}:{searchParams:Promise<{error?:string}>}){
  const {supabase,user}=await requireOwner();
  const [{data,error},params,capabilities]=await Promise.all([
-  supabase.from("laundry_services")
-   .select("id,category,package_name,name,price_idr,unit,duration,revision")
-   .eq("is_visible",true).order("position").limit(200),
+  supabase.rpc("laundry_pos_package_catalog"),
   searchParams,supabase.rpc("laundry_pos_owner_capabilities")
  ]);
- const canWrite=!capabilities.error&&capabilities.data?.write_enabled===true;
+ const canWrite=!capabilities.error&&capabilities.data?.write_enabled===true&&data?.enabled===true;
  return <PosWorkspace title="Tambah Pesanan" category="POS MANAJER"
   backHref="/admin" description="Pilih pelanggan, pindai barcode/QR, tentukan durasi, dan susun layanan pada formulir POS yang sama dengan Kasir.">
    {!canWrite&&<p className="binatu-inline-notice" role="status">Mode pratinjau: pembuatan nota belum aktif. Scan dan pencarian member hanya membaca data; tidak memberikan poin.</p>}
    {params.error&&<p className="binatu-inline-notice" role="alert">Penyimpanan nota masih dikunci untuk melindungi data produksi.</p>}
    {error?<p className="binatu-inline-notice" role="alert">Katalog tidak dapat dimuat. Periksa koneksi dan coba kembali.</p>:
-    <OrderForm services={(data??[]) as CatalogService[]} requestId={randomUUID()} canWrite={canWrite}
+    <OrderForm packageWorkflow services={(data?.services??[]) as CatalogService[]} requestId={randomUUID()} canWrite={canWrite}
      canLookup role="owner" createAction={createOwnerOrder}
      recoveryKey={commandRecoveryKey('owner',user.id,'CREATE_ORDER')} recoverAction={recoverOwnerOrder}/>}
   </PosWorkspace>;

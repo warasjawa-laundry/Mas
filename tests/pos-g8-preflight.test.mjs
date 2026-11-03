@@ -39,7 +39,7 @@ test("G8 never passes without owner-actor writes, service-duration policy and ca
 });
 test("QA audit receipt cannot be misinterpreted as Production readiness",()=>{
  assert.equal(receipt.productionPosTables,0);
- assert.equal(receipt.qaReadOnlyReceipt.posTables,20);
+ assert.equal(receipt.qaReadOnlyReceipt.posTables,22);
  assert.equal(receipt.qaReadOnlyReceipt.writeEnabledOutlets,0);
  assert.equal(receipt.evidence.ownerPosWriteUat.verified,false);
 });

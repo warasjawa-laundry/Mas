@@ -18,3 +18,8 @@ Rollback operasional bukan menghapus semua data POS. Migration additive tetap di
 
 
 **Pemilik tindakan eksternal:** Owner bersama reviewer keamanan/operator jaringan memilih dan menguji trusted workplace network yang benar-benar dibatasi atau kontrol identitas lebih kuat; ID-only known-ID impersonation tidak diselesaikan throttle. Operator DB membuktikan backup/restore produksi aman dan RPO/RTO; Owner+kasir/tester membuktikan real Auth, Android, uang/print dan visual; Owner+pemeriksa keuangan menandatangani cutoff/saldo/piutang/poin; Owner+operator release memberi approval schema dan cutover secara terpisah. Bukti/reviewer/timestamp privat wajib; semua masih BLOCKED sampai tersedia. [Daftar acceptance dan penanggung jawab](./master-audit-20261102.md#tindakan-eksternal-wajib-dan-pemilik-bukti).
+
+
+### Tambahan 3 November 2026
+
+Tambahan bersifat additive. Stop write_enabled dan finance_enabled sesuai prosedur otoritas; jangan DROP keluarga, tarif, snapshot, kontak atau histori. Rollback aplikasi ke commit terverifikasi tidak menghapus ledger. Mode paket dan guard pelunasan tidak dibypass untuk memulihkan UI lama. Uji dump/restore CI memakai data sintetis saja; restore backup produksi masih wajib.

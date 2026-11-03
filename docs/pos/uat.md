@@ -64,3 +64,8 @@
 ## Gate identitas sebelum aktivasi finansial
 
 ID MAS empat angka adalah pengenal publik yang dapat diketahui orang lain. Throttle global hanya membatasi tebakan dan dapat menyebabkan DoS; ia **tidak mencegah impersonation bila ID sudah diketahui**. Owner bersama reviewer keamanan/operator jaringan wajib memilih dan menguji kontrol yang memadai, misalnya akses dari trusted workplace network yang benar-benar dibatasi atau identitas yang lebih kuat. Simpan keputusan, batas ancaman, negative test akses tak berhak dan reviewer sebagai bukti privat sebelum finance. Tidak ada perubahan kontrol tersebut yang dianggap telah diterapkan dari dokumen ini. Daftar siapa/bukti penutupan ada pada [master audit](./master-audit-20261102.md#tindakan-eksternal-wajib-dan-pemilik-bukti).
+
+
+### Tambahan 3 November 2026
+
+Uji tambahan: empat tahap, satu paket dan konfirmasi ganti paket; edit durasi/harga tidak mengubah nota lama; DP→pelunasan→poin ledger→WA baru; unpaid/DP/refund/zero tidak dapat diserahkan; histori aktor dan nota Sudah Diambil tetap dapat dicetak. Android kamera/galeri, WA terpasang dan printer nyata: PHYSICAL_UAT_REQUIRED.

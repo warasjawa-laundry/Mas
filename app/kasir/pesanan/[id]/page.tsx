@@ -14,9 +14,10 @@ import PendingSubmit from "@/components/admin/pending-submit";
 import {commandRecoveryKey} from "@/lib/pos/command-recovery";
 import {recoverCashierCommand} from "../recovery-actions";
 
+import OrderTimeline,{type OrderEvent} from "@/components/pos/order-timeline";
 export const dynamic="force-dynamic";
 type Item={service_name:string;unit:string;quantity_milli:number;price_idr:number;line_total_idr:number;duration?:string;package_name?:string;due_at?:string|null};
-type Order={id:string;invoice_no:string;customer_name:string;total_idr:string;work_status:string;lifecycle_status:string;created_at:string;perfume:string|null;notes:string|null;created_staff_id:string;items:Item[];due_at?:string|null};
+type Order={id:string;invoice_no:string;customer_name:string;total_idr:string;work_status:string;lifecycle_status:string;created_at:string;perfume:string|null;notes:string|null;created_staff_id:string;items:Item[];events?:OrderEvent[];due_at?:string|null};
 type Receipt={id:string;type:'RECEIPT'|'REFUND';method:'CASH'|'NONCASH';amount_idr:string;at:string};
 type Finance={order_id:string;total_idr:string;paid_idr:string;refunded_idr:string;remaining_idr:string;payment_status:'UNPAID'|'PARTIAL'|'PAID'|'REFUNDED'|'ZERO_TOTAL';version:number;shift_open:boolean;finance_enabled?:boolean;receipts:Receipt[]};
 type Search={error?:string;saved?:string;retry?:string;amount?:string;method?:string;version?:string;retryRefund?:string;reason?:string};
@@ -38,7 +39,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
  }
  const o=detail.data as Order;
  const f=summary.error||!summary.data||typeof summary.data!=="object"||!summary.data.payment_status?null:summary.data as Finance;
- const target=o.lifecycle_status!=='CONFIRMED'?null:o.work_status==='QUEUED'?'READY':o.work_status==='READY'?'COLLECTED':null;
+ const target=o.lifecycle_status!=='CONFIRMED'?null:o.work_status==='QUEUED'?'PROCESSING':o.work_status==='PROCESSING'?'READY':o.work_status==='READY'?'COLLECTED':null;
  const canCollect=hasCashierGrant(access.session.permissions,'payment_collect');
  const canRefund=hasCashierGrant(access.session.permissions,'refund_full');
  const wantsRetry=query.error==='payment-unconfirmed'&&!!query.retry&&uuid.test(query.retry);
@@ -119,15 +120,15 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
     {!canFinance&&<p className={styles.warning} role="status">Transaksi finansial POS masih dikunci. Nota dan riwayat tetap dapat dilihat, tetapi pembayaran dan refund belum bisa diproses.</p>}
    </>}
   </section>
-  <section className={styles.card}><h2>Status cucian</h2>
-   <p>Proses: <strong>{o.work_status==='READY'?'Siap diambil':o.work_status==='COLLECTED'?'Sudah diambil':'Antrian'}</strong></p>
+  <section className={styles.card}><h2>Status cucian</h2><p className={styles.muted}>Serah terima hanya setelah lunas. Nota gratis, refund dan sengketa memerlukan kebijakan terpisah.</p>
+   <p>Proses: <strong>{o.work_status==='PROCESSING'?'Diproses':o.work_status==='READY'?'Siap diambil':o.work_status==='COLLECTED'?'Sudah diambil':'Antrian'}</strong></p>
    <p className={styles.muted}>Status pengerjaan dicatat terpisah dari pembayaran.</p>
    {hasCashierGrant(access.session.permissions,'order_work')&&<RecoverableForm action={advanceWorkStatus}
     recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'SET_WORK',o.id)} recoverAction={recoverCashierCommand.bind(null,'SET_WORK',o.id)}>
     {target&&<>
     <input name="orderId" type="hidden" value={o.id}/><input name="requestId" type="hidden" value={randomUUID()}/>
     <input name="target" type="hidden" value={target}/>
-    <PendingSubmit className={styles.mainButton} disabled={!canWrite} label={`Ubah ke ${target==='READY'?'Siap Diambil':'Sudah Diambil'}`}/>
+    <PendingSubmit className={styles.mainButton} disabled={!canWrite||(target==='COLLECTED'&&f?.payment_status!=='PAID')} label={`Ubah ke ${target==='PROCESSING'?'Mulai proses':target==='READY'?'Siap Diambil':'Sudah Diambil'}`}/>
    </>}</RecoverableForm>}
    {f&&hasCashierGrant(access.session.permissions,'order_work')&&<RecoverableForm action={cancelCashierOrder}
     recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'CANCEL',o.id)} recoverAction={recoverCashierCommand.bind(null,'CANCEL',o.id)}>
@@ -141,7 +142,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
     </details>}
    </RecoverableForm>}
   </section>
-  </div>
-  {hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft invoice={o.invoice_no} customer={o.customer_name} workStatus={o.work_status} total={money(o.total_idr)}/>}
+  <section className={styles.card}><OrderTimeline events={o.events??[]}/></section></div>
+  {o.lifecycle_status==='CONFIRMED'&&hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft key={o.id} role="cashier" orderId={o.id} workStatus={o.work_status} version={f?.version??0}/>}
  </main>;
 }

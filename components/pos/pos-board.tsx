@@ -7,13 +7,13 @@ import { site } from "@/lib/site";
 import type {CashierGrants,CashierPermission} from "@/lib/pos/cashier-permissions";
 export type { PosRow } from "@/lib/pos/board";
 type Props = { role: "owner" | "cashier"; tab?: string; view?: string; orders?: PosRow[]; memberCount?: string | null; transactionCount?: string | null; dbReady?: boolean; writeEnabled?: boolean; permissions?:CashierGrants };
-const tabs: { key: BoardTab; label: string }[] = [{ key: "queue", label: "Antrian" }, { key: "ready", label: "Siap Ambil" }, { key: "unpaid", label: "Belum Bayar" }];
+const tabs: { key: BoardTab; label: string }[] = [{ key: "queue", label: "Antrian" }, { key: "ready", label: "Siap Ambil" }, { key: "unpaid", label: "Belum Bayar" }, {key:"collected",label:"Sudah Diambil"}];
 
 export default function PosBoard({ role, tab = "queue", view, orders = [], memberCount, transactionCount, dbReady = false, writeEnabled = false,permissions }: Props) {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const owner = role === "owner", base = owner ? "/admin" : "/kasir";
-  const active: BoardTab = tab === "ready" || tab === "unpaid" ? tab : "queue";
+  const active: BoardTab = tab === "ready" || tab === "unpaid" || tab === "collected" ? tab : "queue";
   const visible = dbReady ? filterBoardOrders(orders, active, search) : [];
   const selected = visible.find(order => order.id === selectedId) ?? visible[0] ?? null;
   const menu = view === "menu", addHref = owner ? "/admin/pesanan/baru" : "/kasir/pesanan/baru";
@@ -60,7 +60,7 @@ export default function PosBoard({ role, tab = "queue", view, orders = [], membe
       </section><section className="binatu-detail-pane" aria-label="Ringkasan nota terpilih">
         {selected ? <><header className="binatu-detail-title"><div><p>RINCIAN PESANAN</p><h2>{selected.invoice_no}</h2></div><span className={"binatu-payment-badge " + (selected.payment_status === "PAID" ? "is-paid" : "")}>{paymentLabel(selected.payment_status)}</span></header>
           <div className="binatu-customer-summary"><span><PosIcon name="people" size={27} /></span><div><small>Pelanggan</small><h3>{selected.customer_name}</h3><p>{boardDate(selected.created_at)}</p></div></div>
-          <dl className="binatu-note-facts"><div><dt>Status cucian</dt><dd>{selected.work_status === "READY" ? "Siap Ambil" : selected.work_status === "COLLECTED" ? "Sudah Diambil" : "Antrian"}</dd></div><div><dt>Pembayaran</dt><dd>{paymentLabel(selected.payment_status)}</dd></div></dl>
+          <dl className="binatu-note-facts"><div><dt>Status cucian</dt><dd>{selected.work_status === "PROCESSING" ? "Diproses" : selected.work_status === "READY" ? "Siap Ambil" : selected.work_status === "COLLECTED" ? "Sudah Diambil" : "Antrian"}</dd></div><div><dt>Pembayaran</dt><dd>{paymentLabel(selected.payment_status)}</dd></div></dl>
           <div className="binatu-total-summary"><span>Total tagihan</span><strong>{boardMoney(selected.total_idr)}</strong></div><p className="binatu-detail-help">Lihat rincian layanan, riwayat pembayaran, dan tindakan pesanan pada nota.</p><Link href={detailBase + selected.id} className="binatu-button binatu-detail-action" prefetch={false}><PosIcon name="receipt" size={20} />Buka Rincian Nota</Link></> :
           <div className="binatu-detail-placeholder"><img src="/pos/empty-laundry.svg" width="300" height="208" alt="" /><h2>Rincian pesanan</h2><p>Pilih nota pada daftar untuk melihat ringkasannya.</p></div>}
       </section></div>

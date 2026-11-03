@@ -7,13 +7,15 @@ import RecoverableForm from "@/components/admin/recoverable-form";
 import PendingSubmit from "@/components/admin/pending-submit";
 import {commandRecoveryKey} from "@/lib/pos/command-recovery";
 import {formatIdr} from "@/lib/pos/g4-order";
+import {WhatsAppDraft} from "@/app/kasir/pesanan/[id]/whatsapp-draft";
 import {PrintButton} from "@/app/kasir/pesanan/[id]/print-button";
 import {collectOwnerPayment,refundOwnerOrder,openOwnerShift,advanceOwnerWork,cancelOwnerOrder,recoverOwnerOperation} from "../operations-actions";
 import styles from "@/app/kasir/pesanan/orders.module.css";
+import OrderTimeline,{type OrderEvent} from "@/components/pos/order-timeline";
 export const dynamic="force-dynamic";
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type Item={service_name:string;unit:string;quantity_milli:number;price_idr:string|number;line_total_idr:string|number;duration?:string;package_name?:string;due_at?:string|null};
-type Row={id:string;invoice_no:string;customer_name:string;created_at:string;total_idr:string|number;work_status:string;payment_status:string;items:Item[];due_at?:string|null};
+type Row={id:string;invoice_no:string;customer_name:string;created_at:string;total_idr:string|number;work_status:string;payment_status:string;items:Item[];events?:OrderEvent[];lifecycle_status?:string;due_at?:string|null};
 type Receipt={id:string;type:string;method:string;amount_idr:string;at:string};
 type Finance={total_idr:string;paid_idr:string;refunded_idr:string;remaining_idr:string;payment_status:string;version:number;shift_open:boolean;receipts:Receipt[]};
 const date=(value:string)=>new Date(value).toLocaleString("id-ID",{timeZone:"Asia/Jakarta"})+" WIB";
@@ -32,10 +34,10 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  const support=!capabilities.error&&capabilities.data?.owner_operations===true;
  const canWrite=support&&capabilities.data?.write_enabled===true;
  const canFinance=canWrite&&capabilities.data?.finance_enabled===true;
- const target=row?.work_status==="QUEUED"?"READY":row?.work_status==="READY"?"COLLECTED":null;
- const showPay=finance&&["UNPAID","PARTIAL"].includes(finance.payment_status)&&/^[1-9][0-9]*$/.test(finance.remaining_idr);
- const refundable=finance&&finance.receipts.some(r=>r.type==="RECEIPT")&&finance.payment_status!=="REFUNDED";
- const cancellable=finance&&(finance.paid_idr==="0"||finance.paid_idr===finance.refunded_idr);
+ const target=row?.lifecycle_status!=="CONFIRMED"?null:row?.work_status==="QUEUED"?"PROCESSING":row?.work_status==="PROCESSING"?"READY":row?.work_status==="READY"?"COLLECTED":null;
+ const showPay=row?.lifecycle_status==="CONFIRMED"&&finance&&["UNPAID","PARTIAL"].includes(finance.payment_status)&&/^[1-9][0-9]*$/.test(finance.remaining_idr);
+ const refundable=row?.lifecycle_status==="CONFIRMED"&&finance&&finance.receipts.some(r=>r.type==="RECEIPT")&&finance.payment_status!=="REFUNDED";
+ const cancellable=row?.lifecycle_status==="CONFIRMED"&&finance&&(finance.paid_idr==="0"||finance.paid_idr===finance.refunded_idr);
  return <PosWorkspace title={row?row.invoice_no:"Rincian Pesanan"} category="POS MANAJER" backHref="/admin" description="Nota dan transaksi melalui sesi Owner.">
  {!row?<><p role="status" className="binatu-inline-notice">Rincian nota belum tersedia atau pesanan sudah dibatalkan.</p>
  <RecoverableForm action={cancelOwnerOrder} recoveryKey={commandRecoveryKey('owner',user.id,'CANCEL',id)} recoverAction={recoverOwnerOperation.bind(null,'CANCEL',id)}>{null}</RecoverableForm>
@@ -83,12 +85,12 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <PendingSubmit className={styles.dangerButton} disabled={!canFinance||!finance.shift_open} label="Konfirmasi refund penuh"/></>}</RecoverableForm>
  </>}
  </section>
- <section className={styles.card}><h2>Status cucian</h2><p><strong>{row.work_status==="READY"?"Siap diambil":row.work_status==="COLLECTED"?"Sudah diambil":"Antrian"}</strong></p>
+ <section className={styles.card}><h2>Status cucian</h2><p className={styles.muted}>Serah terima hanya setelah lunas. Nota gratis, refund dan sengketa memerlukan kebijakan terpisah.</p><p><strong>{row.work_status==="PROCESSING"?"Diproses":row.work_status==="READY"?"Siap diambil":row.work_status==="COLLECTED"?"Sudah diambil":"Antrian"}</strong></p>
  <RecoverableForm action={advanceOwnerWork} className={target?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'SET_WORK',id)} recoverAction={recoverOwnerOperation.bind(null,'SET_WORK',id)}>
  {target&&<>
  <input type="hidden" name="requestId" value={randomUUID()}/><input type="hidden" name="orderId" value={id}/><input type="hidden" name="target" value={target}/>
- <PendingSubmit className={styles.mainButton} disabled={!canWrite} label={target==="READY"?"Ubah ke Siap Diambil":"Ubah ke Sudah Diambil"}/></>}</RecoverableForm>
+ <PendingSubmit className={styles.mainButton} disabled={!canWrite||(target==="COLLECTED"&&finance?.payment_status!=="PAID")} label={target==="PROCESSING"?"Mulai proses":target==="READY"?"Ubah ke Siap Diambil":"Ubah ke Sudah Diambil"}/></>}</RecoverableForm>
  <RecoverableForm action={cancelOwnerOrder} className={finance&&cancellable?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'CANCEL',id)} recoverAction={recoverOwnerOperation.bind(null,'CANCEL',id)}>
  {finance&&cancellable&&<><h3>Batalkan pesanan</h3>
@@ -96,7 +98,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <label>Alasan pembatalan<input name="reason" required minLength={3} maxLength={300}/></label>
  <PendingSubmit className={styles.dangerButton} disabled={!canWrite} label="Konfirmasi pembatalan"/></>}</RecoverableForm>
  {finance&&!cancellable&&<p className={styles.warning}>Ada dana diterima. Lakukan refund penuh sebelum membatalkan pesanan.</p>}
- </section></div></>}
+ </section><section className={styles.card}><OrderTimeline events={row.events??[]}/></section></div>{row.lifecycle_status==="CONFIRMED"&&<WhatsAppDraft key={id} role="owner" orderId={id} workStatus={row.work_status} version={finance?.version??0}/>}</>}
  <Link className="binatu-button binatu-button-soft" href="/admin">Kembali ke Pesanan</Link>
  </PosWorkspace>;
 }

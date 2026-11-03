@@ -21,5 +21,5 @@
 /* G8 UX: per-service duration stays visible next to each catalog price, including on phones. */
 .serviceInfo .serviceDuration{display:inline-flex;align-items:center;gap:5px;background:#fff8db;color:#6a4b00;border-radius:7px;padding:4px 8px;font-size:11px;font-weight:700;margin:2px 0 7px}
 
-/* Three-step wizard: avoid the empty desktop column formerly used by the duration panel. */
+/* Keep the customer form full width when the package panel is absent. */
 .catalogColumn>.customerPanel{grid-column:1 / -1}

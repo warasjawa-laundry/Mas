@@ -2,13 +2,13 @@ export type PosRow = {
   id: string; invoice_no: string; customer_name: string; total_idr: string | number;
   work_status: string; payment_status: string; created_at: string;
 };
-export type BoardTab = "queue" | "ready" | "unpaid";
+export type BoardTab = "queue" | "ready" | "unpaid" | "collected";
 
 export function filterBoardOrders(orders: PosRow[], tab: BoardTab, search = "") {
   const query = search.trim().slice(0, 80).toLocaleLowerCase("id-ID");
   return orders.filter(order => {
-    const matchesStatus = tab === "ready" ? order.work_status === "READY" :
-      tab === "unpaid" ? ["UNPAID", "PARTIAL"].includes(order.payment_status) : order.work_status === "QUEUED";
+    const matchesStatus = tab === "collected" ? order.work_status === "COLLECTED" : tab === "ready" ? order.work_status === "READY" :
+      tab === "unpaid" ? ["UNPAID", "PARTIAL"].includes(order.payment_status) : ["QUEUED","PROCESSING"].includes(order.work_status);
     return matchesStatus && (!query || order.customer_name.toLocaleLowerCase("id-ID").includes(query) || order.invoice_no.toLocaleLowerCase("id-ID").includes(query));
   });
 }

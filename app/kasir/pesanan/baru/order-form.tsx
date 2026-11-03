@@ -14,21 +14,28 @@ import {resolveCashierMemberCode} from "./qr-actions";
 import {resolveOwnerPosMemberCode} from "@/app/admin/pesanan/member-actions";
 import type {CommandActionResult} from "@/lib/pos/command-recovery";
 
-export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number};
+export type CatalogService={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;revision:number;duration_package_code?:string};
 const money=(n:string|number|bigint)=>formatIdr(n);
-const steps=["Pelanggan","Layanan","Konfirmasi"];
+const legacySteps=["Pelanggan","Layanan","Konfirmasi"];
 
 function CreateOrderButton({disabled}:{disabled:boolean}){
  const {pending}=useFormStatus();
  return <button className={styles.primary} disabled={disabled||pending} aria-busy={pending} type="submit">{pending?'Menyimpan pesanan…':'Buat pesanan'}</button>;
 }
 
-export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction}:{
+export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",createAction,recoveryKey,recoverAction,packageWorkflow=false}:{
  services:CatalogService[];requestId:string;canWrite:boolean;canLookup:boolean;role?:"owner"|"cashier";
  createAction?:(form:FormData)=>Promise<CommandActionResult>;
- recoveryKey?:string;recoverAction?:(requestId:string)=>Promise<CommandActionResult>;
+ packageWorkflow?:boolean;recoveryKey?:string;recoverAction?:(requestId:string)=>Promise<CommandActionResult>;
 }){
+ const steps=packageWorkflow?["Pelanggan","Durasi","Layanan","Konfirmasi"]:legacySteps;
+ const servicesStep=packageWorkflow?2:1,summaryStep=packageWorkflow?3:2;
  const [step,setStep]=useState(0);
+ const [packageCode,setPackageCode]=useState("");
+ const [pendingPackage,setPendingPackage]=useState("");
+ const packages=useMemo(()=>[...new Map(services.filter(s=>s.duration_package_code).map(s=>[s.duration_package_code!,{code:s.duration_package_code!,name:s.package_name,duration:s.duration}])).values()],[services]);
+ function choosePackage(code:string){if(code===packageCode)return;if(Object.values(quantities).some(Boolean)){setPendingPackage(code);return;}setPackageCode(code);}
+
  const [recoveryPending,setRecoveryPending]=useState(false);
  const [customerType,setCustomerType]=useState<"guest"|"member">("guest");
  const [name,setName]=useState("");
@@ -43,7 +50,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
  const [search,setSearch]=useState("");
  const [category,setCategory]=useState("");
  const title=useRef<HTMLHeadingElement>(null);
- const available=services;
+ const available=packageWorkflow?services.filter(s=>s.duration_package_code===packageCode):services;
  const categories=useMemo(()=>[...new Set(available.map(s=>s.category))],[available]);
  const activeCategory=categories.includes(category)?category:'';
  const visible=available.filter(s=>(!activeCategory||s.category===activeCategory)&&`${s.name} ${s.package_name} ${s.duration}`.toLocaleLowerCase('id').includes(search.toLocaleLowerCase('id')));
@@ -55,7 +62,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
  const customerValid=customerType==="guest"?name.trim().length>=2:/^[1-9][0-9]{0,11}$/.test(member)&&memberName.length>0;
  const customerLabel=customerType==='guest'?name.trim():memberName||`Member MJL #${member}`;
  const items=JSON.stringify(chosen.map(s=>({service_id:s.id,quantity:quantities[s.id],revision:Number(s.revision)})));
- const canContinue=canAdvanceOrderStep(step,customerValid,available.length>0,!!quote);
+ const canContinue=packageWorkflow?(step===0?customerValid:step===1?!!packageCode:!!quote):canAdvanceOrderStep(step,customerValid,available.length>0,!!quote);
  function go(next:number){setStep(next);queueMicrotask(()=>title.current?.focus())}
  function pickMember(number:string,label:string){
   lookupSequence.current++;setMember(number);setMemberName(label);setMemberError("");setMemberBusy(false);
@@ -103,8 +110,14 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
        {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-{member.padStart(6,"0")}</span></p>}</>}
      <p className={styles.help}>Periksa identitas pelanggan. Data akan diverifikasi kembali saat nota dibuat.</p>
     </section>
-    <section className={`${styles.panel} ${styles.catalogPanel} ${step!==1?styles.mobileHidden:''}`} aria-labelledby="services-title">
-     <div className={styles.sectionHeading}><h2 id="services-title">Pilih layanan & durasi</h2><span>02</span></div>
+    {packageWorkflow&&<section className={`${styles.panel} ${step!==1?styles.mobileHidden:''}`} aria-labelledby="package-title">
+     <div className={styles.sectionHeading}><h2 id="package-title">Pilih paket durasi</h2><span>02</span></div>
+     <p className={styles.help}>Estimasi memakai jam kalender sejak nota dibuat.</p>
+     {packages.length===0?<p className={styles.warn}>Paket belum dikonfigurasi Owner. Tarif contoh tidak digunakan.</p>:<div className={styles.segment}>{packages.map(p=><label key={p.code}><input type="radio" name="duration-package" checked={packageCode===p.code} onChange={()=>choosePackage(p.code)}/>{p.name} · {p.duration}</label>)}</div>}
+     {pendingPackage&&<div role="alert"><p>Mengganti paket akan mengosongkan pilihan layanan. Periksa tarif paket baru sebelum menambah layanan.</p><button type="button" className={styles.back} onClick={()=>setPendingPackage("")}>Pertahankan pilihan</button><button type="button" className={styles.primary} onClick={()=>{setPackageCode(pendingPackage);setQuantities({});setPendingPackage("");}}>Ganti paket dan pilih ulang</button></div>}
+    </section>}
+    <section className={`${styles.panel} ${styles.catalogPanel} ${step!==servicesStep?styles.mobileHidden:''}`} aria-labelledby="services-title">
+     <div className={styles.sectionHeading}><h2 id="services-title">Pilih layanan & durasi</h2><span>{String(servicesStep+1).padStart(2,"0")}</span></div>
      <label className={styles.search}><span>Cari layanan</span><input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari nama layanan / paket"/></label>
      <div className={styles.categories} aria-label="Kategori layanan"><button type="button" aria-pressed={!activeCategory} onClick={()=>setCategory('')}>Semua</button>{categories.map(c=><button type="button" key={c} aria-pressed={activeCategory===c} onClick={()=>setCategory(c)}>{c||'Lainnya'}</button>)}</div>
      <p className={styles.help}>Ketik jumlah tepat atau gunakan + / −. Gunakan titik untuk desimal, maksimal 3 angka pada kg dan meter.</p>
@@ -117,8 +130,8 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
       </div>})}</div>}
     </section>
    </div>
-   <aside className={`${styles.summaryPanel} ${step!==2&&!recoveryPending?styles.mobileHidden:''}`} aria-labelledby="summary-title">
-    <div className={styles.summaryHead}><h2 id="summary-title">Atur & rincian pesanan</h2><p>Durasi mengikuti masing-masing layanan yang dipilih.</p></div>
+   <aside className={`${styles.summaryPanel} ${step!==summaryStep&&!recoveryPending?styles.mobileHidden:''}`} aria-labelledby="summary-title">
+    <div className={styles.summaryHead}><h2 id="summary-title">Atur & rincian pesanan</h2><p>{packageWorkflow?"Satu paket durasi untuk seluruh layanan pada nota.":"Durasi mengikuti masing-masing layanan yang dipilih."}</p></div>
     <div className={styles.summaryBody}>
      <div className={styles.customerSummary}><small>Pelanggan</small><strong>{customerValid?customerLabel:'Belum dipilih'}</strong></div>
      {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{s.duration||"Durasi belum ditentukan"} · {quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
@@ -139,7 +152,7 @@ export function OrderForm({services,requestId,canWrite,canLookup,role="cashier",
   </div>
   <div className={styles.sticky}>
    <div><small>{customerValid?customerLabel:'Pelanggan belum dipilih'} · {chosen.length} layanan</small><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
-   <div className={styles.controls}>{step>0&&<button type="button" className={styles.back} onClick={()=>go(step-1)}>Kembali</button>}{step<2&&<button type="button" className={styles.primary} disabled={!canContinue} onClick={()=>go(step+1)}>{step===1?'Atur pesanan':'Lanjut'}</button>}</div>
+   <div className={styles.controls}>{step>0&&<button type="button" className={styles.back} onClick={()=>go(step-1)}>Kembali</button>}{step<summaryStep&&<button type="button" className={styles.primary} disabled={!canContinue} onClick={()=>go(step+1)}>{step===servicesStep?'Atur pesanan':'Lanjut'}</button>}</div>
   </div>
  </div>;
 }

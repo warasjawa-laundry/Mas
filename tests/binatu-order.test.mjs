@@ -46,8 +46,8 @@ test('cashier UI keeps payload safeguards and integrated read-only scan',()=>{
  assert.match(form,/CashierQrScanner/);
  assert.match(form,/<CashierQrScanner role=\{role\}/);
  assert.doesNotMatch(form,/awardPoint|postPoint|laundry_record_visit/i);
- assert.match(form,/steps=\["Pelanggan","Layanan","Konfirmasi"\]/);
- assert.match(form,/step<2/);
+ assert.match(form,/steps=packageWorkflow\?\["Pelanggan","Durasi","Layanan","Konfirmasi"\]/);
+ assert.match(form,/step<summaryStep/);
  assert.match(form,/canAdvanceOrderStep/);
  assert.match(form,/stepQuantity/);
  for(const name of ['requestId','kind','guestName','memberNumber','items','perfume','notes'])assert.match(form,new RegExp('name="'+name+'"'));

@@ -28,3 +28,8 @@
 
 
 **Pemilik tindakan eksternal:** Owner bersama reviewer keamanan/operator jaringan memilih dan menguji trusted workplace network yang benar-benar dibatasi atau kontrol identitas lebih kuat; ID-only known-ID impersonation tidak diselesaikan throttle. Operator DB membuktikan backup/restore produksi aman dan RPO/RTO; Owner+kasir/tester membuktikan real Auth, Android, uang/print dan visual; Owner+pemeriksa keuangan menandatangani cutoff/saldo/piutang/poin; Owner+operator release memberi approval schema dan cutover secara terpisah. Bukti/reviewer/timestamp privat wajib; semua masih BLOCKED sampai tersedia. [Daftar acceptance dan penanggung jawab](./master-audit-20261102.md#tindakan-eksternal-wajib-dan-pemilik-bukti).
+
+
+### Tambahan 3 November 2026
+
+Tambahan katalog/WA tidak membuka uang. Setelah approval migrasi produksi terpisah, konfigurasi paket durasi jam kalender dan tarif resmi, petakan record lama, review template asli Owner, baru aktifkan package_workflow_enabled melalui UI. Kedua flag transaksi tetap OFF. Tidak memakai tarif contoh atau transaksi contoh. Cutover finansial/pilot tetap memerlukan bukti G8 dan approval tersendiri.

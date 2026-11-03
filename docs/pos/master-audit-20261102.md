@@ -1,5 +1,22 @@
 # Master audit POS G0–G8 — 2 November 2026
 
+> **Checkpoint 3 November 2026: implementasi aman dan QA selesai secara lokal; CI paket tambahan belum selesai.** 284 tes Node, TypeScript, build Next.js dan 93 tes browser PASS (fixture sintetis, bukan real Auth/physical UAT). Regresi SQL QA lulus secara kolektif, semua perubahan transaksi di-rollback. Lima migrasi tambahan 20261103070000–074000 QA saja; flags write/finance/package-mode tetap OFF. Main c262a7f sudah lulus kedua CI; paket tambahan akan memperoleh SHA dan bukti CI/deployment tersendiri. Matriks di bawah adalah baseline historis; tabel status terkini berikut mengesampingkan kata PROVISIONAL/pending lama yang telah ditutup oleh bukti ini. G8 tetap NO-GO.
+
+| Gate | Status aktual | Bukti implementasi/QA | Acceptance tersisa |
+| --- | --- | --- | --- |
+| G0 | PARTIAL | Baseline main diinspeksi, inventaris schema dan checksums legacy, sumber/revisi tercatat | Inventory/reconciliation bisnis Owner dan SHA final release |
+| G1 | PARTIAL | Owner Auth, current cashier session/revoke/permissions dan negative SQL tests | Real-session UAT, mitigasi identity ID-only sebelum finance |
+| G2 | PARTIAL | Migrasi additive canonical, 22 tabel POS RLS, direct-write aplikasi ditolak | Final replay/semantic schema comparison, Production migration approval |
+| G3 | PARTIAL | Owner katalog keluarga/paket/tarif, kalender Owner, revisi dan immutable note snapshots | Durasi/tarif resmi Owner dan real-session UAT |
+| G4 | PARTIAL | Owner actor, wizard 4 tahap, satu paket, authoritative quote, UUID retry, status/history, handover guard | Perangkat nyata, real login lifecycle dan jaringan |
+| G5 | PARTIAL | DP/full/refund, points once, cash atomik, negative/concurrency source fixtures | Pilot finansial disetujui, actual reconciliation, identity mitigation |
+| G6 | PARTIAL | Cash/shift/report, receipt template/verified recipient/current ledger, import review append-only tanpa posting | Physical cash/print/WA, actual Binatu reconciliation dan cutoff |
+| G7 | PARTIAL | Argon dipertahankan, 93 browser fixtures, mobile package/WA 320/390/1440 | PHYSICAL_UAT_REQUIRED, 25-screen Owner signoff |
+| G8 | BLOCKED | Fail-closed preflight, rollback/monitoring, synthetic restore/race di CI stable | Actual backup/restore RPO/RTO, external evidence dan financial cutover approval |
+
+A01–A06 di tabel historis: koreksi kode tersedia dan tercakup tes recovery/parser/print/SQL; real network-loss UAT serta race timestamp akhir tetap disebut terpisah, bukan diklaim PASS fisik. Durasi kalender dan template resmi telah diputuskan Owner; keduanya bukan pertanyaan yang masih menunggu. Finance dan historical-import posting tidak diaktifkan.
+
+
 > **Checkpoint terkini sebelum final CI (2 Nov 2026): PROVISIONAL / G8 NO-GO.** Root mengonfirmasi ketiga migrasi canonical telah diterapkan **QA saja**: `20261102190000_pos_owner_creation_duration_snapshots.sql`, `20261102193000_pos_owner_operations_shared_cores.sql`, `20261102210000_pos_import_review_audit.sql`. Fixture owner duration, owner operations, import audit dan regresi existing G5/G6/G2 PASS setelah apply. `write_enabled=false` dan `finance_enabled=false`. Lima browser test wizard sintetis PASS pada 320/390/1440px memakai mocks; ini bukan real Auth atau PHYSICAL_UAT. Synthetic restore dan race tambahan menunggu CI yang akan datang, **belum PASS**. Final tree/CI dan deployment paket baru belum disertifikasi. Produksi tetap 0 tabel POS; tidak ada mutasi produksi. Lihat [master audit](./master-audit-20261102.md) untuk dependensi dan bukti penutupan.
 
 **Status keseluruhan: PARTIAL; G8 NO-GO / BLOCKED.** Dokumen ini mengonsolidasikan audit baseline `main` `0fe995db640de6249bd9389fe674a6853ab4d5bd` dan paket perubahan lokal yang sedang diuji. **PROVISIONAL: final validation, final diff review, CI dan SHA hasil merge belum selesai.** PASS checkpoint tidak menjadi PASS untuk tree akhir. Tidak ada izin migrasi produksi, perubahan Auth produksi, aktivasi transaksi, posting impor, atau cutover dari dokumen ini.
@@ -97,3 +114,20 @@ Seluruh baris tetap BLOCKED / PHYSICAL_UAT_REQUIRED sampai bukti nyata tersedia.
 Tambahan rencana v1.1 diterima: empat tahap, satu paket per nota, paket global dan WA dinamis. Audit ulang dan implementasi dilaksanakan setelah paket ini stabil; lihat service-duration-whatsapp-plan-v1.1.md. Tarif contoh bukan konfigurasi resmi.
 
 CI b6153db: replay semua migrasi dan regresi SQL PASS; synthetic restore FAIL pada representasi ACL owner (explicit default vs NULL), bukan perubahan hak aplikasi/data. Comparator diperbaiki untuk acldefault; hasil ulang masih menunggu.
+
+
+## Tambahan terverifikasi lokal — 3 November 2026
+
+Keputusan Owner terbaru: wizard **Pelanggan → Durasi → Layanan → Konfirmasi**, satu paket per nota, **jam kalender**; durasi dan tarif resmi diisi Owner. Ini menggantikan kontrak tiga tahap/mixed-duration untuk katalog paket yang diaktifkan. Snapshot nota lama tidak dibackfill atau diubah.
+
+Lima migrasi tambahan 20261103070000–074000 telah diterapkan QA saja. Keluarga layanan satu record + tarif per paket; pemetaan opsional record lama mempertahankan service ID; paket default nonaktif/tanpa durasi/tanpa tarif contoh. Tombol aktivasi katalog tidak mengubah write_enabled atau finance_enabled.
+
+Nota memakai harga/revisi otoritatif; backend menolak campuran paket pada mode paket. Diproses, ready_at, collected_at, histori aktor, tab Sudah Diambil dan detail pembatalan tersedia. Trigger database menolak serah terima Belum Bayar, DP, refund dan tagihan nol; tidak ada override.
+
+Template WA asli Owner tersimpan sebagai konfigurasi berotorisasi dan berversi. Nota/Siap/Sudah Diambil membaca ulang receipt dan ledger periode aktual, menyembunyikan poin untuk guest, membedakan perkiraan dengan saldo aktif. Kontak diverifikasi untuk nota dengan audit aktor; link wa.me hanya sesudah pemeriksaan penerima. Tidak ada pengiriman otomatis atau status SENT. Sumber URL: https://faq.whatsapp.com/5913398998672934.
+
+23 fixture SQL regresi QA lulus secara kolektif; satu pemeriksaan jumlah tabel G5 awal gagal karena 20 menjadi 22 dan diperbarui ke 22 tanpa mengurangi RLS/ACL. Tambahan uji menolak unpaid/DP/refund/zero handover, menguji posting poin/lunas, ID kontak idempotent, revoke izin WA dan histori aktor. 284 tes Node dan TypeScript lulus; build dan suite browser final dijalankan kembali pada tree akhir. Fixture browser bukan real Auth atau uji Android/print fisik.
+
+CI main c262a7f lulus: Audit Release Gate dan Stage 10 PostgreSQL Concurrency QA (run 41590525471 / 41590525640). CI/deployment **paket tambahan** harus diverifikasi pada SHA berikutnya; belum dinyatakan PASS di checkpoint ini. Production belum dimigrasi. G8 tetap NO-GO.
+
+Advisor QA: default-deny RLS INFO disengaja; 3 anonymous dan 9 authenticated SECURITY DEFINER RPC exposure warnings pada tambahan awal ditinjau sebagai endpoint yang berotorisasi, bukan akses publik tanpa pemeriksaan. Negative auth/revoke fixtures lulus; kontrol identitas ID-only kasir tetap blocker sebelum finance. Tidak menyatakan advisor bersih. Raw ACL provider berbeda dari CI; fingerprint membandingkan definisi, RLS dan hak efektif anon/authenticated/kolom. Perbedaan semantic tersisa harus dijelaskan sesudah artefak CI final tersedia.

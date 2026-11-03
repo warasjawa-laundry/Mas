@@ -33,7 +33,7 @@ export async function openOwnerShift(form:FormData):Promise<Result>{
 export async function advanceOwnerWork(form:FormData):Promise<Result>{
  const orderId=form.get("orderId"),requestId=form.get("requestId"),target=form.get("target");
  if(typeof orderId!=="string"||!uuid.test(orderId)||typeof requestId!=="string"||!uuid.test(requestId)
-  ||(target!=="READY"&&target!=="COLLECTED"))return {error:"Perubahan status tidak valid."};
+  ||(target!=="PROCESSING"&&target!=="READY"&&target!=="COLLECTED"))return {error:"Perubahan status tidak valid."};
  return post("laundry_pos_owner_work_status",{p_request_id:requestId,p_order_id:orderId,p_new_status:target},
   `/admin/pesanan/${orderId}`,d=>d.work_status===target);
 }
@@ -79,7 +79,7 @@ export async function recoverOwnerOperation(operation:RecoverableOperation,order
   (operation==="OPEN_SHIFT"&&result.status!=="OPEN")||
   (operation==="CASH_ENTRY"&&result.status!=="POSTED")||
   (operation==="CLOSE_SHIFT"&&result.status!=="CLOSED")||
-  (operation==="SET_WORK"&&!["READY","COLLECTED"].includes(result.work_status))||
+  (operation==="SET_WORK"&&!["PROCESSING","READY","COLLECTED"].includes(result.work_status))||
   (operation==="CANCEL"&&result.lifecycle_status!=="CANCELLED"))return {error:"Bukti transaksi belum lengkap. Penanda tetap disimpan."};
  const path=orderId?`/admin/pesanan/${orderId}`:"/admin/kas";
  revalidatePath(path);revalidatePath("/admin");revalidatePath("/admin/kas");

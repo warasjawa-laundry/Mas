@@ -42,13 +42,13 @@ test("G7 backend member prefix search is device-scoped and never exposes PII",()
  assert.match(action,/data\.slice\(0,8\)/);
  assert.doesNotMatch(action,/whatsapp|address|tokenDigest|recordOwnerVisit/);
 });
-test("G8 UX uses per-service duration with three-step wizard and real catalog pricing",()=>{
+test("Package wizard uses four steps and real catalog pricing",()=>{
  const form=source("app/kasir/pesanan/baru/order-form.tsx");
- assert.match(form,/steps=\["Pelanggan","Layanan","Konfirmasi"\]/);
+ assert.match(form,/steps=packageWorkflow\?\["Pelanggan","Durasi","Layanan","Konfirmasi"\]/);
  assert.doesNotMatch(form,/DurationSheet|setDuration|servicesForDuration/);
  assert.match(form,/s.duration\|\|"Durasi belum ditentukan"/);
  assert.match(form,/MemberNamePicker/);
- assert.match(form,/step<2/);
+ assert.match(form,/step<summaryStep/);
  assert.match(form,/Total saat ini hanya harga layanan/);
  assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\}/);
  const editor=source("components/admin/service-editor.tsx");

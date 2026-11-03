@@ -23,7 +23,7 @@ export async function recoverCashierCommand(operation:RecoverableOperation,order
   (operation==='OPEN_SHIFT'&&result.status!=='OPEN')||
   (operation==='CASH_ENTRY'&&result.status!=='POSTED')||
   (operation==='CLOSE_SHIFT'&&result.status!=='CLOSED')||
-  (operation==='SET_WORK'&&!['READY','COLLECTED'].includes(result.work_status))||
+  (operation==='SET_WORK'&&!['PROCESSING','READY','COLLECTED'].includes(result.work_status))||
   (operation==='CANCEL'&&result.lifecycle_status!=='CANCELLED'))return {error:"Bukti transaksi belum lengkap. Penanda tetap disimpan."};
  const destination=orderId?`/kasir/pesanan/${orderId}`:'/kasir/kas';
  const saved=operation==='PAYMENT'?'payment':operation==='FULL_REFUND'?'refund':operation==='CASH_ENTRY'?'entry':operation==='CLOSE_SHIFT'?'closed':operation==='CANCEL'?'cancelled':operation==='SET_WORK'?'1':'shift';

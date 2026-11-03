@@ -71,6 +71,8 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-owner-operations-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-import-audit-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-cashier-recovery-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-package-workflow-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-whatsapp-receipts-rollback.sql
       - name: Synthetic backup and restore rehearsal (no Production data)
         env:
           POSTGRES_CONTAINER: ${{ job.services.postgres.id }}

@@ -33,7 +33,7 @@ export async function advanceWorkStatus(form:FormData):Promise<CommandActionResu
   const orderId=form.get("orderId"),target=form.get("target"),requestId=form.get("requestId");
   const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   if(typeof orderId!=="string" || !uuid.test(orderId) ||
-     (target!=="READY"&&target!=="COLLECTED") ||
+     (target!=="PROCESSING"&&target!=="READY"&&target!=="COLLECTED") ||
      typeof requestId!=="string" || !uuid.test(requestId))return {error:'Periksa nota dan perubahan status.'};
   const {data,error}=await access.client.rpc("laundry_pos_g4_work_status",{
     ...access.tokens,p_request_id:requestId,p_order_id:orderId,p_new_status:target,

@@ -32,3 +32,8 @@
 ### Keputusan Owner terbaru (2 November 2026)
 - Screenshot langkah Durasi terpisah diganti menjadi durasi yang melekat pada tiap layanan karena permintaan eksplisit Owner, bukan ketidaksesuaian desain. Wizard menjadi 3 tahap: Pelanggan/Layanan/Konfirmasi.
 - `Layanan & Harga` memperlihatkan kolom Durasi di tiap baris; Owner dapat mengeditnya lewat form layanan yang sama. Referensi screenshot Binatu harus dibaca dengan perubahan flow yang disetujui Owner, sementara UAT visual yang lain tetap menunggu pemeriksaan fisik.
+
+
+### Tambahan 3 November 2026
+
+Tambahan mempertahankan shell Argon MasJawa. Empat tahap dan paket global berasal dari revisi Owner terbaru; layanan lama tetap dapat dipetakan. Browser fixture menguji 320/390/1440 dan draf WA; screenshot diperiksa lokal. Ini bukan persetujuan visual 25 layar oleh Owner atau PHYSICAL_UAT.

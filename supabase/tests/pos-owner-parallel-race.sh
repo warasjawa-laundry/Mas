@@ -11,6 +11,12 @@ insert into auth.users(id,aud,role) values('$owner','authenticated','authenticat
 insert into public.laundry_owner_accounts(auth_user_id,is_active) values('$owner',true);
 insert into public.laundry_services(id,category,package_name,name,price_idr,unit,duration)
  values('$service','QA','Race','Owner race synthetic',6000,'kg','6 jam');
+select set_config('request.jwt.claim.sub','$owner',false);
+select public.laundry_pos_save_package('REGULAR',1,'Reguler QA',360,true);
+select public.laundry_pos_save_family('bbbb9000-bbbb-4bbb-8bbb-bbbbbbbb9007',0,
+ '{"name":"Owner race synthetic","category":"QA","unit":"kg","position":1,"active":true}',
+ '[{"code":"REGULAR","price_idr":"6000","active":true,"existing_id":"$service","existing_revision":1},{"code":"EXPRESS","price_idr":"0","active":false},{"code":"FLASH","price_idr":"0","active":false}]');
+select public.laundry_pos_enable_package_workflow();
 update public.laundry_pos_outlets set write_enabled=true,finance_enabled=false where code='MJL';
 SQL
 tmp=$(mktemp -d)
@@ -21,7 +27,7 @@ begin;
 select set_config('request.jwt.claim.sub','$owner',true);
 select pg_sleep(0.2);
 select public.laundry_pos_owner_create_order('$request','Owner race synthetic',null,
- jsonb_build_array(jsonb_build_object('service_id','$service','quantity','1.255','revision',1)),null,null);
+ jsonb_build_array(jsonb_build_object('service_id','$service','quantity','1.255','revision',2)),null,null);
 select pg_sleep(0.5);
 commit;
 SQL
@@ -37,7 +43,7 @@ do \$\$begin
  if (select count(*) from public.laundry_pos_orders where customer_name='Owner race synthetic')<>1
  or (select count(*) from public.laundry_pos_commands where request_id='$request')<>1
  or not exists(select 1 from public.laundry_pos_orders where customer_name='Owner race synthetic'
- and created_by='$owner' and created_staff_id is null and total_idr=7530 and due_at is not null)
+ and created_by='$owner' and created_staff_id is null and total_idr=7530 and due_at is not null and package_minutes_snapshot=360)
  then raise exception 'owner concurrent create duplicated or actor/amount/ETA lost';end if;
 end\$\$;
 update public.laundry_pos_outlets set finance_enabled=true;

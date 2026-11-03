@@ -13,7 +13,7 @@ export const metadata={title:"Tambah Pesanan - Mas Jawa Laundry",robots:{index:f
 export default async function NewCashierOrder({searchParams}:{searchParams:Promise<{error?:string}>}){
  const access=await cashierRpcAccess("order_view");
  if(!access)redirect("/kasir");
- const {data,error}=await access.client.rpc("laundry_pos_g4_catalog",access.tokens);
+ const {data,error}=await access.client.rpc("laundry_pos_package_catalog",access.tokens);
  const {error:reason}=await searchParams;
  return <main className={styles.shell}>
   <div className={`${styles.pagePattern} binatu-pattern`} aria-hidden="true"/>
@@ -23,7 +23,7 @@ export default async function NewCashierOrder({searchParams}:{searchParams:Promi
   {reason&&<p className={styles.warn} role="alert">{reason==='unconfirmed'?'Penyimpanan belum terkonfirmasi. Sebelum mencoba lagi, periksa Daftar Pesanan agar tidak membuat duplikat.':
    reason==='disabled'?'Transaksi belum diaktifkan.':'Form tidak valid, periksa data pelanggan dan kuantitas.'}</p>}
   {error?<p className={styles.warn} role="alert">Katalog POS belum tersedia di database aktif. Tidak ada transaksi yang dibuat.</p>:
-   <OrderForm services={(Array.isArray(data)?data:[]) as CatalogService[]} requestId={randomUUID()} canWrite={access.session.write_enabled} canLookup={hasCashierGrant(access.session.permissions,"member_lookup")}
+   <OrderForm packageWorkflow services={(Array.isArray(data?.services)?data.services:[]) as CatalogService[]} requestId={randomUUID()} canWrite={access.session.write_enabled&&data?.enabled===true} canLookup={hasCashierGrant(access.session.permissions,"member_lookup")}
     recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'CREATE_ORDER')} recoverAction={recoverCashierCommand.bind(null,'CREATE_ORDER',null)}/>}
  </main>;
 }

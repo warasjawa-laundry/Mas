@@ -100,8 +100,8 @@
   },
   "qaReadOnlyReceipt": {
     "project": "cwxsbgfjynwxqalwonae",
-    "posTables": 20,
-    "rlsEnabled": 20,
+    "posTables": 22,
+    "rlsEnabled": 22,
     "outlets": 1,
     "writeEnabledOutlets": 0,
     "orders": 0,
@@ -113,7 +113,7 @@
     "anonOwnerBoardExecute": false,
     "authOwnerBoardExecute": true,
     "qaOwnerMigration": "pos_owner_readonly_ui_pr31_qa",
-    "verifiedAt": "2026-11-02",
+    "verifiedAt": "2026-11-03",
     "financeEnabledOutlets": 0,
     "privateReviewAuditRows": 0,
     "appliedSourceMigrations": [
@@ -121,17 +121,24 @@
       "20261102193000_pos_owner_operations_shared_cores.sql",
       "20261102210000_pos_import_review_audit.sql",
       "20261102213000_pos_import_audit_fk_indexes.sql",
-      "20261102214000_pos_cashier_finance_recovery.sql"
+      "20261102214000_pos_cashier_finance_recovery.sql",
+      "20261103070000_pos_package_catalog.sql",
+      "20261103071000_pos_package_orders_handover.sql",
+      "20261103072000_pos_whatsapp_receipts.sql",
+      "20261103073000_pos_receipt_catalog_boundaries.sql",
+      "20261103074000_pos_operational_history.sql"
     ],
     "ownerPosRpc": 20
   },
   "productionFinanceEnabledOutlets": 0,
   "automatedLocalCheckpoint": {
-    "nodeTests": 280,
-    "browserFixtureTests": 14,
+    "nodeTests": 284,
+    "browserFixtureTests": 93,
     "typecheck": "PASS",
     "build": "PASS",
     "ci": "PENDING",
-    "physicalUat": "PHYSICAL_UAT_REQUIRED"
+    "physicalUat": "PHYSICAL_UAT_REQUIRED",
+    "latestStableCiSha": "c262a7f2b9b25677b4ff1a9452a228d194a35c6c",
+    "additionalPackageCi": "PENDING"
   }
 }

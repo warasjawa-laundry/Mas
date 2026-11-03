@@ -10,8 +10,8 @@ const fixtureDir=path.resolve('test-results/pos-wizard-fixture');
 const bundle=path.join(fixtureDir,'bundle.js');
 const requestId='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const services=[
- {id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',category:'Kiloan',package_name:'Express',name:'Cuci Express',price_idr:6000,unit:'kg',duration:'6 jam',revision:3},
- {id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',category:'Satuan',package_name:'Reguler',name:'Setrika Satuan',price_idr:4000,unit:'pcs',duration:'2 hari',revision:7},
+ {id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',category:'Kiloan',package_name:'Express',name:'Cuci Express',price_idr:6000,unit:'kg',duration:'6 jam',revision:3,duration_package_code:'EXPRESS'},
+ {id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc',category:'Satuan',package_name:'Reguler',name:'Setrika Satuan',price_idr:4000,unit:'pcs',duration:'2 hari',revision:7,duration_package_code:'REGULAR'},
 ];
 const cssSource=readFileSync('app/kasir/pesanan/baru/wizard.module.css','utf8');
 const classNames=[...new Set([...cssSource.matchAll(/\.([a-zA-Z_][\w-]*)/g)].map(x=>x[1]))];
@@ -47,7 +47,7 @@ test.beforeAll(async()=>{
  import React from 'react';import {createRoot} from 'react-dom/client';
  import {OrderForm} from './order-form.cjs';
  const role=window.posFixtureRole||'cashier';
- createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role}));
+ createRoot(document.getElementById('root')).render(React.createElement(OrderForm,{services:${JSON.stringify(services)},requestId:${JSON.stringify(requestId)},canWrite:true,canLookup:true,role,packageWorkflow:window.posPackageWorkflow||false}));
  `);
  const alias:Record<string,string>={
   'next/navigation':path.resolve('tests/pos-fixture-navigation.cjs'),
@@ -66,12 +66,13 @@ test.beforeAll(async()=>{
  });
 });
 
-async function mount(page:Page,width=390,role='cashier'){
+async function mount(page:Page,width=390,role='cashier',packageWorkflow=false){
  page.on('pageerror',error=>{throw error});
  await page.setViewportSize({width,height:900});
  await page.route('**/*',route=>route.abort());
  await page.setContent(`<style>:root{--font-pos:Arial}body{margin:0;background:#f8f8f9}${fixtureCss}</style><main class="${classMap.shell}"><div id="root"></div></main>`);
  await page.evaluate(value=>{(window as any).posFixtureRole=value},role);
+ await page.evaluate(value=>{(window as any).posPackageWorkflow=value},packageWorkflow);
  await page.addScriptTag({path:bundle});
  await expect(page.getByRole('heading',{name:'Pilih pelanggan',exact:true})).toBeVisible();
 }
@@ -158,3 +159,33 @@ for(const role of ['cashier','owner'])test(`${role}: manual identity requires lo
  expect(await page.evaluate(()=>(window as any).posFixture.lookups.map((lookup:any)=>lookup.role))).toEqual([role,role,role,role]);
 });
 
+for(const width of [320,390,1440])test(`package workflow has four steps, filters tariffs and confirms a package change at ${width}px`,async({page})=>{
+ await mount(page,width,'owner',true);
+ await page.getByLabel('Nama pelanggan').fill('Pelanggan Paket QA');
+ if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
+ await page.getByLabel('Reguler · 2 hari',{exact:true}).check();
+ if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
+ await expect(page.getByLabel('Jumlah Cuci Express',{exact:true})).toHaveCount(0);
+ await page.getByLabel('Jumlah Setrika Satuan',{exact:true}).fill('2');
+ if(width<1024)await page.getByRole('button',{name:'Kembali',exact:true}).click();
+ await page.getByLabel('Express · 6 jam',{exact:true}).click();
+ await expect(page.getByRole('alert')).toContainText('mengosongkan pilihan layanan');
+ await expect(page.locator('[name=items]')).toHaveValue(/cccccccc/);
+ await page.getByRole('button',{name:'Pertahankan pilihan',exact:true}).click();
+ await expect(page.getByLabel('Reguler · 2 hari',{exact:true})).toBeChecked();
+ await page.getByLabel('Express · 6 jam',{exact:true}).click();
+ await page.getByRole('button',{name:'Ganti paket dan pilih ulang',exact:true}).click();
+ await expect(page.locator('[name=items]')).toHaveValue('[]');
+ if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
+ await expect(page.getByLabel('Jumlah Setrika Satuan',{exact:true})).toHaveCount(0);
+ await page.getByLabel('Jumlah Cuci Express',{exact:true}).fill('1.25');
+ if(width<1024)await page.getByRole('button',{name:'Atur pesanan',exact:true}).click();
+ await expect(page.getByRole('complementary').locator('.'+classMap.total)).toHaveText(/Total tagihanRp\s*7\.500/);
+ await noOverflow(page);
+ await page.getByRole('button',{name:'Buat pesanan',exact:true}).click();
+ const payload=await page.evaluate(()=>(window as any).posFixture.creates[0]);
+ expect(JSON.parse(payload.items)).toEqual([{service_id:services[0].id,revision:3,quantity:'1.25'}]);
+ await page.evaluate(()=>(window as any).posFixture.finishCreate());
+ await expect(page.getByRole('alert')).toContainText('Nota belum terkonfirmasi');
+ await page.screenshot({path:`artifacts/screenshots/pos-package-wizard-${width}.png`,fullPage:true});
+});

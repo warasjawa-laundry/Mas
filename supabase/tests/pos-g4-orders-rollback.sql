@@ -13,7 +13,7 @@ declare
 begin
  select id into strict v_outlet from public.laundry_pos_outlets where code='MJL' and write_enabled=false;
  if (select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace
-     where n.nspname='public' and c.relname like 'laundry_pos_%' and c.relkind='r' and c.relrowsecurity)<>20 then
+     where n.nspname='public' and c.relname like 'laundry_pos_%' and c.relkind='r' and c.relrowsecurity)<>22 then
   raise exception 'G4 RLS table count drift'; end if;
  if has_table_privilege('anon','public.laundry_pos_orders','select')
  or has_table_privilege('authenticated','public.laundry_pos_commands','insert') then
@@ -88,8 +88,12 @@ begin
   perform public.laundry_pos_g4_work_status(v_token,v_login,gen_random_uuid(),v_order,'QUEUED');
   raise exception 'G4 illegal transition accepted';
  exception when sqlstate '22023' then null;end;
- if (public.laundry_pos_g4_work_status(v_token,v_login,gen_random_uuid(),v_order,'COLLECTED')->>'work_status')<>'COLLECTED' then
-  raise exception 'G4 collected transition failed';end if;
+ begin
+  perform public.laundry_pos_g4_work_status(v_token,v_login,gen_random_uuid(),v_order,'COLLECTED');
+  raise exception 'G4 unpaid handover accepted';
+ exception when sqlstate '22023' then
+  if sqlerrm<>'POS_HANDOVER_REQUIRES_SETTLED_PAYMENT' then raise;end if;
+ end;
  if (select count(*) from public.laundry_pos_payments)<>0 or
     (select count(*) from public.laundry_pos_point_links)<>0 or
     (select count(*) from public.laundry_amount_transactions)<>0 then

@@ -10,3 +10,8 @@ Per setiap shift owner mengecek: 1) kas tunai harapan = opening + cash receipt +
 
 
 **Pemilik tindakan eksternal:** Owner bersama reviewer keamanan/operator jaringan memilih dan menguji trusted workplace network yang benar-benar dibatasi atau kontrol identitas lebih kuat; ID-only known-ID impersonation tidak diselesaikan throttle. Operator DB membuktikan backup/restore produksi aman dan RPO/RTO; Owner+kasir/tester membuktikan real Auth, Android, uang/print dan visual; Owner+pemeriksa keuangan menandatangani cutoff/saldo/piutang/poin; Owner+operator release memberi approval schema dan cutover secara terpisah. Bukti/reviewer/timestamp privat wajib; semua masih BLOCKED sampai tersedia. [Daftar acceptance dan penanggung jawab](./master-audit-20261102.md#tindakan-eksternal-wajib-dan-pemilik-bukti).
+
+
+### Tambahan 3 November 2026
+
+Pantau POS_SINGLE_PACKAGE_REQUIRED, stale catalog/revision, contact_request_conflict, POS_HANDOVER_REQUIRES_SETTLED_PAYMENT dan kegagalan baca receipt. Jangan mencatat nomor HP, alamat, isi pesan, QR/token atau kredensial di log. wa.me opened/copied bukan delivery. Pantau jumlah point ADD/VOID vs pelunasan/refund dan periode program.
