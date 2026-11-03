@@ -140,3 +140,86 @@
  .binatu-service-content .service-settings-list .mj-service-duration-col strong{font-size:11px}
  .binatu-service-content .service-settings-list>li>details>summary>span:last-child{font-size:12px}
 }
+
+
+/* MasJawa catalog — native disclosure is keyboard accessible, with visible button labels and no browser triangles. */
+.binatu-service-content .mj-catalog{display:grid;gap:18px;min-width:0}
+.binatu-service-content .mj-catalog-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-top:10px}
+.binatu-service-content .mj-catalog-section-head h2{font-size:18px;margin:0 0 4px;letter-spacing:-.02em}
+.binatu-service-content .mj-catalog-section-head p{font-size:12px;line-height:1.6;color:var(--pos-muted);margin:0}
+.binatu-service-content .mj-catalog-packages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.binatu-service-content .mj-catalog-card{background:white;border:1px solid var(--pos-line);border-radius:15px;min-width:0;overflow:hidden}
+.binatu-service-content .mj-catalog-card>summary{display:flex;list-style:none;cursor:pointer;min-height:52px;padding:16px;gap:12px;color:var(--mj-ink)}
+.binatu-service-content .mj-catalog-card>summary::-webkit-details-marker{display:none}
+.binatu-service-content .mj-catalog-card>summary::marker{content:""}
+.binatu-service-content .mj-catalog-card[open]{border-color:#c99e31}
+.binatu-service-content .mj-catalog-card>summary:hover{background:#fffdf5}
+.binatu-service-content .mj-package-card>summary{flex-direction:column;justify-content:space-between;min-height:145px}
+.binatu-service-content .mj-package-detail{display:grid;gap:3px}
+.binatu-service-content .mj-package-detail>strong{font-size:14px;font-weight:800}
+.binatu-service-content .mj-package-duration{font-size:22px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.binatu-service-content .mj-package-detail>small,.binatu-service-content .mj-catalog-create small,.binatu-service-content .mj-catalog-receipt small{font-size:11px;color:var(--pos-muted);font-weight:500;display:block}
+.binatu-service-content .mj-package-controls{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.binatu-service-content .mj-catalog-status{border-radius:7px;padding:4px 7px;font-size:10px;font-weight:700;white-space:nowrap;line-height:1.4}
+.binatu-service-content .mj-catalog-status.is-active{color:#17633c;background:#e8f6ed}
+.binatu-service-content .mj-catalog-status.is-inactive{color:#666b75;background:#f0f1f3}
+.binatu-service-content .mj-catalog-edit{display:inline-flex;justify-content:center;align-items:center;gap:8px;border:1px solid #e1e3e7;background:#fff;border-radius:9px;min-height:38px;padding:8px 12px;font-size:11px;font-weight:800;color:#22252a;white-space:nowrap}
+.binatu-service-content .mj-catalog-card[open]>summary .mj-catalog-edit{background:#fef5d1;border-color:#e7c65c}
+.binatu-service-content .mj-catalog-count{background:#fef5d1;color:#604c08;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:800;white-space:nowrap}
+.binatu-service-content .mj-catalog-legacy-note{font-size:12px;line-height:1.65;color:#59616f;background:#f8f8f9;border:1px solid var(--pos-line);padding:12px 14px;margin:0;border-radius:10px}
+.binatu-service-content .mj-catalog-create>summary{align-items:center;min-height:76px;background:#fffdf5}
+.binatu-service-content .mj-catalog-create>summary>span:nth-child(2){flex:1;min-width:0;font-size:13px;font-weight:800}
+.binatu-service-content .mj-catalog-add-icon{display:grid;place-items:center;flex:none;width:39px;height:39px;border-radius:10px;background:var(--mj-gold);font-size:25px;font-weight:500}
+.binatu-service-content .mj-catalog-services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.binatu-service-content .mj-service-card>summary{display:grid;gap:14px;align-content:start;padding:16px}
+.binatu-service-content .mj-service-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;min-width:0}
+.binatu-service-content .mj-service-head>span:first-child{min-width:0}
+.binatu-service-content .mj-service-head strong{display:block;font-size:14px;font-weight:800;overflow-wrap:anywhere}
+.binatu-service-content .mj-service-head small{display:block;font-size:11px;color:var(--pos-muted);margin-top:5px;overflow-wrap:anywhere}
+.binatu-service-content .mj-service-price-list{display:grid;gap:0;border-top:1px solid var(--pos-line);border-bottom:1px solid var(--pos-line)}
+.binatu-service-content .mj-service-price-list>span{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;font-size:12px}
+.binatu-service-content .mj-service-price-list>span+span{border-top:1px solid #eff0f1}
+.binatu-service-content .mj-service-price-list strong{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;text-align:right}
+.binatu-service-content .mj-service-price-list .mj-price-unavailable{color:#717782;font-weight:500;font-size:11px}
+.binatu-service-content .mj-service-edit{justify-self:start}
+.binatu-service-content .mj-catalog-edit-panel{border-top:1px solid var(--pos-line);padding:18px;background:#fbfbfc}
+.binatu-service-content .mj-catalog-form{gap:14px;padding:0;border:0;margin:0}
+.binatu-service-content .mj-catalog-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.binatu-service-content .mj-catalog-form-grid>label{min-width:0}
+.binatu-service-content .mj-catalog-form label{display:grid;gap:7px;min-width:0;margin:0;font-size:12px;font-weight:700}
+.binatu-service-content .mj-catalog-form .mj-catalog-switch{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:700}
+.binatu-service-content .mj-catalog-switch input[type=checkbox]{width:19px;height:19px;min-height:19px;accent-color:#bb8900}
+.binatu-service-content .mj-catalog-form-heading{font-size:13px;margin:4px 0 0}
+.binatu-service-content .mj-catalog-tariff-edit{display:grid;gap:12px}
+.binatu-service-content .mj-catalog-tariff-edit fieldset{min-width:0;border:1px solid var(--pos-line);border-radius:11px;padding:12px;display:grid;gap:10px;background:white}
+.binatu-service-content .mj-catalog-tariff-edit legend{padding:0 5px;font-size:12px;font-weight:800}
+.binatu-service-content .mj-catalog-tariff-edit legend span{font-size:11px;color:var(--pos-muted);font-weight:500}
+.binatu-service-content .mj-catalog-form-actions{display:flex;justify-content:flex-end;gap:10px}
+.binatu-service-content .mj-catalog-form-actions button,.binatu-service-content .mj-catalog-activation button{min-height:48px;border-radius:11px;background:var(--mj-gold);color:var(--mj-ink);font-weight:800;padding:10px 16px;border:0;cursor:pointer}
+.binatu-service-content .mj-catalog-empty{font-size:12px;color:var(--pos-muted);margin:0;padding:14px;background:white;border:1px dashed #ced2d7;border-radius:10px}
+.binatu-service-content .mj-catalog-activation{padding:18px;background:white;border:1px solid var(--pos-line);border-radius:15px;display:grid;gap:12px}
+.binatu-service-content .mj-catalog-activation h3{margin:0;font-size:15px}
+.binatu-service-content .mj-catalog-activation p{margin:0;color:var(--pos-muted);font-size:12px;line-height:1.6}
+.binatu-service-content .mj-catalog-activation dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0}
+.binatu-service-content .mj-catalog-activation dl>div{background:#f7f8f9;border-radius:10px;padding:12px;display:grid;gap:4px}
+.binatu-service-content .mj-catalog-activation dt{font-size:10px;color:var(--pos-muted)}
+.binatu-service-content .mj-catalog-activation dd{margin:0;font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+.binatu-service-content .mj-catalog-live-note{margin:0;padding:12px 14px;background:#e8f6ed;color:#17633c;border-radius:10px;font-size:12px}
+.binatu-service-content .mj-catalog-receipt>summary{align-items:center;justify-content:space-between;gap:12px}
+.binatu-service-content .mj-catalog-receipt>summary strong{font-size:13px;font-weight:800}
+@media(max-width:640px){
+ .binatu-service-content .mj-catalog-packages{grid-template-columns:1fr;gap:10px}
+ .binatu-service-content .mj-package-card>summary{min-height:0;flex-direction:row;align-items:center;gap:12px;padding:14px 16px}
+ .binatu-service-content .mj-package-controls{margin-left:auto;justify-content:flex-end}
+ .binatu-service-content .mj-package-detail>strong{font-size:13px}
+ .binatu-service-content .mj-package-duration{font-size:18px}
+ .binatu-service-content .mj-catalog-services{grid-template-columns:1fr}
+ .binatu-service-content .mj-catalog-form-grid{grid-template-columns:1fr}
+ .binatu-service-content .mj-catalog-section-head{align-items:center}
+}
+@media(max-width:380px){
+ .binatu-service-content .mj-package-controls{gap:5px;flex-direction:column;align-items:flex-end}
+ .binatu-service-content .mj-catalog-edit{padding:8px 10px}
+ .binatu-service-content .mj-catalog-activation dl{gap:6px}
+ .binatu-service-content .mj-catalog-activation dl>div{padding:9px}
+}

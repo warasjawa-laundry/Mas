@@ -67,3 +67,23 @@ test("Package wizard uses four steps and real catalog pricing",()=>{
  assert.match(picker,/400\)/); // 400 ms debounce
  assert.match(picker,/onPick\(row\)/);
 });
+
+test("Owner package catalog uses visible price cards and labeled edit actions instead of native triangles",()=>{
+ const ui=source("components/admin/package-catalog-editor.tsx");
+ const css=source("app/pos-ui.css");
+ assert.match(ui,/mj-catalog-packages/);
+ assert.match(ui,/mj-catalog-services/);
+ assert.match(ui,/mj-service-price-list/);
+ assert.match(ui,/Ubah layanan/);
+ assert.match(ui,/money\(tariff\.price_idr\)/);
+ assert.match(ui,/Tidak tersedia/);
+ assert.match(ui,/mj-catalog-activation/);
+ assert.match(ui,/settings\.families\.map/);
+ assert.match(ui,/name=\{'price-'\+p\.code\}/);
+ assert.match(ui,/savePackage/);
+ assert.match(ui,/saveFamily/);
+ assert.match(ui,/saveReceiptSettings/);
+ assert.match(css,/mj-catalog-card>summary::-webkit-details-marker\{display:none\}/);
+ assert.match(css,/mj-catalog-services\{display:grid;grid-template-columns:repeat\(2/);
+ assert.match(css,/@media\(max-width:640px\)/);
+});
