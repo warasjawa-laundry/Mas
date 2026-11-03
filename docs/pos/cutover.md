@@ -46,3 +46,7 @@ Tambahan katalog/WA tidak membuka uang. Setelah approval migrasi produksi terpis
 
 ## Uji POS sebelum go-live Januari 2027
 Pilot data dummy tidak sama dengan G8 GO. Hanya nota pelanggan umum `UJI - ...` yang boleh tercatat selama `pilot_test_only=true`; trigger SQL menolak pelanggan member dan point-link pada nota uji. Wajib rekonsiliasi semua order, pembayaran, cash ledger dan kas shift tes, kemudian arsipkan/reset secara terkontrol sebelum mengizinkan transaksi nyata. Data pelanggan/member dipertahankan dan backup/restore wajib. Catat waktu, reviewer, source SHA, serta state flags saat mulai/hentikan pilot. Jalur STOP: `write_enabled=false` dan `finance_enabled=false` lewat operator DB, lalu review commands/receipts; jangan hapus ledger. G8 preflight tetap menolak GO dengan financial flags ON dan evidence yang belum lengkap. Lihat [pilot test](./pilot-test-20261103.md).
+
+
+## Status pilot yang sedang aktif — 3 November 2026
+Mode uji dummy Production sudah diverifikasi pada commit kode `ae5da9d7`. `pilot_test_only=true`, katalog ON, finansial ON **untuk simulasi**, 0 nota/payment/cash/point-links ketika diaktifkan, 785 pelanggan tidak diubah. G8 masih NO_GO dan tidak ada izin transaksi pelanggan nyata. Saat pilot diakhiri, gunakan prosedur STOP dan rekonsiliasi/arsip/reset test ledger sebelum go-live 2027. Detail: [receipt pilot](./pilot-activation-20261103.md).

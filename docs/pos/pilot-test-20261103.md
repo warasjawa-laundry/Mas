@@ -20,3 +20,7 @@
 
 ## Checkpoint
 Uji regresi otomatis bukan pengganti UAT autentikasi riil, kamera, printer, WhatsApp, atau uang fisik. `docs/pos/g8-readiness.json` tetap berstatus NO_GO sampai semua evidence aktual disetujui.
+
+
+## Status pelaksanaan yang telah diverifikasi
+Tanggal: 3 November 2026. Guard QA dan Production terpasang; perintah negatif di QA dan Production di-rollback dan tidak membuat nota. CI kode `ae5da9d7` PASS; domain Vercel utama menggunakan deployment `dpl_4it5WrLmQenBArhqFkgjXrzFxJKC` READY. Mode test `pilot_test_only` dan katalog paket **sudah ON** di Production (bukan sekadar rencana). Semua transaksi yang dibuat setelahnya tetap data dummy dan G8 NO_GO. Lihat [receipt aktivasi](./pilot-activation-20261103.md).

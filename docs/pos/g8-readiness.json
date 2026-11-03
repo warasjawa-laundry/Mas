@@ -204,6 +204,15 @@
     "onlyDummyGuest": true,
     "protectRealMembers": true,
     "isNotG8Go": true,
-    "requireCleanupBeforeLaunch": true
+    "requireCleanupBeforeLaunch": true,
+    "status": "PILOT_TEST_ONLY_ACTIVE",
+    "codeSha": "ae5da9d7d372988ba483209c2532c1858f63d958",
+    "vercelDeployment": "dpl_4it5WrLmQenBArhqFkgjXrzFxJKC",
+    "productionPilotTestOnly": true,
+    "productionPackageWorkflowEnabled": true,
+    "productionOrdersAtActivation": 0,
+    "productionMembersAtActivation": 785,
+    "productionPosPointLinksAtActivation": 0,
+    "realFinancialGoLive": false
   }
 }
