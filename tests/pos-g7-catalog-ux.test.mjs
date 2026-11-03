@@ -51,8 +51,10 @@ test("Package wizard uses four steps and real catalog pricing",()=>{
  assert.match(form,/formatDurationHours\(p\.duration\)/);
  assert.doesNotMatch(form,/\{p\.name\} · \{p\.duration\}/);
  assert.match(form,/step<summaryStep/);
- assert.match(form,/Total saat ini hanya harga layanan/);
- assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\}/);
+ assert.match(form,/Subtotal layanan ditambah biaya antar-jemput/);
+ assert.match(form,/deliveryOptions\.map/);
+ assert.match(form,/selectedDelivery\.amount_idr/);
+ assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\|\|!selectedDelivery\}/);
  const editor=source("components/admin/service-editor.tsx");
  assert.match(editor,/name="duration"/);
  const settings=source("app/admin/settings/services/page.tsx");

@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
-const payload={requestId:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',guestName:'Tamu QA',memberNumber:null,items:[],perfume:null,notes:null};
+const payload={requestId:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',guestName:'Tamu QA',memberNumber:null,items:[],perfume:null,notes:null,deliveryCode:'NEAR',deliveryRevision:1};
 function action(path,rpcName){
  const out={exports:{}};const calls=[];
  const client={rpc:async(name,args)=>{calls.push({name,args});return {data:null,error:{message:'network'}}}};
@@ -35,7 +35,10 @@ test('owner create uses owner RPC and same recovery without a cashier identity',
  assert.equal(typeof a.invoke,'function');
  const result=await a.invoke(new FormData());
  assert.equal(typeof result.error,'string');
- assert.equal(a.calls[0].name,'laundry_pos_owner_create_order');
+ assert.equal(a.calls[0].name,'laundry_pos_owner_create_order_with_delivery');
  assert.equal(a.calls[0].args.p_request_id,payload.requestId);
+ assert.equal(a.calls[0].args.p_delivery_code,'NEAR');
+ assert.equal(a.calls[0].args.p_delivery_revision,1);
+ assert.equal('p_delivery_amount' in a.calls[0].args,false);
  assert.equal('p_device_token' in a.calls[0].args,false);
 });

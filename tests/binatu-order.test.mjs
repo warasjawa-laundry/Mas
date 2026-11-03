@@ -52,7 +52,7 @@ test('cashier UI keeps payload safeguards and integrated read-only scan',()=>{
  assert.match(form,/stepQuantity/);
  for(const name of ['requestId','kind','guestName','memberNumber','items','perfume','notes'])assert.match(form,new RegExp('name="'+name+'"'));
  assert.match(form,/action=\{createAction\?\?createCashierOrder\}/);
- assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\}/);
+ assert.match(form,/disabled=\{!canWrite\|\|!quote\|\|!customerValid\|\|!selectedDelivery\}/);
  assert.match(form,/calculateOrderTotals/);
  assert.match(form,/useFormStatus/);
  assert.match(form,/disabled=\{disabled\|\|pending\}/);
