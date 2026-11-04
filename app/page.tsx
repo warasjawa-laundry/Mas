@@ -41,14 +41,13 @@ export default async function HomePage() {
       <main id="home">
         <section className="hero shell" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">MAS JAWA LAUNDRY</p>
             <h1 id="hero-title">Laundry kiloan dan satuan</h1>
-            <p className="hero-description">Cuci lipat, cuci setrika, dan gorden di Kandang Jati Kulon, Probolinggo. Lihat pilihan layanan atau tanyakan kebutuhan cucian Anda.</p>
+            <p className="hero-description">Pilih layanan dan paket pengerjaan untuk cucian Anda di Kandang Jati Kulon, Probolinggo. Periksa harga dan durasi sebelum membawa cucian.</p>
             <div className="hero-actions">
-              <a className="button button-primary" href={siteHref("/#layanan")}>Lihat daftar harga <span aria-hidden="true">↓</span></a>
+              <a className="button button-primary" href={siteHref("/#layanan")}>Lihat daftar harga</a>
               <a className="button button-secondary" href={whatsappService} target="_blank" rel="noopener noreferrer">Hubungi lewat WhatsApp <span aria-hidden="true">↗</span></a>
             </div>
-            <p className="hero-location"><span className="location-mark" aria-hidden="true" /> {site.landmark}</p>
+            <p className="hero-location">{site.landmark}</p>
           </div>
           <div className="hero-visual">
             <div className="hero-photo-frame">
@@ -61,18 +60,18 @@ export default async function HomePage() {
         <section id="layanan" className="section section-alt" aria-labelledby="services-title">
           <div className="shell">
             <div className="section-top">
-              <div><p className="eyebrow">LAYANAN & HARGA</p><h2 id="services-title">Daftar layanan dan harga</h2></div>
-              <p className="section-intro">Lihat harga, satuan, dan perkiraan waktu pengerjaan untuk setiap layanan.</p>
+              <div><h2 id="services-title">Daftar layanan dan harga</h2></div>
+              <p className="section-intro">Pilih paket untuk melihat layanan yang tersedia. Harga dan durasi dalam jam mengikuti pengaturan laundry.</p>
             </div>
             <ServicePrices initial={catalog.services} initialFailed={catalog.failed} realtime={catalogRealtimeConfig()}/>
-            <details className="price-disclaimer"><summary>Konfirmasi tarif dan estimasi sebelum memesan</summary><p>Konfirmasi biaya dan perkiraan waktu pengerjaan kepada petugas saat menyerahkan cucian.</p></details>
+            <details className="price-disclaimer"><summary>Informasi tarif dan estimasi</summary><p>Konfirmasi biaya dan perkiraan waktu pengerjaan kepada petugas saat menyerahkan cucian. Durasi memakai jam kalender; petugas mencantumkan estimasi tanggal dan waktu selesai pada nota.</p></details>
           </div>
         </section>
 
         <section id="keunggulan" className="section" aria-labelledby="about-title">
           <div className="shell">
             <span id="testimoni" aria-hidden="true" />
-            <div className="section-top"><div><p className="eyebrow">CARA LAUNDRY</p><h2 id="about-title">Cara menggunakan layanan</h2></div></div>
+            <div className="section-top"><div><h2 id="about-title">Cara menggunakan layanan</h2></div></div>
             <ol className="service-steps">
               <li><span aria-hidden="true">01</span><h3>Pilih layanan</h3><p>Lihat jenis cucian, tarif, dan estimasi waktu. Tanyakan kepada petugas jika cucian Anda belum tercantum.</p></li>
               <li><span aria-hidden="true">02</span><h3>Bawa cucian ke laundry</h3><p>Konfirmasi layanan, biaya, dan perkiraan selesai saat menyerahkan cucian.</p></li>
@@ -97,7 +96,6 @@ export default async function HomePage() {
         <section className="section contact-section" id="kontak" aria-labelledby="contact-title">
           <div className="shell contact-grid">
             <div className="contact-copy">
-              <p className="eyebrow">LOKASI & KONTAK</p>
               <h2 id="contact-title">Lokasi dan kontak</h2>
               <p>Tanyakan harga, jenis cucian, atau ketersediaan layanan antar jemput melalui WhatsApp.</p>
               <div className="contact-actions">
@@ -106,7 +104,7 @@ export default async function HomePage() {
               </div>
             </div>
             <aside className="contact-location-card" aria-label="Alamat Mas Jawa Laundry">
-              <span className="location-label">ALAMAT LAUNDRY</span>
+              <span className="location-label">Alamat laundry</span>
 
               <h3>{site.shortAddress}</h3>
               <p>{site.address}<br />{site.landmark}</p>

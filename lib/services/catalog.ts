@@ -1,5 +1,5 @@
 export type Service={id:string;category:string;package_name:string;name:string;price_idr:number;unit:string;duration:string;duration_minutes?:number|null;position:number;is_visible:boolean;revision:number};
-export type PublishedService=Omit<Service,"is_visible"|"revision">;
+export type PublishedService=Omit<Service,"is_visible"|"revision">&{duration_package_code?:string};
 const clean=(v:FormDataEntryValue|null,max:number,required=false)=>{
  const s=typeof v==="string"?v.trim():"";
  return s.length<=max&&(!required||s.length>0)&&!(/[\x00-\x1f\x7f]/.test(s))?s:null;
@@ -17,6 +17,18 @@ export function parseService(form:FormData){
   ...(minutes===null?{}:{duration_minutes:minutes===""?null:Number(minutes)})};
 }
 export const formatPrice=(price:number,unit:string)=>"Rp"+new Intl.NumberFormat("id-ID").format(price)+"/"+unit;
+export function serviceHours(service:{duration_minutes?:number|null;duration:string}){
+ const minutes=service.duration_minutes;
+ if(typeof minutes==='number'&&Number.isFinite(minutes)&&minutes>0){
+  const hours=new Intl.NumberFormat('id-ID',{maximumFractionDigits:2}).format(minutes/60);
+  return (minutes%3===0?'':'Sekitar ')+hours+' jam';
+ }
+ const legacy=service.duration.trim().match(/^(\d+)(?:\s*[–-]\s*(\d+))?\s*(hari|jam|menit)$/i);
+ if(!legacy)return 'Konfirmasi durasi';
+ const factor=legacy[3].toLowerCase()==='hari'?24:legacy[3].toLowerCase()==='menit'?1/60:1;
+ const format=(value:string)=>new Intl.NumberFormat('id-ID',{maximumFractionDigits:2}).format(Number(value)*factor);
+ return (legacy[3].toLowerCase()==='menit'&&Number(legacy[1])%3!==0?'Sekitar ':'')+format(legacy[1])+(legacy[2]?'–'+format(legacy[2]):'')+' jam';
+}
 export function groupServices(services:PublishedService[]){
  const categories=new Map<string,Map<string,PublishedService[]>>();
  for(const s of [...services].sort((a,b)=>a.position-b.position||a.id.localeCompare(b.id))){

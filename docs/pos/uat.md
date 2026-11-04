@@ -45,6 +45,8 @@ Perbaikan UI4November: ulangi login kedua peran, grant create-only/view-only/cas
 
 ## UAT Member Experience V2
 
+Homepage lanjutan: uji Reguler/Ekspres/Kilat, harga/satuan layanan, durasi dalam jam, keyboard selector, informasi tarif, seluruh navigasi dan tautan WhatsApp/Maps pada HP/desktop. [Audit dan bukti homepage](../2026-11-04-homepage-catalog.md) memuat fixture SQL rollback,130 browser dan batas uji fisik. Tidak ada transaksi Production yang diperlukan untuk UAT katalog.
+
 Evidence and complete automated scenarios: [Member Experience V2](../2026-11-04-member-experience-v2.md). Owner/operator must verify an issued card on physical Android: camera allow/deny/retry/close, gallery photo, correct member number, year selection, refresh/history/promo, lost/revoked card denial, TalkBack and 200% zoom. Also verify bookmarked unified login with real Owner/Kasir sessions and role redirect. Status **PHYSICAL_UAT_REQUIRED** until dated device/operator results exist; do not paste tokens or credentials into evidence. Camera video and QR browser fixtures are synthetic, not physical acceptance. This UI release does not authorize financial cutover, remove Data Uji or alter opening points.
 
 

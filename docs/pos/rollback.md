@@ -1,5 +1,7 @@
 # Rollback dan penghentian POS
 
+Katalog homepage4November: rollback aplikasi ke deployment terverifikasi sebelumnya jika pembacaan gagal. Fungsi additive `laundry_public_service_catalog()` boleh tetap terpasang karena tidak mengubah data atau API lama. Jangan drop sebelum seluruh reader berpindah. Scope dan bukti: [homepage/katalog](../2026-11-04-homepage-catalog.md). Tidak perlu restore data untuk perubahan fungsi baca ini.
+
 Pilot Production tetap dummy-only; real G8 NO_GO. [Master audit](./master-audit-20261102.md) memuat kondisi terkini dan acceptance yang belum selesai.
 
 1. Pada insiden, operator berwenang mematikan write_enabled dan finance_enabled untuk menghentikan command baru. Jangan mengubah pilot_test_only menjadi false sebagai cara mengatasi error test.

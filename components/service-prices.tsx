@@ -5,6 +5,7 @@ import type {PublishedService} from "@/lib/services/catalog";
 type Props={initial:PublishedService[];initialFailed:boolean;realtime:{url:string;key:string}|null};
 export default function ServicePrices({initial,initialFailed,realtime}:Props){
  const [services,setServices]=useState(initial),[failed,setFailed]=useState(initialFailed);
+ const [loading,setLoading]=useState(false);
  const etag=useRef("");
  useEffect(()=>{
   let active=true,busy=false,again=false;
@@ -12,7 +13,7 @@ export default function ServicePrices({initial,initialFailed,realtime}:Props){
   let socket:{removeAllChannels:()=>Promise<unknown>;disconnect:()=>Promise<unknown>}|undefined;
   async function refresh(){
    if(!active||document.hidden||!navigator.onLine)return;
-   if(busy){again=true;return}busy=true;
+   if(busy){again=true;return}busy=true;setLoading(true);
    try{
     const response=await fetch("/api/services",{cache:"no-store",signal:controller.signal,headers:etag.current?{"If-None-Match":etag.current}:{}});
     if(response.status===304){if(active)setFailed(false);return}
@@ -21,7 +22,7 @@ export default function ServicePrices({initial,initialFailed,realtime}:Props){
     if(!Array.isArray(body.services))throw Error("invalid");
     if(active){etag.current=response.headers.get("etag")??"";setServices(body.services);setFailed(false)}
    }catch{if(active&&!controller.signal.aborted)setFailed(true)}
-   finally{busy=false;if(again&&active){again=false;void refresh()}}
+   finally{busy=false;if(active)setLoading(false);if(again&&active){again=false;void refresh()}}
   }
   if(realtime){
    void import("@supabase/realtime-js").then(({RealtimeClient})=>{
@@ -39,6 +40,7 @@ export default function ServicePrices({initial,initialFailed,realtime}:Props){
   return ()=>{active=false;controller.abort();clearInterval(timer);void socket?.removeAllChannels().catch(()=>socket?.disconnect());document.removeEventListener("visibilitychange",resume);window.removeEventListener("focus",resume);window.removeEventListener("online",resume)};
  },[realtime?.url,realtime?.key]);
  return <div aria-live="polite" aria-atomic="false">
+  {loading&&services.length===0&&<p className="catalog-feedback" role="status">Memperbarui layanan dan harga…</p>}
   {failed&&<p className="catalog-feedback" role="status">Daftar harga belum dapat diperbarui. Hubungi petugas untuk memastikan harga.</p>}
   {services.length?<ServicePricesView services={services}/>:!failed&&<p className="catalog-feedback">Belum ada layanan yang ditampilkan. Hubungi petugas untuk informasi harga.</p>}
  </div>;

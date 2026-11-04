@@ -300,5 +300,19 @@
     "g8RealGo": false,
     "releasePolicy": "CI must pass before Production read-only function migration and exact-SHA deployment",
     "browserTests": 113
+  },
+  "publicHomepageCatalog": {
+    "baselineMain": "32960bb42a74eded303e15959d51708910c1efd0",
+    "migration": "20261104160718_public_pos_service_catalog.sql",
+    "qa": "PASS_ROLLBACK",
+    "nodeTests": 319,
+    "browserTests": 130,
+    "buildAndTypecheck": "PASS_LOCAL",
+    "productionDataWrites": false,
+    "operationalFlagChanges": false,
+    "physicalUat": false,
+    "g8RealGo": false,
+    "evidence": "docs/2026-11-04-homepage-catalog.md",
+    "releasePolicy": "Exact-SHA CI first; new tariff read function only in Production; final deployment receipt external"
   }
 }

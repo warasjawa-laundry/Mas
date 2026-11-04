@@ -1,7 +1,6 @@
 import "server-only";
 import {createClient} from "@supabase/supabase-js";
 import {assertQaPreviewIsolation} from "@/lib/supabase/qa-preview-isolation";
-import {defaultServices} from "./defaults";
 import type {PublishedService} from "./catalog";
 export type RealtimeConfig={url:string;key:string};
 export function catalogRealtimeConfig():RealtimeConfig|null{
@@ -15,11 +14,10 @@ export function catalogRealtimeConfig():RealtimeConfig|null{
 export async function readPublishedServices(){
  assertQaPreviewIsolation();
  const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_PUBLISHABLE_KEY;
- // The standalone public build retains its existing prices without a backend.
- if(!url||!key)return {services:defaultServices,failed:false};
+ if(!url||!key)return {services:[] as PublishedService[],failed:true};
  const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:(input,init)=>fetch(input,{...init,cache:"no-store"})}});
  try{
-  const {data,error}=await client.from("laundry_services").select("id,category,package_name,name,price_idr,unit,duration,position").eq("is_visible",true).order("position").order("id").limit(200);
+  const {data,error}=await client.rpc("laundry_public_service_catalog");
   return {services:(error?[]:data??[]) as PublishedService[],failed:!!error};
  }catch{return {services:[] as PublishedService[],failed:true}}
 }
