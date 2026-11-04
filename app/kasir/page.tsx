@@ -1,3 +1,5 @@
+import OwnerLoginSubmit from "@/components/admin/owner-login-submit";
+import Disclosure from "@/components/pos/disclosure";
 
 import Link from "next/link";
 import type {Metadata} from "next";
@@ -17,7 +19,7 @@ export default async function CashierHome({searchParams}:{searchParams:Promise<{
    <nav className="mj-login-tabs" aria-label="Jenis pengguna"><Link prefetch={false} href="/admin/login?role=owner">MANAJER</Link><span aria-current="page">KASIR</span></nav>
    <div className="mj-login-fields"><h1>Masuk Kasir</h1><p>Gunakan ID kasir yang diberikan manajer laundry.</p>
     {params.error&&<p role="alert" className="mj-pos-notice">{params.error==="unavailable"?"Login kasir belum tersedia pada database aktif.":"ID tidak dikenal, tidak aktif, atau terlalu banyak percobaan."}</p>}
-    <form action={loginCashier}><label htmlFor="cashier-username">ID Kasir</label><input id="cashier-username" name="username" autoComplete="off" spellCheck={false} type="text" placeholder="MAS-2001" maxLength={8} pattern="MAS-[0-9]{4}" required/><button type="submit">Masuk</button></form>
+    <form action={loginCashier}><label htmlFor="cashier-username">ID Kasir</label><input id="cashier-username" name="username" autoComplete="off" spellCheck={false} type="text" placeholder="MAS-2001" maxLength={8} pattern="MAS-[0-9]{4}" required/><OwnerLoginSubmit/></form>
     <Link prefetch={false} href="/admin/login?role=owner">Masuk sebagai pemilik</Link></div>
   </section>
  </main>;
@@ -35,7 +37,7 @@ export default async function CashierHome({searchParams}:{searchParams:Promise<{
     <Link href="/kasir/menu">Buka Menu Kasir</Link></main>:
   <PosBoard role="cashier" tab={params.tab} view={params.view} orders={orders} dbReady={dbReady} writeEnabled={session.write_enabled} permissions={session.permissions}/>}
   <section className="mj-cashier-identity">{!session.write_enabled&&<p role="status">Modul transaksi belum diaktifkan</p>}<span>Kasir: {session.display_name} · {session.username}</span>
-   <details><summary>Hak akses kasir</summary><ul>{CASHIER_PERMISSIONS.filter(([key])=>hasCashierGrant(session.permissions,key)).map(([key,label])=><li key={key}>{key==="member_lookup"?"Cari pelanggan":label}</li>)}</ul></details>
+   <Disclosure title="Hak akses kasir"><ul>{CASHIER_PERMISSIONS.filter(([key])=>hasCashierGrant(session.permissions,key)).map(([key,label])=><li key={key}>{key==="member_lookup"?"Cari pelanggan":label}</li>)}</ul></Disclosure>
    <form action={leaveCashier}><button type="submit">Keluar Kasir</button></form></section>
  </>;
 }

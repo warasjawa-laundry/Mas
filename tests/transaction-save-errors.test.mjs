@@ -6,7 +6,7 @@ import ts from 'typescript';
 const compiled=ts.transpileModule(readFileSync('app/admin/points/actions.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
 function action(result){
  const out={exports:{}};let writes=0;
- const mocks={'next/navigation':{redirect(url){throw Error('redirect:'+url)}},'@/lib/supabase/owner':{requireOwner:async()=>({supabase:{rpc:async()=>{writes++;return result}}})}};
+ const mocks={'next/navigation':{redirect(url){throw Error('redirect:'+url)}},'@/lib/supabase/owner':{requireOwner:async()=>({supabase:{rpc:async(name)=>{if(name==="laundry_pos_display_context")return {data:{pilot_test_only:false},error:null};writes++;return result}}})}};
  runInNewContext(compiled,{require:n=>mocks[n],exports:out.exports,module:out,Number,String,Array});
  return {save:out.exports.recordAmountVisit,writes:()=>writes};
 }

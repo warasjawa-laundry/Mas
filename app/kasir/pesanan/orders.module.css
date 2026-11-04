@@ -43,7 +43,6 @@
 .paymentForm .muted{margin:0}.paymentForm button{width:100%}
 .mutedPanel{padding:18px;border-radius:12px;background:#fff8df;border:1px solid #ecdeac;margin:20px 0;font-size:13px}.mutedPanel .mainButton{width:100%}
 .refundPanel{border-top:1px solid #eeeff1;padding-top:20px;margin-top:22px}
-.refundPanel summary{min-height:44px;display:list-item;font-size:13px;font-weight:700;color:#62666d;cursor:pointer;padding:11px 0}
 .dangerButton{background:#a62925;color:#fff;border:0;border-radius:11px;padding:12px 18px;min-height:48px;font:inherit;font-size:13px;font-weight:800;cursor:pointer}.dangerButton:disabled{background:#e2e3e5;color:#62666d;cursor:not-allowed}
 .detailGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
 .detailGrid>.card{margin:0}.detailGrid>.paymentCard{grid-column:2;grid-row:1/span 2}
@@ -63,3 +62,7 @@
 .simulationPoints{margin-block:12px;min-width:0;border-left:4px solid #f7b801;overflow-wrap:anywhere}
 .simulationPoints h2{font-size:15px}
 .simulationLabel{display:inline-block;background:#fff3c4;color:#332800;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.5}
+
+.paymentForm input[type=checkbox]{width:22px;min-width:22px;min-height:22px;height:22px;flex-shrink:0;margin:0;accent-color:#805c00}
+.paymentForm label:has(input[type=checkbox]){display:flex;align-items:flex-start;gap:12px;min-height:44px;line-height:1.6}
+@media(max-width:560px){.item,.receipt{flex-wrap:wrap}.item>strong,.receipt>strong{max-width:100%;margin-left:auto;overflow-wrap:normal;white-space:nowrap;flex-shrink:0}.item>div,.receipt>div,.receipt>span{flex:1 1 160px}.shell>a{min-width:44px}}

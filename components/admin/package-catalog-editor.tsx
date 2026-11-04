@@ -48,7 +48,7 @@ export default function PackageCatalogEditor({settings,receipt}:{settings:Packag
    {settings.packages.map(p=><details className="mj-catalog-card mj-package-card" key={p.code}>
     <summary aria-label={`Ubah paket ${p.name}, ${packageDuration(p.duration_minutes)}`}>
      <span className="mj-package-detail"><strong>{p.name}</strong><span className="mj-package-duration">{packageDuration(p.duration_minutes)}</span><small>Jam kalender</small></span>
-     <span className="mj-package-controls"><span className={`mj-catalog-status ${p.active?'is-active':'is-inactive'}`}>{p.active?'Aktif':'Nonaktif'}</span><span className="mj-catalog-edit" aria-hidden="true">Ubah <span>↗</span></span></span>
+     <span className="mj-package-controls"><span className={`mj-catalog-status ${p.active?'is-active':'is-inactive'}`}>{p.active?'Aktif':'Nonaktif'}</span><span className="mj-catalog-edit" aria-hidden="true">Ubah <span className="mj-editor-closed">Buka</span><span className="mj-editor-open">Tutup</span></span></span>
     </summary>
     <div className="mj-catalog-edit-panel">
      <RecoverableForm action={savePackage} className="admin-form mj-catalog-form">
@@ -78,7 +78,7 @@ export default function PackageCatalogEditor({settings,receipt}:{settings:Packag
     <span className="mj-service-price-list">
      {settings.packages.map(p=>{const tariff=f.tariffs.find(t=>t.code===p.code);const available=f.active&&p.active&&tariff?.active;return <span key={p.code}><span>{p.name}</span><strong className={available?'':'mj-price-unavailable'}>{available&&tariff?money(tariff.price_idr):'Tidak tersedia'}</strong></span>})}
     </span>
-    <span className="mj-catalog-edit mj-service-edit" aria-hidden="true">Ubah layanan <span>↗</span></span>
+    <span className="mj-catalog-edit mj-service-edit" aria-hidden="true">Ubah layanan <span className="mj-editor-closed">Buka</span><span className="mj-editor-open">Tutup</span></span>
    </summary>
    <div className="mj-catalog-edit-panel"><FamilyForm family={f} packages={settings.packages}/></div>
   </details>)}

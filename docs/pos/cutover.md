@@ -25,3 +25,8 @@ Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota
 ## Simulasi poin bukan cutover
 
 RPC/helper simulasi poin hanya membaca katalog, nota/pembayaran dan aturan periode. Label SIMULASI — TIDAK DIBUKUKAN tidak menjadi poin aktual atau saldo member. Task simulasi tidak mengarsipkan/menghapus/reset data dummy; prosedur akhir pilot, rekonsiliasi dan G8 tetap terpisah. Deploy code setelah CI dan dua fungsi read-only QA/Production diverifikasi; jangan mengubah flags atau ledger untuk menguji tampilan.
+
+
+## Validasi paket UI kedua peran, 4 November 2026
+
+Paket UI4November tidak mengubah keputusan cutover. Pasang fungsi baca display_context dan katalog hanya setelah QA/CI lulus, sebelum deploy source yang memakainya; validasi SHA domain. Mode pilot/flag finansial tetap seperti baseline. Histori poin legacy dibaca tetapi server action penulisan/koreksi menolak pilot atau metadata tidak tersedia.

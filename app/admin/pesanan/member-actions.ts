@@ -12,7 +12,7 @@ export async function findOwnerPosMembers(raw:string):Promise<OwnerPosMember[]>{
  const escaped=term.replace(/[\\%_]/g,"\\$&");
  const {data,error}=await supabase.from("laundry_members").select("member_number,display_name")
   .eq("is_active",true).ilike("display_name",escaped+"%").order("display_name").limit(8);
- if(error||!Array.isArray(data))return [];
+ if(error||!Array.isArray(data))throw new Error("Pencarian member belum dapat dimuat.");
  return data.flatMap(x=>{
   const memberNumber=String(x.member_number??"");
   if(!/^[1-9][0-9]{0,11}$/.test(memberNumber)||typeof x.display_name!=="string")return [];

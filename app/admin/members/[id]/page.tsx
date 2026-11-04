@@ -1,3 +1,4 @@
+import {readDisplayContext} from "@/components/pos/context-notice";
 import Link from "next/link";
 import {randomUUID} from "node:crypto";
 import {notFound} from "next/navigation";
@@ -28,6 +29,7 @@ export default async function OwnerMember({params,searchParams}:Props){
    <nav className="admin-breadcrumb" aria-label="Kembali"><Link href="/admin/members">← Data Pelanggan</Link></nav>
    <section className="admin-content customer-profile">
     <header className="customer-profile-heading"><div><h1>{member.display_name}</h1><p className="admin-hint">{memberNumber(member.member_number)}</p></div><span className="customer-status">{member.is_active?"Aktif":"Nonaktif"}</span></header>
+    <nav className="member-task-nav" aria-label="Riwayat pelanggan"><Link href={`/admin/members/${id}?view=history`} prefetch={false}>Riwayat transaksi & poin</Link><Link href={`/admin/members/${id}?view=promo`} prefetch={false}>Promo member</Link></nav>
     <section className="customer-contact-panel" aria-labelledby="customer-contact-heading">
      <h2 id="customer-contact-heading">Data Kontak</h2>
      <Link prefetch={false} href={`/admin/members/${id}/card`} className="admin-logout">Kartu Member</Link>
@@ -37,6 +39,8 @@ export default async function OwnerMember({params,searchParams}:Props){
    </section>
   </main>;
  }
+ const contextR=await supabase.rpc("laundry_pos_display_context");
+ const allowLegacyTransactions=!contextR.error&&readDisplayContext(contextR.data)?.pilot_test_only===false;
  const pointYear=Number(new Intl.DateTimeFormat("en-US",{year:"numeric",timeZone:"Asia/Jakarta"}).format(new Date()));
  const [memberR,addsR,voidsR,historyR,promosR,balancesR,rulesR]=await timeAdmin("member.detail.queries", () => Promise.all([
   supabase.from("laundry_members").select("id,member_number,display_name,is_active,whatsapp_e164,whatsapp_promo_consent,address").eq("id",id).maybeSingle(),
@@ -73,15 +77,16 @@ export default async function OwnerMember({params,searchParams}:Props){
    {notice.amountRecorded==="1" && <p className="admin-success" role="status">Transaksi berhasil dicatat. Poin bertambah {Number(notice.pointsEarned)||0}. <Link href={`/admin/members/${id}?view=history`}>Lihat riwayat →</Link></p>}
    {notice.corrected==="1" && <p className="admin-success" role="status">Transaksi berhasil dibatalkan dengan riwayat tetap tersimpan.</p>}
    {notice.error && <p className="admin-error" role="alert">
-      {notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi pengelola database untuk memeriksa aturan poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
+      {notice.error==="pilot"?"Perubahan transaksi dan poin lama tidak tersedia selama mode uji.":notice.error==="reason"?"Alasan pembatalan minimal 3 karakter.":notice.error==="amount"?"Isi nominal transaksi dan keterangan dengan benar.":notice.error==="rules"?"Aturan poin tahun ini belum tersedia. Hubungi pengelola database untuk memeriksa aturan poin.":"Perubahan gagal disimpan. Periksa koneksi dan coba lagi."}
     </p>}
    <p className="member-context-line">{balancesR.error?"Poin belum dimuat":`${currentPoints?.points_total??0} poin (${pointYear})`} · {failed?"Total transaksi belum dimuat":`${total} transaksi seluruh periode`}</p>
-   <MemberTaskNav memberId={id} view={view}/>
+   <MemberTaskNav memberId={id} view={view} allowTransactions={allowLegacyTransactions}/>
    {view==="transaction"&&<section aria-label="Catat transaksi">
+   {!allowLegacyTransactions?<p className="admin-error">Pencatatan poin manual tidak tersedia selama mode transaksi belum dipastikan atau masih dalam uji coba. Gunakan riwayat untuk memeriksa catatan lama.</p>:<>
    {rulesR.error||!rulesR.data?
      <p className="admin-error">Aturan poin belum dimuat. Transaksi bernominal tidak dapat disimpan untuk sementara.</p>:
      <AmountVisitForm key={amountRequestId} memberName={member.display_name} memberId={id} requestId={amountRequestId} memberActive={member.is_active}
-       tiers={pointRules} year={pointYear}/>}
+       tiers={pointRules} year={pointYear}/>}</>}
    </section>}
    <div className="owner-detail-jump-links"><Link href={`/admin/members/${id}/edit`} className="admin-logout">Ubah Data</Link><Link href={`/admin/members/${id}/card`} className="admin-logout">Kartu QR</Link></div>
    {view==="history"&&<section aria-label="Riwayat member">
@@ -104,7 +109,7 @@ export default async function OwnerMember({params,searchParams}:Props){
         {!isVoid&&!historyR.amountsFailed&&!amountMap.has(event.id)&&<small>Catatan lama tanpa nominal · 0 poin</small>}
         {isVoid&&<small>Alasan: {event.reason}</small>}
        </div>
-       {!isVoid&&!historyR.reversalsFailed&&!wasCorrected&&<details className="owner-void-box"><summary>Batalkan</summary>
+       {allowLegacyTransactions&&!isVoid&&!historyR.reversalsFailed&&!wasCorrected&&<details className="owner-void-box"><summary>Batalkan</summary>
          <form action={correctOwnerVisit}>
            <input type="hidden" name="memberId" value={id}/>
            <input type="hidden" name="eventId" value={event.id}/>
@@ -124,7 +129,7 @@ export default async function OwnerMember({params,searchParams}:Props){
    </nav>}
    </details>
    </section>}
-   {view==="promo"&&<MemberPromotions memberId={id} memberName={member.display_name}
+   {view==="promo"&&<MemberPromotions readOnly={!allowLegacyTransactions} memberId={id} memberName={member.display_name}
      requestId={promoRequestId} promos={promosR.data||[]}
      whatsappPhone={member.whatsapp_e164} whatsappConsent={member.whatsapp_promo_consent===true} memberActive={member.is_active}
      loadFailed={!!promosR.error} error={notice.promoError} result={notice.promo}/>}

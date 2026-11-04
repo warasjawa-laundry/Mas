@@ -1,0 +1,40 @@
+import {test,expect} from '@playwright/test';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import path from 'node:path';
+import {createRequire} from 'node:module';
+import ts from 'typescript';
+const req=createRequire(process.cwd()+'/package.json'),webpack=req('next/dist/compiled/webpack/webpack-lib');
+const dir=path.resolve('test-results/pos-ui-controls'),bundle=path.join(dir,'bundle.js');
+test.describe.configure({mode:'serial'});
+test.beforeAll(async()=>{
+ mkdirSync(dir,{recursive:true});
+ const files={dialog:'components/admin/review-dialog.tsx',disclosure:'components/pos/disclosure.tsx',confirm:'components/admin/confirm-submit.tsx',pending:'components/admin/pending-submit.tsx',scanner:'app/kasir/pesanan/baru/cashier-qr-scanner.tsx',context:'components/pos/context-notice.tsx'};
+ for(const [name,file] of Object.entries(files))writeFileSync(path.join(dir,name+'.cjs'),ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText);
+ writeFileSync(path.join(dir,'styles.cjs'),'exports.default=new Proxy({},{get:(_,key)=>key});');
+ writeFileSync(path.join(dir,'stubs.cjs'),`exports.useRouter=()=>({replace:href=>{window.closedHref=href;window.closeReview()}});exports.resolveCashierMemberCode=async()=>null;exports.resolveOwnerPosMemberCode=async()=>null;exports.decodeLaundryQrImage=async()=>{throw Error('synthetic')};exports.decodeLaundryBarcodeImage=async()=>{throw Error('synthetic')};`);
+ writeFileSync(path.join(dir,'entry.js'),`import React,{useState} from 'react';import {createRoot} from 'react-dom/client';import Dialog from './dialog.cjs';import Disclosure from './disclosure.cjs';import Confirm from './confirm.cjs';import {CashierQrScanner} from './scanner.cjs';import Context from './context.cjs';
+ function App(){const [open,setOpen]=useState(false);window.closeReview=()=>setOpen(false);return <><button id="launch" onClick={()=>setOpen(true)}>Buka review</button><Disclosure title="Atur penerima"><label>Nomor WhatsApp<input type="tel"/></label></Disclosure><CashierQrScanner disabled={false} onMember={()=>{}}/><Context context={{pilot_test_only:true,write_enabled:true,finance_enabled:true}}/><form onSubmit={e=>{e.preventDefault();window.submits=(window.submits||0)+1}}><Confirm label="Nonaktifkan kasir" description="Sesi berakhir; riwayat tetap tersimpan." className="danger"/></form>{open&&<Dialog closeHref="/review?hide=1"><input aria-label="Alasan review"/><button>Konfirmasi hanya fixture</button></Dialog>}</>};createRoot(document.getElementById('root')).render(<App/>);`);
+ const entry=path.join(dir,'entry.js');writeFileSync(entry,ts.transpileModule(readFileSync(entry,'utf8'),{compilerOptions:{jsx:ts.JsxEmit.ReactJSX,module:ts.ModuleKind.CommonJS}}).outputText);
+ const stub=path.join(dir,'stubs.cjs'),alias={'next/navigation':stub,'./pending-submit':path.join(dir,'pending.cjs'),'./wizard.module.css':path.join(dir,'styles.cjs'),'./qr-actions':stub,'@/app/admin/pesanan/member-actions':stub,'@/lib/laundry/qr-image':stub,'@/lib/laundry/barcode-image':stub};
+ await new Promise<void>((resolve,reject)=>{const compiler=webpack({mode:'production',entry,optimization:{minimize:false},output:{path:dir,filename:'bundle.js'},resolve:{modules:[path.resolve('node_modules'),'node_modules'],alias}});compiler.run((error:Error|null,stats:any)=>compiler.close(()=>error?reject(error):stats.hasErrors()?reject(Error(stats.toString())):resolve()));});
+});
+for(const width of [320,390,768,1024,1440])test(`cashier and owner controls fit, disclose and trap modal focus at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:700});
+ const css=readFileSync('app/pos-ui.css','utf8')+'\n'+readFileSync('app/kasir/pesanan/baru/wizard.module.css','utf8');
+ await page.route('**/*',r=>r.fulfill({contentType:'text/html',body:`<style>body{margin:0;font-family:Arial}.fixture{padding:14px;max-width:650px;box-sizing:border-box;margin:auto}input{max-width:100%}${css}</style><main class="fixture"><div id="root"></div></main>`}));
+ await page.goto('http://127.0.0.1:3000/controls-fixture');await page.addScriptTag({path:bundle});
+ const summary=page.locator('summary');await expect(summary).toContainText('Buka');await summary.click();await expect(summary).toContainText('Tutup');await expect(page.getByLabel('Nomor WhatsApp')).toBeVisible();
+ await summary.focus();await page.keyboard.press('Enter');await expect(page.getByLabel('Nomor WhatsApp')).toBeHidden();
+ await expect(page.locator('video')).toBeHidden();
+ const camera=page.getByRole('button',{name:'Scan Barcode / QR Kamera'});expect((await camera.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+ await expect(page.getByRole('note')).toContainText('Mode uji.');
+ await page.getByRole('button',{name:'Nonaktifkan kasir',exact:true}).click();expect(await page.evaluate(()=>(window as any).submits||0)).toBe(0);
+ await page.getByRole('button',{name:'Batal',exact:true}).click();expect(await page.evaluate(()=>(window as any).submits||0)).toBe(0);
+ await page.getByRole('button',{name:'Buka review'}).click();const dialog=page.getByRole('dialog');await expect(dialog).toBeVisible();
+ await dialog.getByRole('button',{name:'Konfirmasi hanya fixture'}).focus();await page.keyboard.press('Tab');
+ // Native dialogs may focus their own document viewport between the last and first control.
+ await page.keyboard.press('Tab');expect(await page.evaluate(()=>!!document.activeElement?.closest('dialog'))).toBe(true);
+ await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(page.getByRole('button',{name:'Buka review'})).toBeFocused();
+ expect(await page.evaluate(()=>(window as any).closedHref)).toBe('/review?hide=1');expect(await page.evaluate(()=>(window as any).submits||0)).toBe(0);
+});

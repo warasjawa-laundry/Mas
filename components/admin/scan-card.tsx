@@ -188,7 +188,7 @@ export default function ScanCard() {
         </button>
         <Link href="/admin/members" className="admin-logout">Cari Member Manual</Link>
       </div>
-      {loading && <p className="member-note" role="status">Memeriksa kartu dan membuka transaksi member…</p>}
+      {loading && <p className="member-note" role="status">Memeriksa kartu dan membuka profil pelanggan…</p>}
       <div className={"owner-camera" + (running || starting ? " owner-camera-active" : "")}>
         <video ref={videoRef} autoPlay muted playsInline aria-label="Kamera untuk scan kartu" />
         {!running && !starting && <span className="owner-camera-placeholder">Pilih kamera atau foto QR dari galeri</span>}

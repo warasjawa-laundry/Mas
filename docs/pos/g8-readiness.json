@@ -5,8 +5,8 @@
   "sourceRepository": "warasjawa-laundry/Mas",
   "vercelProject": "mas",
   "vercelGitConnection": "unyilhm1-hue/mas",
-  "reviewedMainSha": "cf7a7997b7a4da655c58b205bcc4c6111f08be9f",
-  "deployedProductionSha": "cf7a7997b7a4da655c58b205bcc4c6111f08be9f",
+  "reviewedMainSha": "f2b79943dd43b4ed7276bbda87eaa56c31a34768",
+  "deployedProductionSha": "f2b79943dd43b4ed7276bbda87eaa56c31a34768",
   "productionPosTables": 22,
   "productionOutletCount": 1,
   "productionWriteEnabledOutlets": 1,
@@ -275,5 +275,30 @@
     "productionDataCleanupAuthorized": false,
     "releasePolicy": "Apply necessary read-only functions only after CI; record deployment SHA and integrity in final receipt",
     "g8RealGo": false
+  },
+  "uiRemediation": {
+    "baselineMainSha": "f2b79943dd43b4ed7276bbda87eaa56c31a34768",
+    "migration": "20261104070000_pos_ui_display_context.sql",
+    "canonicalMigrations": 44,
+    "findingsImplemented": 23,
+    "nodeTests": 309,
+    "layoutScenarios": 58,
+    "layoutRenders": 348,
+    "viewportWidths": [
+      320,
+      390,
+      768,
+      1024,
+      1280,
+      1440
+    ],
+    "layoutOverflowAfter": 0,
+    "qaContextAcl": "PASS_ROLLBACK",
+    "physicalUat": false,
+    "realAuthUat": false,
+    "productionDataWrites": false,
+    "g8RealGo": false,
+    "releasePolicy": "CI must pass before Production read-only function migration and exact-SHA deployment",
+    "browserTests": 113
   }
 }

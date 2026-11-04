@@ -1,3 +1,4 @@
+import Disclosure from "@/components/pos/disclosure";
 import PointSimulation from "@/components/pos/point-simulation";
 import {readPointSimulation,pointSimulationMatchesPayment} from "@/lib/pos/point-simulation";
 import Link from "next/link";
@@ -26,7 +27,7 @@ type Receipt={id:string;type:'RECEIPT'|'REFUND';method:'CASH'|'NONCASH';amount_i
 type Finance={order_id:string;total_idr:string;paid_idr:string;refunded_idr:string;remaining_idr:string;payment_status:'UNPAID'|'PARTIAL'|'PAID'|'REFUNDED'|'ZERO_TOTAL';version:number;shift_open:boolean;finance_enabled?:boolean;receipts:Receipt[]};
 type Search={error?:string;saved?:string;retry?:string;amount?:string;method?:string;version?:string;retryRefund?:string;reason?:string};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const labels={UNPAID:'Belum bayar',PARTIAL:'Bayar sebagian',PAID:'Lunas',REFUNDED:'Sudah direfund',ZERO_TOTAL:'Gratis'} as const;
+const labels={UNPAID:'Belum bayar',PARTIAL:'Dibayar sebagian',PAID:'Lunas',REFUNDED:'Dana sudah dikembalikan',ZERO_TOTAL:'Gratis'} as const;
 const money=(v:string|number)=>formatIdr(v);
 
 export default async function OrderDetails({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<Search>}){
@@ -62,7 +63,7 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
   <h1>{o.invoice_no}</h1>
   <p className={styles.muted}><strong>{o.customer_name}</strong> · {new Date(o.created_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</p></div>{hasCashierGrant(access.session.permissions,'receipt_print')&&<PrintButton/>}</header>
   {query.error&&<p className={styles.warning} role="alert">
-   {query.error.includes('unconfirmed')?'Hasil transaksi belum terkonfirmasi. Periksa daftar pembayaran sebelum mencoba kembali dengan request yang SAMA.':
+   {query.error.includes('unconfirmed')?'Hasil transaksi belum terkonfirmasi. Periksa daftar pembayaran sebelum mencoba kembali dengan nomor permintaan yang sama.':
      'Perubahan belum terkonfirmasi. Periksa status nota sebelum mengulangi tindakan.'}
   </p>}
   {query.saved&&<p className={styles.ok} role="status">{query.saved==='payment'?'Pembayaran tercatat.':query.saved==='refund'?'Pengembalian penuh tercatat.':query.saved==='shift'?'Kas dibuka.':query.saved==='cancelled'?'Nota dibatalkan.':'Status tersimpan.'}</p>}
@@ -110,19 +111,18 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
       </label>
       <label>Metode pembayaran<select name="method" defaultValue={wantsRetry?query.method:'CASH'}>
        <option value="CASH">Tunai</option><option value="NONCASH">Non-tunai (dikonfirmasi petugas)</option></select></label>
-      <p id="payment-help" className={styles.muted}>Cocokkan nominal dan metode dengan pembayaran yang diterima. Jangan terima pembayaran lagi jika transaksi sebelumnya belum jelas.</p>
-      <PendingSubmit className={styles.mainButton} disabled={!canFinance||!f.shift_open} label="Simpan pembayaran"/>
+      <p id="payment-help" className={styles.muted}>{o.is_test_order?'Gunakan nominal simulasi; jangan menerima dana sungguhan.':'Cocokkan nominal dan metode dengan pembayaran yang diterima.'} Jangan terima pembayaran lagi jika transaksi sebelumnya belum jelas.</p>
+      <PendingSubmit className={styles.mainButton} disabled={!canFinance||!f.shift_open} label={o.is_test_order?"Simpan simulasi pembayaran":"Simpan pembayaran"}/>
     </>}</RecoverableForm>}
     {hasReceipts&&canRefund&&<RecoverableForm action={refundCashierOrder} className={styles.paymentForm}
       recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'FULL_REFUND',o.id)} recoverAction={recoverCashierCommand.bind(null,'FULL_REFUND',o.id)}>
-     {f.payment_status!=='REFUNDED'&&<details className={styles.refundPanel}>
-     <summary>Pengembalian dana penuh</summary>
+     {f.payment_status!=='REFUNDED'&&<Disclosure title="Pengembalian dana penuh" className={styles.refundPanel}>
       <input type="hidden" name="orderId" value={o.id}/><input type="hidden" name="requestId" value={refundReq}/>
       <input type="hidden" name="expectedVersion" value={wantsRefundRetry?query.version??String(f.version):String(f.version)}/>
-      <label>Alasan refund<input name="reason" minLength={3} maxLength={300} required defaultValue={''} placeholder="Alasan wajib dicatat"/></label>
-      <p className={styles.muted}>Semua pembayaran akan dikembalikan sesuai metode asal. Jika hasil sebelumnya tidak diketahui, cocokkan jurnal dan ulangi hanya dengan alasan serta ID request yang sama.</p>
-      <PendingSubmit className={styles.dangerButton} disabled={!canFinance||!f.shift_open} label="Konfirmasi refund penuh"/>
-    </details>}</RecoverableForm>}
+      <label>Alasan pengembalian dana<input name="reason" minLength={3} maxLength={300} required defaultValue={''} placeholder="Alasan wajib dicatat"/></label>
+      <p className={styles.muted}>{o.is_test_order?'Hanya catatan simulasi yang dibalik; tidak ada dana atau poin member yang dipindahkan.':'Semua pembayaran akan dikembalikan sesuai metode asal.'} Jika hasil sebelumnya tidak diketahui, cocokkan jurnal dan ulangi hanya dengan alasan serta nomor permintaan yang sama.</p>
+      <PendingSubmit className={styles.dangerButton} disabled={!canFinance||!f.shift_open} label={o.is_test_order?"Konfirmasi pengembalian simulasi":"Konfirmasi pengembalian dana"}/>
+    </Disclosure>}</RecoverableForm>}
     {!canFinance&&<p className={styles.warning} role="status">Transaksi finansial POS masih dikunci. Nota dan riwayat tetap dapat dilihat, tetapi pembayaran dan refund belum bisa diproses.</p>}
    </>}
   </section>
@@ -134,18 +134,17 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
     {target&&<>
     <input name="orderId" type="hidden" value={o.id}/><input name="requestId" type="hidden" value={randomUUID()}/>
     <input name="target" type="hidden" value={target}/>
-    <PendingSubmit className={styles.mainButton} disabled={!canWrite||(target==='COLLECTED'&&f?.payment_status!=='PAID')} label={`Ubah ke ${target==='PROCESSING'?'Mulai proses':target==='READY'?'Siap Diambil':'Sudah Diambil'}`}/>
+    <PendingSubmit className={styles.mainButton} disabled={!canWrite||(target==='COLLECTED'&&f?.payment_status!=='PAID')} label={`${target==='PROCESSING'?'Mulai proses':target==='READY'?'Ubah ke Siap Diambil':'Ubah ke Sudah Diambil'}`}/>
    </>}</RecoverableForm>}
-   {f&&hasCashierGrant(access.session.permissions,'order_work')&&<RecoverableForm action={cancelCashierOrder}
+   {f&&hasCashierGrant(access.session.permissions,'order_work')&&<RecoverableForm className={styles.paymentForm} action={cancelCashierOrder}
     recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'CANCEL',o.id)} recoverAction={recoverCashierCommand.bind(null,'CANCEL',o.id)}>
-    {o.lifecycle_status==='CONFIRMED'&&f.paid_idr===f.refunded_idr&&<details className={styles.refundPanel}>
-     <summary>Batalkan nota</summary>
+    {o.lifecycle_status==='CONFIRMED'&&f.paid_idr===f.refunded_idr&&<Disclosure title="Batalkan nota" className={styles.refundPanel}>
      <input name="orderId" type="hidden" value={o.id}/><input name="requestId" type="hidden" value={randomUUID()}/>
      <input name="expectedVersion" type="hidden" value={String(f.version)}/>
      <label>Alasan pembatalan<input name="reason" minLength={3} maxLength={300} required/></label>
      <p className={styles.muted}>Pembatalan hanya tersedia jika tidak ada dana diterima atau refund penuh sudah selesai. Riwayat tidak dihapus.</p>
      <PendingSubmit className={styles.dangerButton} disabled={!canWrite} label="Konfirmasi pembatalan nota"/>
-    </details>}
+    </Disclosure>}
    </RecoverableForm>}
   </section>
   <>{o.is_test_order&&<PointSimulation data={!simulation.error&&pointSimulationMatchesPayment(readPointSimulation(simulation.data),f)?readPointSimulation(simulation.data):null}/>}</>

@@ -24,6 +24,15 @@ const Promos=component("components/admin/member-promotions.tsx",{
 const css=readFileSync("app/globals.css","utf8").replace(/^@import[^\n]*\n/,"")+"\n"+readFileSync("app/pos-ui.css","utf8")+"\n"+readFileSync("app/admin/admin.css","utf8");
 const memberId="00000000-0000-4000-8000-000000000012";
 const members=[{id:memberId,member_number:6,display_name:"Nama Contoh",is_active:true},{id:memberId+"x",member_number:5,display_name:"Member dengan nama sangat panjang untuk pengujian",is_active:false}];
+test('pilot promo view shows existing terms without mutation or messaging controls',async({page})=>{
+ await page.setViewportSize({width:390,height:800});
+ const content=renderToStaticMarkup(Promos({memberId,memberName:'QA Member',requestId:memberId,promos:[{id:memberId,title:'QA promo retained',terms:'QA terms',status:'AVAILABLE',expires_at:null,created_at:'2026-11-01T00:00:00Z',redeemed_at:null,cancelled_at:null,cancel_reason:null},{id:'qa-used',title:'QA used',status:'USED',created_at:'2026-11-01T00:00:00Z',redeemed_at:'2026-11-02T00:00:00Z'},{id:'qa-cancelled',title:'QA cancelled',status:'CANCELLED',created_at:'2026-11-01T00:00:00Z',cancel_reason:'QA historical reason'}],loadFailed:false,whatsappPhone:null,whatsappConsent:false,memberActive:true,readOnly:true}));
+ await page.setContent(`<style>${css}</style><div class="admin-root">${content}</div>`);
+ await expect(page.getByText('QA promo retained',{exact:true})).toBeVisible();
+ await expect(page.getByRole('status')).toContainText('Promo ditampilkan untuk dibaca');
+ await expect(page.getByText('Dibatalkan: QA historical reason',{exact:true})).toBeVisible();await expect(page.getByText(/^Dipakai /)).toBeVisible();
+ await expect(page.locator('form')).toHaveCount(0);await expect(page.locator('summary')).toHaveCount(0);
+});
 for(const width of [320,390,1440])test(`customer directory and retained legacy promo controls at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:900});
  const shell=(content:string)=>`<style>body{margin:0}${css}</style><div class="admin-root"><main class="admin-workspace"><section class="admin-content owner-member-page">${content}</section></main></div>`;

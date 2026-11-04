@@ -33,6 +33,8 @@ export async function grantManualPromo(formData: FormData) {
     if(date.getTime()<=Date.now())return {error:"Pilih tanggal berlaku promo hari ini atau setelahnya."};
   }
 
+  const mode=await supabase.rpc("laundry_pos_display_context");
+  if(mode.error||mode.data?.pilot_test_only!==false)return {error:"Perubahan promo tidak tersedia saat mode uji atau mode transaksi belum dapat diperiksa."};
   const { data,error }=await supabase.rpc("laundry_grant_manual_promotion",{
     p_member_id:memberId,p_title:title,p_terms:terms||null,
     p_expires_at:expiresAt,p_request_id:requestId
@@ -54,6 +56,8 @@ export async function finishManualPromo(formData:FormData) {
   if(action==="CANCEL"&&(reason.length<3||reason.length>500))
     return {error:"Alasan pembatalan harus 3–500 karakter."};
 
+  const mode=await supabase.rpc("laundry_pos_display_context");
+  if(mode.error||mode.data?.pilot_test_only!==false)return {error:"Perubahan promo tidak tersedia saat mode uji atau mode transaksi belum dapat diperiksa."};
   const {data,error}=await supabase.rpc("laundry_finish_manual_promotion",{
     p_member_id:memberId,p_promotion_id:promoId,p_action:action,p_reason:action==="CANCEL"?reason:null
   });

@@ -37,3 +37,8 @@ Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota
 | Member sintetis QA75.000 | DP25.000 tanpa points, lunas50.000 award sekali/retry, refund VOID sekali dan saldo0 | RPC/ledger/balance/history SQL PASS, rollback |
 
 Tidak ada reset data dummy Production pada task ini. Receipt final memuat hash dataset dan CI/deployment exact SHA; G8 tetap NO_GO.
+
+
+## Validasi paket UI kedua peran, 4 November 2026
+
+Perbaikan UI4November: ulangi login kedua peran, grant create-only/view-only/cash-only, ketik nomor kartu berawalan0, buka/tutup semua panel, review Binatu dengan Tab/Shift+Tab/Escape, nominal panjang, checkbox kontak dan konfirmasi Nonaktifkan Kasir. Uji320/390/768/1024/1440 serta keyboard HP, kamera/galeri, printer dan WhatsApp nyata. Otomatis bukan PHYSICAL_UAT_REQUIRED PASS; mode uji tetap tidak boleh mengubah poin member lama.

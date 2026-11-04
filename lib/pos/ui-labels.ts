@@ -1,0 +1,2 @@
+export function paymentMethodLabel(method:string){return ({CASH:'Tunai',NONCASH:'Non-tunai'} as Record<string,string>)[method]??'Metode belum tersedia';}
+export function cashCategoryLabel(category:string){return ({PAYMENT:'Pembayaran',REFUND:'Pengembalian dana',OPENING:'Saldo awal',NON_SALE_IN:'Kas masuk non-penjualan',NON_SALE_OUT:'Kas keluar non-penjualan',MANUAL:'Mutasi lainnya',CASH_IN:'Kas masuk',CASH_OUT:'Kas keluar'} as Record<string,string>)[category]??'Mutasi lainnya';}

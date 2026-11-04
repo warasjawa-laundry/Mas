@@ -22,6 +22,6 @@ export function boardDate(value: string) {
   return new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(date) + " WIB";
 }
 export function paymentLabel(status: string) {
-  const labels: Record<string, string> = { PAID: "Lunas", PARTIAL: "Bayar sebagian", REFUNDED: "Refund penuh", ZERO_TOTAL: "Gratis", UNPAID: "Belum Bayar" };
+  const labels: Record<string, string> = { PAID: "Lunas", PARTIAL: "Dibayar sebagian", REFUNDED: "Refund penuh", ZERO_TOTAL: "Gratis", UNPAID: "Belum Bayar" };
   return labels[status] ?? "Status belum tersedia";
 }

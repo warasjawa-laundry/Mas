@@ -1,3 +1,4 @@
+import ContextNotice,{readDisplayContext} from "@/components/pos/context-notice";
 import Link from "next/link";
 import { randomUUID } from "node:crypto";
 import {requireOwner} from "@/lib/supabase/owner";
@@ -17,16 +18,18 @@ export default async function OwnerCash({searchParams}:{searchParams:Promise<{er
  const {supabase,user}=await requireOwner();
  const [overviewResult,capabilities]=await Promise.all([supabase.rpc("laundry_pos_owner_cash_overview"),supabase.rpc("laundry_pos_owner_capabilities")]);
  const {data,error}=overviewResult;
- const canFinance=!capabilities.error&&capabilities.data?.owner_operations===true&&capabilities.data?.finance_enabled===true;
+
+ const contextR=await supabase.rpc("laundry_pos_display_context");const context=contextR.error?null:readDisplayContext(contextR.data);
+ const canFinance=context?.finance_enabled===true&&!capabilities.error&&capabilities.data?.owner_operations===true&&capabilities.data?.finance_enabled===true;
  const query=await searchParams;const overview:Overview|null=error||!data||typeof data!=="object"||
  typeof data.open!=="boolean"?null:data as Overview;
  return <PosWorkspace title="Mutasi Kas" category="OPERASIONAL" description="Kas utama Mas Jawa Laundry melalui sesi Owner.">
- <nav className={styles.header} aria-label="Navigasi operasional">
+ <ContextNotice context={context}/><nav className={styles.header} aria-label="Navigasi operasional">
  <Link className={styles.mainLink} href="/admin/laporan">Laporan</Link></nav>
  {query.error&&<p role="alert" className={styles.warning}>
   {query.error==='unconfirmed'?"Hasil mutasi belum diketahui. Periksa jurnal sebelum melakukan tindakan ulang.":
   "Permintaan tidak dapat diproses. Periksa data, hak akses, dan status kas."}</p>}
- {query.saved&&<p role="status" className={styles.ok}>Transaksi kas sudah dikonfirmasi database.</p>}
+ {query.saved&&<p role="status" className={styles.ok}>Mutasi kas tersimpan.</p>}
  {!overview?<p role="status" className={styles.warning}>Modul kas belum tersedia di database aktif.</p>:<>
  <section className={styles.card}><div className={styles.cardHeading}><h2>Ringkasan kas</h2>
  <span className={styles.paymentBadge}>{overview.open?'Shift terbuka':'Shift tertutup'}</span></div>
@@ -35,7 +38,7 @@ export default async function OwnerCash({searchParams}:{searchParams:Promise<{er
  <div><small>Masuk tunai</small><strong>{formatIdr(overview.cash_in_idr)}</strong></div>
  <div className={styles.remaining}><small>Saldo diharapkan</small><strong>{formatIdr(overview.expected_cash_idr)}</strong></div>
  </div><p className={styles.muted}>Pengeluaran tunai: {formatIdr(overview.cash_out_idr)}. Transfer/non-tunai tidak dihitung sebagai uang fisik dalam laci.</p>
- {!canFinance&&<p className={styles.warning}>Transaksi masih dikunci. Tidak ada posting kas ke produksi.</p>}
+ {!canFinance&&<p className={styles.warning}>Transaksi masih dikunci. Pencatatan kas belum diizinkan.</p>}
  <RecoverableForm className={overview.open?styles.paymentForm:undefined} action={postNonSaleCash}
  recoveryKey={commandRecoveryKey('owner',user.id,'CASH_ENTRY')} recoverAction={recoverOwnerOperation.bind(null,'CASH_ENTRY',null)}>
  {overview.open&&<><h3>Catat kas masuk / keluar non-penjualan</h3>

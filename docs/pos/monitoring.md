@@ -20,3 +20,8 @@ Pada cutover riil kumpulkan bukti dua shift tertutup, saldo pembukaan dan review
 ## Perubahan identitas dan kontak pilot — 3 November 2026
 
 Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.
+
+
+## Validasi paket UI kedua peran, 4 November 2026
+
+Sesudah rilis UI4November, periksa error RPC display_context/katalog, pesan mode tidak tersedia, grant menu versus tujuan, kegagalan lookup member, dan keluhan tombol/dialog mobile. Metadata gagal harus terlihat sebagai belum terverifikasi, bukan mode transaksi nyata. Tidak merekam token, nomor WA atau isi kartu ke log baru.

@@ -11,7 +11,7 @@ import {recoverCashierCommand} from "../recovery-actions";
 export const dynamic="force-dynamic";
 export const metadata={title:"Tambah Pesanan - Mas Jawa Laundry",robots:{index:false,follow:false}};
 export default async function NewCashierOrder({searchParams}:{searchParams:Promise<{error?:string}>}){
- const access=await cashierRpcAccess("order_view");
+ const access=await cashierRpcAccess("order_create");
  if(!access)redirect("/kasir");
  const {data,error}=await access.client.rpc("laundry_pos_package_catalog",access.tokens);
  const {error:reason}=await searchParams;

@@ -23,7 +23,7 @@ type Row={perfume?:string|null;notes?:string|null;is_test_order:boolean;service_
 type Receipt={id:string;type:string;method:string;amount_idr:string;at:string};
 type Finance={total_idr:string;paid_idr:string;refunded_idr:string;remaining_idr:string;payment_status:string;version:number;shift_open:boolean;receipts:Receipt[]};
 const date=(value:string)=>new Date(value).toLocaleString("id-ID",{timeZone:"Asia/Jakarta"})+" WIB";
-const labels:Record<string,string>={UNPAID:"Belum bayar",PARTIAL:"Bayar sebagian",PAID:"Lunas",REFUNDED:"Sudah direfund",ZERO_TOTAL:"Gratis"};
+const labels:Record<string,string>={UNPAID:"Belum bayar",PARTIAL:"Dibayar sebagian",PAID:"Lunas",REFUNDED:"Dana sudah dikembalikan",ZERO_TOTAL:"Gratis"};
 export default async function OwnerInvoice({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{saved?:string}>}){
  const [{id},query]=await Promise.all([params,searchParams]);if(!uuid.test(id))notFound();
  const {supabase,user}=await requireOwner();
@@ -81,15 +81,15 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <input type="hidden" name="expectedVersion" value={String(finance.version)}/>
  <label>Jumlah pembayaran (Rp)<input name="amountIdr" inputMode="numeric" required pattern="[1-9][0-9]*" maxLength={10} defaultValue={finance.remaining_idr}/></label>
  <label>Metode pembayaran<select name="method"><option value="CASH">Tunai</option><option value="NONCASH">Non-tunai (sudah diterima)</option></select></label>
- <p className={styles.muted}>Cocokkan nominal dengan dana yang diterima. Jika hasil belum jelas, periksa jurnal sebelum mengulangi dari formulir yang sama.</p>
- <PendingSubmit className={styles.mainButton} disabled={!canFinance||!finance.shift_open} label="Simpan pembayaran"/></>}</RecoverableForm>
+ <p className={styles.muted}>{row.is_test_order?'Gunakan nominal simulasi; jangan menerima dana sungguhan.':'Cocokkan nominal dengan dana yang diterima.'} Jika hasil belum jelas, periksa jurnal sebelum mengulangi dari formulir yang sama.</p>
+ <PendingSubmit className={styles.mainButton} disabled={!canFinance||!finance.shift_open} label={row.is_test_order?"Simpan simulasi pembayaran":"Simpan pembayaran"}/></>}</RecoverableForm>
  <RecoverableForm action={refundOwnerOrder} className={refundable?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'FULL_REFUND',id)} recoverAction={recoverOwnerOperation.bind(null,'FULL_REFUND',id)}>
  {refundable&&<><h3>Pengembalian dana penuh</h3>
  <input type="hidden" name="requestId" value={randomUUID()}/><input type="hidden" name="orderId" value={id}/><input type="hidden" name="expectedVersion" value={String(finance.version)}/>
- <label>Alasan refund<input name="reason" required minLength={3} maxLength={300}/></label>
- <p className={styles.muted}>Seluruh pembayaran dikembalikan sesuai metode asal. Poin dari nota ini dibalik satu kali.</p>
- <PendingSubmit className={styles.dangerButton} disabled={!canFinance||!finance.shift_open} label="Konfirmasi refund penuh"/></>}</RecoverableForm>
+ <label>Alasan pengembalian dana<input name="reason" required minLength={3} maxLength={300}/></label>
+ <p className={styles.muted}>{row.is_test_order?'Pengembalian ini hanya membalik catatan simulasi. Tidak ada dana atau saldo poin member yang dipindahkan.':'Seluruh pembayaran dikembalikan sesuai metode asal. Poin dari nota ini dibalik satu kali.'}</p>
+ <PendingSubmit className={styles.dangerButton} disabled={!canFinance||!finance.shift_open} label={row.is_test_order?"Konfirmasi pengembalian simulasi":"Konfirmasi pengembalian dana"}/></>}</RecoverableForm>
  </>}
  </section>
  <>{row.is_test_order&&<PointSimulation data={!simulation.error&&pointSimulationMatchesPayment(readPointSimulation(simulation.data),finance)?readPointSimulation(simulation.data):null}/>}</>

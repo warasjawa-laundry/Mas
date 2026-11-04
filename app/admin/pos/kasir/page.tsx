@@ -1,3 +1,4 @@
+import ConfirmSubmit from "@/components/admin/confirm-submit";
 import Link from "next/link";
 import PendingSubmit from "@/components/admin/pending-submit";
 import { site } from "@/lib/site";
@@ -69,9 +70,9 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
         <h2 id="cashier-list">Daftar kasir ({cashiers.filter(c => c.active).length} aktif)</h2>
         {cashiers.length === 0 && <p className={styles.empty}>Belum ada kasir. Isi nama dan hak akses pada formulir Tambah kasir.</p>}
         {cashiers.map(c => <article key={c.staff_id} className={styles.panel}>
-          <div className={styles.cashierHeading}><h3>{c.display_name}</h3><span className={styles.status}>{c.active ? "Aktif" : "Dihapus / nonaktif"}</span></div>
+          <div className={styles.cashierHeading}><h3>{c.display_name}</h3><span className={styles.status}>{c.active ? "Aktif" : "Nonaktif"}</span></div>
           <div className={styles.identity}><div><span>ID kasir</span><strong>{c.username}</strong></div><p>Sesi aktif: <strong>{c.active_devices}</strong></p></div>
-          <p className={styles.help}>ID tetap sama saat nama diubah atau kasir dihapus. Menghapus kasir akan memutus semua sesi dan menyimpan riwayatnya.</p>
+          <p className={styles.help}>ID tetap sama saat nama diubah atau kasir dinonaktifkan. Menonaktifkan kasir akan memutus semua sesi dan menyimpan riwayatnya.</p>
           {c.active ? <>
             <form action={saveCashier} className={styles.form}>
               <input type="hidden" name="staffId" value={c.staff_id} />
@@ -83,12 +84,12 @@ export default async function CashierOwnerPage({ searchParams }: Props) {
             <div className={styles.actions}>
               <form action={revokeCashierDevices}>
                 <input type="hidden" name="staffId" value={c.staff_id} />
-                <button type="submit" className={styles.plainButton}>Cabut semua sesi</button>
+                <ConfirmSubmit label="Cabut semua sesi" description="Kasir harus masuk kembali. Semua sesi yang sedang aktif akan berakhir." className={styles.plainButton}/>
               </form>
               <form action={removeCashier}>
                 <input type="hidden" name="staffId" value={c.staff_id} />
                 <input type="hidden" name="name" value={c.display_name} />
-                <button type="submit" className={styles.dangerButton}>Hapus kasir</button>
+                <ConfirmSubmit label="Nonaktifkan kasir" description="Kasir tidak dapat masuk lagi. Semua sesinya berakhir; riwayat tetap tersimpan." className={styles.dangerButton}/>
               </form>
             </div>
           </> : <p className={styles.help}>Kasir nonaktif tidak dapat masuk. Riwayat aktivitas tetap tersimpan.</p>}

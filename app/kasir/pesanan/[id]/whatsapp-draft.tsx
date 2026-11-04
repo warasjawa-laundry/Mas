@@ -1,4 +1,5 @@
 "use client";
+import Disclosure from "@/components/pos/disclosure";
 import {useEffect,useRef,useState} from "react";
 import {prepareOrderReceipt,verifyOrderContact} from "../receipt-actions";
 import {receiptWhatsAppUrl,type ReceiptData,type ReceiptKind} from "@/lib/pos/receipt";
@@ -21,7 +22,7 @@ export function WhatsAppDraft({orderId,role,workStatus,version,isTestOrder=false
  const url=draft?receiptWhatsAppUrl(draft.data.contact,draft.text,testOnly):null;
  return <section className={styles.card}>
   <h2>Pesan WhatsApp</h2><p className={styles.muted}>Baca ulang data nota setelah pembayaran selesai atau dilewati. Petugas menekan Kirim di WhatsApp; membuka draf bukan bukti terkirim.</p>
-  {testOnly&&<p className={styles.muted} role="status">Nota simulasi dapat dikirim ke nomor penguji yang bersedia menerima pesan uji. Jangan gunakan nomor pelanggan nyata.</p>}<details><summary>Verifikasi nomor & alamat penerima</summary><RecoverableForm action={async form=>{
+  {testOnly&&<p className={styles.muted} role="status">Nota simulasi dapat dikirim ke nomor penguji yang bersedia menerima pesan uji. Jangan gunakan nomor pelanggan nyata.</p>}<Disclosure title="Verifikasi nomor & alamat penerima"><RecoverableForm action={async form=>{
    setContactSaved(false);const result=await verifyOrderContact(role,orderId,form);if(result.confirmed){sequence.current++;setDraft(null);setChecked(false);setContactRequest(crypto.randomUUID());setContactSaved(true);return {error:''};}return result;
   }} className={styles.paymentForm}>
    <input type="hidden" name="requestId" value={contactRequest}/>
@@ -29,7 +30,7 @@ export function WhatsAppDraft({orderId,role,workStatus,version,isTestOrder=false
    <label>Alamat pelanggan<input name="address" maxLength={240} autoComplete="off"/></label>
    <label><input type="checkbox" name="confirmed" value="yes" required/> {testOnly?"Nomor ini milik saya atau penguji yang menyetujui pesan simulasi.":"Pelanggan mengonfirmasi nomor dan alamat ini untuk nota yang sedang dibuka."}</label>
    <PendingSubmit disabled={!contactRequest} className={styles.mainButton} label="Simpan kontak terverifikasi"/>
-  </RecoverableForm>{contactSaved&&<p role="status">Nomor WhatsApp tersimpan. Baca ulang draf untuk memakai kontak terbaru.</p>}</details>
+  </RecoverableForm>{contactSaved&&<p role="status">Nomor WhatsApp tersimpan. Baca ulang draf untuk memakai kontak terbaru.</p>}</Disclosure>
   <div className={styles.receiptActions}>
    <button type="button" disabled={busy} className={styles.mainButton} onClick={()=>prepare('NEW')}>Baca draf Nota Baru</button>
    {workStatus==='READY'&&<button type="button" disabled={busy} className={styles.mainButton} onClick={()=>prepare('READY')}>Baca draf Siap Diambil</button>}

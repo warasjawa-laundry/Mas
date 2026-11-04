@@ -25,6 +25,7 @@ function load(path) {
   const code = ts.transpileModule(readFileSync(path, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX } }).outputText;
   const output = { exports: {} };
   const mocks = {
+ "@/components/pos/context-notice":{readDisplayContext:v=>v?.pilot_test_only===false?v:null},
     "react/jsx-runtime": { jsx, jsxs: jsx }, "next/link": component,
     "node:crypto": { randomUUID: () => memberId }, "next/navigation": { notFound(){throw Error("NOT_FOUND")} },
     "@/lib/supabase/owner": { requireOwner: async () => ({ supabase: { from: query, rpc: async name => {calls.push(name);return {data:name==="laundry_pos_owner_list_cashiers"?[cashier]:[],error:null}} } }) },
@@ -58,7 +59,7 @@ test("default customer profile shows contact data without deferred panels or the
   assert.match(text, /Synthetic customer fixture/);
   assert.match(text, /\+6281234567890/);
   assert.match(text, /Synthetic address fixture/);
-  assert.doesNotMatch(text, /Catat transaksi|poin|Promo|Kartu QR|\/admin\/scan|view=history|view=promo/i);
+  assert.doesNotMatch(text, /Catat transaksi|Kartu QR|\/admin\/scan|view=transaction/i);
   assert.deepEqual(calls, ["laundry_members"]);
   assert.ok(nodes(tree).some(node => node.href === `/admin/members/${memberId}/edit`));
 });

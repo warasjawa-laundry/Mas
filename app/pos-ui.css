@@ -44,7 +44,7 @@
 .binatu-orders-pane{background:white;min-width:0;border-right:1px solid var(--pos-line)}.binatu-search{display:flex;align-items:center;gap:10px;background:#ebebeb;padding:0 14px;margin:20px;border:1px solid #727984;border-radius:11px;color:#59616f;min-height:46px}
 .binatu-search input{flex:1;min-width:0;width:100%;background:transparent;border:0;font-family:inherit;font-size:12px;min-height:46px;color:#22252a}.binatu-search input::placeholder{color:#59616f}
 .binatu-search:focus-within{outline:2px solid #665000;outline-offset:2px}.binatu-search input:focus-visible{outline:0}
-.binatu-status-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--pos-line);padding:0 8px}
+.binatu-status-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--pos-line);padding:0 8px}
 .binatu-status-tabs>a{position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-height:55px;text-align:center;font-size:11px;text-decoration:none;color:#59616f;font-weight:600;padding:8px 3px;border-bottom:3px solid transparent;white-space:nowrap}
 .binatu-status-tabs>[aria-current=page]{color:#22252a;border-color:var(--mj-gold);font-weight:800}.binatu-status-tabs span{border-radius:7px;font-size:9px;background:#f3f4f6;min-width:18px;padding:1px 4px;color:#4b515c}
 .binatu-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:45px 25px;min-height:440px}
@@ -95,7 +95,7 @@
  .mj-login-screen{padding:0;align-items:stretch;background:white}.mj-login-card,.admin-root .mj-login-card{width:100%;max-width:480px;border:0;border-radius:0;box-shadow:none;margin:auto;min-height:100dvh}.mj-login-banner{height:165px}.mj-login-fields{padding:28px 24px}.mj-login-brand{padding-bottom:25px}.mj-login-brand strong{font-size:24px}
  .mj-login-fields input{font-size:16px}.mj-cashier-identity{padding:10px 20px 24px}
 }
-@media(max-width:359px){.binatu-bottom-nav{gap:7px;padding-inline:10px}.binatu-bottom-nav>a{padding-inline:13px;gap:6px}.binatu-bottom-nav button span{display:none}.binatu-role-chip{gap:5px;padding-inline:7px}.binatu-outlet-head{padding-inline:16px}.binatu-outlet-head strong{font-size:11px}.binatu-board-heading{padding-inline:16px}.binatu-status-tabs>a{font-size:11px}}
+@media(max-width:359px){.binatu-bottom-nav{gap:7px;padding-inline:10px}.binatu-bottom-nav>a{padding-inline:13px;gap:6px}.binatu-bottom-nav button span{display:inline}.binatu-role-chip{gap:5px;padding-inline:7px}.binatu-outlet-head{padding-inline:16px}.binatu-outlet-head strong{font-size:11px}.binatu-board-heading{padding-inline:16px}.binatu-status-tabs>a{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.admin-root *,.mj-pos-root *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media print{.binatu-sidebar,.binatu-bottom-nav,.binatu-page-cap,.binatu-outlet-head,.binatu-skip-link,.mj-cashier-identity{display:none!important}.admin-root:has(.binatu-sidebar)>#admin-main,.mj-has-sidebar .mj-staff-main{margin:0!important}.admin-root,.mj-pos-root{padding:0!important;background:white}}
 
@@ -223,3 +223,35 @@
  .binatu-service-content .mj-catalog-activation dl{gap:6px}
  .binatu-service-content .mj-catalog-activation dl>div{padding:9px}
 }
+
+/* Operational controls share the existing POS palette. */
+.pos-disclosure{margin-block:14px;min-width:0}
+.pos-disclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:12px 14px;border:1px solid #858b94;border-radius:10px;background:#fff;color:#22252a;font-size:13px;font-weight:700;cursor:pointer;list-style:none}
+.pos-disclosure>summary::-webkit-details-marker{display:none}
+.pos-disclosure>summary>span:first-child{min-width:0;overflow-wrap:anywhere}
+.pos-disclosure-state{flex-shrink:0;color:#6c4e00;font-size:12px}
+.pos-disclosure-open{display:none}.pos-disclosure[open]>summary .pos-disclosure-closed{display:none}.pos-disclosure[open]>summary .pos-disclosure-open{display:inline}
+.pos-disclosure-content{padding-top:14px;min-width:0;display:grid;gap:14px}
+.pos-review-dialog{width:min(650px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain;border:1px solid #858b94;border-radius:16px;padding:20px;background:#fffaf0;color:#22252a;font-family:var(--font-pos);box-sizing:border-box}
+.pos-review-dialog::backdrop{background:#22252ab3}
+.pos-review-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pos-review-dialog button,.pos-review-dialog>header a{min-height:44px}
+.pos-review-dialog>header button{border:1px solid #858b94;background:#fff;border-radius:9px;padding:10px;font:inherit;cursor:pointer}
+.pos-review-dialog :focus-visible{outline:3px solid #665000;outline-offset:3px}
+.pos-review-dialog input:not([type=radio]):not([type=hidden]){min-height:44px;box-sizing:border-box;max-width:100%}
+.binatu-import-content,.binatu-import-content form,.binatu-import-content label{min-width:0}
+.binatu-import-content input[type=file]{width:100%;max-width:100%;box-sizing:border-box;font-size:13px}
+.binatu-import-content button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.binatu-import-content a{display:inline-flex;align-items:center;min-height:44px}
+.pos-confirm-action{display:grid;gap:10px}.pos-confirm-action p{margin:0;font-size:13px}.pos-confirm-action>div{display:flex;gap:10px;flex-wrap:wrap}
+.pos-confirm-action button{min-height:44px}
+.mj-login-fields>a{min-height:44px;display:flex;align-items:center;justify-content:center}
+.binatu-store-brand{min-height:44px}.binatu-bottom-nav button{min-width:44px}
+.mj-catalog-edit .mj-editor-open{display:none}.mj-catalog-card[open]>summary .mj-editor-closed{display:none}.mj-catalog-card[open]>summary .mj-editor-open{display:inline}
+@media(max-width:1199px){.binatu-status-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.pos-disclosure,.pos-review-dialog,.pos-confirm-action{display:none!important}}
+
+.admin-root :is(.owner-history-details,.owner-void-box,.owner-promo-create,.owner-promo-whatsapp,.owner-promo-use,.owner-promo-cancel,.owner-card-reissue)>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;cursor:pointer;list-style:none}
+.admin-root :is(.owner-history-details,.owner-void-box,.owner-promo-create,.owner-promo-whatsapp,.owner-promo-use,.owner-promo-cancel,.owner-card-reissue)>summary::after{content:"Buka";font-size:12px;color:#6c4e00;font-weight:700;flex-shrink:0}
+.admin-root :is(.owner-history-details,.owner-void-box,.owner-promo-create,.owner-promo-whatsapp,.owner-promo-use,.owner-promo-cancel,.owner-card-reissue)[open]>summary::after{content:"Tutup"}
+.admin-root .admin-content>.admin-brand,.admin-root .print-card-page .admin-shortcuts a{display:inline-flex;align-items:center;min-height:44px}

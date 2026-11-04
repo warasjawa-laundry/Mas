@@ -14,3 +14,8 @@ Arsip/reset simulasi menuju Januari 2027 memerlukan prosedur yang disetujui dan 
 ## Perubahan identitas dan kontak pilot — 3 November 2026
 
 Nomor member tetap MJL-0…, nota baru NOTA-1…, kasir baru MAS-2XXX. Satu nota lama beserta payment/cash dummy sudah diarsipkan atas izin Owner; 0 transaksi operasional saat snapshot, pilot tetap ON. Command/tombstone dan arsip private harus dipertahankan saat rollback; jangan reset counter atau mengaktifkan ulang invoice lama. Kontak penguji dan tautan wa.me kini diizinkan setelah verifikasi/konfirmasi, selalu dengan watermark simulasi. UAT aplikasi WhatsApp/perangkat fisik tetap PHYSICAL_UAT_REQUIRED. Rincian migrasi, hash data dan guard operator ada pada empat dokumen audit existing.
+
+
+## Validasi paket UI kedua peran, 4 November 2026
+
+Rollback UI4November: kembalikan deployment ke commit terverifikasi sebelumnya pada proyek mas existing. Fungsi display_context boleh tetap ada karena hanya membaca; jangan drop fungsi selama source baru masih memakainya. Bila otorisasi katalog perlu dipulihkan, gunakan definisi sebelumnya dari migrasi20261103210500 setelah review, tanpa reset flag/data. Data member, kartu, poin, invoice, arsip, payment dan ledger tidak disentuh oleh migrasi044.

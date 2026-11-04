@@ -19,6 +19,7 @@ type Props={
   whatsappPhone:string|null;
   whatsappConsent:boolean;
   memberActive:boolean;
+  readOnly?:boolean;
 };
 function wibDate(date:string) {
   return new Intl.DateTimeFormat("id-ID",{
@@ -38,19 +39,19 @@ const results:Record<string,string>={
 };
 
 export default function MemberPromotions({
- memberId,memberName,requestId,promos,error,result,loadFailed,whatsappPhone,whatsappConsent,memberActive
+ memberId,memberName,requestId,promos,error,result,loadFailed,whatsappPhone,whatsappConsent,memberActive,readOnly=false
 }:Props){
  return <section id="promo-member" className="owner-promo-section" aria-labelledby="promo-owner-heading">
    <div className="owner-promo-header">
      <div>
        <h2 id="promo-owner-heading">Promo Member</h2>
-       <p className="member-note">Buat promo khusus untuk member ini. Poin tidak otomatis ditukar menjadi promo.</p>
+       <p className="member-note">{readOnly?'Lihat promo yang pernah diberikan kepada member ini.':'Buat promo khusus untuk member ini. Poin tidak otomatis ditukar menjadi promo.'}</p>
      </div>
    </div>
    {!memberActive&&<p className="admin-error">Member nonaktif. Promo tidak dapat diberikan atau digunakan.</p>}
    {result && results[result] && <p className="admin-success" role="status">{results[result]}</p>}
    {error && <p className="admin-error" role="alert">{descriptions[error]??descriptions.save}</p>}
-   <details className="owner-promo-create" open={!!error||promos.length===0}>
+   {!readOnly&&<details className="owner-promo-create" open={!!error||promos.length===0}>
      <summary>+ Berikan Promo</summary>
      <RecoverableForm action={grantManualPromo} className="owner-promo-form">
        <input type="hidden" name="memberId" value={memberId}/>
@@ -69,7 +70,8 @@ export default function MemberPromotions({
        <PendingSubmit label="Simpan Promo untuk Member"/>
        </fieldset>
      </RecoverableForm>
-   </details>
+   </details>}
+   {readOnly&&<p className="member-note" role="status">Promo ditampilkan untuk dibaca. Pemberian, penggunaan, pembatalan, dan pesan promo tidak tersedia selama mode uji atau mode transaksi belum dapat diperiksa.</p>}
    {loadFailed ? <p className="admin-error" role="alert">Daftar promo belum dapat dimuat. Coba lagi.</p>
     : !promos.length ? <p className="member-note owner-promo-empty">Belum ada promo untuk member ini.</p>
     : <ul className="owner-promo-list">{promos.map(p=>{
@@ -82,13 +84,13 @@ export default function MemberPromotions({
         <small>Diberikan {wibDate(p.created_at)}{p.expires_at?" · Berakhir "+wibDate(p.expires_at):""}</small>
         {p.status==="USED"&&p.redeemed_at&&<small>Dipakai {wibDate(p.redeemed_at)}</small>}
         {p.status==="CANCELLED"&&<small>Dibatalkan{p.cancel_reason?": "+p.cancel_reason:""}</small>}
-        {p.status==="AVAILABLE" && !expired && memberActive && <details className="owner-promo-whatsapp">
+        {!readOnly&&p.status==="AVAILABLE" && !expired && memberActive && <details className="owner-promo-whatsapp">
           <summary>Siapkan pesan WhatsApp</summary>
           <PromoWhatsapp memberId={memberId} promoId={p.id} memberName={memberName} title={p.title} terms={p.terms}
             expiresAt={p.expires_at} whatsappPhone={whatsappPhone}
             whatsappConsent={whatsappConsent} memberActive={memberActive}/>
         </details>}
-        {p.status==="AVAILABLE" && memberActive && <div className="owner-promo-actions">
+        {!readOnly&&p.status==="AVAILABLE" && memberActive && <div className="owner-promo-actions">
           {!expired&&<details className="owner-promo-use"><summary>Tandai Digunakan</summary><p>Pastikan member sudah menggunakan promo ini. Status akan berubah menjadi Digunakan.</p><RecoverableForm action={finishManualPromo}>
             <input type="hidden" name="memberId" value={memberId}/>
             <input type="hidden" name="promoId" value={p.id}/>

@@ -17,6 +17,7 @@ async function render(view,notice={}){
  },rpc:async(name)=>{calls.push(name);return {data:[],error:null}}};
  const jsx=(type,props)=>({type:typeof type==='string'?type:'component',...props});
  const mocks={
+ "@/components/pos/context-notice":{readDisplayContext:v=>v?.pilot_test_only===false?v:null},
   'react/jsx-runtime':{jsx,jsxs:jsx},'next/link':()=>null,'node:crypto':{randomUUID:()=>memberId},'next/navigation':{notFound(){throw Error('not found')}},
   '@/lib/supabase/owner':{requireOwner:async()=>({supabase})},'@/lib/laundry/card':{memberNumber:()=> 'MJL-000001'},
   '@/app/admin/visits/actions':{correctOwnerVisit:()=>{}},'@/components/admin/member-task-nav':()=>null,'@/components/admin/amount-visit-form':()=>null,'@/components/admin/member-promotions':()=>null,
@@ -30,22 +31,22 @@ async function render(view,notice={}){
  const tree=await output.exports.default({params:Promise.resolve({id:memberId}),searchParams:Promise.resolve({view,...notice})});
  return {calls,historyLoads,tree:JSON.stringify(tree)};
 }
-test('transaction entry needs five reads and never waits for history or promos',async()=>{
- const r=await render('transaction');assert.equal(r.calls.length,5);assert.equal(r.historyLoads,0);assert.match(r.tree,/Catat transaksi/);
+test('transaction entry needs six reads and never waits for history or promos',async()=>{
+ const r=await render('transaction');assert.equal(r.calls.length,6);assert.equal(r.historyLoads,0);assert.match(r.tree,/Catat transaksi/);
 });
 
 test('legacy action result URLs preserve transaction feedback without changing the default profile',async()=>{
  const saved=await render('transaction',{view:undefined,amountRecorded:'1',pointsEarned:'3'});
- assert.equal(saved.calls.length,5);
+ assert.equal(saved.calls.length,6);
  assert.match(saved.tree,/Transaksi berhasil dicatat/);
  assert.match(saved.tree,/Poin bertambah/);
  const failed=await render('transaction',{view:undefined,error:'save'});
- assert.equal(failed.calls.length,5);
+ assert.equal(failed.calls.length,6);
  assert.match(failed.tree,/Perubahan gagal disimpan/);
 });
 test('promo tab requests promos without loading the ledger or point rules',async()=>{
- const r=await render('promo');assert.equal(r.calls.length,5);assert.equal(r.historyLoads,0);assert.ok(r.calls.includes('laundry_member_promotions'));assert.doesNotMatch(r.tree,/aria-label":"Catat transaksi/);
+ const r=await render('promo');assert.equal(r.calls.length,6);assert.equal(r.historyLoads,0);assert.ok(r.calls.includes('laundry_member_promotions'));assert.doesNotMatch(r.tree,/aria-label":"Catat transaksi/);
 });
 test('history tab loads its scoped ledger without requesting promos or rules',async()=>{
- const r=await render('history');assert.equal(r.calls.length,4);assert.equal(r.historyLoads,1);assert.match(r.tree,/Riwayat member/);
+ const r=await render('history');assert.equal(r.calls.length,5);assert.equal(r.historyLoads,1);assert.match(r.tree,/Riwayat member/);
 });

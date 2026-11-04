@@ -18,6 +18,8 @@ export async function recordAmountVisit(formData:FormData){
     return {error:"Periksa nominal transaksi dan isi keterangan 3–240 karakter dalam satu baris, tanpa Enter atau tab."};
   }
 
+  const mode=await supabase.rpc("laundry_pos_display_context");
+  if(mode.error||mode.data?.pilot_test_only!==false)return {error:"Pencatatan poin manual tidak tersedia saat mode uji atau mode transaksi belum dapat diperiksa."};
   const {data,error}=await supabase.rpc("laundry_record_amount_visit",{
     p_member_id:memberId,
     p_amount_idr:Number(amountText),

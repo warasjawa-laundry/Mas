@@ -27,6 +27,8 @@ export async function recordOwnerVisit(formData:FormData) {
   const memberId=String(formData.get("memberId") || "");
   const requestId=String(formData.get("requestId") || "");
   if(!uuidRe.test(memberId) || !uuidRe.test(requestId)) redirect("/admin/members");
+  const mode=await supabase.rpc("laundry_pos_display_context");
+  if(mode.error||mode.data?.pilot_test_only!==false)redirect("/admin/members/"+memberId+"?view=history&error=pilot");
   const {data,error}=await supabase.rpc("laundry_record_visit",{
     p_member_id:memberId,p_request_id:requestId
   });
@@ -47,6 +49,8 @@ export async function correctOwnerVisit(formData:FormData) {
   if(reason.length<3 || reason.length>500){
     redirect("/admin/members/"+memberId+"?error=reason");
   }
+  const mode=await supabase.rpc("laundry_pos_display_context");
+  if(mode.error||mode.data?.pilot_test_only!==false)redirect("/admin/members/"+memberId+"?view=history&error=pilot");
   const {data,error}=await supabase.rpc("laundry_void_visit",{
     p_event_id:eventId,p_reason:reason,p_request_id:requestId
   });

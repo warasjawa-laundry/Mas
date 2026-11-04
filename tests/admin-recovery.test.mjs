@@ -8,7 +8,7 @@ const member='00000000-0000-4000-8000-000000000001';
 const request='00000000-0000-4000-8000-000000000002';
 function load(file,{rpc={data:null,error:{message:'offline'}},ready=true}={}){
  const out={exports:{}};let writes=0;
- const mocks={'next/navigation':{redirect(url){throw Error('redirect:'+url)}},'@/lib/supabase/owner':{requireOwner:async()=>({supabase:{rpc:async()=>{writes++;return rpc}}})},'@/lib/laundry/card':{cardIssuanceReady:()=>ready,newCardToken:()=> 'synthetic-token',tokenDigest:()=> 'digest',encryptCardToken:()=> 'ciphertext'},'@/lib/laundry/validation':validation};
+ const mocks={'next/navigation':{redirect(url){throw Error('redirect:'+url)}},'@/lib/supabase/owner':{requireOwner:async()=>({supabase:{rpc:async(name)=>{if(name==="laundry_pos_display_context")return {data:{pilot_test_only:false},error:null};writes++;return rpc}}})},'@/lib/laundry/card':{cardIssuanceReady:()=>ready,newCardToken:()=> 'synthetic-token',tokenDigest:()=> 'digest',encryptCardToken:()=> 'ciphertext'},'@/lib/laundry/validation':validation};
  const compiled=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText;
  runInNewContext(compiled,{exports:out.exports,module:out,require:n=>mocks[n],Date,Number,String,Array});
  return {...out.exports,writes:()=>writes};

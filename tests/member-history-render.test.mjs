@@ -13,9 +13,10 @@ async function render({ amountsFailed=false,reversalsFailed=false,hasOlder=false
   const q={select(){return q},eq(){return q},order(){return q},limit(){return q},maybeSingle(){return q},
     then(resolve){return Promise.resolve({data:{id:memberId,display_name:"Synthetic fixture",member_number:1,is_active:true,tiers:[]},count:1,error:null}).then(resolve)}};
   const mocks={
+ "@/components/pos/context-notice":{readDisplayContext:v=>v?.pilot_test_only===false?v:null},
     "react/jsx-runtime":{jsx,jsxs:jsx},"next/link":()=>null,"node:crypto":{randomUUID:()=>memberId},
     "next/navigation":{notFound(){throw Error("NOT_FOUND")}},
-    "@/lib/supabase/owner":{requireOwner:async()=>({supabase:{from:()=>q,rpc:async()=>({data:[],error:null})}})},
+    "@/lib/supabase/owner":{requireOwner:async()=>({supabase:{from:()=>q,rpc:async(name)=>({data:name==="laundry_pos_display_context"?{pilot_test_only:false}:[],error:null})}})},
     "@/lib/laundry/card":{memberNumber:()=>"MJL-000001"},
     "@/app/admin/visits/actions":{correctOwnerVisit:()=>{}},
     "@/components/admin/member-task-nav":()=>null,"@/components/admin/amount-visit-form":()=>null,"@/components/admin/member-promotions":()=>null,

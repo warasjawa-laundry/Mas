@@ -31,7 +31,7 @@ export function MemberNamePicker({onPick,disabled,role="cashier"}:{onPick:(membe
   </label>
   <p className={styles.help}>Pilih nomor member yang sesuai. Nama sama bisa dimiliki beberapa pelanggan; tidak ada pemilihan otomatis.</p>
   {busy&&<p role="status" className={styles.help}>Mencari member…</p>}
-  {error&&<p role="alert" className={styles.warn}>Pencarian gagal. Coba nama lain atau ketik nomor member.</p>}
+  {error&&<p role="alert" className={styles.warn}>Pencarian belum dapat dimuat. Periksa koneksi lalu coba lagi.</p>}
   {searched&&!busy&&query.trim().length>=3&&results.length===0&&!error&&<p role="status" className={styles.help}>Member tidak ditemukan. Coba nama lain atau ketik nomor member.</p>}
   {results.length>0&&<ul className={styles.memberResults}>
     {results.map(row=><li key={row.memberNumber}><button type="button" disabled={disabled}

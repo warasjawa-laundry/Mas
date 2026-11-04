@@ -25,7 +25,7 @@ test.beforeAll(async()=>{
  const files:Record<string,string>={
   'order-form':'app/kasir/pesanan/baru/order-form.tsx',
   'recoverable-form':'components/admin/recoverable-form.tsx',
-  money:'lib/pos/money.ts','catalog-units':'lib/pos/catalog-units.ts',
+  'member-code':'lib/pos/member-code.ts',money:'lib/pos/money.ts','catalog-units':'lib/pos/catalog-units.ts',
   'ui-quantity':'lib/pos/ui-quantity.ts','g4-order':'lib/pos/g4-order.ts',
   'command-recovery':'lib/pos/command-recovery.ts',eta:'lib/pos/eta.ts',
   'point-preview':'components/pos/point-simulation-preview.tsx','point-card':'components/pos/point-simulation.tsx','point-data':'lib/pos/point-simulation.ts',
@@ -66,7 +66,7 @@ test.beforeAll(async()=>{
   '@/app/admin/pesanan/member-actions':path.join(fixtureDir,'controls.cjs'),
   '@/components/admin/recoverable-form':path.join(fixtureDir,'recoverable-form.cjs'),
  };
- for(const name of ['money','catalog-units','ui-quantity','g4-order','command-recovery','eta'])alias['@/lib/pos/'+name]=path.join(fixtureDir,name+'.cjs');
+ for(const name of ['member-code','money','catalog-units','ui-quantity','g4-order','command-recovery','eta'])alias['@/lib/pos/'+name]=path.join(fixtureDir,name+'.cjs');
  await new Promise<void>((resolve,reject)=>{
   const compiler=webpack({mode:'production',optimization:{minimize:false},entry:path.join(fixtureDir,'entry.js'),output:{path:fixtureDir,filename:'bundle.js'},resolve:{modules:[path.resolve('node_modules'),'node_modules'],alias}});
   compiler.run((error:Error|null,stats:{hasErrors:()=>boolean;toString:()=>string})=>compiler.close(()=>error?reject(error):stats.hasErrors()?reject(Error(stats.toString())):resolve()));
@@ -239,4 +239,16 @@ for(const width of [320,390,1440])for(const role of ['owner','cashier'])test(`pi
  await expect(card).toContainText('Aturan poin periode 2027 belum tersedia');await expect(card).not.toContainText('+0 poin');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
  mkdirSync('artifacts/screenshots',{recursive:true});await page.screenshot({path:`artifacts/screenshots/point-wizard-${role}-${width}.png`,fullPage:true});
+});
+
+for(const role of ['owner','cashier'])test(`printed member number is normalized before lookup for ${role}`,async({page})=>{
+ await mount(page,390,role);
+ await page.getByRole('radio',{name:'Member MJL',exact:true}).check();
+ await page.getByLabel('Nomor member',{exact:true}).fill('000012');
+ await page.getByRole('button',{name:'Periksa nomor member',exact:true}).click();
+ const lookup=await page.evaluate(()=>(window as any).posFixture.lookups[0]);
+ expect(lookup.number).toBe('12');
+ await page.evaluate(()=>(window as any).posFixture.lookups[0].resolve({memberNumber:'12',displayName:'QA printed number'}));
+ await expect(page.getByRole('status')).toContainText('MJL-000012');
+ await expect(page.getByRole('button',{name:'Lanjut',exact:true})).toBeEnabled();
 });

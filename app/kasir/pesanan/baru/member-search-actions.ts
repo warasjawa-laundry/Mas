@@ -11,7 +11,7 @@ export async function findCashierMembers(raw:string):Promise<NamedCashierMember[
  const {data,error}=await access.client.rpc("laundry_pos_g7_member_name",{
   ...access.tokens,p_name_prefix:prefix,
  });
- if(error||!Array.isArray(data))return [];
+ if(error||!Array.isArray(data))throw new Error("Pencarian member belum dapat dimuat.");
  return data.slice(0,8).flatMap((row:unknown)=>{
   if(!row||typeof row!=="object")return [];
   const value=row as Record<string,unknown>;

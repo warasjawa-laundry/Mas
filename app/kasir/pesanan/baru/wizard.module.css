@@ -25,3 +25,8 @@
 .catalogColumn>.customerPanel{grid-column:1 / -1}
 
 .etaPreview{margin-top:16px;overflow-wrap:anywhere}.etaPreview dl{margin:0}.etaPreview dl>div{margin-bottom:10px}.etaPreview dt{font-size:12px}.etaPreview dd{margin:4px 0 0;font-weight:600;font-variant-numeric:tabular-nums}
+
+.qrPanel{min-width:0;margin:16px 0}.qrActions{display:flex;gap:10px;flex-wrap:wrap}.qrActions button,.galleryPick{display:flex;align-items:center;justify-content:center;min-height:48px;max-width:100%;padding:12px;border:1px solid #858b94;border-radius:10px;background:#fff;color:#22252a;font:inherit;font-size:13px;font-weight:700;cursor:pointer;box-sizing:border-box}
+.galleryPick{position:relative;overflow:hidden}.galleryPick input{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer}.galleryPick:focus-within{outline:3px solid #805c00;outline-offset:3px}.galleryPick:has(input:disabled){opacity:.6;cursor:not-allowed}
+.qrVideo{display:block;width:100%;max-width:100%;height:auto;max-height:300px;margin-top:12px;border-radius:10px;background:#22252a}.qrHidden{display:none}
+@media(max-width:480px){.qrActions>*{width:100%}}

@@ -67,6 +67,7 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
  const require=createRequire(import.meta.url);
  const quantities=await import(helper.href);
  const modules={
+  "@/lib/pos/member-code":await import("../lib/pos/member-code.ts"),
   'react':require('react'),'react-dom':require('react-dom'),'react/jsx-runtime':require('react/jsx-runtime'),
   '@/components/pos/point-simulation-preview':{default:()=>null},
   '@/lib/pos/money':money,'@/lib/pos/catalog-units':units,'@/lib/pos/g4-order':order,
@@ -99,6 +100,6 @@ test('real cashier markup escapes catalog text and keeps locked submission disab
  assert.match(html,/name="requestId" value="test-request"/);
  assert.doesNotMatch(html,/poin|Promo|<video/i);
  const empty=renderToStaticMarkup(React.createElement(OrderForm,{...props,services:[]}));
- assert.match(empty,/Tidak ada layanan yang cocok/);
+ assert.match(empty,/Belum ada layanan tersedia/);
  assert.match(empty,/Belum ada layanan dipilih/);
 });

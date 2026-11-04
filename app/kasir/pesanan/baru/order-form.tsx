@@ -1,4 +1,5 @@
 "use client";
+import {normalizeMemberBarcode} from "@/lib/pos/member-code";
 import {useEffect,useMemo,useRef,useState} from "react";
 import {useFormStatus} from "react-dom";
 import {calculateOrderTotals} from "@/lib/pos/money";
@@ -87,9 +88,10 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
   lookupSequence.current++;setMember(number);setMemberName(label);setMemberError("");setMemberBusy(false);
  }
  async function verifyMember(){
+  const canonical=normalizeMemberBarcode(member);if(!canonical)return;
   const sequence=++lookupSequence.current;setMemberBusy(true);setMemberError("");
   try{
-   const result=await (role==='owner'?resolveOwnerPosMemberCode(member):resolveCashierMemberCode(member));
+   const result=await (role==='owner'?resolveOwnerPosMemberCode(canonical):resolveCashierMemberCode(canonical));
    if(sequence!==lookupSequence.current)return;
    if(result)pickMember(result.memberNumber,result.displayName);
    else {setMemberName("");setMemberError("Member aktif tidak ditemukan. Periksa nomor atau pindai kartu.");}
@@ -121,7 +123,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
      </div>
      {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder={pilotTestOnly?"UJI - Nama Dummy":"Masukkan nama pelanggan"}/><small>{pilotTestOnly?"Wajib awalan UJI - dan nama dummy minimal 2 karakter. Nota ini diberi penanda tes di database.":"Minimal 2 karakter."}</small></label>:
       <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{lookupSequence.current++;setMember(e.target.value.replace(/\D/g,'').slice(0,12));setMemberName("");setMemberError("");setMemberBusy(false)}} maxLength={12} placeholder="Nomor pada kartu member"/></label>
-       {canLookup&&<button type="button" className={styles.back} disabled={memberBusy||!/^[1-9][0-9]{0,11}$/.test(member)} onClick={verifyMember}>{memberBusy?'Memeriksa member…':'Periksa nomor member'}</button>}
+       {canLookup&&<button type="button" className={styles.back} disabled={memberBusy||!normalizeMemberBarcode(member)} onClick={verifyMember}>{memberBusy?'Memeriksa member…':'Periksa nomor member'}</button>}
        {memberError&&<p role="alert" className={styles.warn}>{memberError}</p>}
        {canLookup&&<>
        <CashierQrScanner role={role} disabled={false} onMember={pickMember}/>
@@ -141,8 +143,8 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
      <div className={styles.sectionHeading}><h2 id="services-title">{packageWorkflow?"Pilih layanan":"Pilih layanan & durasi"}</h2><span>{String(servicesStep+1).padStart(2,"0")}</span></div>
      <label className={styles.search}><span>Cari layanan</span><input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari nama layanan / paket"/></label>
      <div className={styles.categories} aria-label="Kategori layanan"><button type="button" aria-pressed={!activeCategory} onClick={()=>setCategory('')}>Semua</button>{categories.map(c=><button type="button" key={c} aria-pressed={activeCategory===c} onClick={()=>setCategory(c)}>{c||'Lainnya'}</button>)}</div>
-     <p className={styles.help}>Ketik jumlah tepat atau gunakan + / −. Gunakan titik untuk desimal, maksimal 3 angka pada kg dan meter.</p>
-     {visible.length===0?<p className={styles.empty}>Tidak ada layanan yang cocok. Ubah pencarian atau kategori.</p>:<div className={styles.services}>{visible.map(s=>{
+     <p className={styles.help}>Masukkan jumlah atau gunakan tombol tambah dan kurang. Gunakan titik untuk desimal, maksimal 3 angka pada kg dan meter.</p>
+     {visible.length===0?<p className={styles.empty}>{available.length===0?(packageWorkflow&&!packageCode?'Pilih paket untuk melihat layanan.':'Belum ada layanan tersedia. Hubungi Manajer untuk memeriksa katalog.'):'Tidak ada layanan yang cocok. Ubah pencarian atau kategori.'}</p>:<div className={styles.services}>{visible.map(s=>{
       const error=quantityError(s);
       return <div key={s.id} className={styles.service} data-selected={!!quantities[s.id]}>
        <div className={styles.serviceInfo}><strong>{s.name}</strong><small>{s.package_name||s.category}</small>{!packageWorkflow&&<span className={styles.serviceDuration}><span aria-hidden="true">◷</span> {s.duration||"Durasi belum ditentukan"}</span>}<span>{money(s.price_idr)} <small>/ {s.unit}</small></span></div>
@@ -168,7 +170,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
       <select value={deliveryCode} onChange={e=>setDeliveryCode(e.target.value)} disabled={deliveryOptions.length===0}>
        {deliveryOptions.map(d=><option key={d.code} value={d.code}>{d.name} · {money(d.amount_idr)}</option>)}
       </select>
-      <small>Tarif berasal dari Supabase dan diverifikasi ulang saat nota disimpan.</small>
+      <small>Tarif mengikuti pengaturan outlet dan diperiksa lagi saat nota disimpan.</small>
      </label>
      {deliveryOptions.length===0&&<p role="alert" className={styles.warn}>Pilihan antar-jemput belum tersedia dari database. Nota tidak dapat dibuat sebelum tarif dimuat.</p>}
      <label className={styles.field}>Catatan cucian (opsional)<textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={500} rows={3} placeholder="Catatan untuk proses laundry"/></label>
@@ -176,7 +178,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
       <div><span>Subtotal layanan</span><strong>{quote?money(quote.subtotalIdr):'—'}</strong></div>
       <div><span>Antar-jemput · {selectedDelivery?.name??'Belum tersedia'}</span><strong>{selectedDelivery?money(selectedDelivery.amount_idr):'—'}</strong></div>
       <div><span>Diskon</span><strong>Belum tersedia</strong></div>
-      <p className={styles.help}>Subtotal layanan ditambah biaya antar-jemput. Harga akhir divalidasi oleh Supabase sebelum nota tersimpan.</p>
+      <p className={styles.help}>Subtotal layanan ditambah biaya antar-jemput. Harga akhir diperiksa kembali sebelum nota disimpan.</p>
      </div>
     </div>
     <div className={styles.summaryFooter}><div className={styles.total}><span>Total tagihan</span><strong>{quote?money(quote.totalIdr):chosen.length?'Periksa jumlah':money(0)}</strong></div>
