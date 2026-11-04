@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { logoutOwner } from "@/app/admin/actions";
 import { leaveCashier } from "@/app/kasir/actions";
 import PosIcon, { type PosIconName } from "@/components/pos/pos-icon";
-import { site } from "@/lib/site";
+import { assets,site } from "@/lib/site";
 import {hasCashierGrant,type CashierGrants,type CashierPermission} from "@/lib/pos/cashier-permissions";
 
 type Role = "owner" | "cashier";
@@ -37,7 +37,7 @@ function Navigation({ role,permissions }: { role: Role;permissions?:CashierGrant
     <a className="binatu-skip-link" href={owner ? "#admin-main" : "#cashier-main"}>Lewati navigasi</a>
     <aside className="binatu-sidebar" aria-label={owner ? "Menu manajer" : "Menu kasir"}>
       <div className="binatu-sidebar-top binatu-pattern"><div className="binatu-store-card">
-        <Link href={base} className="binatu-store-brand" prefetch={false}><img src="/pos/storefront.svg" width="42" height="42" alt="" /><span>MAS JAWA LAUNDRY<small>{site.shortAddress}</small></span></Link>
+        <Link href={base} className="binatu-store-brand" prefetch={false}><img src={assets.logo} width="42" height="42" alt="" /><span>MAS JAWA LAUNDRY<small>{site.shortAddress}</small></span></Link>
         <div className="binatu-store-role"><span>Akses saat ini</span><strong>{owner ? "Manajer" : "Kasir"}<i aria-hidden="true" /></strong></div>
       </div></div>
       <nav className="binatu-side-links" aria-label="Navigasi utama">{links.map(item => <Link href={item.href} key={item.href} prefetch={false} aria-current={active(item.href) ? "page" : undefined}><span className="binatu-side-icon"><PosIcon name={item.icon} size={21} /></span><span><strong>{item.label}</strong><small>{item.sub}</small></span></Link>)}</nav>

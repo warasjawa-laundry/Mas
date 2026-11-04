@@ -1,4 +1,4 @@
-import {site} from "@/lib/site";
+import {assets,site} from "@/lib/site";
 
 import Link from "next/link";
 import {loginOwner} from "@/app/admin/actions";
@@ -13,7 +13,7 @@ export default async function OwnerLogin({searchParams}:Props){
  const success=notice==="password-changed"?"Password berhasil diubah. Silakan masuk kembali.":notice==="logout"?"Anda telah keluar.":notice==="reauth"?"Untuk keamanan, masukkan kembali password sebelum membuka area owner.":null;
  return <main className="admin-auth binatu-login-screen"><section className="admin-login-card binatu-login-card" aria-labelledby="login-heading">
   <div className="binatu-login-banner binatu-pattern" aria-hidden="true"/>
-  <div className="binatu-login-brand"><span className="binatu-login-mark"><img src="/pos/laundry-mark.svg" width="36" height="36" alt=""/></span><div><strong>Mas Jawa Laundry</strong><span>{site.shortAddress}</span></div></div>
+  <div className="binatu-login-brand"><span className="binatu-login-mark"><img src={assets.logo} width="36" height="36" alt=""/></span><div><strong>Mas Jawa Laundry</strong><span>{site.shortAddress}</span></div></div>
   <nav className="binatu-login-tabs" aria-label="Pilih jenis login">
    <Link prefetch={false} href="/admin/login?role=owner" aria-current={!cashier?"page":undefined}>Manajer</Link>
    <Link prefetch={false} href="/admin/login?role=kasir" aria-current={cashier?"page":undefined}>Kasir</Link>

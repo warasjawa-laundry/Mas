@@ -1,11 +1,11 @@
 import Link from "next/link";
-import {site} from "@/lib/site";
+import {assets,site} from "@/lib/site";
 type Props={title:string;category:string;description?:string;backHref?:string;children:React.ReactNode};
 export default function PosWorkspace({title,category,description,backHref="/admin/menu",children}:Props){
  return <main className="binatu-board binatu-workspace">
   <div className="binatu-pattern binatu-page-cap" aria-hidden="true"/>
   <header className="binatu-outlet-head">
-   <img src="/pos/storefront.svg" width="50" height="50" alt=""/>
+   <img src={assets.logo} width="50" height="50" alt=""/>
    <div><strong>MAS JAWA LAUNDRY</strong><p>{site.shortAddress}</p></div>
    <span className="binatu-role-chip">Manajer<span aria-hidden="true"/></span>
   </header>

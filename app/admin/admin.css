@@ -70,8 +70,8 @@
 .binatu-login-banner::after { content: ""; position: absolute; bottom: -1px; left: 0; right: 0; height: 32px; background: #fff; border-radius: 32px 32px 0 0; }
 .binatu-login-brand { padding: .25rem 1.5rem 1.5rem; display: flex; align-items: center; justify-content: center; gap: .875rem; }
 .binatu-login-brand > div { display: grid; gap: .125rem; }
-.binatu-login-mark { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 14px; background: var(--admin-yellow); flex: 0 0 54px; }
-.binatu-login-mark img { display: block; }
+.binatu-login-mark { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 14px; background: #fff; flex: 0 0 54px; }
+.binatu-login-mark img { display: block; width: 48px; height: 48px; border-radius: 11px; object-fit: cover; }
 .binatu-login-brand strong { font-size: 1.65rem; font-weight: 800; letter-spacing: -.055em; }
 .binatu-login-brand span { font-size: .8125rem; color: var(--admin-muted); }
 .binatu-login-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--admin-line); }

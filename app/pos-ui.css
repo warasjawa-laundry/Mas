@@ -8,11 +8,13 @@
 .admin-root button,.admin-root input,.admin-root textarea,.admin-root select,.mj-pos-root button,.mj-pos-root input,.mj-pos-root textarea,.mj-pos-root select{font:inherit}
 .admin-root :focus-visible,.mj-pos-root :focus-visible{outline:3px solid #665000;outline-offset:3px}
 .admin-root ::selection,.mj-pos-root ::selection{background:#f7b801;color:#22252a}
-.binatu-pattern{background:#f5b500 url("/pos/laundry-pattern.svg") repeat;background-size:165px 165px}
+.binatu-pattern{background-color:#25203b;background-image:url("/pos/masjawa-laundry-pattern.svg"),linear-gradient(110deg,#25203b 0%,#39234d 55%,#203b59 100%);background-repeat:repeat,no-repeat;background-size:480px 165px,cover;background-position:center center,center}
+/* Login uses the same authored icon set but keeps the full banner composition. */
+.binatu-login-banner.binatu-pattern{background:#25203b url("/pos/masjawa-login-banner.svg") center center / cover no-repeat}
 .binatu-sidebar{position:fixed;inset:0 auto 0 0;width:260px;z-index:40;display:flex;flex-direction:column;background:white;border-right:1px solid var(--pos-line);overflow-y:auto}
 .binatu-sidebar-top{padding:20px 15px 16px}.binatu-store-card{background:white;border-radius:16px;padding:14px 12px}
 .binatu-store-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--mj-ink);font-size:11px;line-height:1.5;font-weight:800}
-.binatu-store-brand img{flex:none}.binatu-store-brand span{min-width:0}.binatu-store-brand small{display:block;font-size:10px;font-weight:400;color:var(--pos-muted);margin-top:4px}
+.binatu-store-brand img{flex:none;border-radius:10px;object-fit:cover}.binatu-store-brand span{min-width:0}.binatu-store-brand small{display:block;font-size:10px;font-weight:400;color:var(--pos-muted);margin-top:4px}
 .binatu-store-role{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--pos-line);padding-top:12px;margin-top:12px;font-size:10px;color:var(--pos-muted)}
 .binatu-store-role strong{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:var(--mj-ink);color:white;font-size:10px;font-weight:600}
 .binatu-store-role i,.binatu-role-chip>span{width:8px;height:8px;border-radius:50%;background:#36cc82;display:block}
@@ -33,6 +35,7 @@
 .mj-has-sidebar .mj-staff-main{margin-left:260px;min-width:0}.mj-staff-main{min-height:100dvh}.mj-pos-root .binatu-board{min-height:100dvh}
 .binatu-board{min-width:0;background:var(--pos-canvas);font-family:var(--font-pos);color:var(--mj-ink);padding-bottom:32px}
 .binatu-page-cap{height:43px}.binatu-outlet-head{background:white;position:relative;display:flex;align-items:center;gap:14px;border-radius:26px 26px 0 0;padding:18px 28px;margin-top:-12px;border-bottom:1px solid var(--pos-line)}
+.binatu-outlet-head>img{border-radius:12px;object-fit:cover;flex:none}
 .binatu-outlet-head>div{flex:1;min-width:0}.binatu-outlet-head strong{font-size:13px;font-weight:800}.binatu-outlet-head p{font-size:12px;margin:3px 0 0;color:var(--pos-muted)}
 .binatu-role-chip{background:var(--mj-ink);color:white;padding:8px 11px;display:flex;align-items:center;gap:10px;border-radius:10px;font-size:11px;font-weight:600}
 .binatu-board-heading{display:flex;justify-content:space-between;align-items:center;padding:25px 28px;gap:15px}.binatu-board-heading h1{font-size:23px!important;letter-spacing:-.035em!important;margin:0!important;font-weight:800;line-height:1.3}
@@ -67,8 +70,9 @@
 .binatu-menu-symbol{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;background:var(--mj-gold)}
 .mj-login-screen{display:flex;align-items:center;justify-content:center;min-height:100dvh;background:var(--pos-canvas);padding:30px 16px;font-family:var(--font-pos)}
 .mj-login-card,.admin-root .mj-login-card{width:min(100%,440px);background:white;border-radius:22px;overflow:clip;border:1px solid var(--pos-line);padding:0;box-shadow:0 10px 30px #22252a0a}
-.mj-login-banner{height:132px;background:#f5b500 url("/pos/laundry-pattern.svg") repeat;background-size:165px 165px;position:relative}.mj-login-banner:after{content:"";height:25px;position:absolute;bottom:-1px;left:0;right:0;background:white;border-radius:30px 30px 0 0}
-.mj-login-brand{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 20px 26px}.mj-brand-mark{display:grid;place-items:center;width:50px;height:50px;background:var(--mj-gold);border-radius:15px;font-size:19px;font-weight:800;color:#22252a}.mj-login-brand strong{font-size:22px;font-weight:800;letter-spacing:-.05em}
+.mj-login-banner{height:132px;background:#25203b url("/pos/masjawa-login-banner.svg") center center / cover no-repeat;position:relative}.mj-login-banner:after{content:"";height:25px;position:absolute;bottom:-1px;left:0;right:0;background:white;border-radius:30px 30px 0 0}
+.mj-login-brand{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 20px 26px}.mj-brand-mark{display:grid;place-items:center;width:50px;height:50px;background:#25203b;border-radius:12px;overflow:hidden}
+.mj-brand-mark img{width:50px;height:50px;object-fit:cover;display:block}.mj-login-brand strong{font-size:22px;font-weight:800;letter-spacing:-.05em}
 .mj-login-tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--pos-line)}.mj-login-tabs a,.mj-login-tabs span{min-height:55px;padding:16px 8px;text-align:center;text-decoration:none;color:#59616f;border-bottom:3px solid transparent;font-size:12px;font-weight:600}.mj-login-tabs [aria-current=page]{color:#22252a;font-weight:800;border-bottom-color:var(--mj-gold)}
 .mj-login-fields{padding:26px 28px 30px}.mj-login-fields h1{font-size:18px!important;margin:0 0 8px!important}.mj-login-fields p{font-size:12px;line-height:1.7;color:#59616f;margin:0 0 18px}.mj-login-fields form{display:grid;gap:10px}.mj-login-fields label{font-size:12px;font-weight:700}.mj-login-fields input{width:100%;min-height:49px;border:1px solid #9399a2;background:white;color:#22252a;border-radius:11px;padding:12px;font-family:inherit;font-size:14px}
 .mj-login-fields form>button,.mj-login-fields .admin-primary{background:var(--mj-gold);color:#22252a;border:0;min-height:49px;border-radius:11px;font-weight:700;font-size:13px;margin-top:12px;cursor:pointer}.mj-login-fields form>button:hover{background:var(--mj-gold-deep)}

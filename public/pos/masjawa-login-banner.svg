@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="714" height="205" viewBox="0 0 714 205" fill="none">
+  <title>Mas Jawa Laundry - banner ungu dan biru</title>
+  <desc>Ornamen mesin cuci, baju dan hanger terpisah dari panel login putih.</desc>
+  <defs>
+    <pattern id="mjl-icons" width="480" height="165" patternUnits="userSpaceOnUse" patternTransform="translate(20 22)">
+  <!-- Three restrained icons using one stroke weight and rounded joins. -->
+  <g stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2">
+    <g stroke="#78D6F0" stroke-opacity=".64">
+      <rect x="34" y="27" width="102" height="112" rx="13"/>
+      <path d="M34 57H136"/>
+      <circle cx="50" cy="42" r="3"/>
+      <circle cx="65" cy="42" r="3"/>
+      <circle cx="85" cy="96" r="31"/>
+      <path d="M65 104c6-7 13-8 20-4 8 4 15 3 20-3"/>
+    </g>
+    <g stroke="#EEE7FA" stroke-opacity=".58">
+      <path d="M203 47l22-11h20l22 11 18 22-18 14-11-11v62h-42V72l-11 11-18-14 18-22Z"/>
+      <path d="M225 36c2 10 18 14 20 0"/>
+    </g>
+    <g stroke="#E58BD7" stroke-opacity=".65">
+      <path d="M379 62c0-11 18-12 18-1 0 6-5 9-10 13v9"/>
+      <path d="M387 83l-47 35c-5 4-3 10 4 10h86c7 0 9-6 4-10l-47-35Z"/>
+    </g>
+  </g>
+  <path d="M34 150h27" stroke="#E58BD7" stroke-width="3" stroke-linecap="round" stroke-opacity=".70"/>
+  <path d="M214 150h27" stroke="#78D6F0" stroke-width="3" stroke-linecap="round" stroke-opacity=".70"/>
+  <path d="M351 150h27" stroke="#EEE7FA" stroke-width="3" stroke-linecap="round" stroke-opacity=".45"/>
+    </pattern>
+  </defs>
+  <rect width="714" height="205" fill="#25203B"/>
+  <path d="M595 0H714V205H648Z" fill="#20334F"/>
+  <rect width="714" height="205" fill="url(#mjl-icons)"/>
+  <path d="M20 2h128" stroke="#C343A7" stroke-width="5" stroke-linecap="round"/>
+  <path d="M150 2h92" stroke="#1EB8E2" stroke-width="5" stroke-linecap="round"/>
+</svg>

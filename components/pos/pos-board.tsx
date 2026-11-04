@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import PosIcon, { type PosIconName } from "@/components/pos/pos-icon";
 import { boardDate, boardMoney, filterBoardOrders, paymentLabel, type BoardTab, type PosRow } from "@/lib/pos/board";
-import { site } from "@/lib/site";
+import { assets,site } from "@/lib/site";
 import type {CashierGrants,CashierPermission} from "@/lib/pos/cashier-permissions";
 export type { PosRow } from "@/lib/pos/board";
 type Props = { role: "owner" | "cashier"; tab?: string; view?: string; orders?: PosRow[]; memberCount?: string | null; transactionCount?: string | null; dbReady?: boolean; writeEnabled?: boolean; permissions?:CashierGrants };
@@ -40,7 +40,7 @@ export default function PosBoard({ role, tab = "queue", view, orders = [], membe
     {label:"Laporan",sub:"Rekap per periode",href:"/kasir/laporan",icon:"report",permission:"reports_view"}]}];
   return <main className={"binatu-board" + (menu ? " binatu-board-menu" : "")}>
     <div className="binatu-pattern binatu-page-cap" aria-hidden="true" />
-    <header className="binatu-outlet-head"><img src="/pos/storefront.svg" width="50" height="50" alt="" /><div><strong>MAS JAWA LAUNDRY</strong><p>{site.shortAddress}</p></div><span className="binatu-role-chip">{owner ? "Manajer" : "Kasir"}<span aria-hidden="true" /></span></header>
+    <header className="binatu-outlet-head"><img src={assets.logo} width="50" height="50" alt="" /><div><strong>MAS JAWA LAUNDRY</strong><p>{site.shortAddress}</p></div><span className="binatu-role-chip">{owner ? "Manajer" : "Kasir"}<span aria-hidden="true" /></span></header>
     {menu ? <section className="binatu-menu-page" aria-labelledby="menu-title">
       <header className="binatu-page-heading"><div><p>MAS JAWA LAUNDRY</p><h1 id="menu-title">Menu {owner ? "Manajer" : "Kasir"}</h1></div></header>
       {owner && <div className="binatu-member-metrics"><div><small>Pelanggan aktif</small><strong>{memberCount ?? "Belum dimuat"}</strong></div><div><small>Kunjungan tercatat</small><strong>{transactionCount ?? "Belum dimuat"}</strong><span>Seluruh periode</span></div></div>}

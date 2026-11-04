@@ -46,3 +46,7 @@ Perbaikan UI4November: ulangi login kedua peran, grant create-only/view-only/cas
 ## UAT Member Experience V2
 
 Evidence and complete automated scenarios: [Member Experience V2](../2026-11-04-member-experience-v2.md). Owner/operator must verify an issued card on physical Android: camera allow/deny/retry/close, gallery photo, correct member number, year selection, refresh/history/promo, lost/revoked card denial, TalkBack and 200% zoom. Also verify bookmarked unified login with real Owner/Kasir sessions and role redirect. Status **PHYSICAL_UAT_REQUIRED** until dated device/operator results exist; do not paste tokens or credentials into evidence. Camera video and QR browser fixtures are synthetic, not physical acceptance. This UI release does not authorize financial cutover, remove Data Uji or alter opening points.
+
+
+## UAT visual background MasJawa (belum diuji pada perangkat fisik)
+Pada domain utama dan perangkat Android/desktop, pastikan warna ungu–biru dan ikon SVG baru tampil pada login gabungan (tab Manajer/Kasir), fallback login `/kasir`, header dashboard Owner/Kasir, menu dan sidebar, serta halaman Kelola Kasir. Periksa logo resmi MasJawa, lengkungan panel putih, pemotongan banner pada lebar 320/360/390/768/desktop, teks tetap terbaca dan tidak ada overflow. Verifikasi tab dan login kedua peran tetap berfungsi; riwayat/kas/nota tidak berubah. Catat bukti fisik dan reviewer nyata, bukan otomatis PASS dari commit visual. Acuan: `docs/pos/brand-background-20261104.md`.
