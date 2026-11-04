@@ -10,14 +10,14 @@ test("public text avoids em dashes, while valid time ranges remain",()=>{
 });
 test("headlines name the service instead of generic promises",()=>{
  const h=read("app/page.tsx"),m=read("app/membership/page.tsx");
- for(const expected of ["Daftar layanan dan harga","Cara menggunakan layanan","Kartu member"])assert.ok(h.includes(expected));
- assert.match(m,/Kartu member/);
+ for(const expected of ["Daftar layanan dan harga","Cara menggunakan layanan","Cek poin dan riwayat laundry dengan mudah"])assert.ok(h.includes(expected));
+ assert.match(m,/Scan Kartu Member/);
  assert.match(read("app/k/[token]/page.tsx"),/Catatan Kartu Member/);
  for(const old of ["Pilih yang sesuai kebutuhan.","Informasi jelas, jadi lebih mudah menentukan layanan.","Kartu langganan, tanpa harus mengingat jumlah transaksi."])assert.ok(!h.includes(old));
 });
 test("copy keeps correct privacy, status and operational policies",()=>{
  const h=read("app/page.tsx"),m=read("app/membership/page.tsx"),sc=read("components/customer-card-scanner.tsx"),p=read("app/k/[token]/page.tsx");
- assert.match(h,/poin dan riwayat transaksi/);
+ assert.match(h,/poin dan riwayat laundry/);
  assert.match(h,/Konfirmasi biaya dan perkiraan waktu/);
  assert.doesNotMatch(h+m,/uji coba|sedang disiapkan|sedang menyiapkan|informasi sebelumnya|preview/i);
  assert.match(m,/Promo tidak diberikan otomatis/);
@@ -26,6 +26,6 @@ test("copy keeps correct privacy, status and operational policies",()=>{
  assert.match(sc,/tidak dikirim ke server/);
  assert.match(sc,/bukan mencatat transaksi baru/);
  assert.match(read("components/member-progress-view.tsx"),/disesuaikan jika transaksi dibatalkan/);
- assert.match(m,/href="#scan-kartu"/);
- assert.match(m,/siteHref\("\/admin\/login"\)/);
+ assert.match(m,/id="scan-kartu"/);
+ assert.doesNotMatch(m,/siteHref\("\/admin\/login"\)/);
 });

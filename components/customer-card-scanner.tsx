@@ -130,9 +130,11 @@ export default function CustomerCardScanner(){
 
   return <section className="customer-card-scanner" aria-labelledby="customer-scan-heading">
     <div className="customer-scan-heading">
-      <h2 id="customer-scan-heading">Sudah punya kartu member?</h2>
-      <p>Pindai QR pada kartu atau pilih fotonya dari galeri. Anda bisa melihat jumlah transaksi dan promo yang tercatat.</p>
+      <h2 id="customer-scan-heading">Pilih cara memindai</h2>
+      <p>Letakkan QR di tengah kamera, pastikan terlihat utuh dan cukup terang. Untuk foto, pilih gambar QR yang jelas.</p>
     </div>
+    {(starting||reading)&&<p className="customer-scan-status" role="status">{starting?"Membuka kamera. Tunggu hingga tampil pratinjau.":"Memeriksa QR dan membuka catatan kartu…"}</p>}
+    {error&&<div className="customer-scan-retry"><button type="button" className="button button-secondary" disabled={starting||reading} onClick={()=>{setError("");void startCamera();}}>Coba kamera lagi</button><p>Anda juga bisa memilih foto QR yang lebih jelas lewat tombol galeri.</p></div>}
     {error && <p className="customer-scan-error" role="alert">{error}</p>}
     <div className="customer-scan-actions">
       {cameraOpen ?

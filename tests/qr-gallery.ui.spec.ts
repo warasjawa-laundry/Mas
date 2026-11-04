@@ -31,3 +31,36 @@ test("gallery refuses a foreign QR and can retry with a valid cropped card",asyn
  await page.locator(".customer-image-input").setInputFiles({name:"card.png",mimeType:"image/png",buffer:await qr.toBuffer(cardUrl,{width:320,margin:4})});
  await expect(page).toHaveURL(new RegExp(`/k/${token}$`),{timeout:20000});
 });
+
+test('camera denial offers a usable retry and gallery picker',async({page})=>{
+ await page.addInitScript(()=>{
+  Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>{throw new DOMException('Denied','NotAllowedError')}}});
+ });
+ await page.goto('/membership');
+ await page.getByRole('button',{name:'Buka Kamera',exact:true}).click();
+ await expect(page.locator('.customer-card-scanner').getByRole('alert')).toContainText('Kamera tidak bisa dibuka');
+ await page.getByRole('button',{name:'Coba kamera lagi',exact:true}).click();
+ await expect(page.locator('.customer-card-scanner').getByRole('alert')).toContainText('Kamera tidak bisa dibuka');
+ const picker=page.waitForEvent('filechooser');
+ await page.getByRole('button',{name:'Pilih Foto QR',exact:true}).click();
+ expect((await picker).isMultiple()).toBe(false);
+});
+
+test('synthetic camera stream decodes an existing-format QR without sending its image',async({page})=>{
+ test.setTimeout(45000);
+ const dataUrl=await qr.toDataURL(cardUrl,{width:480,margin:4});
+ await page.addInitScript(({dataUrl})=>{
+  Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>{
+   const canvas=document.createElement('canvas');canvas.width=640;canvas.height=640;
+   const ctx=canvas.getContext('2d')!;ctx.fillStyle='white';ctx.fillRect(0,0,640,640);
+   const image=new Image();image.src=dataUrl;await image.decode();ctx.drawImage(image,80,80,480,480);
+   const stream=canvas.captureStream(12);
+   const timer=setInterval(()=>ctx.drawImage(image,80,80,480,480),80);
+   stream.getTracks().forEach(track=>track.addEventListener('ended',()=>clearInterval(timer)));
+   return stream;
+  }}});
+ },{dataUrl});
+ await page.goto('/membership');
+ await page.getByRole('button',{name:'Buka Kamera',exact:true}).click();
+ await expect(page).toHaveURL(new RegExp(`/k/${token}$`),{timeout:25000});
+});

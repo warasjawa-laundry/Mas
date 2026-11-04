@@ -85,10 +85,10 @@ export default async function HomePage() {
           <div className="shell">
             <div className="member-feature">
               <div className="member-feature-copy">
-                <p className="eyebrow eyebrow-light">KARTU MEMBER</p>
-                <h2 id="member-title">Kartu member</h2>
-                <p>Daftar melalui petugas, tunjukkan kartu saat transaksi, lalu pindai QR untuk melihat poin dan riwayat transaksi.</p>
-                <a className="button button-white" href={siteHref("/membership")}>Buka kartu member <span aria-hidden="true">→</span></a>
+                <p className="member-feature-label">Kartu Member MasJawa</p>
+                <h2 id="member-title">Cek poin dan riwayat laundry dengan mudah</h2>
+                <p>Punya kartu member MasJawa Laundry? Scan QR untuk melihat poin, transaksi yang tercatat, dan promo yang tersedia. Tanpa perlu login atau memasang aplikasi.</p>
+                <a className="button button-white" href={siteHref("/membership")}>Scan Kartu Member</a>
               </div>
             </div>
           </div>

@@ -20,7 +20,7 @@ test("homepage keeps legacy public anchors for old links", () => {
 
 test("homepage does not inject a public owner dashboard or imaginary claims", () => {
   assert.doesNotMatch(page, /admin\/login|Beri Promo Otomatis|AI[- ]powered|Gratis untuk semua/i);
-  assert.match(page, /poin dan riwayat transaksi/);
+  assert.match(page, /poin dan riwayat laundry/);
 });
 
 test("approved member copy presents the final program without trial labels", () => {

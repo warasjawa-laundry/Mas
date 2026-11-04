@@ -42,3 +42,7 @@ Tidak ada reset data dummy Production pada task ini. Receipt final memuat hash d
 ## Validasi paket UI kedua peran, 4 November 2026
 
 Perbaikan UI4November: ulangi login kedua peran, grant create-only/view-only/cash-only, ketik nomor kartu berawalan0, buka/tutup semua panel, review Binatu dengan Tab/Shift+Tab/Escape, nominal panjang, checkbox kontak dan konfirmasi Nonaktifkan Kasir. Uji320/390/768/1024/1440 serta keyboard HP, kamera/galeri, printer dan WhatsApp nyata. Otomatis bukan PHYSICAL_UAT_REQUIRED PASS; mode uji tetap tidak boleh mengubah poin member lama.
+
+## UAT Member Experience V2
+
+Evidence and complete automated scenarios: [Member Experience V2](../2026-11-04-member-experience-v2.md). Owner/operator must verify an issued card on physical Android: camera allow/deny/retry/close, gallery photo, correct member number, year selection, refresh/history/promo, lost/revoked card denial, TalkBack and 200% zoom. Also verify bookmarked unified login with real Owner/Kasir sessions and role redirect. Status **PHYSICAL_UAT_REQUIRED** until dated device/operator results exist; do not paste tokens or credentials into evidence. Camera video and QR browser fixtures are synthetic, not physical acceptance. This UI release does not authorize financial cutover, remove Data Uji or alter opening points.

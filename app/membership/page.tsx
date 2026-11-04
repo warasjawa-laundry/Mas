@@ -7,7 +7,7 @@ import MembershipScrollEntry from "@/components/membership-scroll-entry";
 import { siteHref } from "@/lib/navigation";
 import { whatsappLink } from "@/lib/site";
 
-const memberDescription = "Cara memakai kartu member Mas Jawa Laundry, mulai dari pendaftaran melalui petugas hingga melihat catatan transaksi lewat QR. Promo ditentukan oleh pemilik laundry.";
+const memberDescription = "Scan QR kartu member MasJawa Laundry lewat kamera atau galeri untuk melihat poin, riwayat transaksi, dan promo yang tercatat.";
 
 export const metadata: Metadata = {
   title: "Kartu Member",
@@ -37,31 +37,17 @@ export default function MembershipPage() {
         <div className="shell">
           <div className="breadcrumb"><Link href={siteHref("/")}>Beranda</Link><span aria-hidden="true">/</span><span>Kartu Member</span></div>
           <div className="member-page-heading">
-            <p className="eyebrow">KARTU MEMBER MAS JAWA LAUNDRY</p>
-            <h1>Kartu member</h1>
-            <nav className="member-entry-actions" aria-label="Akses kartu member">
-              <a className="member-entry-action member-entry-action-primary" href="#scan-kartu">
-                <strong>Scan QR Kartu <span aria-hidden="true">→</span></strong>
-              </a>
-              <Link className="member-admin-entry" href={siteHref("/admin/login")} prefetch={false}>
-                <span>Untuk petugas: <strong>Masuk Admin <span aria-hidden="true">→</span></strong></span>
-              </Link>
-            </nav>
-            <p>Scan QR untuk melihat poin, riwayat transaksi, dan promo member. Pendaftaran dan pencatatan transaksi dilakukan oleh petugas.</p>
+            <h1>Scan Kartu Member</h1>
+            <p>Lihat saldo poin, riwayat transaksi, dan promo pada kartu Anda. Pilih kamera atau foto QR dari galeri.</p>
           </div>
           <div id="scan-kartu" className="member-scan-target">
             <CustomerCardScanner />
           </div>
-          <div className="how-grid">
-            <article className="how-card"><span>01</span><h2>Daftar melalui petugas</h2><p>Cukup berikan nama. Nomor WhatsApp boleh dikosongkan dan hanya digunakan untuk informasi promo jika Anda setuju.</p></article>
-            <article className="how-card"><span>02</span><h2>Tunjukkan kartu saat transaksi</h2><p>Petugas memindai QR dan mencatat nominal transaksi. Anda tidak perlu memasang aplikasi.</p></article>
-            <article className="how-card"><span>03</span><h2>Lihat catatan transaksi</h2><p>Pindai QR dengan kamera HP atau pilih foto QR dari galeri untuk melihat catatan kartu.</p></article>
-          </div>
           <div className="member-policy">
             <div>
-              <h2>Cara pemberian promo</h2>
-              <p>Promo tidak diberikan otomatis berdasarkan jumlah transaksi. Pemilik laundry menentukan promo untuk setiap member. Jika ada promo untuk kartu Anda, informasinya bisa dilihat lewat QR. Pesan promo melalui WhatsApp hanya dikirim jika Anda setuju.</p>
-              <p>QR pada kartu dapat dibuka tanpa login dan menampilkan informasi terbatas. Jangan bagikan foto QR kepada orang lain. Jika kartu hilang, hubungi petugas untuk meminta penggantian.</p>
+              <h2>Tentang kartu Anda</h2>
+              <p>Belum punya kartu? Daftar melalui petugas. Nomor WhatsApp boleh dikosongkan. Promo tidak diberikan otomatis berdasarkan poin atau jumlah transaksi; promo yang tersedia tercatat pada kartu. Pesan promo hanya dikirim jika Anda setuju.</p>
+              <p>QR dapat membuka catatan tanpa login. Jangan bagikan fotonya kepada orang lain. Jika kartu hilang, minta penggantian kepada petugas.</p>
             </div>
             <div className="member-policy-action">
               <strong>Perlu bantuan kartu member?</strong>

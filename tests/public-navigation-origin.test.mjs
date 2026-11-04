@@ -18,7 +18,7 @@ test("all public first-party navigation uses one stable preview-aware helper", (
   assert.match(home, /siteHref\("\/#layanan"\)/);
   assert.match(home, /siteHref\("\/membership"\)/);
   assert.match(member, /siteHref\("\/"\)/);
-  assert.match(member, /siteHref\("\/admin\/login"\)/);
+  assert.doesNotMatch(member, /siteHref\("\/admin\/login"\)/);
 });
 
 test("preview links use a stable alias only with explicit Preview configuration", () => {

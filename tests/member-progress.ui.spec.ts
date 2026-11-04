@@ -15,16 +15,19 @@ const props={name:"Nama Contoh",number:"MJL-000001",total:2,year:2026,points:5,b
  transactions:[{event_id:"a",occurred_at:"2026-10-17T05:00:00Z",amount_idr:75000,program_year:2026,awarded_points:5,cancelled:false},
  {event_id:"b",occurred_at:"2026-10-16T05:00:00Z",amount_idr:200000,program_year:2026,awarded_points:20,cancelled:true},
  {event_id:"c",occurred_at:"2026-10-15T05:00:00Z",amount_idr:null,program_year:null,awarded_points:0,cancelled:false}],historyFailed:false,page:1,nextHref:"?year=2026&page=2",promos:[]};
-for(const width of [320,390,1440])test(`customer can trace points and cancelled transactions at ${width}px`,async({page})=>{
+for(const width of [320,360,390,768,1440])test(`customer can trace points and cancelled transactions at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:900});
  await page.setContent(`<style>body{margin:0}${css}</style>${renderToStaticMarkup(out.exports.default(props))}`);
- await expect(page.getByRole("heading",{name:"Poin dan transaksi"})).toBeVisible();
- await expect(page.getByText("Nama Contoh",{exact:true})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Kartu member Anda"})).toBeVisible();
+ await expect(page.getByText("Nama Contoh",{exact:true})).toHaveCount(0);
+ await expect(page.getByText("Data Uji",{exact:true})).toBeVisible();
+ await expect(page.getByText("Belum ada promo untuk kartu ini.",{exact:true})).toBeVisible();
+ expect(await page.locator('.member-point-primary>strong').evaluate(e=>parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThan(await page.locator('.member-count>strong').evaluate(e=>parseFloat(getComputedStyle(e).fontSize)));
  await expect(page.getByRole("heading",{name:"Riwayat transaksi"})).toBeVisible();
  await expect(page.getByText("Rp75.000",{exact:true})).toBeVisible();await expect(page.getByText("+5 poin",{exact:true})).toBeVisible();
  await expect(page.getByText("20 poin dibatalkan",{exact:true})).toBeVisible();await expect(page.getByText("Tanpa nominal",{exact:true})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
- await expect(page.getByRole("link",{name:"Lebih lama →"})).toHaveAttribute("href",/year=2026&page=2/);
+ await expect(page.getByRole("link",{name:"Lebih lama"})).toHaveAttribute("href",/year=2026&page=2/);
  mkdirSync("artifacts/screenshots",{recursive:true});await page.screenshot({path:`artifacts/screenshots/member-progress-final-${width}.png`,fullPage:true});
 });
 test("unavailable history is distinguished from a genuine empty year",async({page})=>{
@@ -32,6 +35,35 @@ test("unavailable history is distinguished from a genuine empty year",async({pag
  await expect(page.getByRole("alert")).toContainText("Riwayat belum dapat dimuat");await expect(page.getByText("Belum ada transaksi pada tahun ini.")).toHaveCount(0);
  await page.setContent(`<style>${css}</style>${renderToStaticMarkup(out.exports.default({...props,transactions:[],points:0}))}`);
  await expect(page.getByText("Belum ada transaksi pada tahun ini.")).toBeVisible();await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
+test("2027 missing balance stays unavailable and 200 percent reflow preserves controls",async({page})=>{
+ await page.setViewportSize({width:640,height:900});
+ await page.setContent(`<style>body{margin:0;zoom:2}${css}</style>${renderToStaticMarkup(out.exports.default({...props,year:2027,points:null,transactions:[]}))}`);
+ await expect(page.getByText('Saldo tahun ini belum tersedia.',{exact:true})).toBeVisible();
+ await expect(page.locator('.member-point-primary>strong')).toHaveCount(0);
+ await expect(page.getByRole('link',{name:'2027',exact:true})).toHaveAttribute('aria-current','page');
+ await expect(page.getByText('Semua tahun, setelah pembatalan.',{exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+ await page.getByRole('link',{name:'2026',exact:true}).focus();
+ await expect(page.getByRole('link',{name:'2026',exact:true})).toHaveCSS('outline-width','3px');
+ for(const link of await page.locator('.member-year-nav a,.member-history-pagination a,.member-public-foot a').all()){
+  expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+ }
+});
+
+test('result links navigate by keyboard to their scoped destinations',async({page})=>{
+ await page.route('**/k/fixture**',route=>route.fulfill({contentType:'text/html',body:'<h1>Tujuan fixture sintetis</h1>'}));
+ const render=async()=>{
+  await page.goto('about:blank');
+  await page.setContent(`<base href="http://127.0.0.1:3000/k/fixture"><style>${css}</style>${renderToStaticMarkup(out.exports.default({...props,page:2,previousHref:'?year=2026&page=1',nextHref:'?year=2026&page=3'}))}`);
+ };
+ for(const [name,target] of [['2026','year=2026'],['2027','year=2027'],['Lebih baru','year=2026&page=1'],['Lebih lama','year=2026&page=3']]){
+  await render();await page.getByRole('link',{name,exact:true}).focus();await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(new RegExp(target));
+ }
+ await render();await page.getByRole('link',{name:'Pindai kartu lain',exact:true}).click();await expect(page).toHaveURL(/\/membership$/);
+ await render();await page.getByRole('link',{name:'MasJawa Laundry',exact:true}).click();await expect(page).toHaveURL('http://127.0.0.1:3000/');
 });
 
 for(const width of [320,390,1440])test(`available promotion includes terms and WIB expiry at ${width}px`,async({page})=>{

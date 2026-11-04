@@ -23,7 +23,8 @@ async function render({search={},historyError=false,balancesError=false,unknown=
  return {props:await out.exports.default({params:Promise.resolve({token}),searchParams:Promise.resolve(search)}),calls};
 }
 test("customer defaults to the current WIB year instead of prioritizing empty future points",async()=>{
- const {props,calls}=await render();assert.equal(props.name,"Nama Contoh");assert.equal(props.year,2026);assert.equal(props.points,5);assert.equal(props.years[0].year,2026);
+ const {props,calls}=await render();assert.equal(props.name,undefined);assert.equal(props.year,2026);assert.equal(props.points,5);assert.equal(props.years[0].year,2026);
+ assert.ok(!calls.some(([name])=>name==='laundry_public_member_name'),'full name is not requested by the customer portal');
  const [,args]=calls.find(([name])=>name==="laundry_public_transaction_history");
  assert.equal(args.p_year,2026);assert.equal(args.p_page,1);assert.match(args.p_digest_hex,/^[a-f0-9]{64}$/);assert.ok(!JSON.stringify(args).includes("A".repeat(43)));
 });

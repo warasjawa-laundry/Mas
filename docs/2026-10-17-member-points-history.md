@@ -23,3 +23,7 @@ Returned fields are transaction ID, date/time, amount, captured points, program 
 - CI repeats the integration test against PostgreSQL 17. Route tests cover current-year default, scoped digests, failure states and pagination boundaries. Browser fixtures render the exact public presentation component with synthetic data at phone/desktop widths.
 - Security/performance advisors reviewed: existing closed-card-table RLS informational notices and paused leaked-password protection remain; the new index may be reported unused until normal traffic uses it.
 - Customer database, production deployment and provider settings are unchanged. The implementation is for the existing isolated QA Preview candidate.
+
+## Superseding public presentation, 4 November 2026
+
+[Member Experience V2](./2026-11-04-member-experience-v2.md) updates the current presentation and release scope. Public results no longer request/render full names; member number identifies the card. Selected-year points dominate the all-time count, 2027 is selectable, and the prelaunch Data Uji notice remains until an independently approved cutover. Ledger/RPC semantics and existing QR tokens remain unchanged. The historical QA-only deployment statement above describes the original 2026-10-17 milestone, not the current Production rollout.

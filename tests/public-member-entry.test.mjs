@@ -17,7 +17,7 @@ test("public header points to actual member page, not inactive homepage section"
  assert.doesNotMatch(header,/href: "\/#promo", text: "Kartu Member"/);
  assert.match(home,/siteHref\("\/membership"\)/);
  assert.match(membership,/<CustomerCardScanner \/>/);
- assert.match(membership,/siteHref\("\/admin\/login"\)/);
+ assert.doesNotMatch(membership,/\/admin\/login|Masuk Admin|\/kasir/);
 });
 
 test("member holders can use camera or gallery locally, without login or searching names",()=>{
