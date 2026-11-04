@@ -142,7 +142,7 @@ h3 { font-size: 1.22rem; }
 .member-page-heading { max-width: 710px; margin-bottom: 38px; }
 .member-page-heading h1 { max-width: 650px; margin-bottom: 23px; }
 .member-page-heading>p:not(.eyebrow) { color: var(--muted); max-width: 590px; font-size: 1.1rem; }
-.program-status { background: #fff8e9; color: #674113; border: 1px solid #f0dfb2; border-radius: 12px; padding: 16px 20px; margin-top: 25px; line-height: 1.6; }
+.program-status { background: #F3EEFA; color: #4B3677; border: 1px solid #D8C9E8; border-radius: 12px; padding: 16px 20px; margin-top: 25px; line-height: 1.6; }
 .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
 .how-card { background: #fff; border: 1px solid var(--line); border-radius: 15px; padding: 28px; }
 .how-card>span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--brand-light); color: var(--brand); font-size: .85rem; font-weight: 800; margin-bottom: 26px; }

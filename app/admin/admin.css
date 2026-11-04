@@ -3,8 +3,8 @@
   --admin-muted: #59616d;
   --admin-line: #dfe2e6;
   --admin-input: #858b94;
-  --admin-yellow: #f7b801;
-  --admin-soft: #fdf3d0;
+  --admin-primary: #5B3F8C;
+  --admin-soft: #F3EEFA;
   min-height: 100dvh;
   background: #f3f4f6;
   color: var(--admin-ink);
@@ -35,9 +35,9 @@
 .admin-primary, .member-add, .member-directory-add, .member-directory-record {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   min-height: 48px; padding: .75rem 1.25rem; border: 1px solid transparent; border-radius: 12px;
-  color: var(--admin-ink); background: var(--admin-yellow); font-size: .875rem; font-weight: 800; text-align: center; cursor: pointer;
+  color: #fff; background: var(--admin-primary); font-size: .875rem; font-weight: 800; text-align: center; cursor: pointer;
 }
-.admin-primary:hover, .member-add:hover, .member-directory-add:hover, .member-directory-record:hover { background: #e5aa00; }
+.admin-primary:hover, .member-add:hover, .member-directory-add:hover, .member-directory-record:hover { background: #49316F; color: #fff; }
 .admin-primary { margin-top: 1rem; }
 .admin-logout, .member-directory-edit {
   display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
@@ -77,7 +77,7 @@
 .binatu-login-tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--admin-line); }
 .binatu-login-tabs a { position: relative; min-height: 56px; display: flex; align-items: center; justify-content: center; color: var(--admin-muted); font-weight: 700; }
 .binatu-login-tabs a[aria-current=page] { color: var(--admin-ink); font-weight: 800; }
-.binatu-login-tabs a[aria-current=page]::after { content: ""; position: absolute; bottom: 0; width: 80px; height: 4px; background: var(--admin-yellow); border-radius: 4px 4px 0 0; }
+.binatu-login-tabs a[aria-current=page]::after { content: ""; position: absolute; bottom: 0; width: 80px; height: 4px; background: var(--admin-primary); border-radius: 4px 4px 0 0; }
 .binatu-login-fields { padding: 1.5rem; }
 .binatu-login-fields h1 { font-size: 1.125rem; margin-bottom: .5rem; }
 .binatu-login-help { padding: 1rem; margin: 0 0 1.25rem; background: var(--admin-soft); border-radius: 16px; color: #4b515b; font-size: .8125rem; line-height: 1.7; }
@@ -154,7 +154,7 @@
 .owner-count-box small, .owner-point-estimate small, .owner-point-rule-form small { font-size: .75rem; color: var(--admin-muted); }
 .owner-point-year-tabs, .member-task-nav { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.25rem 0; }
 .owner-point-year-tabs a, .member-task-nav a { min-height: 44px; display: flex; align-items: center; justify-content: center; padding: .625rem .875rem; border: 1px solid var(--admin-input); border-radius: 10px; background: #fff; font-weight: 700; }
-.owner-point-year-tabs a[aria-current=page], .member-task-nav a[aria-current=page] { background: var(--admin-yellow); border-color: transparent; }
+.owner-point-year-tabs a[aria-current=page], .member-task-nav a[aria-current=page] { background: var(--admin-soft); border-color: #9A7ABE; color: #4B3677; }
 .owner-point-rule-form legend { font-weight: 800; padding-inline: .375rem; }
 .owner-rule-inputs label { display: grid; gap: .5rem; }
 .transaction-entry-fields { display: grid; gap: .625rem; }
@@ -190,7 +190,7 @@
 .owner-wa-panel { padding-inline: 0; }
 .owner-wa-panel textarea { width: 100%; min-width: 0; border: 1px solid var(--admin-input); border-radius: 12px; padding: .875rem; font-size: 1rem; background: #fff; color: var(--admin-ink); }
 .owner-wa-actions > * { flex: 1 1 140px; min-height: 48px; margin: 0; }
-.owner-wa-warning { color: #7b3b1b !important; background: #fff3e7; padding: .875rem; border: 1px solid #d5a47c; border-radius: 10px; }
+.owner-wa-warning { color: #79324E !important; background: #F9EBF2; padding: .875rem; border: 1px solid #DEC5D3; border-radius: 10px; }
 .owner-wa-feedback { font-weight: 700; }
 .promo-fields, .service-fields { display: grid; gap: .625rem; padding: 0; margin: 0; border: 0; min-width: 0; }
 .promo-fields:disabled, .service-fields:disabled { opacity: .6; }
@@ -208,7 +208,7 @@
 /* Preserve physical-card dimensions and QR quiet zones for existing issuance paths. */
 .print-card-page { max-width: 950px; }
 .mj-card-preview { width: 85.6mm; max-width: 100%; margin-top: 1.75rem; }
-.mj-card { width: 100%; height: auto; aspect-ratio: 85.6/53.98; border: 1px solid #cdd1d6; border-top: 1mm solid #f7b801; border-radius: 3mm; display: grid; grid-template-columns: minmax(0,1fr) 30mm; gap: 2mm; padding: 3.5mm; background: #fff; color: #22252a; overflow: hidden; font-family: Arial,Helvetica,sans-serif; }
+.mj-card { width: 100%; height: auto; aspect-ratio: 85.6/53.98; border: 1px solid #cdd1d6; border-top: 1mm solid #5B3F8C; border-radius: 3mm; display: grid; grid-template-columns: minmax(0,1fr) 30mm; gap: 2mm; padding: 3.5mm; background: #fff; color: #22252a; overflow: hidden; font-family: Arial,Helvetica,sans-serif; }
 .mj-card-info { min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 2mm; }
 .mj-card-heading { display: flex; align-items: center; gap: 2mm; font-size: 11px; font-weight: 700; line-height: 1.2; }
 .mj-card-heading img { display: block; width: 7mm; height: 7mm; object-fit: contain; flex: 0 0 7mm; border-radius: 1mm; }

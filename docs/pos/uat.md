@@ -50,3 +50,7 @@ Evidence and complete automated scenarios: [Member Experience V2](../2026-11-04-
 
 ## UAT visual background MasJawa (belum diuji pada perangkat fisik)
 Pada domain utama dan perangkat Android/desktop, pastikan warna ungu–biru dan ikon SVG baru tampil pada login gabungan (tab Manajer/Kasir), fallback login `/kasir`, header dashboard Owner/Kasir, menu dan sidebar, serta halaman Kelola Kasir. Periksa logo resmi MasJawa, lengkungan panel putih, pemotongan banner pada lebar 320/360/390/768/desktop, teks tetap terbaca dan tidak ada overflow. Verifikasi tab dan login kedua peran tetap berfungsi; riwayat/kas/nota tidak berubah. Catat bukti fisik dan reviewer nyata, bukan otomatis PASS dari commit visual. Acuan: `docs/pos/brand-background-20261104.md`.
+
+
+## UAT palet visual Kasir/Manajer (menunggu perangkat fisik)
+Pastikan pada lebar 320/360/390/768/desktop: tombol login Manajer/Kasir, tombol Tambah Pesanan dan nota, menu/sidebar terpilih, tab antrian, status Belum Bayar/Lunas, mode uji, wizard paket-durasi, pilihan jumlah, pengaturan layanan, poin simulasi, mutasi kas, laporan, serta kartu cetak menggunakan tema MasJawa tanpa kuning lama. Kontras CTA putih pada ungu, tab aktif lavender dengan teks gelap, notice info biru, unpaid rose, paid hijau, refund/destruktif merah. Periksa focus ring, enabled/disabled dan keyboard/tab selection (bukan hanya warna), handover/print tetap terbaca, scroll/overflow dan tidak ada aksi berubah. Bukti otomatis tidak menggantikan UAT fisik. Lihat `docs/pos/brand-palette-20261104.md`.
