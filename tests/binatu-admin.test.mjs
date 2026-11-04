@@ -36,7 +36,7 @@ function load(path) {
     "@/lib/admin/timing": {timeAdmin: (_name, callback) => callback()},
     "@/lib/laundry/member-history": {historyPageNumber: () => 1},
     "@/lib/pos/cashier-permissions": cashierPermissions,
-    "@/lib/site": {site:{address:"Synthetic outlet address",shortAddress:"Synthetic outlet area"}},
+    "@/lib/site": {site:{address:"Synthetic outlet address",shortAddress:"Synthetic outlet area"},assets:{logo:"https://example.test/masjawa-brand-logo.jpg"}},
     "./actions": actions,
     "./cashiers.module.css": {default:new Proxy({}, {get:(_target,key)=>String(key)})},
   };
@@ -136,6 +136,8 @@ test("login uses Manajer and Kasir with existing ID payloads, actions, and error
   assert.match(JSON.stringify(owner), /Manajer|MANAJER/);
   assert.match(JSON.stringify(cashier), /Kasir|KASIR/);
   assert.match(JSON.stringify(owner), /ID atau password tidak cocok/);
+  assert.ok(nodes(owner).some(node => node.src === "https://example.test/masjawa-brand-logo.jpg"));
+  assert.ok(nodes(cashier).some(node => node.src === "https://example.test/masjawa-brand-logo.jpg"));
   assert.ok(nodes(owner).some(node => node.action === actions.loginOwner));
   assert.ok(nodes(owner).some(node => node.id === "owner-id" && node.name === "loginId"));
   assert.ok(nodes(cashier).some(node => node.action === actions.loginCashier));
