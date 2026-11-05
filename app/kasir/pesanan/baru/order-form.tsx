@@ -63,6 +63,8 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
  const [memberError,setMemberError]=useState("");
  const lookupSequence=useRef(0);
  const [quantities,setQuantities]=useState<Record<string,string>>({});
+ const [quantityStep,setQuantityStep]=useState(100);
+ useEffect(()=>{try{const saved=Number(localStorage.getItem('mjl.quantityStep'));if([1,10,100,1000].includes(saved))setQuantityStep(saved)}catch{}},[]);
  const [perfume,setPerfume]=useState("");
  const [deliveryCode,setDeliveryCode]=useState("NONE");
  const selectedDelivery=deliveryOptions.find(d=>d.code===deliveryCode);
@@ -81,7 +83,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
  },[chosen,quantities,selectedDelivery]);
  const customerValid=customerType==="guest"?(pilotTestOnly?/^UJI - \S.{1,}$/i.test(name.trim()):name.trim().length>=2):!pilotTestOnly&&/^[1-9][0-9]{0,11}$/.test(member)&&memberName.length>0;
  const customerLabel=customerType==='guest'?name.trim():memberName||`Member MJL #${member}`;
- const items=JSON.stringify(chosen.map(s=>({service_id:s.id,quantity:quantities[s.id],revision:Number(s.revision)})));
+ const items=JSON.stringify(chosen.map(s=>({service_id:s.id,quantity:quantities[s.id].replace(',','.'),revision:Number(s.revision)})));
  const canContinue=packageWorkflow?(step===0?customerValid:step===1?!!packageCode:!!quote):canAdvanceOrderStep(step,customerValid,available.length>0,!!quote);
  function go(next:number){setStep(next);queueMicrotask(()=>title.current?.focus())}
  function pickMember(number:string,label:string){
@@ -100,7 +102,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
  }
  function changeQuantity(id:string,value:string){setQuantities(prev=>({...prev,[id]:value}))}
  function adjust(s:CatalogService,direction:1|-1){
-  try{changeQuantity(s.id,stepQuantity(quantities[s.id]??"",posUnitFromCatalog(s.unit),direction))}catch{return}
+  try{changeQuantity(s.id,stepQuantity(quantities[s.id]??"",posUnitFromCatalog(s.unit),direction,quantityStep))}catch{return}
  }
  function quantityError(s:CatalogService){
   if(!quantities[s.id])return '';
@@ -140,6 +142,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
      {pendingPackage&&<div role="alert"><p>Mengganti paket akan mengosongkan pilihan layanan. Periksa tarif paket baru sebelum menambah layanan.</p><button type="button" className={styles.back} onClick={()=>setPendingPackage("")}>Pertahankan pilihan</button><button type="button" className={styles.primary} onClick={()=>{setPackageCode(pendingPackage);setQuantities({});setPendingPackage("");}}>Ganti paket dan pilih ulang</button></div>}
     </section>}
     <section className={`${styles.panel} ${styles.catalogPanel} ${step!==servicesStep?styles.mobileHidden:''}`} aria-labelledby="services-title">
+     <label className={styles.quantityStep}>Langkah tombol kg / m<select value={quantityStep} onChange={e=>{const next=Number(e.target.value);setQuantityStep(next);try{localStorage.setItem('mjl.quantityStep',String(next))}catch{}}}>{[1,10,100,1000].map(n=><option key={n} value={n}>{(n/1000).toLocaleString('id-ID',{maximumFractionDigits:3})}</option>)}</select></label>
      <div className={styles.sectionHeading}><h2 id="services-title">{packageWorkflow?"Pilih layanan":"Pilih layanan & durasi"}</h2><span>{String(servicesStep+1).padStart(2,"0")}</span></div>
      <label className={styles.search}><span>Cari layanan</span><input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari nama layanan / paket"/></label>
      <div className={styles.categories} aria-label="Kategori layanan"><button type="button" aria-pressed={!activeCategory} onClick={()=>setCategory('')}>Semua</button>{categories.map(c=><button type="button" key={c} aria-pressed={activeCategory===c} onClick={()=>setCategory(c)}>{c||'Lainnya'}</button>)}</div>
@@ -148,7 +151,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
       const error=quantityError(s);
       return <div key={s.id} className={styles.service} data-selected={!!quantities[s.id]}>
        <div className={styles.serviceInfo}><strong>{s.name}</strong><small>{s.package_name||s.category}</small>{!packageWorkflow&&<span className={styles.serviceDuration}><span aria-hidden="true">◷</span> {s.duration||"Durasi belum ditentukan"}</span>}<span>{money(s.price_idr)} <small>/ {s.unit}</small></span></div>
-       <div className={styles.quantity}><button type="button" aria-label={`Kurangi ${s.name}`} disabled={!quantities[s.id]} onClick={()=>adjust(s,-1)}>−</button><input aria-label={`Jumlah ${s.name}`} aria-invalid={!!error} aria-describedby={error?`quantity-${s.id}`:undefined} inputMode={s.unit==='pcs'||s.unit==='satuan'?'numeric':'decimal'} placeholder="0" value={quantities[s.id]??""} onChange={e=>changeQuantity(s.id,e.target.value.slice(0,12))}/><button type="button" aria-label={`Tambah ${s.name}`} onClick={()=>adjust(s,1)}>+</button></div>
+       <div className={styles.quantity}><button type="button" aria-label={`Kurangi ${s.name}`} disabled={!quantities[s.id]} onClick={()=>adjust(s,-1)}>−</button><input aria-label={`Jumlah ${s.name}`} aria-invalid={!!error} aria-describedby={error?`quantity-${s.id}`:undefined} inputMode={s.unit==='pcs'||s.unit==='satuan'?'numeric':'decimal'} placeholder="0" value={quantities[s.id]??""} onChange={e=>changeQuantity(s.id,e.target.value.slice(0,12))}/><span>{posUnitFromCatalog(s.unit)}</span><button type="button" aria-label={`Tambah ${s.name}`} onClick={()=>adjust(s,1)}>+</button></div>
        {error&&<p id={`quantity-${s.id}`} className={styles.quantityError}>{error}</p>}
       </div>})}</div>}
     </section>
@@ -157,7 +160,8 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
     <div className={styles.summaryHead}><h2 id="summary-title">Atur & rincian pesanan</h2><p>{packageWorkflow?"Satu paket durasi untuk seluruh layanan pada nota.":"Durasi mengikuti masing-masing layanan yang dipilih."}</p></div>
     <div className={styles.summaryBody}>
      <div className={styles.customerSummary}><small>Pelanggan</small><strong>{customerValid?customerLabel:'Belum dipilih'}</strong></div>
-     {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{!packageWorkflow&&`${s.duration||"Durasi belum ditentukan"} · `}{quantities[s.id]} {s.unit} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
+     <p className={styles.help}>Kontak nota diverifikasi setelah penyimpanan melalui bagian Pesan WhatsApp. Periksa nomor dan persetujuan penerima sebelum mengirim.</p>
+     {chosen.length===0?<p className={styles.empty}>Belum ada layanan dipilih. Tambahkan layanan dari katalog.</p>:<div className={styles.summary}>{chosen.map((s,i)=><div key={s.id}><span><strong>{s.name}{s.package_name?` · ${s.package_name}`:""}</strong><small>{!packageWorkflow&&`${s.duration||"Durasi belum ditentukan"} · `}{quantities[s.id]} {posUnitFromCatalog(s.unit)} × {money(s.price_idr)}</small></span><strong>{quote?money(quote.items[i].lineTotalIdr):'Periksa jumlah'}</strong></div>)}</div>}
      {chosen.length>30&&<p role="alert" className={styles.warn}>Maksimal 30 layanan per nota. Kurangi pilihan layanan.</p>}
      {packageWorkflow&&etaPreview}
      <label className={styles.field}>Parfum

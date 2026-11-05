@@ -1,5 +1,5 @@
 /** Strict cashier form boundary; all authoritative amounts and permissions are rechecked by Postgres. */
-export type G5PaymentInput={orderId:string;requestId:string;amountIdr:string;method:'CASH'|'NONCASH';expectedVersion:number};
+export type G5PaymentInput={orderId:string;requestId:string;amountIdr:string;method:'CASH'|'NONCASH'|'TRANSFER'|'QRIS';expectedVersion:number};
 export type G5RefundInput={orderId:string;requestId:string;reason:string;expectedVersion:number};
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const AMOUNT=/^[1-9][0-9]{0,9}$/;
@@ -18,7 +18,7 @@ function common(form:FormData):{orderId:string;requestId:string;expectedVersion:
 export function parseG5Payment(form:FormData):G5PaymentInput|null{
  const base=common(form),amountIdr=get(form,'amountIdr'),method=get(form,'method');
  if(!base||!amountIdr||!AMOUNT.test(amountIdr)||BigInt(amountIdr)>BigInt("1000000000")||
- (method!=='CASH'&&method!=='NONCASH'))return null;
+ (method!=='CASH'&&method!=='NONCASH'&&method!=='TRANSFER'&&method!=='QRIS'))return null;
  return {...base,amountIdr,method};
 }
 export function parseG5Refund(form:FormData):G5RefundInput|null{

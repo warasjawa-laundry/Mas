@@ -12,8 +12,8 @@ export async function collectCashierPayment(form:FormData):Promise<CommandAction
  const payload=parseG5Payment(form);
  if(!payload)return {error:'Periksa nominal dan metode pembayaran. Isian tetap tersedia.'};
  const path=`/kasir/pesanan/${payload.orderId}`;
- const {data,error}=await access.client.rpc('laundry_pos_g5_payment',{
-  ...access.tokens,p_request_id:payload.requestId,p_order_id:payload.orderId,
+ const {data,error}=await access.client.rpc('laundry_pos_v3_finance',{
+  ...access.tokens,p_operation:'PAYMENT',p_request_id:payload.requestId,p_order_id:payload.orderId,
   p_amount_idr:payload.amountIdr,p_method:payload.method,p_expected_version:payload.expectedVersion,
  });
  if(error||!data||typeof data!=='object'||typeof data.payment_id!=='string'){
@@ -44,8 +44,8 @@ export async function refundCashierOrder(form:FormData):Promise<CommandActionRes
  const payload=parseG5Refund(form);
  if(!payload)return {error:"Periksa nomor nota dan alasan refund."};
  const path=`/kasir/pesanan/${payload.orderId}`;
- const {data,error}=await access.client.rpc('laundry_pos_g5_refund_full',{
-  ...access.tokens,p_request_id:payload.requestId,p_order_id:payload.orderId,
+ const {data,error}=await access.client.rpc('laundry_pos_v3_finance',{
+  ...access.tokens,p_operation:'FULL_REFUND',p_request_id:payload.requestId,p_order_id:payload.orderId,
   p_reason:payload.reason,p_expected_version:payload.expectedVersion,
  });
  if(error||!data||typeof data!=='object'||data.payment_status!=='REFUNDED'){

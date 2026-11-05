@@ -1,0 +1,25 @@
+/* Roll width comes from the selected printer driver; the receipt controls its printable width. */
+.thermal-print-root { display: none; }
+.thermal-receipt { box-sizing: border-box; width: 58mm; max-width: 100%; padding: 3mm; background: #fff; color: #000; font: 11px/1.4 Arial, sans-serif; font-variant-numeric: tabular-nums; text-align: left; }
+.thermal-receipt[data-width="80"] { width: 80mm; font-size: 12px; }
+.thermal-line { overflow-wrap: anywhere; white-space: pre-wrap; break-inside: avoid; }
+.thermal-heading { font-weight: 700; }
+.thermal-amount-row { display: flex; align-items: baseline; justify-content: space-between; gap: 2mm; }
+.thermal-amount-row > span:first-child { min-width: 0; }
+.thermal-nominal { flex: 0 0 auto; text-align: right; white-space: nowrap; }
+.thermal-receipt hr { border: 0; border-top: 1px dashed #000; margin: 2mm 0; }
+.thermal-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.thermal-controls label { display: grid; gap: 4px; }
+.thermal-controls button, .thermal-controls select { min-height: 44px; padding: 8px 12px; border: 1px solid #555; border-radius: 6px; background: #fff; color: #111; font: inherit; }
+.thermal-controls button:disabled { opacity: .65; }
+.thermal-controls :is(button,select):focus-visible { outline: 3px solid #005fcc; outline-offset: 3px; }
+.thermal-preview-toggle { box-sizing: border-box; min-height: 44px; padding-block: 12px; cursor: pointer; }
+.thermal-preview-toggle:focus-visible { outline: 3px solid #005fcc; outline-offset: 3px; }
+.thermal-preview { margin-top: 12px; max-width: 100%; border: 1px solid #555; width: fit-content; }
+@media print {
+ @page { size: auto; margin: 0; }
+ body:has(> .thermal-print-root) { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+ body:has(> .thermal-print-root) > :not(.thermal-print-root) { display: none !important; }
+ body > .thermal-print-root { display: block !important; position: static !important; margin: 0 !important; padding: 0 !important; }
+ .thermal-print-root .thermal-receipt { max-width: none; margin: 0; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

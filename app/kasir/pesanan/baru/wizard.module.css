@@ -7,6 +7,12 @@
 .field input,.field textarea,.field select,.durationTrigger,.memberResults button,.sheetOption{border-color:#858b94}
 .search input{border-color:#727984}
 .quantity input{border-color:#62666d}
+.quantityStep{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px;font-size:14px;font-weight:600}
+.quantityStep select{min-height:44px;min-width:100px;padding:8px;border:1px solid #62666d;border-radius:8px;background:white;font:inherit}
+.quantity{flex-wrap:wrap;gap:4px}
+.quantity input{width:90px!important;font-size:17px;min-height:48px}
+.quantity>span{font-size:14px;padding:4px}
+@media(max-width:480px){.service{flex-wrap:wrap}.quantity{margin-left:auto}.serviceInfo{flex:1 1 100%}}
 .sectionHeading>span{color:#62666d}
 .primary:disabled{color:#52565d}
 @media(min-width:901px) and (max-width:1023px){

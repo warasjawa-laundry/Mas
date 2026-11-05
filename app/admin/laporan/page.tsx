@@ -34,6 +34,8 @@ export default async function OwnerReports({searchParams}:{searchParams:Promise<
  <p>Nota dibuat: <strong>{report.orders_created}</strong> · Piutang pada akhir periode: <strong>{formatIdr(report.receivables_as_of_end_idr)}</strong></p>
  <p className={styles.muted}>Laporan ini merangkum arus kas operasional, bukan laba bersih.</p>
  {!report.truncated&&<a className={styles.mainLink} href={`/admin/laporan/export?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}>Unduh laporan CSV</a>}
+ <a className={styles.mainLink} href={`/admin/laporan/export?format=xlsx&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}>Unduh laporan Excel</a>
+ <p className={styles.muted}>Excel memuat nota, kuantitas layanan, dan mutasi. Saldo nota memakai kondisi terkini; penerimaan kas mengikuti periode yang dipilih.</p>
  {report.truncated&&<p className={styles.warning}>Hasil terlalu banyak untuk ekspor aman (lebih dari 300 mutasi). Persempit tanggal.</p>}
  </section><section className={styles.card}><h2>Mutasi dalam periode</h2>
  {report.rows.length===0?<p className={styles.muted}>Tidak ada mutasi.</p>:report.rows.map((x,i)=><div key={i} className={styles.receipt}>

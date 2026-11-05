@@ -15,7 +15,8 @@ test('G5 rejects money coercion/negative/zero/over-limit/stale version/invalid m
   assert.equal(parseG5Payment(payment({amountIdr:bad})),null);
  for(const bad of ['0','-1','1.0','NaN','999999999999999999999999'])
   assert.equal(parseG5Payment(payment({expectedVersion:bad})),null);
- for(const bad of ['CARD','TRANSFER','cash',''])assert.equal(parseG5Payment(payment({method:bad})),null);
+ for(const bad of ['CARD','cash',''])assert.equal(parseG5Payment(payment({method:bad})),null);
+ for(const method of ['TRANSFER','QRIS'])assert.equal(parseG5Payment(payment({method})).method,method);
  for(const field of ['orderId','requestId']) assert.equal(parseG5Payment(payment({[field]:'fake'})),null);
 });
 test('G5 refund reason and stable identity must be present',()=>{

@@ -17,13 +17,13 @@ async function post(rpc:string,args:Record<string,unknown>,path:string,check:(da
 }
 export async function collectOwnerPayment(form:FormData):Promise<Result>{
  const p=parseG5Payment(form);if(!p)return {error:"Periksa nominal, metode, dan versi nota."};
- return post("laundry_pos_owner_payment",{p_request_id:p.requestId,p_order_id:p.orderId,
+ return post("laundry_pos_v3_finance",{p_operation:'PAYMENT',p_request_id:p.requestId,p_order_id:p.orderId,
   p_amount_idr:p.amountIdr,p_method:p.method,p_expected_version:p.expectedVersion},
   `/admin/pesanan/${p.orderId}`,d=>typeof d.payment_id==="string");
 }
 export async function refundOwnerOrder(form:FormData):Promise<Result>{
  const p=parseG5Refund(form);if(!p)return {error:"Periksa alasan refund dan versi nota."};
- return post("laundry_pos_owner_refund_full",{p_request_id:p.requestId,p_order_id:p.orderId,
+ return post("laundry_pos_v3_finance",{p_operation:'FULL_REFUND',p_request_id:p.requestId,p_order_id:p.orderId,
   p_reason:p.reason,p_expected_version:p.expectedVersion},`/admin/pesanan/${p.orderId}`,d=>d.payment_status==="REFUNDED");
 }
 export async function openOwnerShift(form:FormData):Promise<Result>{
@@ -48,13 +48,18 @@ export async function cancelOwnerOrder(form:FormData):Promise<Result>{
 }
 export async function postOwnerCash(form:FormData):Promise<Result>{
  const p=parseCashEntry(form);if(!p)return {error:"Periksa nominal dan alasan mutasi."};
- return post("laundry_pos_owner_cash_entry",{p_request_id:p.requestId,p_direction:p.direction,
+ return post("laundry_pos_v3_finance",{p_operation:'CASH_ENTRY',p_request_id:p.requestId,p_direction:p.direction,
   p_amount_idr:p.amountIdr,p_reason:p.reason},"/admin/kas",d=>d.status==="POSTED");
 }
 export async function closeOwnerRegister(form:FormData):Promise<Result>{
  const p=parseCloseShift(form);if(!p)return {error:"Periksa uang fisik dan alasan selisih."};
  return post("laundry_pos_owner_close_shift",{p_request_id:p.requestId,p_counted_idr:p.countedIdr,
   p_reason:p.reason},"/admin/kas",d=>d.status==="CLOSED");
+}
+export async function reconcileOwnerCash(form:FormData):Promise<Result>{
+ const p=parseCloseShift(form);const expected=form.get('expectedIdr');
+ if(!p||typeof expected!=='string'||!/^\-?\d{1,16}$/.test(expected)||p.reason.length<3)return {error:'Periksa nominal dan catatan penghitungan.'};
+ return post('laundry_pos_v3_reconcile',{p_request_id:p.requestId,p_counted_idr:p.countedIdr,p_expected_idr:expected,p_reason:p.reason},'/admin/kas',d=>d.status==='RECONCILED');
 }
 export async function openOwnerCashRegister(form:FormData):Promise<Result>{
  const requestId=form.get("requestId");

@@ -47,7 +47,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  {!row?<><p role="status" className="binatu-inline-notice">Rincian nota belum tersedia atau pesanan sudah dibatalkan.</p>
  <RecoverableForm action={cancelOwnerOrder} recoveryKey={commandRecoveryKey('owner',user.id,'CANCEL',id)} recoverAction={recoverOwnerOperation.bind(null,'CANCEL',id)}>{null}</RecoverableForm>
  <RecoverableForm action={advanceOwnerWork} recoveryKey={commandRecoveryKey('owner',user.id,'SET_WORK',id)} recoverAction={recoverOwnerOperation.bind(null,'SET_WORK',id)}>{null}</RecoverableForm></>:<>
- <div className={styles.header}><p><strong>{row.customer_name}</strong> · {date(row.created_at)}</p><PrintButton/></div>
+ <div className={styles.header}><p><strong>{row.customer_name}</strong> · {date(row.created_at)}</p><PrintButton orderId={id} role="owner" version={finance?.version??0} isTestOrder={row.is_test_order===true}/></div>
  {query.saved&&<p className={styles.ok} role="status">Perubahan sudah dikonfirmasi database.</p>}
  <TestOrderNotice isTestOrder={row.is_test_order===true}/>
  {!canWrite&&<p className="binatu-inline-notice" role="status">Perubahan pesanan masih dikunci. Riwayat yang tersedia tetap dapat dibaca.</p>}
@@ -65,31 +65,25 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  {!finance?<p className={styles.warning}>Ringkasan pembayaran belum tersedia.</p>:<>
  <div className={styles.paymentTotals}><div><small>Total nota</small><strong>{formatIdr(finance.total_idr)}</strong></div>
  <div><small>Sudah diterima</small><strong>{formatIdr(finance.paid_idr)}</strong></div>
- <div className={styles.remaining}><small>Sisa pembayaran</small><strong>{formatIdr(finance.remaining_idr)}</strong></div></div>
+ <div className={styles.remaining}><small>Sisa pembayaran</small><strong>{formatIdr(finance.payment_status==='REFUNDED'?'0':finance.remaining_idr)}</strong></div></div>
  {finance.refunded_idr!=="0"&&<p>Total dikembalikan: {formatIdr(finance.refunded_idr)}</p>}
  {finance.receipts.map(receipt=><div key={receipt.id} className={styles.receipt}><span>{receipt.type==="REFUND"?"Refund":"Pembayaran"} · {receipt.method==="CASH"?"Tunai":"Non-tunai"}<small>{date(receipt.at)}</small></span><strong>{receipt.type==="REFUND"?"−":"+"}{formatIdr(receipt.amount_idr)}</strong></div>)}
- <RecoverableForm action={openOwnerShift} className={!finance.shift_open?styles.paymentForm:undefined}
- recoveryKey={commandRecoveryKey('owner',user.id,'OPEN_SHIFT')} recoverAction={recoverOwnerOperation.bind(null,'OPEN_SHIFT',id)}>
- {!finance.shift_open&&<>
- <input type="hidden" name="requestId" value={randomUUID()}/><input type="hidden" name="orderId" value={id}/>
- <p>Kas utama belum dibuka. Saldo awal shift baru nol.</p>
- <PendingSubmit className={styles.mainButton} disabled={!canFinance} label="Buka kas utama"/></>}</RecoverableForm>
  <RecoverableForm action={collectOwnerPayment} className={showPay?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'PAYMENT',id)} recoverAction={recoverOwnerOperation.bind(null,'PAYMENT',id)}>
  {showPay&&<>
  <h3>{row.is_test_order?"Catat simulasi pembayaran":"Terima pembayaran"}</h3><input type="hidden" name="requestId" value={randomUUID()}/><input type="hidden" name="orderId" value={id}/>
  <input type="hidden" name="expectedVersion" value={String(finance.version)}/>
  <label>Jumlah pembayaran (Rp)<input name="amountIdr" inputMode="numeric" required pattern="[1-9][0-9]*" maxLength={10} defaultValue={finance.remaining_idr}/></label>
- <label>Metode pembayaran<select name="method"><option value="CASH">Tunai</option><option value="NONCASH">Non-tunai (sudah diterima)</option></select></label>
- <p className={styles.muted}>{row.is_test_order?'Gunakan nominal simulasi; jangan menerima dana sungguhan.':'Cocokkan nominal dengan dana yang diterima.'} Jika hasil belum jelas, periksa jurnal sebelum mengulangi dari formulir yang sama.</p>
- <PendingSubmit className={styles.mainButton} disabled={!canFinance||!finance.shift_open} label={row.is_test_order?"Simpan simulasi pembayaran":"Simpan pembayaran"}/></>}</RecoverableForm>
+ <label>Metode pembayaran<select name="method"><option value="CASH">Tunai</option><option value="TRANSFER">Transfer (sudah diterima)</option><option value="QRIS">QRIS (sudah diterima)</option><option value="NONCASH">Non-tunai lainnya (sudah diterima)</option></select></label>
+ <p className={styles.muted}>{row.is_test_order?'Gunakan nominal simulasi; jangan menerima dana sungguhan.':'Cocokkan nominal dengan dana yang diterima.'} Isi nominal DP atau seluruh sisa tagihan untuk pelunasan. Jika hasil belum jelas, periksa jurnal sebelum mengulangi dari formulir yang sama.</p>
+ <PendingSubmit className={styles.mainButton} disabled={!canFinance} label={row.is_test_order?"Simpan simulasi pembayaran":"Simpan pembayaran"}/></>}</RecoverableForm>
  <RecoverableForm action={refundOwnerOrder} className={refundable?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'FULL_REFUND',id)} recoverAction={recoverOwnerOperation.bind(null,'FULL_REFUND',id)}>
  {refundable&&<><h3>Pengembalian dana penuh</h3>
  <input type="hidden" name="requestId" value={randomUUID()}/><input type="hidden" name="orderId" value={id}/><input type="hidden" name="expectedVersion" value={String(finance.version)}/>
  <label>Alasan pengembalian dana<input name="reason" required minLength={3} maxLength={300}/></label>
  <p className={styles.muted}>{row.is_test_order?'Pengembalian ini hanya membalik catatan simulasi. Tidak ada dana atau saldo poin member yang dipindahkan.':'Seluruh pembayaran dikembalikan sesuai metode asal. Poin dari nota ini dibalik satu kali.'}</p>
- <PendingSubmit className={styles.dangerButton} disabled={!canFinance||!finance.shift_open} label={row.is_test_order?"Konfirmasi pengembalian simulasi":"Konfirmasi pengembalian dana"}/></>}</RecoverableForm>
+ <PendingSubmit className={styles.dangerButton} disabled={!canFinance} label={row.is_test_order?"Konfirmasi pengembalian simulasi":"Konfirmasi pengembalian dana"}/></>}</RecoverableForm>
  </>}
  </section>
  <>{row.is_test_order&&<PointSimulation data={!simulation.error&&pointSimulationMatchesPayment(readPointSimulation(simulation.data),finance)?readPointSimulation(simulation.data):null}/>}</>

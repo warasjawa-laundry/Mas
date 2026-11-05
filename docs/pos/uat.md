@@ -1,5 +1,9 @@
 # UAT G7/G8
 
+## V3, 5 November 2026
+
+[Bukti otomatis dan batasnya](./implementation-plan-v3.md): kuantitas kg/m dengan koma/titik dan4langkah, pcs bulat, DP/lunas lintas periode, actor berbeda, refund, carry saldo, print58/80 dan Excel4sheet. Semua financial fixture sintetis rollback; race hanya CI ephemeral. Operator/Owner perlu menguji printer fisik58/80/driver, panjang kertas, auto-cut, Android/TalkBack, login manusia dan rekonsiliasi uang. Status PHYSICAL_UAT_REQUIRED sampai ada bukti bertanggal/perangkat/penguji nyata. Mode Uji bukan penerimaan riil dan bukan G8 GO.
+
 Status 3 November 2026: pilot guest dummy aktif, real GO belum diberikan oleh hasil pengujian. Automated evidence ada pada [verifikasi](./g7-g8-verification.md); fixture/browser print emulation bukan signoff perangkat fisik.
 
 Production hanya boleh dipakai untuk latihan `UJI - Nama Dummy`, uang simulasi dan tanpa kontak/member pelanggan. Data member/poin sintetis diuji di QA. Akses QA dari perangkat harus dikonfigurasi operator dengan isolasi yang sah; tidak membuat Preview/Production baru atau memakai kredensial Production sebagai shortcut.

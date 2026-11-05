@@ -79,6 +79,7 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-point-simulation-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-ui-context-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/public-pos-service-catalog.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-v3-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-whatsapp-receipts-rollback.sql
       - name: Synthetic backup and restore rehearsal (no Production data)
         env:
@@ -96,3 +97,4 @@ jobs:
           bash supabase/tests/stage10-postgres-parallel-race.sh
           bash supabase/tests/pos-g7-parallel-race.sh
           bash supabase/tests/pos-owner-parallel-race.sh
+          bash supabase/tests/pos-v3-parallel-race.sh

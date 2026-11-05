@@ -85,6 +85,23 @@ async function mount(page:Page,width=390,role='cashier',packageWorkflow=false,pi
  await expect(page.getByRole('heading',{name:'Pilih pelanggan',exact:true})).toBeVisible();
 }
 async function noOverflow(page:Page){expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1)}
+
+for(const width of [320,390,1440])test(`V3 decimal step controls preserve typed measurements at ${width}px`,async({page})=>{
+ await mount(page,width);await page.getByLabel('Nama pelanggan').fill('Pelanggan V3 Fixture');
+ if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
+ const input=page.getByLabel('Jumlah Cuci Express',{exact:true});
+ const steps=page.getByRole('combobox',{name:/Langkah tombol kg/});
+ await expect(steps).toHaveValue('100');
+ for(const [step,next] of [['1','1.251'],['10','1.26'],['100','1.35'],['1000','2.25']]){
+  await steps.selectOption(step);await input.fill('1,25');await page.getByRole('button',{name:'Tambah Cuci Express',exact:true}).click();await expect(input).toHaveValue(next);
+  await page.getByRole('button',{name:'Kurangi Cuci Express',exact:true}).click();await expect(input).toHaveValue('1.25');
+ }
+ await input.fill('1,');await page.getByRole('button',{name:'Tambah Cuci Express',exact:true}).click();await expect(input).toHaveValue('1,');
+ await steps.selectOption('100');await input.fill('');await page.getByRole('button',{name:'Tambah Cuci Express',exact:true}).click();await expect(input).toHaveValue('0.1');
+ const pcs=page.getByLabel('Jumlah Setrika Satuan',{exact:true});await pcs.fill('2,5');await expect(pcs).toHaveAttribute('aria-invalid','true');
+ await pcs.fill('3');await page.getByRole('button',{name:'Tambah Setrika Satuan',exact:true}).click();await expect(pcs).toHaveValue('4');
+ await noOverflow(page);
+});
 async function selectServices(page:Page,width:number){
  if(width<1024)await page.getByRole('button',{name:'Lanjut',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Pilih layanan & durasi',exact:true})).toBeVisible();
@@ -96,6 +113,15 @@ async function selectServices(page:Page,width:number){
  await page.screenshot({path:`artifacts/screenshots/pos-wizard-services-${width}.png`,fullPage:true});
  if(width<1024)await page.getByRole('button',{name:'Atur pesanan',exact:true}).click();
 }
+
+test('V3 quantity inputs remain usable at 200 percent reflow',async({page})=>{
+ await mount(page,640);await page.getByLabel('Nama pelanggan').fill('Pelanggan V3 Zoom');
+ await page.getByRole('button',{name:'Lanjut',exact:true}).click();
+ await page.evaluate(()=>{document.body.style.zoom='2'});
+ await page.getByLabel('Jumlah Cuci Express',{exact:true}).fill('1,25');
+ await expect(page.getByLabel('Jumlah Cuci Express',{exact:true})).toHaveValue('1,25');
+ await noOverflow(page);
+});
 
 for(const width of [320,390,1440])test(`guest journey, exact mixed-duration total and stable retry at ${width}px`,async({page})=>{
  await mount(page,width);

@@ -57,7 +57,8 @@ test('cashier UI keeps payload safeguards and integrated read-only scan',()=>{
  assert.match(form,/useFormStatus/);
  assert.match(form,/disabled=\{disabled\|\|pending\}/);
  const detail=source('app/kasir/pesanan/[id]/page.tsx');
- for(const action of ['collectCashierPayment','openCashierShift','refundCashierOrder','advanceWorkStatus'])assert.match(detail,new RegExp('action=\\{'+action+'\\}'));
+ for(const action of ['collectCashierPayment','refundCashierOrder','advanceWorkStatus'])assert.match(detail,new RegExp('action=\\{'+action+'\\}'));
+ assert.doesNotMatch(detail,/action=\{openCashierShift\}/);
  assert.match(detail,/expectedVersion/);
  assert.match(detail,/wantsRetry\?query.retry/);
  assert.match(detail,/wantsRefundRetry\?query.retryRefund/);

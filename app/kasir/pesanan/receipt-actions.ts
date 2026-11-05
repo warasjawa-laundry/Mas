@@ -4,14 +4,14 @@ import {cashierRpcAccess} from "@/lib/pos/g4-server";
 import {commandUuid} from "@/lib/pos/command-recovery";
 import {buildReceipt,normalizeReceiptPhone,type ReceiptData,type ReceiptKind} from "@/lib/pos/receipt";
 import {readPointSimulation} from "@/lib/pos/point-simulation";
-async function access(role:'owner'|'cashier'){
+async function access(role:'owner'|'cashier',permission:'receipt_print'|'whatsapp_draft'='whatsapp_draft'){
  if(role==='owner'){const {supabase}=await requireOwner();return {client:supabase,tokens:{}};}
- return cashierRpcAccess('whatsapp_draft');
+ return cashierRpcAccess(permission);
 }
-export async function prepareOrderReceipt(role:'owner'|'cashier',orderId:string,kind:ReceiptKind):Promise<{error:string;data?:ReceiptData;text?:string}>{
+async function readReceiptDraft(role:'owner'|'cashier',orderId:string,kind:ReceiptKind,print=false):Promise<{error:string;data?:ReceiptData;text?:string}>{
  if(!commandUuid.test(orderId)||!['NEW','READY','COLLECTED'].includes(kind))return {error:'Nota atau jenis pesan tidak valid.'};
- const auth=await access(role);if(!auth)return {error:'Masuk kembali dengan identitas dan izin WhatsApp yang sesuai.'};
- const {data,error}=await auth.client.rpc('laundry_pos_whatsapp_receipt',{...auth.tokens,p_order_id:orderId,p_kind:kind});
+ const auth=await access(role,print?'receipt_print':'whatsapp_draft');if(!auth)return {error:print?'Masuk kembali dengan identitas dan izin mencetak nota.':'Masuk kembali dengan identitas dan izin WhatsApp yang sesuai.'};
+ const {data,error}=await auth.client.rpc(print?'laundry_pos_print_receipt':'laundry_pos_whatsapp_receipt',{...auth.tokens,p_order_id:orderId,...(print?{}:{p_kind:kind})});
  if(error||!data||typeof data.is_test_order!=='boolean')return {error:'Draf terbaru belum dapat dibaca. Periksa koneksi dan status nota.'};
  if(data.is_test_order){
   const preview=await auth.client.rpc('laundry_pos_point_simulation',{...auth.tokens,p_order_id:orderId});
@@ -20,6 +20,12 @@ export async function prepareOrderReceipt(role:'owner'|'cashier',orderId:string,
   data.point_simulation=simulation;
  }
  try{return {error:'',data,text:buildReceipt(data)}}catch{return {error:'Data pembayaran atau status nota belum lengkap. Draf tidak dibuat.'};}
+}
+export async function prepareOrderReceipt(role:'owner'|'cashier',orderId:string,kind:ReceiptKind){
+ return readReceiptDraft(role,orderId,kind);
+}
+export async function preparePrintReceipt(role:'owner'|'cashier',orderId:string){
+ return readReceiptDraft(role,orderId,'NEW',true);
 }
 export async function verifyOrderContact(role:'owner'|'cashier',orderId:string,form:FormData){
  const requestId=form.get('requestId'),raw=String(form.get('phone')??''),address=String(form.get('address')??'').trim();

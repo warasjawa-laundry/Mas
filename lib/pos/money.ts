@@ -46,6 +46,7 @@ export function parseMoneyIdr(text: string): bigint {
 }
 
 export function parseQuantityMilli(text: string, unit: QuantityUnit): bigint {
+  if(typeof text==='string')text=text.replace(',','.');
   if (unit !== 'kg' && unit !== 'm' && unit !== 'pcs') reject('INVALID_UNIT');
   if (typeof text !== 'string' || text.length > 11 || !(unit === 'pcs' ? INTEGER : DECIMAL).test(text)) {
     reject('INVALID_QUANTITY');

@@ -8,8 +8,8 @@ const page="/kasir/kas";
 export async function postNonSaleCash(form:FormData):Promise<CommandActionResult>{
  const access=await cashierRpcAccess("cash_entry");if(!access)redirect("/kasir");
  const item=parseCashEntry(form);if(!item)return {error:"Periksa nominal dan alasan mutasi. Isian tetap tersedia."};
- const {data,error}=await access.client.rpc("laundry_pos_g6_cash_entry",{
-  ...access.tokens,p_request_id:item.requestId,p_direction:item.direction,
+ const {data,error}=await access.client.rpc("laundry_pos_v3_finance",{
+  ...access.tokens,p_operation:'CASH_ENTRY',p_request_id:item.requestId,p_direction:item.direction,
   p_amount_idr:item.amountIdr,p_reason:item.reason
  });
  if(error||!data||data.status!=="POSTED"){

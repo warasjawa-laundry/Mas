@@ -1,12 +1,19 @@
 import {getVerifiedOwner} from "@/lib/supabase/owner";
 import { reportingPeriod,isReport } from "@/lib/pos/g6-cash";
 import { escapeCsv } from "@/lib/pos/g6-import";
+import {reportXlsxResponse} from "@/lib/pos/report-xlsx";
 export const dynamic="force-dynamic";
 export async function GET(request:Request){
  const owner=await getVerifiedOwner();if(!owner)return new Response("Tidak berhak",{status:403});
  const url=new URL(request.url);
  const start=url.searchParams.get('start')||'',end=url.searchParams.get('end')||'';
  const p=reportingPeriod(start,end);if(!p)return new Response("Tanggal tidak valid",{status:400});
+ if(url.searchParams.get('format')==='xlsx'){
+  const {data,error}=await owner.supabase.rpc('laundry_pos_v3_report',p);
+  if(error?.message?.includes('POS_REPORT_LIMIT'))return new Response('Data terlalu banyak. Persempit periode laporan.',{status:422});
+  if(error)return new Response("Laporan tidak tersedia",{status:503});
+  return reportXlsxResponse(data,start,end);
+ }
  const {data,error}=await owner.supabase.rpc('laundry_pos_owner_report',p);
  if(error||!isReport(data))return new Response("Laporan tidak tersedia",{status:503});
  if(data.truncated)return new Response("Persempit tanggal agar tidak ada data terpotong",{status:422});

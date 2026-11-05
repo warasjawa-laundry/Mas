@@ -30,6 +30,9 @@ export function buildReceipt(r:ReceiptData){
  for(const key of ['total','paid','refunded','remaining'] as const)if(!/^(0|[1-9]\d{0,15})$/.test(r[key]))throw Error('Nominal nota tidak valid');
  const total=BigInt(r.total),paid=BigInt(r.paid),refund=BigInt(r.refunded),remaining=BigInt(r.remaining);
  if(total<paid-refund||remaining!==total-paid+refund||refund>paid)throw Error('Rincian pembayaran belum konsisten');
+ if(refund>BigInt(0)&&(refund!==paid||r.status!=='REFUNDED'))throw Error('Refund sebagian belum didukung pada nota');
+ const closed=r.status==='REFUNDED'||r.work_status==='CANCELLED'||r.status==='CANCELLED';
+ const payable=closed?'0':r.remaining;
  if(r.delivery){
   if(!/^(0|[1-9]\d{0,15})$/.test(r.delivery.amount_idr)||
      !r.delivery.name||!r.delivery.code||
@@ -56,9 +59,10 @@ export function buildReceipt(r:ReceiptData){
  lines.push(divider,`Total Layanan : ${money(r.service_subtotal??r.total)}`);
  if(r.delivery&&r.delivery.code!=='NONE')lines.push(`Antar-Jemput (${r.delivery.name}) : ${money(r.delivery.amount_idr)}`);
  lines.push(`Total Tagihan : ${money(r.total)}`,divider,r.is_test_order?'PEMBAYARAN SIMULASI':'PEMBAYARAN',`Total : ${money(r.total)}`,
-  `Sudah Dibayar : ${money(r.paid)}`,`Sisa Tagihan : ${money(r.remaining)}`,
-  `Status : ${{PAID:'LUNAS',PARTIAL:'DP / BELUM LUNAS',UNPAID:'BELUM BAYAR',REFUNDED:'REFUND',ZERO_TOTAL:'TAGIHAN NOL — REVIEW DIPERLUKAN'}[r.status]??'Belum diketahui'}`);
+  `Sudah Dibayar : ${money(r.paid)}`,`Sisa Tagihan : ${money(payable)}`,
+  `Status : ${r.work_status==='CANCELLED'&&r.status!=='REFUNDED'?'DIBATALKAN':{PAID:'LUNAS',PARTIAL:'DP / BELUM LUNAS',UNPAID:'BELUM BAYAR',REFUNDED:'REFUND',CANCELLED:'DIBATALKAN',ZERO_TOTAL:'TAGIHAN NOL — REVIEW DIPERLUKAN'}[r.status]??'Belum diketahui'}`);
  if(refund>BigInt(0))lines.push(`Refund : ${money(refund)}`);
+ if(closed)lines.push('Nota ditutup. Tidak ada tagihan baru.');
  if(r.member){
   const m=r.member;lines.push(divider,'POIN MEMBER',`Periode : ${m.year}`,
    r.status==='PAID'?`Poin Transaksi : +${m.awarded} poin`:
@@ -75,7 +79,7 @@ export function buildReceipt(r:ReceiptData){
   r.status==='PAID'?'Pembayaran sudah lunas. Cucian dapat diambil.':r.status==='PARTIAL'?`Mohon melunasi ${money(r.remaining)} sebelum cucian diserahkan.`:
   r.status==='UNPAID'?`Mohon melakukan pembayaran ${money(r.remaining)} sebelum cucian diserahkan.`:'Hubungi petugas untuk pemeriksaan nota.',
   'Pengambilan hanya dapat dilakukan setelah pembayaran lunas.','Terima kasih telah mempercayakan cucian kepada kami.');
- if(r.kind==='NEW'&&!r.is_test_order)lines.push('',c.terms,c.payment_notice,c.bank,c.ewallet);
+ if(r.kind==='NEW'&&!r.is_test_order&&!closed)lines.push('',c.terms,c.payment_notice,c.bank,c.ewallet);
  if(r.kind==='COLLECTED')lines.push('Terima kasih telah menggunakan jasa '+c.outlet_name+'.');
  lines.push('',c.cs);return lines.filter(v=>v!==undefined).join('\n');
 }
