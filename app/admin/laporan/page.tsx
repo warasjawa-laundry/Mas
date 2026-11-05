@@ -1,6 +1,7 @@
 import ContextNotice,{readDisplayContext} from "@/components/pos/context-notice";
 import {paymentMethodLabel,cashCategoryLabel} from "@/lib/pos/ui-labels";
 import Link from "next/link";
+import Form from "next/form";
 import {requireOwner} from "@/lib/supabase/owner";
 import PosWorkspace from "@/components/pos/pos-workspace";
 import { formatIdr } from "@/lib/pos/g4-order";
@@ -21,10 +22,10 @@ export default async function OwnerReports({searchParams}:{searchParams:Promise<
  return <PosWorkspace title="Laporan" category="OPERASIONAL" description="Ringkasan transaksi yang sudah tercatat di database.">
  <ContextNotice context={context}/><nav className={styles.header} aria-label="Navigasi operasional">
  <Link className={styles.mainLink} href="/admin/kas">Mutasi Kas</Link></nav>
- <form method="GET" className={styles.paymentForm}><p className={styles.muted}>Periode memakai WIB. Tanggal mulai dihitung; transaksi pada tanggal batas akhir belum dihitung.</p>
+ <Form action="/admin/laporan" prefetch={false} className={styles.paymentForm}><p className={styles.muted}>Periode memakai WIB. Tanggal mulai dihitung; transaksi pada tanggal batas akhir belum dihitung.</p>
  <label>Tanggal mulai<input type="date" name="start" defaultValue={start} required/></label>
  <label>Tanggal batas akhir<input type="date" name="end" defaultValue={end} required/></label>
- <button className={styles.mainButton}>Tampilkan laporan</button></form>
+ <button className={styles.mainButton}>Tampilkan laporan</button></Form>
  {!report?<p role="status" className={styles.warning}>{!period?'Pilih tanggal batas akhir setelah tanggal mulai, maksimal 93 hari.':'Laporan belum dapat dimuat. Muat ulang untuk mencoba lagi.'}</p>:<>
  <section className={styles.card}><h2>Ringkasan operasional</h2><div className={styles.paymentTotals}>
  <div><small>Kas masuk tunai</small><strong>{formatIdr(report.cash_in_idr)}</strong></div>

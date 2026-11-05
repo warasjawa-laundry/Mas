@@ -2,6 +2,7 @@ import {hasCashierGrant} from "@/lib/pos/cashier-permissions";
 import ContextNotice,{readDisplayContext} from "@/components/pos/context-notice";
 import {paymentMethodLabel,cashCategoryLabel} from "@/lib/pos/ui-labels";
 import Link from "next/link";
+import Form from "next/form";
 import { redirect } from "next/navigation";
 import { cashierRpcAccess } from "@/lib/pos/g4-server";
 import { formatIdr } from "@/lib/pos/g4-order";
@@ -23,10 +24,10 @@ export default async function CashierReports({searchParams}:{searchParams:Promis
  <Link href="/kasir">← Kasir</Link><header className={styles.header}>
  <div><p className={styles.kicker}>MAS JAWA LAUNDRY</p><h1>Laporan</h1></div>
  {hasCashierGrant(access.session.permissions,"cash_view")&&<Link className={styles.mainLink} href="/kasir/kas">Mutasi Kas</Link>}</header>
- <ContextNotice context={context}/><form method="GET" className={styles.paymentForm}><p className={styles.muted}>Periode memakai WIB. Tanggal mulai dihitung; transaksi pada tanggal batas akhir belum dihitung.</p>
+ <ContextNotice context={context}/><Form action="/kasir/laporan" prefetch={false} className={styles.paymentForm}><p className={styles.muted}>Periode memakai WIB. Tanggal mulai dihitung; transaksi pada tanggal batas akhir belum dihitung.</p>
  <label>Tanggal mulai<input type="date" name="start" defaultValue={start} required/></label>
  <label>Tanggal batas akhir<input type="date" name="end" defaultValue={end} required/></label>
- <button className={styles.mainButton}>Tampilkan laporan</button></form>
+ <button className={styles.mainButton}>Tampilkan laporan</button></Form>
  {!report?<p role="status" className={styles.warning}>{!period?'Pilih tanggal batas akhir setelah tanggal mulai, maksimal 93 hari.':'Laporan belum dapat dimuat. Muat ulang untuk mencoba lagi.'}</p>:<>
  <section className={styles.card}><h2>Ringkasan operasional</h2><div className={styles.paymentTotals}>
  <div><small>Kas masuk tunai</small><strong>{formatIdr(report.cash_in_idr)}</strong></div>

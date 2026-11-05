@@ -31,6 +31,10 @@ QA menemukan status pembayaran bukan kolom orders dan enum refund FULLY_REFUNDED
 
 ## Rilis dan rollback
 
+Perbaikan filter laporan (5 November 2026): formulir tanggal Owner/Kasir memakai `next/form` agar GET dilakukan melalui router. Formulir HTML sebelumnya memuat dokumen baru dan memicu aturan reauthentication Owner, sehingga sesi dicabut saat menekan Tampilkan laporan. Proxy, batas sesi, backend role/grant, dan validasi periode tetap berlaku. Regresi memeriksa kedua tanggal dan role, serta membuktikan router internal tidak mencabut sesi sementara refresh dokumen tetap meminta login. Gejala kasir di akun nyata belum dikonfirmasi; pemeriksaan grant/session kasir tetap di backend.
+
+Verifikasi perbaikan filter: tes baru mula-mula gagal pada kedua formulir native, lalu lulus setelah perubahan. Focused18/18, seluruh Node336/336, browser141/141, build+TypeScript lulus. Tidak ada migrasi atau perubahan data. Perjalanan login akun nyata tetap memerlukan UAT; tes ini memakai identitas/session sintetis.
+
 Migrasi46:20261105010000_pos_v3_automatic_cash_reports.sql. Private helper/tables RLS+ACL tertutup, shared receipt search_path kosong. Cached command tetap memeriksa actor/digest, beda channel UUID ditolak dan legacy NONCASH tidak diberi label transfer/QRIS tanpa bukti. Final SHA/CI/deployment/integrity dicatat pada receipt rilis setelah benar-benar ada.
 
 Rollback aplikasi ke deployment terverifikasi sebelumnya; biarkan schema additive untuk menjaga histori baru. Jangan drop metadata pembayaran/reconciliation atau mempersempit opening constraint jika carried balance sudah dipakai. Core lama tidak diganti; tidak ada rollback dengan menghapus transaksi.
