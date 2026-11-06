@@ -2,7 +2,7 @@
 import {revalidatePath} from "next/cache";
 import {requireOwner} from "@/lib/supabase/owner";
 import {parseG5Payment,parseG5Refund,parseG5Shift} from "@/lib/pos/g5-payment";
-import {parseCashEntry,parseCloseShift} from "@/lib/pos/g6-cash";
+import {parseStructuredCashEntry,parseCloseShift} from "@/lib/pos/g6-cash";
 
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const unknown="Hasil belum terkonfirmasi atau transaksi dikunci. Periksa nota dan jurnal; ulangi hanya dari formulir ini dengan isian serta ID permintaan yang sama.";
@@ -47,9 +47,9 @@ export async function cancelOwnerOrder(form:FormData):Promise<Result>{
  revalidatePath("/admin");revalidatePath(`/admin/pesanan/${p.orderId}`);return {error:"",confirmed:true,redirectTo:"/admin?saved=cancelled"};
 }
 export async function postOwnerCash(form:FormData):Promise<Result>{
- const p=parseCashEntry(form);if(!p)return {error:"Periksa nominal dan alasan mutasi."};
- return post("laundry_pos_v3_finance",{p_operation:'CASH_ENTRY',p_request_id:p.requestId,p_direction:p.direction,
-  p_amount_idr:p.amountIdr,p_reason:p.reason},"/admin/kas",d=>d.status==="POSTED");
+ const p=parseStructuredCashEntry(form);if(!p)return {error:"Periksa nominal, kategori, arah kas, dan catatan. Pengeluaran memakai Kas keluar."};
+ return post("laundry_pos_v31_cash_entry",{p_request_id:p.requestId,p_direction:p.direction,
+  p_amount_idr:p.amountIdr,p_category_code:p.categoryCode,p_note:p.note},"/admin/kas",d=>d.status==="POSTED");
 }
 export async function closeOwnerRegister(form:FormData):Promise<Result>{
  const p=parseCloseShift(form);if(!p)return {error:"Periksa uang fisik dan alasan selisih."};

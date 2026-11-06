@@ -1,7 +1,9 @@
 import {readPointSimulation,pointSimulationLines,pointSimulationMatchesPayment,type PointSimulation} from './point-simulation.ts';
 export type ReceiptKind='NEW'|'READY'|'COLLECTED';
 export type ReceiptContact={phone:string|null;address:string;verified_at:string|null};
-export type ReceiptData={is_test_order?:boolean;invoice:string;customer:string;actor:string;collector?:string|null;created_at:string;due_at:string|null;ready_at:string|null;collected_at:string|null;
+export type ReceiptPayment={amount_idr:string;received_at:string;receiver:string;method:string;internal_reference?:string;payment_id?:string;cash_ledger_id?:string|null;original_receipt_id?:string|null};
+export type ReceiptData={order_id?:string;order_version?:string;payment_version?:string;snapshot_at?:string;payments?:ReceiptPayment[];refunds?:ReceiptPayment[];lifecycle_status?:string;contact_draft?:ReceiptContact|null;
+ is_test_order?:boolean;invoice:string;customer:string;actor:string;collector?:string|null;created_at:string;due_at:string|null;ready_at:string|null;collected_at:string|null;
  work_status:string;kind:ReceiptKind;package:string|null;minutes:number|null;perfume:string|null;notes:string|null;
  total:string;service_subtotal?:string;fees_idr?:string;discount_idr?:string;delivery?:{code:string;name:string;amount_idr:string}|null;paid:string;refunded:string;remaining:string;status:string;contact:ReceiptContact|null;
  member:{year:number;balance:string;awarded:number;projected:number|null}|null;point_simulation?:PointSimulation|null;
@@ -24,25 +26,54 @@ export function receiptWhatsAppUrl(contact:ReceiptContact|null,text:string,isTes
  const url='https://wa.me/'+contact.phone.slice(1)+'?text='+encodeURIComponent(text);
  return url.length<=8000?url:null;
 }
-export function buildReceipt(r:ReceiptData){
+const amountPattern=/^(0|[1-9]\d{0,15})$/;
+const uuidPattern=/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+function amount(value:string){if(typeof value!=='string'||!amountPattern.test(value))throw Error('Nominal nota tidak valid');return BigInt(value);}
+export function validateReceiptData(r:ReceiptData,{requireSnapshot=false}:{requireSnapshot?:boolean}={}){
+ if(!r||!r.invoice?.trim()||r.invoice.length>70||/[\x00-\x1f\x7f]/.test(r.invoice)||!r.customer?.trim()||!r.actor?.trim()||uuidPattern.test(r.actor)||r.collector&&uuidPattern.test(r.collector))throw Error('Identitas nota tidak valid');
+ if(!['NEW','READY','COLLECTED'].includes(r.kind)||!['QUEUED','PROCESSING','READY','COLLECTED','CANCELLED'].includes(r.work_status)||!['UNPAID','PARTIAL','PAID','REFUNDED','CANCELLED','ZERO_TOTAL'].includes(r.status))throw Error('Status nota tidak valid');
+ if(r.contact_draft&&(r.contact_draft.verified_at!==null||r.contact_draft.phone!==null&&!/^\+[1-9][0-9]{7,14}$/.test(r.contact_draft.phone)||typeof r.contact_draft.address!=='string'||r.contact_draft.address.length>240||/[\x00-\x1f\x7f]/.test(r.contact_draft.address)))throw Error('Draf kontak belum valid');
+ for(const value of [r.created_at,r.due_at,r.ready_at,r.collected_at])if(value!==null&&!Number.isFinite(Date.parse(value)))throw Error('Waktu nota tidak valid');
+ if(!r.settings||!Number.isSafeInteger(r.settings.revision)||r.settings.revision<1||!r.settings.config?.outlet_name?.trim())throw Error('Pengaturan nota tidak valid');
+ if(requireSnapshot&&(!r.order_id||!new RegExp('^'+uuidPattern.source+'$','i').test(r.order_id)||!r.order_version||!/^[1-9]\d*$/.test(r.order_version)||!r.payment_version||!/^(0|[1-9]\d*)$/.test(r.payment_version)||!r.snapshot_at||!Number.isFinite(Date.parse(r.snapshot_at))||typeof r.is_test_order!=='boolean'||r.service_subtotal===undefined||r.fees_idr===undefined||r.discount_idr===undefined||!Array.isArray(r.payments)||!Array.isArray(r.refunds)))throw Error('Snapshot nota belum lengkap');
  if(r.is_test_order&&r.member)throw Error("Nota uji tidak boleh terhubung dengan member");
- const contact=r.contact;
- for(const key of ['total','paid','refunded','remaining'] as const)if(!/^(0|[1-9]\d{0,15})$/.test(r[key]))throw Error('Nominal nota tidak valid');
- const total=BigInt(r.total),paid=BigInt(r.paid),refund=BigInt(r.refunded),remaining=BigInt(r.remaining);
- if(total<paid-refund||remaining!==total-paid+refund||refund>paid)throw Error('Rincian pembayaran belum konsisten');
- if(refund>BigInt(0)&&(refund!==paid||r.status!=='REFUNDED'))throw Error('Refund sebagian belum didukung pada nota');
+ const total=amount(r.total),paid=amount(r.paid),refund=amount(r.refunded),remaining=amount(r.remaining);
  const closed=r.status==='REFUNDED'||r.work_status==='CANCELLED'||r.status==='CANCELLED';
- const payable=closed?'0':r.remaining;
+ if(total<paid||refund>paid||remaining!==(closed&&r.order_id?BigInt(0):total-paid+refund))throw Error('Rincian pembayaran belum konsisten');
+ if(refund>BigInt(0)&&(refund!==paid||r.status!=='REFUNDED'))throw Error('Refund sebagian belum didukung pada nota');
+ const expected=refund>BigInt(0)?'REFUNDED':total===BigInt(0)?'ZERO_TOTAL':paid===BigInt(0)?'UNPAID':paid===total?'PAID':'PARTIAL';
+ if(r.status!==expected&&!(r.status==='CANCELLED'&&paid===BigInt(0)&&r.work_status==='CANCELLED'))throw Error('Status dan nominal pembayaran tidak konsisten');
+ if(!Array.isArray(r.items)||r.items.length===0)throw Error('Rincian layanan tidak valid');
+ let itemTotal=BigInt(0);
+ for(const item of r.items){
+  if(!item.name?.trim()||!['pcs','kg','m'].includes(item.unit)||!Number.isSafeInteger(item.quantity_milli)||item.quantity_milli<1||item.quantity_milli>1000000000||item.unit==='pcs'&&item.quantity_milli%1000!==0)throw Error('Kuantitas atau satuan layanan tidak valid');
+  const subtotal=amount(item.subtotal);
+  if(subtotal!==(amount(item.price)*BigInt(item.quantity_milli)+BigInt(500))/BigInt(1000))throw Error('Subtotal layanan tidak konsisten');
+  itemTotal+=subtotal;
+ }
+ const service=r.service_subtotal===undefined?itemTotal:amount(r.service_subtotal),fees=amount(r.fees_idr??'0'),discount=amount(r.discount_idr??'0');
+ if(itemTotal!==service||discount>service||service+fees-discount!==total)throw Error('Total nota dan biaya tambahan tidak konsisten');
+ for(const [records,expectedSum] of [[r.payments,paid],[r.refunds,refund]] as const){
+  if(records!==undefined){
+   if(!Array.isArray(records))throw Error('Transaksi terkonfirmasi tidak valid');
+   let sum=BigInt(0);
+   for(const p of records){if(amount(p.amount_idr)<=BigInt(0)||!['CASH','NONCASH','TRANSFER','QRIS'].includes(p.method)||!p.receiver?.trim()||uuidPattern.test(p.receiver)||!Number.isFinite(Date.parse(p.received_at)))throw Error('Transaksi terkonfirmasi tidak valid');sum+=amount(p.amount_idr);}
+   if(sum!==expectedSum)throw Error('Jumlah transaksi terkonfirmasi tidak konsisten');
+  }
+ }
  if(r.delivery){
   if(!/^(0|[1-9]\d{0,15})$/.test(r.delivery.amount_idr)||
      !r.delivery.name||!r.delivery.code||
      (r.fees_idr!==undefined&&BigInt(r.delivery.amount_idr)>BigInt(r.fees_idr)))throw Error('Tarif antar-jemput tidak valid');
  }
- if(r.service_subtotal!==undefined&&(!/^(0|[1-9]\d{0,15})$/.test(r.service_subtotal)||
-    (r.fees_idr!==undefined&&r.discount_idr!==undefined&&
-    total!==BigInt(r.service_subtotal)-BigInt(r.discount_idr)+BigInt(r.fees_idr))))
-  throw Error('Total nota dan biaya tambahan tidak konsisten');
  if(r.kind==='READY'&&r.work_status!=='READY'||r.kind==='COLLECTED'&&(r.work_status!=='COLLECTED'||r.status!=='PAID'||remaining!==BigInt(0)||!r.collected_at))throw Error('Status nota belum sesuai draf');
+ if(requireSnapshot&&r.work_status==='COLLECTED'&&(!['PAID','REFUNDED'].includes(r.status)||remaining!==BigInt(0)||!r.collected_at))throw Error('Status pengambilan dan pembayaran tidak konsisten');
+ if(r.point_simulation&&!pointSimulationMatchesPayment(readPointSimulation(r.point_simulation),{total_idr:r.total,paid_idr:r.paid,refunded_idr:r.refunded,payment_status:r.status}))throw Error('Simulasi dan pembayaran berbeda; baca ulang nota');
+ return r;
+}
+export function buildWhatsAppReceipt(r:ReceiptData){
+ validateReceiptData(r);
+ const contact=r.contact,refund=BigInt(r.refunded),closed=r.status==='REFUNDED'||r.work_status==='CANCELLED'||r.status==='CANCELLED',payable=closed?'0':r.remaining;
  const c=r.settings.config;const title=r.kind==='NEW'?c.new_title:r.kind==='READY'?c.ready_title:c.collected_title;
  const lines=[...(r.is_test_order?["NOTA UJI - SIMULASI", "BUKAN BUKTI PEMBAYARAN NYATA", "Khusus penguji. Jangan terima uang sungguhan.", ""]:[]),c.outlet_name,c.address,c.contact,'',title,'',r.invoice,`Pelanggan : ${r.customer}`,
   `No Handphone : ${contact?.phone??'Belum diverifikasi'}`,`Alamat : ${contact?.address||'Belum diverifikasi'}`,`Kasir : ${r.actor}`,
@@ -83,3 +114,4 @@ export function buildReceipt(r:ReceiptData){
  if(r.kind==='COLLECTED')lines.push('Terima kasih telah menggunakan jasa '+c.outlet_name+'.');
  lines.push('',c.cs);return lines.filter(v=>v!==undefined).join('\n');
 }
+export const buildReceipt=buildWhatsAppReceipt;

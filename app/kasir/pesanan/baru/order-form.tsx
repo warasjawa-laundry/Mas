@@ -57,6 +57,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
  const [recoveryPending,setRecoveryPending]=useState(false);
  const [customerType,setCustomerType]=useState<"guest"|"member">("guest");
  const [name,setName]=useState("");
+ const [contactPhone,setContactPhone]=useState(''),[contactAddress,setContactAddress]=useState('');
  const [member,setMember]=useState("");
  const [memberName,setMemberName]=useState("");
  const [memberBusy,setMemberBusy]=useState(false);
@@ -87,7 +88,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
  const canContinue=packageWorkflow?(step===0?customerValid:step===1?!!packageCode:!!quote):canAdvanceOrderStep(step,customerValid,available.length>0,!!quote);
  function go(next:number){setStep(next);queueMicrotask(()=>title.current?.focus())}
  function pickMember(number:string,label:string){
-  lookupSequence.current++;setMember(number);setMemberName(label);setMemberError("");setMemberBusy(false);
+  lookupSequence.current++;setMember(number);setMemberName(label);setMemberError("");setMemberBusy(false);setContactPhone('');setContactAddress('');
  }
  async function verifyMember(){
   const canonical=normalizeMemberBarcode(member);if(!canonical)return;
@@ -120,8 +121,8 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
      <div className={styles.sectionHeading}><h2 id="customer-title">Pilih pelanggan</h2><span>01</span></div>
      {pilotTestOnly&&<p className={styles.warn} role="status"><strong>MODE UJI — bukan nota pelanggan.</strong> Gunakan nama dummy diawali <strong>UJI - </strong>. Member asli dan poin pelanggan tidak boleh digunakan. Pembayaran/uang kas yang dicatat hanya simulasi; jangan terima dana sungguhan atau kirim WhatsApp ke pelanggan.</p>}
      <div className={styles.segment}>
-      <label><input type="radio" name="customer-type" checked={customerType==='guest'} onChange={()=>setCustomerType('guest')}/> Pelanggan umum</label>
-      <label><input type="radio" name="customer-type" checked={customerType==='member'} disabled={pilotTestOnly} onChange={()=>setCustomerType('member')}/> Member MJL</label>
+      <label><input type="radio" name="customer-type" checked={customerType==='guest'} onChange={()=>{setCustomerType('guest');setContactPhone('');setContactAddress('');}}/> Pelanggan umum</label>
+      <label><input type="radio" name="customer-type" checked={customerType==='member'} disabled={pilotTestOnly} onChange={()=>{setCustomerType('member');setContactPhone('');setContactAddress('');}}/> Member MJL</label>
      </div>
      {customerType==='guest'?<label className={styles.field}>Nama pelanggan<input autoComplete="off" value={name} onChange={e=>setName(e.target.value)} maxLength={120} placeholder={pilotTestOnly?"UJI - Nama Dummy":"Masukkan nama pelanggan"}/><small>{pilotTestOnly?"Wajib awalan UJI - dan nama dummy minimal 2 karakter. Nota ini diberi penanda tes di database.":"Minimal 2 karakter."}</small></label>:
       <><label className={styles.field}>Nomor member<input autoComplete="off" inputMode="numeric" value={member} onChange={e=>{lookupSequence.current++;setMember(e.target.value.replace(/\D/g,'').slice(0,12));setMemberName("");setMemberError("");setMemberBusy(false)}} maxLength={12} placeholder="Nomor pada kartu member"/></label>
@@ -132,6 +133,9 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
        <MemberNamePicker role={role} disabled={false} onPick={row=>pickMember(row.memberNumber,row.displayName)}/>
        </>}
        {memberName&&<p className={styles.scanned} role="status"><strong>{memberName}</strong><span>MJL-0{member.padStart(5,"0")}</span></p>}</>}
+     <label className={styles.field}>Nomor WhatsApp (opsional)<input type="tel" inputMode="tel" autoComplete="off" value={contactPhone} onChange={e=>setContactPhone(e.target.value)} maxLength={24} placeholder={pilotTestOnly?'Nomor penguji, bukan pelanggan':'08… / +62…'}/></label>
+     <label className={styles.field}>Alamat pelanggan (opsional)<input autoComplete="off" value={contactAddress} onChange={e=>setContactAddress(e.target.value)} maxLength={240}/></label>
+     <p className={styles.help}>Kontak disimpan bersama nota sebagai draf. Periksa dan konfirmasikan penerima pada Pesan WhatsApp sebelum mengirim.</p>
      <p className={styles.help}>Periksa identitas pelanggan. Data akan diverifikasi kembali saat nota dibuat.</p>
     </section>
     {packageWorkflow&&<section className={`${styles.panel} ${step!==1?styles.mobileHidden:''}`} aria-labelledby="package-title">
@@ -191,6 +195,7 @@ export function OrderForm({services,deliveryOptions=[],requestId,canWrite,canLoo
      {pilotTestOnly&&quote&&selectedDelivery&&<PointSimulationPreview role={role} items={items} deliveryCode={selectedDelivery.code} deliveryRevision={selectedDelivery.revision} total={quote.totalIdr.toString()}/>}
      <RecoverableForm action={createAction??createCashierOrder} recoveryKey={recoveryKey} recoverAction={recoverAction} onRecoveryPendingChange={setRecoveryPending}>
       <input type="hidden" name="requestId" value={requestId}/><input type="hidden" name="kind" value={customerType}/><input type="hidden" name="guestName" value={customerType==='guest'?name.trim():""}/><input type="hidden" name="memberNumber" value={customerType==='member'?member:""}/><input type="hidden" name="items" value={items}/><input type="hidden" name="perfume" value={perfume}/><input type="hidden" name="notes" value={notes}/><input type="hidden" name="deliveryCode" value={selectedDelivery?.code??""}/><input type="hidden" name="deliveryRevision" value={selectedDelivery?.revision??""}/>
+      <input type="hidden" name="contactPhone" value={contactPhone}/><input type="hidden" name="contactAddress" value={contactAddress}/>
       <CreateOrderButton disabled={!canWrite||!quote||!customerValid||!selectedDelivery}/>
      </RecoverableForm>
     </div>

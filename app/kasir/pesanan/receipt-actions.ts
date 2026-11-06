@@ -2,7 +2,7 @@
 import {requireOwner} from "@/lib/supabase/owner";
 import {cashierRpcAccess} from "@/lib/pos/g4-server";
 import {commandUuid} from "@/lib/pos/command-recovery";
-import {buildReceipt,normalizeReceiptPhone,type ReceiptData,type ReceiptKind} from "@/lib/pos/receipt";
+import {buildWhatsAppReceipt,validateReceiptData,normalizeReceiptPhone,type ReceiptData,type ReceiptKind} from "@/lib/pos/receipt";
 import {readPointSimulation} from "@/lib/pos/point-simulation";
 async function access(role:'owner'|'cashier',permission:'receipt_print'|'whatsapp_draft'='whatsapp_draft'){
  if(role==='owner'){const {supabase}=await requireOwner();return {client:supabase,tokens:{}};}
@@ -11,15 +11,14 @@ async function access(role:'owner'|'cashier',permission:'receipt_print'|'whatsap
 async function readReceiptDraft(role:'owner'|'cashier',orderId:string,kind:ReceiptKind,print=false):Promise<{error:string;data?:ReceiptData;text?:string}>{
  if(!commandUuid.test(orderId)||!['NEW','READY','COLLECTED'].includes(kind))return {error:'Nota atau jenis pesan tidak valid.'};
  const auth=await access(role,print?'receipt_print':'whatsapp_draft');if(!auth)return {error:print?'Masuk kembali dengan identitas dan izin mencetak nota.':'Masuk kembali dengan identitas dan izin WhatsApp yang sesuai.'};
- const {data,error}=await auth.client.rpc(print?'laundry_pos_print_receipt':'laundry_pos_whatsapp_receipt',{...auth.tokens,p_order_id:orderId,...(print?{}:{p_kind:kind})});
+ const {data,error}=await auth.client.rpc(print?'laundry_pos_v31_print_receipt':'laundry_pos_v31_whatsapp_receipt',{...auth.tokens,p_order_id:orderId,...(print?{}:{p_kind:kind})});
  if(error||!data||typeof data.is_test_order!=='boolean')return {error:'Draf terbaru belum dapat dibaca. Periksa koneksi dan status nota.'};
  if(data.is_test_order){
-  const preview=await auth.client.rpc('laundry_pos_point_simulation',{...auth.tokens,p_order_id:orderId});
-  const simulation=readPointSimulation(preview.data);
-  if(preview.error||!simulation)return {error:'Simulasi poin belum tersedia. Baca ulang draf setelah koneksi tersedia.'};
+  const simulation=readPointSimulation(data.point_simulation);
+  if(!simulation)return {error:'Simulasi poin belum tersedia. Baca ulang draf setelah koneksi tersedia.'};
   data.point_simulation=simulation;
  }
- try{return {error:'',data,text:buildReceipt(data)}}catch{return {error:'Data pembayaran atau status nota belum lengkap. Draf tidak dibuat.'};}
+ try{validateReceiptData(data,{requireSnapshot:true});return print?{error:'',data}:{error:'',data,text:buildWhatsAppReceipt(data)}}catch{return {error:'Data pembayaran atau status nota belum lengkap. Draf tidak dibuat.'};}
 }
 export async function prepareOrderReceipt(role:'owner'|'cashier',orderId:string,kind:ReceiptKind){
  return readReceiptDraft(role,orderId,kind);

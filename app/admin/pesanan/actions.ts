@@ -8,11 +8,13 @@ export async function createOwnerOrder(form:FormData):Promise<CommandActionResul
  const {supabase}=await requireOwner();
  const payload=parseG4OrderForm(form);
  if(!payload)return {error:"Periksa pelanggan dan jumlah layanan. Isian tetap tersedia."};
- const {data,error}=await supabase.rpc("laundry_pos_owner_create_order_with_delivery",{
+ const withContact=payload.contactPhone||payload.contactAddress;
+ const {data,error}=await supabase.rpc(withContact?"laundry_pos_v31_create_order":"laundry_pos_owner_create_order_with_delivery",{
   p_request_id:payload.requestId,p_guest_name:payload.guestName,
   p_member_number:payload.memberNumber,p_items:payload.items,
   p_perfume:payload.perfume,p_notes:payload.notes,
   p_delivery_code:payload.deliveryCode,p_delivery_revision:payload.deliveryRevision,
+  ...(withContact?{p_phone:payload.contactPhone??null,p_address:payload.contactAddress??''}:{}),
  });
  if(error?.message?.includes("POS_DELIVERY_PRICE_CHANGED"))return {error:"Tarif antar-jemput berubah. Muat ulang halaman sebelum membuat nota."};
  if(error||!data||typeof data.order_id!=="string")return {error:

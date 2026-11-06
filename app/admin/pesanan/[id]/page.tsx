@@ -1,4 +1,6 @@
 import PointSimulation from "@/components/pos/point-simulation";
+import SystemOrderDetail from "@/components/pos/system-order-detail";
+import type {ReceiptData} from "@/lib/pos/receipt";
 import {readPointSimulation,pointSimulationMatchesPayment} from "@/lib/pos/point-simulation";
 import Link from "next/link";
 import OrderCharges,{type OrderDelivery} from "@/components/pos/order-charges";
@@ -27,11 +29,12 @@ const labels:Record<string,string>={UNPAID:"Belum bayar",PARTIAL:"Dibayar sebagi
 export default async function OwnerInvoice({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{saved?:string}>}){
  const [{id},query]=await Promise.all([params,searchParams]);if(!uuid.test(id))notFound();
  const {supabase,user}=await requireOwner();
- const [detail,financial,capabilities,simulation]=await Promise.all([
+ const [detail,financial,capabilities,simulation,audit]=await Promise.all([
   supabase.rpc("laundry_pos_owner_order_detail",{p_order_id:id}),
   supabase.rpc("laundry_pos_owner_financial",{p_order_id:id}),
   supabase.rpc("laundry_pos_owner_capabilities"),
   supabase.rpc("laundry_pos_point_simulation",{p_order_id:id}),
+  supabase.rpc("laundry_pos_order_audit",{p_order_id:id}),
  ]);
  const row=!detail.error&&detail.data&&typeof detail.data.id==="string"?detail.data as Row:null;
  const finance:Finance|null=!financial.error&&financial.data&&typeof financial.data.payment_status==="string"
@@ -67,7 +70,6 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <div><small>Sudah diterima</small><strong>{formatIdr(finance.paid_idr)}</strong></div>
  <div className={styles.remaining}><small>Sisa pembayaran</small><strong>{formatIdr(finance.payment_status==='REFUNDED'?'0':finance.remaining_idr)}</strong></div></div>
  {finance.refunded_idr!=="0"&&<p>Total dikembalikan: {formatIdr(finance.refunded_idr)}</p>}
- {finance.receipts.map(receipt=><div key={receipt.id} className={styles.receipt}><span>{receipt.type==="REFUND"?"Refund":"Pembayaran"} · {receipt.method==="CASH"?"Tunai":"Non-tunai"}<small>{date(receipt.at)}</small></span><strong>{receipt.type==="REFUND"?"−":"+"}{formatIdr(receipt.amount_idr)}</strong></div>)}
  <RecoverableForm action={collectOwnerPayment} className={showPay?styles.paymentForm:undefined}
  recoveryKey={commandRecoveryKey('owner',user.id,'PAYMENT',id)} recoverAction={recoverOwnerOperation.bind(null,'PAYMENT',id)}>
  {showPay&&<>
@@ -86,6 +88,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <PendingSubmit className={styles.dangerButton} disabled={!canFinance} label={row.is_test_order?"Konfirmasi pengembalian simulasi":"Konfirmasi pengembalian dana"}/></>}</RecoverableForm>
  </>}
  </section>
+ <SystemOrderDetail snapshot={!audit.error?audit.data as ReceiptData:null} role="owner" canViewCash={true} version={finance?.version}/>
  <>{row.is_test_order&&<PointSimulation data={!simulation.error&&pointSimulationMatchesPayment(readPointSimulation(simulation.data),finance)?readPointSimulation(simulation.data):null}/>}</>
  <section className={styles.card}><h2>Status cucian</h2><p className={styles.muted}>Serah terima hanya setelah lunas. Nota gratis, refund dan sengketa memerlukan kebijakan terpisah.</p><p><strong>{row.work_status==="PROCESSING"?"Diproses":row.work_status==="READY"?"Siap diambil":row.work_status==="COLLECTED"?"Sudah diambil":"Antrian"}</strong></p>
  <RecoverableForm action={advanceOwnerWork} className={target?styles.paymentForm:undefined}
@@ -100,7 +103,7 @@ export default async function OwnerInvoice({params,searchParams}:{params:Promise
  <label>Alasan pembatalan<input name="reason" required minLength={3} maxLength={300}/></label>
  <PendingSubmit className={styles.dangerButton} disabled={!canWrite} label="Konfirmasi pembatalan"/></>}</RecoverableForm>
  {finance&&!cancellable&&<p className={styles.warning}>Ada dana diterima. Lakukan refund penuh sebelum membatalkan pesanan.</p>}
- </section><section className={styles.card}><OrderTimeline events={row.events??[]}/></section></div>{row.lifecycle_status==="CONFIRMED"&&<WhatsAppDraft key={id} role="owner" orderId={id} isTestOrder={row.is_test_order===true} workStatus={row.work_status} version={finance?.version??0}/>}</>}
+ </section><section className={styles.card}><OrderTimeline events={row.events??[]}/></section></div>{row.lifecycle_status==="CONFIRMED"&&<WhatsAppDraft key={id} role="owner" orderId={id} initialContact={!audit.error?(audit.data?.contact??audit.data?.contact_draft):null} isTestOrder={row.is_test_order===true} workStatus={row.work_status} version={finance?.version??0}/>}</>}
  <Link className="binatu-button binatu-button-soft" href="/admin">Kembali ke Pesanan</Link>
  </PosWorkspace>;
 }

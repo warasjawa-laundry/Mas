@@ -114,6 +114,23 @@ async function selectServices(page:Page,width:number){
  if(width<1024)await page.getByRole('button',{name:'Atur pesanan',exact:true}).click();
 }
 
+for(const role of ['owner','cashier'] as const)test(`${role} captures optional contacts once and retains them through an unknown save`,async({page})=>{
+ await mount(page,390,role);await page.getByLabel('Nama pelanggan').fill('Penguji Kontak');
+ await page.getByLabel('Nomor WhatsApp (opsional)',{exact:true}).fill('085331222295');
+ await page.getByLabel('Alamat pelanggan (opsional)',{exact:true}).fill('Alamat penguji');
+ await selectServices(page,390);
+ await page.getByRole('button',{name:'Buat pesanan',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>(window as any).posFixture.creates.length)).toBe(1);
+ const payload=await page.evaluate(()=>(window as any).posFixture.creates[0]);
+ expect(payload.contactPhone).toBe('085331222295');expect(payload.contactAddress).toBe('Alamat penguji');
+ await page.evaluate(()=>(window as any).posFixture.finishCreate());
+ await expect(page.getByRole('alert')).toContainText('Nota belum terkonfirmasi');
+ await page.getByRole('button',{name:'Buat pesanan',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>(window as any).posFixture.creates.length)).toBe(2);
+ expect(await page.evaluate(()=>(window as any).posFixture.creates[1])).toEqual(payload);
+ await noOverflow(page);
+});
+
 test('V3 quantity inputs remain usable at 200 percent reflow',async({page})=>{
  await mount(page,640);await page.getByLabel('Nama pelanggan').fill('Pelanggan V3 Zoom');
  await page.getByRole('button',{name:'Lanjut',exact:true}).click();

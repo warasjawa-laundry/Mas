@@ -31,6 +31,8 @@ QA menemukan status pembayaran bukan kolom orders dan enum refund FULLY_REFUNDED
 
 ## Rilis dan rollback
 
+Penerus: [V3.1 nota dan audit](implementation-plan-v3.1.md), 6 November 2026. Memisahkan thermal/WhatsApp/audit, snapshot cetak terbaru, kategori kas dan kontak draf tanpa menulis ulang histori. Bukti printer fisik/G8 tetap terpisah.
+
 Perbaikan filter laporan (5 November 2026): formulir tanggal Owner/Kasir memakai `next/form` agar GET dilakukan melalui router. Formulir HTML sebelumnya memuat dokumen baru dan memicu aturan reauthentication Owner, sehingga sesi dicabut saat menekan Tampilkan laporan. Proxy, batas sesi, backend role/grant, dan validasi periode tetap berlaku. Regresi memeriksa kedua tanggal dan role, serta membuktikan router internal tidak mencabut sesi sementara refresh dokumen tetap meminta login. Gejala kasir di akun nyata belum dikonfirmasi; pemeriksaan grant/session kasir tetap di backend.
 
 Verifikasi perbaikan filter: tes baru mula-mula gagal pada kedua formulir native, lalu lulus setelah perubahan. Focused18/18, seluruh Node336/336, browser141/141, build+TypeScript lulus. Tidak ada migrasi atau perubahan data. Perjalanan login akun nyata tetap memerlukan UAT; tes ini memakai identitas/session sintetis.

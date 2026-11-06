@@ -1,5 +1,9 @@
 # UAT G7/G8
 
+## V3.1, 6 November 2026
+
+Status **PHYSICAL_UAT_REQUIRED**: Owner/kasir menguji login nyata, printer58/80, model/koneksi/driver/kertas/browser/Android, nominal besar,0.75/1.25/2.375kg, meter/pcs, nama/catatan panjang, DP/lunas/refund/batal dan penanda nota uji. Catat ukuran huruf, clipping, potong kertas, cetak ulang, habis kertas/putus koneksi. Perubahan pembayaran setelah preview harus meminta pemeriksaan ulang sebelum print. Verifikasi penerima yang sudah diprefill; ubah nomor harus membatalkan konfirmasi lama. Uji filter tanggal, CSV/Excel tanpa logout, kategori kas serta tautan audit. Gunakan data sintetis selama pilot; jangan menerima uang nyata atau mengirim pesan uji ke pelanggan. [Bukti otomatis dan batasannya](implementation-plan-v3.1.md).
+
 ## V3, 5 November 2026
 
 [Bukti otomatis dan batasnya](./implementation-plan-v3.md): kuantitas kg/m dengan koma/titik dan4langkah, pcs bulat, DP/lunas lintas periode, actor berbeda, refund, carry saldo, print58/80 dan Excel4sheet. Semua financial fixture sintetis rollback; race hanya CI ephemeral. Operator/Owner perlu menguji printer fisik58/80/driver, panjang kertas, auto-cut, Android/TalkBack, login manusia dan rekonsiliasi uang. Status PHYSICAL_UAT_REQUIRED sampai ada bukti bertanggal/perangkat/penguji nyata. Mode Uji bukan penerimaan riil dan bukan G8 GO.

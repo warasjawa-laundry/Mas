@@ -1,5 +1,7 @@
 # Monitoring POS dan pilot
 
+V3.1: pantau kegagalan baca snapshot/izin, perubahan versi sebelum print, request conflict pada kontak/kategori, export422 dan keseimbangan kas. Timestamp snapshot/perhitungan bukan perubahan nominal. Jangan log nomor telepon, alamat, token QR atau isi lengkap WhatsApp. Cetak/draf/unduh tidak boleh menaikkan jumlah payment, ledger atau point links. Hasil printer/login nyata tetap harus dicatat operator; indikator READY deployment bukan G8 GO. [Kontrak dan bukti](implementation-plan-v3.1.md).
+
 Source kondisi operasional: [audit teknis G8](./g8-audit-20261102.md). Production saat ini pilot dummy, bukan penerimaan uang nyata; jangan menafsirkan flags ON atau status PAID nota uji sebagai G8 GO.
 
 | Pantau | Tindakan |

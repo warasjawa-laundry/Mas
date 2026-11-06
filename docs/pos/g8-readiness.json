@@ -315,6 +315,21 @@
     "evidence": "docs/2026-11-04-homepage-catalog.md",
     "releasePolicy": "Exact-SHA CI first; new tariff read function only in Production; final deployment receipt external"
   },
+  "posV31": {
+    "baselineMain": "47f517c01f9742a80198bbc5d5647e80689532be",
+    "migrations": ["20261106010000", "20261106020000", "20261106030000"],
+    "qa": "PASS_THREE_V31_AND_FIVE_LEGACY_ROLLBACK_SUITES",
+    "nodeTests": 360,
+    "browserTests": 164,
+    "buildAndTypecheck": "PASS_LOCAL",
+    "physicalPrinterUat": false,
+    "realAuthUat": false,
+    "productionCustomerOrFinancialDataWrites": false,
+    "operationalFlagChanges": false,
+    "g8RealGo": false,
+    "evidence": "docs/pos/implementation-plan-v3.1.md",
+    "releasePolicy": "Exact-SHA CI including V31 two-connection retries before additive Production migration and existing mas deployment; final release receipt records actual outcomes"
+  },
   "posV3": {
     "baselineMain": "02ce813d8dc0183371164fbc33bcebfc1a8cc939",
     "migration": "20261105010000_pos_v3_automatic_cash_reports.sql",

@@ -1,5 +1,7 @@
 # Rollback dan penghentian POS
 
+V3.1: rollback aplikasi ke deployment terverifikasi sebelumnya di proyek mas. Pertahankan snapshot/read RPC V3.1 dan metadata kategori/kontak; jangan menghapus jurnal atau draf sebagai rollback otomatis. Legacy print/WhatsApp RPC mempertahankan saldo akuntansi lama, sedangkan V3.1 menampilkan saldo yang dapat ditagih nol pada refund/batal. Core keuangan tidak ditulis ulang. Rutin V3 cash/report kini membungkus base private yang tetap berizin; jangan membuka EXECUTE base helper ke anon/authenticated. Forward fix harus QA/CI, bukan menonaktifkan pilot. [Rincian](implementation-plan-v3.1.md).
+
 V3: rollback aplikasi ke deployment terverifikasi sebelumnya. Pertahankan rutin/table additive serta metadata payment-method/reconciliation agar audit baru tidak hilang. Jangan menyusutkan constraint opening jika carried balance sudah dipakai, jangan menghapus transaksi sebagai rollback, dan jangan mematikan pilot_test_only untuk mengatasi masalah. [Rincian V3](./implementation-plan-v3.md).
 
 Katalog homepage4November: rollback aplikasi ke deployment terverifikasi sebelumnya jika pembacaan gagal. Fungsi additive `laundry_public_service_catalog()` boleh tetap terpasang karena tidak mengubah data atau API lama. Jangan drop sebelum seluruh reader berpindah. Scope dan bukti: [homepage/katalog](../2026-11-04-homepage-catalog.md). Tidak perlu restore data untuk perubahan fungsi baca ini.

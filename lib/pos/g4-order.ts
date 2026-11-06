@@ -9,6 +9,8 @@ export type G4OrderInput = {
   notes:string|null;
   deliveryCode:string;
   deliveryRevision:number;
+  contactPhone?:string|null;
+  contactAddress?:string;
 };
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const QTY=/^(?:0|[1-9][0-9]{0,6})(?:\.[0-9]{1,3})?$/;
@@ -24,6 +26,13 @@ export function parseG4OrderForm(form:FormData):G4OrderInput|null{
   const perfume=field(form,"perfume",80),notes=field(form,"notes",500);
   const deliveryCode=field(form,"deliveryCode",8),deliveryRevision=field(form,"deliveryRevision",12);
   const raw=field(form,"items",30000);
+  const phoneInput=form.has('contactPhone')?field(form,'contactPhone',24):'';
+  const contactAddress=form.has('contactAddress')?field(form,'contactAddress',240):'';
+  if(phoneInput===null||contactAddress===null)return null;
+  let contactPhone=phoneInput.replace(/[ ()-]/g,'');
+  if(contactPhone.startsWith('0'))contactPhone='+62'+contactPhone.slice(1);
+  else if(contactPhone&&!contactPhone.startsWith('+'))contactPhone='+'+contactPhone;
+  if(contactPhone&&!/^\+[1-9][0-9]{7,14}$/.test(contactPhone))return null;
   if(!requestId||!UUID.test(requestId)||!raw||name===null||member===null||perfume===null||notes===null||
    !deliveryCode||!['NONE','FREE','NEAR','FAR'].includes(deliveryCode)||
    deliveryRevision===null||!/^([1-9][0-9]{0,11})$/.test(deliveryRevision)||
@@ -46,6 +55,7 @@ export function parseG4OrderForm(form:FormData):G4OrderInput|null{
     parsed.push({service_id:value.service_id,quantity:value.quantity,revision:value.revision});
   }
   return {requestId,guestName:kind==="guest"?name:null,memberNumber:kind==="member"?member:null,
-    items:parsed,perfume:perfume||null,notes:notes||null,deliveryCode,deliveryRevision:Number(deliveryRevision)};
+    items:parsed,perfume:perfume||null,notes:notes||null,deliveryCode,deliveryRevision:Number(deliveryRevision),
+    ...(contactPhone||contactAddress?{contactPhone:contactPhone||null,contactAddress}:{})};
 }
 export const formatIdr=(value:string|number|bigint)=>`Rp${BigInt(value).toLocaleString("id-ID")}`;

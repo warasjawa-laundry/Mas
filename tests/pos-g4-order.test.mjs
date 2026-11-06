@@ -21,6 +21,14 @@ test('member lookup requires exact member number, no accidental guest fallback',
  for(const number of ['','0001','-1','1e3','1 2','1234567890123'])assert.equal(parseG4OrderForm(form({kind:'member',guestName:'',memberNumber:number})),null);
  assert.equal(parseG4OrderForm(form({kind:'member',guestName:'Lain',memberNumber:'1234'})),null);
 });
+
+test('optional creation contacts are normalized as unverified draft data',()=>{
+ const value=parseG4OrderForm(form({contactPhone:'085331222295',contactAddress:'Kraksaan'}));
+ assert.equal(value?.contactPhone,'+6285331222295');
+ assert.equal(value?.contactAddress,'Kraksaan');
+ for(const invalid of [{contactPhone:'bad'},{contactPhone:'08\n1234'},{contactAddress:'x'.repeat(241)},{contactAddress:'Jl\nA'}])assert.equal(parseG4OrderForm(form(invalid)),null);
+ assert.equal('contactPhone' in parseG4OrderForm(form()),false);
+});
 test('request IDs and quantities must be exact bounded values',()=>{
  for(const id of ['','bad','a'.repeat(100)])assert.equal(parseG4OrderForm(form({requestId:id})),null);
  for(const qty of ['0','0.000','1.0000','-1','1e5','99999999','1,500','1 ','']){

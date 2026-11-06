@@ -45,7 +45,7 @@ begin
  if report_v->'cash'->1->>'method'<>'QRIS' then raise exception 'payment channel lost';end if;
  if (public.laundry_pos_print_receipt(order_v))->>'invoice' is distinct from (public.laundry_pos_whatsapp_receipt(order_v,'NEW'))->>'invoice' then raise exception 'receipt sources differ';end if;
  cash_v:=public.laundry_pos_v3_cash();
- if cash_v->'entries'->0->>'order_id'<>order_v::text or cash_v->'entries'->0->>'actor'<>name_v then raise exception 'cash reference/actor missing';end if;
+ if cash_v->'entries'->0->>'order_id'<>order_v::text or cash_v->'entries'->0->>'actor'<>'QA V3 cashier' then raise exception 'cash reference/actor missing';end if;
  perform public.laundry_pos_v3_reconcile(recon_v,25000,25000,'QA counted cash');
  perform public.laundry_pos_v3_reconcile(recon_v,25000,25000,'QA counted cash');
  cash_v:=public.laundry_pos_v3_cash();

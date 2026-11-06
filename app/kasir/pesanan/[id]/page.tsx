@@ -1,4 +1,6 @@
 import Disclosure from "@/components/pos/disclosure";
+import SystemOrderDetail from "@/components/pos/system-order-detail";
+import type {ReceiptData} from "@/lib/pos/receipt";
 import PointSimulation from "@/components/pos/point-simulation";
 import {readPointSimulation,pointSimulationMatchesPayment} from "@/lib/pos/point-simulation";
 import Link from "next/link";
@@ -35,10 +37,11 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
  if(!uuid.test(id))notFound();
  const access=await cashierRpcAccess("order_view");
  if(!access)redirect("/kasir");
- const [detail,summary,simulation]=await Promise.all([
+ const [detail,summary,simulation,audit]=await Promise.all([
    access.client.rpc("laundry_pos_g4_order_detail",{...access.tokens,p_order_id:id}),
    access.client.rpc("laundry_pos_g5_financial",{...access.tokens,p_order_id:id}),
    access.client.rpc("laundry_pos_point_simulation",{...access.tokens,p_order_id:id}),
+   access.client.rpc("laundry_pos_order_audit",{...access.tokens,p_order_id:id}),
  ]);
  if(detail.error||!detail.data||typeof detail.data!=="object"||!detail.data.id){
   return <main className={styles.shell}><Link href="/kasir/pesanan">← Daftar pesanan</Link><p role="alert" className={styles.warning}>Nota tidak ditemukan atau modul belum tersedia.</p></main>;
@@ -85,12 +88,6 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
       <div className={styles.remaining}><small>Sisa pembayaran</small><strong>{money(f.payment_status==='REFUNDED'?'0':f.remaining_idr)}</strong></div>
     </div>
     {f.refunded_idr!=='0'&&<p className={styles.muted}>Total dikembalikan: {money(f.refunded_idr)}</p>}
-    {f.receipts.length>0&&<div className={styles.receiptList} aria-label="Riwayat pembayaran">
-      {f.receipts.map(r=><div className={styles.receipt} key={r.id}>
-       <span>{r.type==='REFUND'?'Refund':'Pembayaran'} · {r.method==='CASH'?'Tunai':'Non-tunai'}<small>{new Date(r.at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</small></span>
-       <strong>{r.type==='REFUND'?'−':'+'}{money(r.amount_idr)}</strong>
-      </div>)}
-    </div>}
     {canCollect&&<RecoverableForm action={collectCashierPayment} className={styles.paymentForm}
       recoveryKey={commandRecoveryKey('cashier',access.session.staff_id,'PAYMENT',o.id)} recoverAction={recoverCashierCommand.bind(null,'PAYMENT',o.id)}>
      {showPay&&<>
@@ -140,8 +137,9 @@ export default async function OrderDetails({params,searchParams}:{params:Promise
     </Disclosure>}
    </RecoverableForm>}
   </section>
+  <SystemOrderDetail snapshot={!audit.error?audit.data as ReceiptData:null} role="cashier" canViewCash={hasCashierGrant(access.session.permissions,'cash_view')} version={f?.version}/>
   <>{o.is_test_order&&<PointSimulation data={!simulation.error&&pointSimulationMatchesPayment(readPointSimulation(simulation.data),f)?readPointSimulation(simulation.data):null}/>}</>
   <section className={styles.card}><OrderTimeline events={o.events??[]}/></section></div>
-  {o.lifecycle_status==='CONFIRMED'&&hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft key={o.id} role="cashier" orderId={o.id} isTestOrder={o.is_test_order===true} workStatus={o.work_status} version={f?.version??0}/>}
+  {o.lifecycle_status==='CONFIRMED'&&hasCashierGrant(access.session.permissions,"whatsapp_draft")&&<WhatsAppDraft key={o.id} role="cashier" orderId={o.id} initialContact={!audit.error?(audit.data?.contact??audit.data?.contact_draft):null} isTestOrder={o.is_test_order===true} workStatus={o.work_status} version={f?.version??0}/>}
  </main>;
 }

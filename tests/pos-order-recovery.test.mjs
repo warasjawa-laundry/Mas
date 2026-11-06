@@ -14,7 +14,7 @@ function action(path,rpcName){
   '@/lib/pos/g4-server':{cashierRpcAccess:async()=>access},
   '@/lib/supabase/owner':{requireOwner:async()=>({supabase:client})},
   '@/lib/pos/g4-order':{parseG4OrderForm:()=>payload},
-  '@/lib/pos/g6-cash':{parseCashEntry:()=>({...payload,direction:'OUT',amountIdr:'5000',reason:'Beli plastik'}),parseCloseShift:()=>({...payload,countedIdr:'0',reason:'Hitung QA'})},
+  '@/lib/pos/g6-cash':{parseStructuredCashEntry:()=>({...payload,direction:'OUT',amountIdr:'5000',categoryCode:'PACKAGING',note:'Beli plastik'}),parseCloseShift:()=>({...payload,countedIdr:'0',reason:'Hitung QA'})},
   '@/lib/pos/g5-payment':{parseG5Payment:()=>payload,parseG5Refund:()=>({...payload,orderId:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',expectedVersion:2,reason:'Koreksi nota'}),parseG5Shift:()=>payload},
  };
  runInNewContext(ts.transpileModule(read(path),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:out.exports,module:out,URLSearchParams,require:n=>{if(!(n in mocks))throw Error(n);return mocks[n]}});

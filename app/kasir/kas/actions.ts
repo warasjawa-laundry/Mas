@@ -2,15 +2,15 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cashierRpcAccess } from "@/lib/pos/g4-server";
-import { parseCashEntry, parseCloseShift } from "@/lib/pos/g6-cash";
+import { parseStructuredCashEntry, parseCloseShift } from "@/lib/pos/g6-cash";
 import type {CommandActionResult} from "@/lib/pos/command-recovery";
 const page="/kasir/kas";
 export async function postNonSaleCash(form:FormData):Promise<CommandActionResult>{
  const access=await cashierRpcAccess("cash_entry");if(!access)redirect("/kasir");
- const item=parseCashEntry(form);if(!item)return {error:"Periksa nominal dan alasan mutasi. Isian tetap tersedia."};
- const {data,error}=await access.client.rpc("laundry_pos_v3_finance",{
-  ...access.tokens,p_operation:'CASH_ENTRY',p_request_id:item.requestId,p_direction:item.direction,
-  p_amount_idr:item.amountIdr,p_reason:item.reason
+ const item=parseStructuredCashEntry(form);if(!item)return {error:"Periksa nominal, kategori, arah kas, dan catatan. Pengeluaran memakai Kas keluar. Isian tetap tersedia."};
+ const {data,error}=await access.client.rpc("laundry_pos_v31_cash_entry",{
+  ...access.tokens,p_request_id:item.requestId,p_direction:item.direction,
+  p_amount_idr:item.amountIdr,p_category_code:item.categoryCode,p_note:item.note
  });
  if(error||!data||data.status!=="POSTED"){
   // Do not auto-retry unknown write with a different UUID.

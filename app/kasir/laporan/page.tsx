@@ -3,6 +3,7 @@ import ContextNotice,{readDisplayContext} from "@/components/pos/context-notice"
 import {paymentMethodLabel,cashCategoryLabel} from "@/lib/pos/ui-labels";
 import Link from "next/link";
 import Form from "next/form";
+import ReportDownload from "@/components/pos/report-download";
 import { redirect } from "next/navigation";
 import { cashierRpcAccess } from "@/lib/pos/g4-server";
 import { formatIdr } from "@/lib/pos/g4-order";
@@ -36,8 +37,8 @@ export default async function CashierReports({searchParams}:{searchParams:Promis
  </div><p>Non-tunai keluar: <strong>{formatIdr(report.noncash_out_idr)}</strong></p>
  <p>Nota dibuat: <strong>{report.orders_created}</strong> · Piutang pada akhir periode: <strong>{formatIdr(report.receivables_as_of_end_idr)}</strong></p>
  <p className={styles.muted}>Laporan ini merangkum arus kas operasional, bukan laba bersih.</p>
- {!report.truncated&&<a className={styles.mainLink} href={`/kasir/laporan/export?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}>Unduh laporan CSV</a>}
- <a className={styles.mainLink} href={`/kasir/laporan/export?format=xlsx&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}>Unduh laporan Excel</a>
+ {!report.truncated&&<ReportDownload className={styles.mainLink} format="csv" filename={`masjawa-mutasi-${start}-${end}.csv`} href={`/kasir/laporan/export?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}>Unduh laporan CSV</ReportDownload>}
+ <ReportDownload className={styles.mainLink} format="xlsx" filename={`masjawa-mutasi-${start}-${end}.xlsx`} href={`/kasir/laporan/export?format=xlsx&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`}>Unduh laporan Excel</ReportDownload>
  <p className={styles.muted}>Excel memuat nota, kuantitas layanan, dan mutasi. Saldo nota memakai kondisi terkini; penerimaan kas mengikuti periode yang dipilih.</p>
  {report.truncated&&<p className={styles.warning}>Hasil terlalu banyak untuk ekspor aman (lebih dari 300 mutasi). Persempit tanggal.</p>}
  </section><section className={styles.card}><h2>Mutasi dalam periode</h2>

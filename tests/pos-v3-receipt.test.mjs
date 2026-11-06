@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {buildReceipt} from '../lib/pos/receipt.ts';
 import {receipt} from './pos-v3-receipt.fixture.mjs';
 test('mixed units retain three decimal precision and nominal snapshots',()=>{
- const text=buildReceipt({...receipt,items:[...receipt.items,{...receipt.items[0],quantity_milli:1234}]});
+ const text=buildReceipt({...receipt,total:'78704',remaining:'68704',items:[...receipt.items,{...receipt.items[0],quantity_milli:1234,subtotal:'7404'}]});
  for(const line of ['1,25 kg x Rp6.000 = Rp7.500','2,35 m x Rp8.000 = Rp18.800','3 pcs x Rp15.000 = Rp45.000','1,234 kg'])assert.ok(text.includes(line));
  assert.match(text,/Kasir : Kasir Uji/);assert.match(text,/19:09 WIB/);
 });

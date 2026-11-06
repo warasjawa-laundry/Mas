@@ -13,11 +13,13 @@ export async function createCashierOrder(form:FormData):Promise<CommandActionRes
   const payload=parseG4OrderForm(form);
   if(!payload)return {error:"Periksa identitas pelanggan dan jumlah layanan. Isian tetap tersedia."};
   if(!access.session.write_enabled)return {error:"Transaksi belum diaktifkan. Isian tetap tersedia."};
-  const {data,error}=await access.client.rpc("laundry_pos_g4_create_order_with_delivery",{
+  const withContact=payload.contactPhone||payload.contactAddress;
+  const {data,error}=await access.client.rpc(withContact?"laundry_pos_v31_create_order":"laundry_pos_g4_create_order_with_delivery",{
     ...access.tokens,p_request_id:payload.requestId,
     p_guest_name:payload.guestName,p_member_number:payload.memberNumber,
     p_items:payload.items,p_perfume:payload.perfume,p_notes:payload.notes,
     p_delivery_code:payload.deliveryCode,p_delivery_revision:payload.deliveryRevision,
+    ...(withContact?{p_phone:payload.contactPhone??null,p_address:payload.contactAddress??''}:{}),
   });
   if(error?.message?.includes("POS_DELIVERY_PRICE_CHANGED"))return {error:"Tarif antar-jemput berubah. Muat ulang katalog sebelum membuat nota."};
   if(error || !data || typeof data!=="object" || typeof data.order_id!=="string"){

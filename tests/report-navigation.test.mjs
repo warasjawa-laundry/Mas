@@ -26,6 +26,7 @@ for(const role of ['admin','kasir'])test(`${role} date filtering uses router nav
   'next/navigation':{redirect:path=>{throw Error(path);}},
   '@/components/pos/context-notice':{default:()=>null,readDisplayContext:()=>null},
   '@/components/pos/pos-workspace':()=>null,
+  '@/components/pos/report-download':()=>null,
   '@/lib/pos/ui-labels':{},'@/lib/pos/cashier-permissions':{hasCashierGrant:()=>true},
   '@/lib/supabase/owner':{requireOwner:async()=>({supabase:client})},
   '@/lib/pos/g4-server':{cashierRpcAccess:async grant=>{assert.equal(grant,'reports_view');return {client,tokens:{p_login_token:'synthetic'},session:{permissions:{}}};}},

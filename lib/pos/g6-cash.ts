@@ -2,6 +2,18 @@
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const MONEY=/^(0|[1-9][0-9]{0,9})$/;
 const POSITIVE=/^[1-9][0-9]{0,9}$/;
+export const CASH_CATEGORIES=[
+ {code:'DETERGENT',label:'Bahan pencuci',classification:'EXPENSE'},
+ {code:'PERFUME',label:'Parfum/pelembut',classification:'EXPENSE'},
+ {code:'PACKAGING',label:'Plastik/kemasan',classification:'EXPENSE'},
+ {code:'UTILITIES',label:'Utilitas',classification:'EXPENSE'},
+ {code:'TRANSPORT',label:'Transportasi',classification:'EXPENSE'},
+ {code:'MAINTENANCE',label:'Servis/perawatan',classification:'EXPENSE'},
+ {code:'PAYROLL',label:'Gaji/operasional',classification:'EXPENSE'},
+ {code:'OTHER',label:'Pengeluaran lainnya',classification:'EXPENSE'},
+ {code:'CAPITAL',label:'Modal',classification:'EQUITY'},
+ {code:'CASH_TRANSFER',label:'Transfer antar kas',classification:'TRANSFER'},
+] as const;
 function value(form:FormData,key:string,max:number):string|null{
  const v=form.get(key);if(typeof v!=="string"||v.length>max||/[\x00-\x1f\x7f]/.test(v))return null;
  return v.trim();
@@ -13,6 +25,13 @@ export function parseCashEntry(form:FormData){
     !amountIdr||!POSITIVE.test(amountIdr)||BigInt(amountIdr)>BigInt(1000000000)||
     !reason||reason.length<3)return null;
  return {requestId,direction,amountIdr,reason};
+}
+export function parseStructuredCashEntry(form:FormData){
+ const requestId=value(form,'requestId',36),direction=value(form,'direction',3),amountIdr=value(form,'amountIdr',10),categoryCode=value(form,'categoryCode',30);
+ const note=form.has('note')?value(form,'note',300):'';
+ const category=CASH_CATEGORIES.find(c=>c.code===categoryCode);
+ if(!requestId||!UUID.test(requestId)||!direction||!['IN','OUT'].includes(direction)||!amountIdr||!POSITIVE.test(amountIdr)||BigInt(amountIdr)>BigInt(1000000000)||!category||(category.classification==='EXPENSE'&&direction!=='OUT')||note===null)return null;
+ return {requestId,direction,amountIdr,categoryCode:category.code,note};
 }
 export function parseCloseShift(form:FormData){
  const requestId=value(form,"requestId",36),countedIdr=value(form,"countedIdr",10),reason=value(form,"reason",300);

@@ -1,0 +1,21 @@
+import {test,expect} from '@playwright/test';
+import {readFileSync,mkdirSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import {runInNewContext} from 'node:vm';
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import ts from 'typescript';
+const req=createRequire(process.cwd()+'/package.json'),module={exports:{} as any};
+const mocks:Record<string,unknown>={'next/link':{default:(p:any)=>createElement('a',p)},'@/lib/pos/receipt':{validateReceiptData:(v:any)=>v},'@/lib/pos/g4-order':{formatIdr:(v:string)=>'Rp'+BigInt(v).toLocaleString('id-ID')},'@/lib/pos/ui-labels':{paymentMethodLabel:(v:string)=>v},'@/app/kasir/pesanan/orders.module.css':{default:new Proxy({},{get:(_,key)=>String(key)})}};
+runInNewContext(ts.transpileModule(readFileSync('components/pos/system-order-detail.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{module,exports:module.exports,require:(n:string)=>mocks[n]??req(n),Date});
+const snapshot={actor:'Owner MasJawa',order_version:'2',payment_version:'1',snapshot_at:'2026-11-06T09:00:00Z',contact_draft:{phone:'+628111111111',address:'Alamat penguji dengan informasi panjang yang tetap harus turun baris tanpa melebar keluar panel'},payments:[{receiver:'Kasir Kedua Dengan Nama Sangat Panjang',amount_idr:'10000',received_at:'2026-11-06T08:00:00Z',method:'QRIS',internal_reference:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',cash_ledger_id:'cccccccc-cccc-4ccc-8ccc-cccccccccccc'}],refunds:[]};
+for(const width of [320,390,768,1440])test(`internal audit wraps references and separates actors at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});
+ const html=renderToStaticMarkup(createElement(module.exports.default,{snapshot,role:'cashier',canViewCash:true,version:2}));
+ await page.setContent(`<style>${readFileSync('app/kasir/pesanan/orders.module.css','utf8')}body{margin:0;padding:16px}*{box-sizing:border-box}small{display:block}section{max-width:100%}</style>${html}`);
+ await expect(page.getByText('Owner MasJawa',{exact:true})).toBeVisible();
+ await expect(page.getByText(/Kasir Kedua Dengan Nama/)).toBeVisible();
+ await expect(page.getByRole('link',{name:'Lihat mutasi terkait'})).toHaveAttribute('href','/kasir/kas#mutasi-cccccccc-cccc-4ccc-8ccc-cccccccccccc');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
+ mkdirSync('artifacts/screenshots',{recursive:true});await page.screenshot({path:`artifacts/screenshots/pos-v31-system-${width}.png`,fullPage:true});
+});

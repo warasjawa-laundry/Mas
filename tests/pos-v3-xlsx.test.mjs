@@ -60,3 +60,15 @@ test('incomplete, excessive and malformed exports fail instead of yielding parti
  assert.throws(()=>buildReportXlsx({...fixture(),cash:Array(10001).fill(fixture().cash[0])}));
  assert.throws(()=>buildReportXlsx({...fixture(),orders:[{...order,total:'9007199254740992'}]}));
 });
+test('cash categories distinguish expenses, capital, transfers and unclassified history without duplicating money',()=>{
+ const d=fixture();
+ for(const [id,code,classification,amount] of [['e','PACKAGING','EXPENSE','5000'],['c','CAPITAL','EQUITY','6000'],['t','CASH_TRANSFER','TRANSFER','7000'],['l',null,null,'8000']])d.cash.push({id,at:order.created_at,direction:'OUT',category:'NON_SALE_OUT',method:'CASH',amount,expense_category_code:code,expense_category_label:code==='PACKAGING'?'Plastik/kemasan':code,accounting_classification:classification});
+ const files=entries(buildReportXlsx(d)),s=files['xl/worksheets/sheet1.xml'],m=files['xl/worksheets/sheet4.xml'];
+ assert.match(s,/Pengeluaran operasional terklasifikasi/);assert.match(s,/Plastik\/kemasan/);assert.match(s,/Belum dikategorikan/);
+ assert.match(m,/Kode kategori/);assert.match(m,/EQUITY/);assert.match(m,/TRANSFER/);
+ assert.equal((m.match(/<row /g)||[]).length,8);
+ assert.equal((files['xl/workbook.xml'].match(/<sheet /g)||[]).length,4);
+});
+test('export rejects mismatched invoice references and fractional pcs instead of presenting conflicting records',()=>{
+ for(const change of [d=>{d.items[0].invoice='NOTA-WRONG';},d=>{d.cash[0].invoice='NOTA-WRONG';},d=>{d.items[2].quantity_milli=2375;},d=>{d.items[0].created_in_period=false;}]){const d=fixture();change(d);assert.throws(()=>buildReportXlsx(d));}
+});

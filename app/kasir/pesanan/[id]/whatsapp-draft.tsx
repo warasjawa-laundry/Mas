@@ -2,13 +2,15 @@
 import Disclosure from "@/components/pos/disclosure";
 import {useEffect,useRef,useState} from "react";
 import {prepareOrderReceipt,verifyOrderContact} from "../receipt-actions";
-import {receiptWhatsAppUrl,type ReceiptData,type ReceiptKind} from "@/lib/pos/receipt";
+import {receiptWhatsAppUrl,type ReceiptData,type ReceiptKind,type ReceiptContact} from "@/lib/pos/receipt";
 import RecoverableForm from "@/components/admin/recoverable-form";
 import PendingSubmit from "@/components/admin/pending-submit";
 import styles from "../orders.module.css";
-export function WhatsAppDraft({orderId,role,workStatus,version,isTestOrder=false}:{orderId:string;role:'owner'|'cashier';workStatus:string;version:number;isTestOrder?:boolean}){
+export function WhatsAppDraft({orderId,role,workStatus,version,isTestOrder=false,initialContact=null}:{orderId:string;role:'owner'|'cashier';workStatus:string;version:number;isTestOrder?:boolean;initialContact?:ReceiptContact|null}){
  const [draft,setDraft]=useState<{data:ReceiptData;text:string}|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[copied,setCopied]=useState(false),[checked,setChecked]=useState(false);
  const [contactRequest,setContactRequest]=useState(''),[contactSaved,setContactSaved]=useState(false);
+ const [phone,setPhone]=useState(initialContact?.phone??''),[address,setAddress]=useState(initialContact?.address??'');
+ const [contactConfirmed,setContactConfirmed]=useState(false);
  const sequence=useRef(0);
  useEffect(()=>{setContactRequest(crypto.randomUUID());},[orderId,role]);
  useEffect(()=>{sequence.current++;setDraft(null);setChecked(false);setCopied(false);},[version,workStatus,orderId,role]);
@@ -23,12 +25,13 @@ export function WhatsAppDraft({orderId,role,workStatus,version,isTestOrder=false
  return <section className={styles.card}>
   <h2>Pesan WhatsApp</h2><p className={styles.muted}>Baca ulang data nota setelah pembayaran selesai atau dilewati. Petugas menekan Kirim di WhatsApp; membuka draf bukan bukti terkirim.</p>
   {testOnly&&<p className={styles.muted} role="status">Nota simulasi dapat dikirim ke nomor penguji yang bersedia menerima pesan uji. Jangan gunakan nomor pelanggan nyata.</p>}<Disclosure title="Verifikasi nomor & alamat penerima"><RecoverableForm action={async form=>{
-   setContactSaved(false);const result=await verifyOrderContact(role,orderId,form);if(result.confirmed){sequence.current++;setDraft(null);setChecked(false);setContactRequest(crypto.randomUUID());setContactSaved(true);return {error:''};}return result;
+   setContactSaved(false);const result=await verifyOrderContact(role,orderId,form);if(result.confirmed){sequence.current++;setDraft(null);setChecked(false);setContactConfirmed(false);setContactRequest(crypto.randomUUID());setContactSaved(true);return {error:''};}return result;
   }} className={styles.paymentForm}>
    <input type="hidden" name="requestId" value={contactRequest}/>
-   <label>Nomor WhatsApp<input name="phone" type="tel" inputMode="tel" maxLength={24} autoComplete="off" placeholder="08… / +62…"/></label>
-   <label>Alamat pelanggan<input name="address" maxLength={240} autoComplete="off"/></label>
-   <label><input type="checkbox" name="confirmed" value="yes" required/> {testOnly?"Nomor ini milik saya atau penguji yang menyetujui pesan simulasi.":"Pelanggan mengonfirmasi nomor dan alamat ini untuk nota yang sedang dibuka."}</label>
+   <label>Nomor WhatsApp<input name="phone" type="tel" inputMode="tel" maxLength={24} autoComplete="off" value={phone} onChange={e=>{sequence.current++;setPhone(e.target.value);setContactSaved(false);setContactConfirmed(false);setDraft(null);setChecked(false);setBusy(false);}} placeholder="08… / +62…"/></label>
+   <label>Alamat pelanggan<input name="address" maxLength={240} autoComplete="off" value={address} onChange={e=>{sequence.current++;setAddress(e.target.value);setContactSaved(false);setContactConfirmed(false);setDraft(null);setChecked(false);setBusy(false);}}/></label>
+   <p className={styles.muted}>Kontak yang sudah dicatat mengisi formulir ini. Tetap periksa nomor bersama penerima; isian awal bukan bukti verifikasi atau izin promosi.</p>
+   <label><input type="checkbox" name="confirmed" value="yes" checked={contactConfirmed} onChange={e=>setContactConfirmed(e.target.checked)} required/> {testOnly?"Nomor ini milik saya atau penguji yang menyetujui pesan simulasi.":"Pelanggan mengonfirmasi nomor dan alamat ini untuk nota yang sedang dibuka."}</label>
    <PendingSubmit disabled={!contactRequest} className={styles.mainButton} label="Simpan kontak terverifikasi"/>
   </RecoverableForm>{contactSaved&&<p role="status">Nomor WhatsApp tersimpan. Baca ulang draf untuk memakai kontak terbaru.</p>}</Disclosure>
   <div className={styles.receiptActions}>
