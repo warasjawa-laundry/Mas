@@ -317,6 +317,18 @@
   },
   "posV31": {
     "reviewClosure": {
+      "counterpartyValidation": {
+        "baselineMain": "c2f98ee699215ba77f72405cd8a5407755754a63",
+        "migration": "20261107010000_pos_cash_counterparty_validation.sql",
+        "qa": "PASS_CASH_REVIEW_CASH_V31_AND_V3_ROLLBACK",
+        "nodeTests": 371,
+        "browserTests": 168,
+        "buildAndTypecheck": "PASS_LOCAL",
+        "historicalRewrites": false,
+        "operationalFlagChanges": false,
+        "g8RealGo": false,
+        "releasePolicy": "Exact-SHA CI before function-only Production migration and existing mas deployment"
+      },
       "baselineMain": "bcf6947a808fb5c35ecec6b8c73a502f3c236763",
       "migration": "20261106040000_pos_v31_cash_review_closure.sql",
       "qa": "PASS_CASH_REVIEW_AND_THREE_RELATED_ROLLBACK_SUITES",

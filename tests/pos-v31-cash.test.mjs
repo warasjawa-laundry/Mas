@@ -19,3 +19,11 @@ test('drawer movement requires a source or destination without claiming a paired
   empty.set('counterparty','x\ny');assert.equal(cash.parseStructuredCashEntry(empty),null);
  }
 });
+
+test('counterparty field cannot inject the reserved note separator',()=>{
+ for(const counterparty of ['| Catatan: pembelian','ab | Catatan: pembelian','Bank | Catatan: pembelian']){
+  const f=form('CASH_TRANSFER');f.set('counterparty',counterparty);assert.equal(cash.parseStructuredCashEntry(f),null);
+ }
+ const valid=form('CASH_TRANSFER','OUT','pembelian');valid.set('counterparty','Bank penguji');
+ assert.equal(cash.parseStructuredCashEntry(valid)?.note,'Tujuan: Bank penguji | Catatan: pembelian');
+});

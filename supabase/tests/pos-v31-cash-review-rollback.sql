@@ -16,12 +16,18 @@ begin
 
  -- Transfer is one drawer movement. Its destination/source is mandatory metadata, not another account balance.
  foreach direction_v in array array['IN','OUT'] loop
-  foreach note_v in array array['','Bank','Sumber: ab','Tujuan: ab',case direction_v when 'IN' then 'Tujuan: Bank' else 'Sumber: Bank' end,E'Sumber: Bank\n',repeat('x',301)] loop
+  foreach note_v in array array['','Bank','Sumber: ab','Tujuan: ab',case direction_v when 'IN' then 'Tujuan: Bank' else 'Sumber: Bank' end,E'Sumber: Bank\n',repeat('x',301),
+   case direction_v when 'IN' then 'Sumber: ' else 'Tujuan: ' end||'| Catatan: pembelian',
+   case direction_v when 'IN' then 'Sumber: ' else 'Tujuan: ' end||'   | Catatan: pembelian',
+   case direction_v when 'IN' then 'Sumber: ' else 'Tujuan: ' end||'ab | Catatan: pembelian',
+   case direction_v when 'IN' then 'Sumber: ' else 'Tujuan: ' end||'ab|Catatan: pembelian'] loop
    begin
     perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),direction_v,'100','CASH_TRANSFER',note_v);
     raise exception 'invalid transfer accepted: % / %',direction_v,note_v;
    exception when invalid_parameter_value then null;end;
   end loop;
+  perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),direction_v,'1','CASH_TRANSFER',
+   case direction_v when 'IN' then 'Sumber: ' else 'Tujuan: ' end||'Bank uji | Catatan: pembelian');
  end loop;
  result_v:=public.laundry_pos_v31_cash_entry(request_v,'OUT','100','CASH_TRANSFER','Tujuan: Bank uji');
  if (select note from public.laundry_pos_cash_ledger where command_id=request_v)<>'Perpindahan uang laci (satu sisi)' then raise exception 'new transfer raw journal label ambiguous';end if;

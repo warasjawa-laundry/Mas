@@ -33,7 +33,7 @@ export function parseStructuredCashEntry(form:FormData){
  if(!requestId||!UUID.test(requestId)||!direction||!['IN','OUT'].includes(direction)||!amountIdr||!POSITIVE.test(amountIdr)||BigInt(amountIdr)>BigInt(1000000000)||!category||(category.classification==='EXPENSE'&&direction!=='OUT')||note===null)return null;
  if(categoryCode==='CASH_TRANSFER'){
   const counterparty=value(form,'counterparty',100);
-  if(!counterparty||counterparty.length<3)return null;
+  if(!counterparty||counterparty.length<3||counterparty.includes('|'))return null;
   note=(direction==='IN'?'Sumber: ':'Tujuan: ')+counterparty+(note?' | Catatan: '+note:'');
   if(note.length>300)return null;
  }

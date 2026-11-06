@@ -1,5 +1,7 @@
 # POS Mas Jawa Laundry Implementation Plan V2 — revisi eksekusi 1 Nov 2026
 
+7November: [validasi sumber/tujuan V3.1](./implementation-plan-v3.1.md) memisahkan nama sumber/tujuan dari catatan sebelum memeriksa minimal3 karakter. Migrasi07010000 hanya memperketat pencatatan baru; retry dan jurnal historis dipertahankan, tanpa aktivasi uang nyata.
+
 6November: [V3.1 dan penutupan review](./implementation-plan-v3.1.md) menjadi acuan nota thermal/WhatsApp/audit, kategori kas Owner, privasi rincian layanan, dan tautan jurnal historis. Perpindahan dana dibatasi sebagai catatan laci satu sisi dengan sumber/tujuan, tanpa klaim saldo bank berpasangan. Bukti hash rilis V3.1 kini disertakan di repository; UAT fisik dan G8 NO_GO tidak berubah.
 
 5November: [eksekusi terpadu V3](./implementation-plan-v3.md) mencakup kuantitas desimal, kas otomatis, rincian nota, Excel4sheet dan thermal58/80. Empat tahap pada V3 adalah acuan permintaan terbaru. API lama tetap kompatibel, tanpa aktivasi finansial riil; UAT fisik dan G8 NO_GO tetap terpisah.

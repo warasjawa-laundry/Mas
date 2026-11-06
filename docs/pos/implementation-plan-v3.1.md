@@ -113,3 +113,11 @@ Antislop closure PASS pada lingkup otomatis: direction/dials dan warna tetap; R-
 - [Query baca pembanding](evidence/v31-fingerprint-query.sql).
 
 Salinan ini berasal dari capture rilis asli pada6November03:32:50UTC, bukan rekonstruksi data sebelum migrasi. Tidak memuat baris pelanggan, nomor telepon, token, atau rahasia. Timestamp tersebut waktu pencatatan receipt; timestamp terpisah untuk tiap query capture tidak dicatat. Fingerprint MD5 membuktikan hasil perbandingan yang direkam, bukan backup, tanda tangan kriptografis atau attestasi auditor independen. Perubahan sah setelah waktu capture dapat membuat hash live berbeda. Live read saat tindak lanjut masih cocok dengan fingerprint sesudah pada manifest. CI/deployment awal dapat diperiksa dari ID/URL pada manifest.
+
+## Validasi sumber/tujuan, 7 November 2026
+
+Review `c2f98ee` menemukan bahwa `Tujuan: | Catatan: pembelian` dan bentuk Sumber yang sama diterima karena panjang catatan ikut dihitung. Baseline telah direproduksi melalui regresi Node dan SQL rollback QA. Migrasi function-only `20261107010000_pos_cash_counterparty_validation.sql` kini menghitung bagian setelah prefix sampai sebelum pemisah pertama `|`, lalu mewajibkan minimal3 karakter sesudah trim. Parser formulir melarang `|` dalam field sumber/tujuan karena karakter tersebut adalah pemisah catatan.
+
+Contoh kosong, whitespace, atau dua karakter sebelum catatan ditolak; `Tujuan: Bank uji | Catatan: pembelian` serta bentuk Sumber valid tetap diterima. Retry identik transaksi historis tetap memakai metadata/alasan/digest asli, tanpa penulisan ulang jurnal. Perbandingan body fungsi terhadap migrasi sebelumnya memastikan hanya predicate validasi yang berubah; otorisasi Owner, lock, core, dan grant tidak berubah.
+
+Lokal: **371 Node**, **168 browser**, build+TypeScript PASS. Tiga suite SQL QA PASS: cash-review, cash V3.1, V3. Kasus baru diuji RED sebelum fix dan GREEN sesudah fix untuk IN/OUT; suite tetap menguji konflik, retry, izin kasir, histori dan lookup lama. CI exact SHA wajib sebelum pemasangan Production/deploy; receipt final mencatat hasil sesungguhnya. Antislop tetap berlaku selama pengerjaan: tidak ada perubahan layout/aset/copy UI, validasi/form error existing dipertahankan. R-26/R-35 PASS untuk lingkup otomatis; UAT fisik, restore, rekonsiliasi dan G8 NO_GO tidak berubah.
