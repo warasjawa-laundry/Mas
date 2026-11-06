@@ -39,7 +39,7 @@ test('internal audit separates creator from receiver and limits links to cash gr
  for(const role of ['owner','cashier'])for(const grant of [true,false]){
   const html=renderToStaticMarkup(createElement(Component,{snapshot:audit(),role,canViewCash:grant,version:2}));
   for(const text of ['Owner MasJawa','Kasir Kedua','QRIS','Referensi internal','Rp10.000','Belum diverifikasi'])assert.ok(html.includes(text),text);
-  assert.equal(html.includes('/kas#mutasi-'),grant);
+  assert.equal(html.includes('/kas?entry='),grant);
   assert.ok(!html.includes('<button'));
  }
 });

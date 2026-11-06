@@ -12,7 +12,7 @@ export const CASH_CATEGORIES=[
  {code:'PAYROLL',label:'Gaji/operasional',classification:'EXPENSE'},
  {code:'OTHER',label:'Pengeluaran lainnya',classification:'EXPENSE'},
  {code:'CAPITAL',label:'Modal',classification:'EQUITY'},
- {code:'CASH_TRANSFER',label:'Transfer antar kas',classification:'TRANSFER'},
+ {code:'CASH_TRANSFER',label:'Perpindahan uang laci',classification:'TRANSFER'},
 ] as const;
 function value(form:FormData,key:string,max:number):string|null{
  const v=form.get(key);if(typeof v!=="string"||v.length>max||/[\x00-\x1f\x7f]/.test(v))return null;
@@ -28,9 +28,15 @@ export function parseCashEntry(form:FormData){
 }
 export function parseStructuredCashEntry(form:FormData){
  const requestId=value(form,'requestId',36),direction=value(form,'direction',3),amountIdr=value(form,'amountIdr',10),categoryCode=value(form,'categoryCode',30);
- const note=form.has('note')?value(form,'note',300):'';
+ let note=form.has('note')?value(form,'note',300):'';
  const category=CASH_CATEGORIES.find(c=>c.code===categoryCode);
  if(!requestId||!UUID.test(requestId)||!direction||!['IN','OUT'].includes(direction)||!amountIdr||!POSITIVE.test(amountIdr)||BigInt(amountIdr)>BigInt(1000000000)||!category||(category.classification==='EXPENSE'&&direction!=='OUT')||note===null)return null;
+ if(categoryCode==='CASH_TRANSFER'){
+  const counterparty=value(form,'counterparty',100);
+  if(!counterparty||counterparty.length<3)return null;
+  note=(direction==='IN'?'Sumber: ':'Tujuan: ')+counterparty+(note?' | Catatan: '+note:'');
+  if(note.length>300)return null;
+ }
  return {requestId,direction,amountIdr,categoryCode:category.code,note};
 }
 export function parseCloseShift(form:FormData){

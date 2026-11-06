@@ -1,5 +1,7 @@
 # Monitoring POS dan pilot
 
+Review kas V3.1: pantau penolakan kategori Owner dari sesi kasir dan kegagalan lookup jurnal tanpa mencatat nomor telepon/catatan rekening. Lookup UUID harus tetap membatasi outlet serta menyembunyikan kuantitas bila order_view tidak ada. Perpindahan laci baru memakai label satu sisi di jurnal/CSV; jangan menganggapnya saldo rekening berpasangan. Retry transaksi historis tidak boleh menambah baris atau mengganti alasan lama. Bukti fingerprint rilis awal tersedia pada `docs/pos/evidence/v31-release-20261106.json`.
+
 V3.1: pantau kegagalan baca snapshot/izin, perubahan versi sebelum print, request conflict pada kontak/kategori, export422 dan keseimbangan kas. Timestamp snapshot/perhitungan bukan perubahan nominal. Jangan log nomor telepon, alamat, token QR atau isi lengkap WhatsApp. Cetak/draf/unduh tidak boleh menaikkan jumlah payment, ledger atau point links. Hasil printer/login nyata tetap harus dicatat operator; indikator READY deployment bukan G8 GO. [Kontrak dan bukti](implementation-plan-v3.1.md).
 
 Source kondisi operasional: [audit teknis G8](./g8-audit-20261102.md). Production saat ini pilot dummy, bukan penerimaan uang nyata; jangan menafsirkan flags ON atau status PAID nota uji sebagai G8 GO.

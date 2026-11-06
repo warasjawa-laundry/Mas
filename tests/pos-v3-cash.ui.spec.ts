@@ -17,6 +17,9 @@ const mocks:Record<string,unknown>={
  '@/lib/pos/g6-cash':{CASH_CATEGORIES},
  '@/app/kasir/pesanan/orders.module.css':{default:new Proxy({},{get:(_,key)=>String(key)})}
 };
+const fields={exports:{} as any};
+runInNewContext(ts.transpileModule(readFileSync('components/pos/cash-entry-fields.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports:fields.exports,module:fields,require:(n:string)=>mocks[n]??req(n)});
+mocks['./cash-entry-fields']=fields.exports;
 runInNewContext(ts.transpileModule(readFileSync('components/pos/cash-panel.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports:out.exports,module:out,require:(n:string)=>mocks[n]??req(n),Date});
 const overview={open:false,opening_idr:'0',cash_in_idr:'25000',cash_out_idr:'0',expected_cash_idr:'25000',entries:[{id:'ledger-1',direction:'IN',category:'PAYMENT',method:'QRIS',amount_idr:'25000',invoice_no:'NOTA-1001',occurred_at:'2026-11-04T19:00:00Z',order_id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',actor:'MAS-2001',customer:'Penguji V3',can_view_order:true,item_count:3,quantity_summary:'1,25 kg · 2,375 m · 3 pcs'}],reconciliations:[{at:'2026-11-04T19:00:00Z',owner:'Owner MasJawa',expected:'25000',counted:'24000',difference:'-1000',reason:'QA periksa selisih'}]};
 for(const width of [320,390,768,1440])test(`V3 cash references and owner reconciliation are readable at ${width}px`,async({page})=>{

@@ -1,0 +1,473 @@
+{
+  "recorded_at": "2026-11-06T03:32:50Z",
+  "repository": "warasjawa-laundry/Mas",
+  "branch": "main",
+  "baseline": "47f517c01f9742a80198bbc5d5647e80689532be",
+  "commit": "bcf6947a808fb5c35ecec6b8c73a502f3c236763",
+  "tree": "eb74d71c78c4d2d41868906af09c7d68d04b9824",
+  "files": [
+    ".github/workflows/stage10-postgres-concurrency.yml",
+    "app/admin/laporan/page.tsx",
+    "app/admin/pesanan/[id]/page.tsx",
+    "app/admin/pesanan/actions.ts",
+    "app/admin/pesanan/operations-actions.ts",
+    "app/kasir/kas/actions.ts",
+    "app/kasir/laporan/page.tsx",
+    "app/kasir/pesanan/[id]/page.tsx",
+    "app/kasir/pesanan/[id]/print-button.tsx",
+    "app/kasir/pesanan/[id]/whatsapp-draft.tsx",
+    "app/kasir/pesanan/actions.ts",
+    "app/kasir/pesanan/baru/order-form.tsx",
+    "app/kasir/pesanan/receipt-actions.ts",
+    "components/pos/cash-panel.tsx",
+    "components/pos/report-download.tsx",
+    "components/pos/system-order-detail.tsx",
+    "components/pos/thermal-receipt.css",
+    "components/pos/thermal-receipt.tsx",
+    "docs/pos/g8-readiness.json",
+    "docs/pos/implementation-plan-v3.1.md",
+    "docs/pos/implementation-plan-v3.md",
+    "docs/pos/monitoring.md",
+    "docs/pos/rollback.md",
+    "docs/pos/uat.md",
+    "lib/pos/g4-order.ts",
+    "lib/pos/g6-cash.ts",
+    "lib/pos/receipt.ts",
+    "lib/pos/report-xlsx.ts",
+    "supabase/migrations/20261106010000_pos_v31_receipt_snapshot.sql",
+    "supabase/migrations/20261106020000_pos_v31_cash_categories.sql",
+    "supabase/migrations/20261106030000_pos_v31_order_contacts.sql",
+    "supabase/tests/pos-v3-rollback.sql",
+    "supabase/tests/pos-v31-cash-rollback.sql",
+    "supabase/tests/pos-v31-contact-rollback.sql",
+    "supabase/tests/pos-v31-parallel-race.sh",
+    "supabase/tests/pos-v31-receipt-rollback.sql",
+    "tests/pos-g4-order.test.mjs",
+    "tests/pos-order-recovery.test.mjs",
+    "tests/pos-v3-cash.ui.spec.ts",
+    "tests/pos-v3-receipt-actions.test.mjs",
+    "tests/pos-v3-receipt.config.ts",
+    "tests/pos-v3-receipt.test.mjs",
+    "tests/pos-v3-receipt.ui.spec.ts",
+    "tests/pos-v3-xlsx.test.mjs",
+    "tests/pos-v31-cash.test.mjs",
+    "tests/pos-v31-receipt-migration.test.mjs",
+    "tests/pos-v31-receipt.test.mjs",
+    "tests/pos-v31-system.test.mjs",
+    "tests/pos-v31-system.ui.spec.ts",
+    "tests/pos-wizard.ui.spec.ts",
+    "tests/report-navigation.test.mjs"
+  ],
+  "pr30_used": false,
+  "working_tree_clean": true,
+  "ci": [
+    {
+      "id": 42156432564,
+      "attempt": 1,
+      "status": "success",
+      "node_pass": 360,
+      "browser_pass": 164,
+      "build": "PASS",
+      "typecheck": "PASS"
+    },
+    {
+      "id": 42156432797,
+      "attempt": 1,
+      "status": "success",
+      "migration_replay": 49,
+      "rollback_regressions": "PASS",
+      "v31_two_connection_races": "PASS one order/contact and one categorized cash entry",
+      "synthetic_restore": "PASS; not a Production restore"
+    }
+  ],
+  "qa": {
+    "project": "cwxsbgfjynwxqalwonae",
+    "rollback_suites_pass": 8,
+    "final_counts": [
+      {
+        "orders": 0,
+        "payments": 0,
+        "ledger": 0,
+        "contact_drafts": 0,
+        "cash_metadata": 0,
+        "history_rows": 53
+      }
+    ],
+    "cross_renderer_actual_rpc": "PASS 5 synthetic snapshots through shared validator, WhatsApp and thermal58/80",
+    "positive_financial_writes": "Synthetic transaction fixtures rolled back",
+    "production_customer_data_copied": false
+  },
+  "production": {
+    "project": "hncfyfvqtlnvqyfrydzb",
+    "migrations": [
+      "20261106010000",
+      "20261106020000",
+      "20261106030000"
+    ],
+    "evidence": {
+      "latest": "20261106030000",
+      "outlets": [
+        {
+          "code": "MJL",
+          "write_enabled": true,
+          "finance_enabled": true,
+          "pilot_test_only": true
+        }
+      ],
+      "categories": 10,
+      "new_tables": [
+        {
+          "rls": true,
+          "name": "pos_order_contact_drafts",
+          "anon_select": false,
+          "authenticated_select": false
+        },
+        {
+          "rls": true,
+          "name": "pos_v31_cash_categories",
+          "anon_select": false,
+          "authenticated_select": false
+        },
+        {
+          "rls": true,
+          "name": "pos_v31_cash_metadata",
+          "anon_select": false,
+          "authenticated_select": false
+        }
+      ],
+      "cash_metadata": 0,
+      "contact_drafts": 0,
+      "migration_count": 49
+    },
+    "integrity_before": [
+      {
+        "dataset": "laundry_members",
+        "rows": 785,
+        "digest": "169e9293bbc8d2c0456a64094fe18963"
+      },
+      {
+        "dataset": "laundry_member_cards",
+        "rows": 18,
+        "digest": "d88a1e092fdca60c4f3c35b0979a9e47"
+      },
+      {
+        "dataset": "laundry_checklist_events",
+        "rows": 21,
+        "digest": "6ad3da4dbdabdc4a58ac91217177d688"
+      },
+      {
+        "dataset": "laundry_amount_transactions",
+        "rows": 19,
+        "digest": "6869aae4b4f7485c173d55e576c2705f"
+      },
+      {
+        "dataset": "laundry_point_rules",
+        "rows": 2,
+        "digest": "6dd33369b38d4d2ac24b8164cb0f3904"
+      },
+      {
+        "dataset": "laundry_services",
+        "rows": 51,
+        "digest": "edc49860012f9a64486515684366869b"
+      },
+      {
+        "dataset": "laundry_pos_duration_packages",
+        "rows": 3,
+        "digest": "3b235ff1dd2b61cbbb267be77ef46ca1"
+      },
+      {
+        "dataset": "laundry_pos_service_families",
+        "rows": 14,
+        "digest": "156b38868cb3f062dcb84a1f77573b17"
+      },
+      {
+        "dataset": "laundry_pos_outlets",
+        "rows": 1,
+        "digest": "7990cd7f8e243e038df84d7ac1da4423"
+      },
+      {
+        "dataset": "laundry_pos_orders",
+        "rows": 3,
+        "digest": "4cd09f9a4f03ff961e68981e0aaf2416"
+      },
+      {
+        "dataset": "laundry_pos_payments",
+        "rows": 3,
+        "digest": "ac8f5a7d01e52646aae898bb207e48c4"
+      },
+      {
+        "dataset": "laundry_pos_cash_ledger",
+        "rows": 3,
+        "digest": "55fe1061776decd5678db1586c869303"
+      },
+      {
+        "dataset": "laundry_pos_point_links",
+        "rows": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "dataset": "laundry_pos_cash_shifts",
+        "rows": 1,
+        "digest": "a0349762140f3c5c7aca970be999c2d8"
+      }
+    ],
+    "integrity_after": [
+      {
+        "dataset": "laundry_members",
+        "rows": 785,
+        "digest": "169e9293bbc8d2c0456a64094fe18963"
+      },
+      {
+        "dataset": "laundry_member_cards",
+        "rows": 18,
+        "digest": "d88a1e092fdca60c4f3c35b0979a9e47"
+      },
+      {
+        "dataset": "laundry_checklist_events",
+        "rows": 21,
+        "digest": "6ad3da4dbdabdc4a58ac91217177d688"
+      },
+      {
+        "dataset": "laundry_amount_transactions",
+        "rows": 19,
+        "digest": "6869aae4b4f7485c173d55e576c2705f"
+      },
+      {
+        "dataset": "laundry_point_rules",
+        "rows": 2,
+        "digest": "6dd33369b38d4d2ac24b8164cb0f3904"
+      },
+      {
+        "dataset": "laundry_services",
+        "rows": 51,
+        "digest": "edc49860012f9a64486515684366869b"
+      },
+      {
+        "dataset": "laundry_pos_duration_packages",
+        "rows": 3,
+        "digest": "3b235ff1dd2b61cbbb267be77ef46ca1"
+      },
+      {
+        "dataset": "laundry_pos_service_families",
+        "rows": 14,
+        "digest": "156b38868cb3f062dcb84a1f77573b17"
+      },
+      {
+        "dataset": "laundry_pos_outlets",
+        "rows": 1,
+        "digest": "7990cd7f8e243e038df84d7ac1da4423"
+      },
+      {
+        "dataset": "laundry_pos_orders",
+        "rows": 3,
+        "digest": "4cd09f9a4f03ff961e68981e0aaf2416"
+      },
+      {
+        "dataset": "laundry_pos_payments",
+        "rows": 3,
+        "digest": "ac8f5a7d01e52646aae898bb207e48c4"
+      },
+      {
+        "dataset": "laundry_pos_cash_ledger",
+        "rows": 3,
+        "digest": "55fe1061776decd5678db1586c869303"
+      },
+      {
+        "dataset": "laundry_pos_point_links",
+        "rows": 0,
+        "digest": "d41d8cd98f00b204e9800998ecf8427e"
+      },
+      {
+        "dataset": "laundry_pos_cash_shifts",
+        "rows": 1,
+        "digest": "a0349762140f3c5c7aca970be999c2d8"
+      }
+    ],
+    "integrity_unchanged": true,
+    "functions_compared": 17,
+    "definitions_and_execute_acl_match_qa": true,
+    "anonymous_rpc_gates": "PASS 7 denied in read-only transaction",
+    "customer_or_financial_data_writes": false,
+    "operational_flag_changes": false,
+    "security_advisories": [
+      {
+        "name": "rls_enabled_no_policy",
+        "level": "INFO",
+        "count": 38,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+      },
+      {
+        "name": "anon_security_definer_function_executable",
+        "level": "WARN",
+        "count": 16,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable"
+      },
+      {
+        "name": "authenticated_security_definer_function_executable",
+        "level": "WARN",
+        "count": 24,
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+      },
+      {
+        "name": "auth_leaked_password_protection",
+        "level": "WARN",
+        "count": 1,
+        "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+      }
+    ],
+    "advisory_disposition": "RLS no-policy tables are default deny, private direct SELECT/EXECUTE denied. Exposed SECURITY DEFINER RPCs enforce Owner or device/login/grant inside. Leaked-password protection remains a known configuration warning; no blanket clean advisor claim."
+  },
+  "deployment": {
+    "project": "mas",
+    "id": "dpl_AzWuqFpufXCgtdwFnuwBUDhpVxka",
+    "state": "READY",
+    "domain": "https://masjawalaundry.web.id",
+    "domain_commit_verified": true,
+    "commit": "bcf6947a808fb5c35ecec6b8c73a502f3c236763",
+    "rollback": "dpl_5LvNBH5ZHBzxZ3sjBGpjfj9kPqCf"
+  },
+  "smoke": {
+    "homepage": {
+      "api": "PASS",
+      "sourceFieldEquality": "PASS",
+      "etag304": "PASS",
+      "result": [
+        {
+          "width": 390,
+          "name": "Reguler",
+          "rows": 14,
+          "hours": "72 jam"
+        },
+        {
+          "width": 390,
+          "name": "Ekspres",
+          "rows": 10,
+          "hours": "24 jam"
+        },
+        {
+          "width": 390,
+          "name": "Kilat",
+          "rows": 7,
+          "hours": "6 jam"
+        },
+        {
+          "width": 1440,
+          "name": "Reguler",
+          "rows": 14,
+          "hours": "72 jam"
+        },
+        {
+          "width": 1440,
+          "name": "Ekspres",
+          "rows": 10,
+          "hours": "24 jam"
+        },
+        {
+          "width": 1440,
+          "name": "Kilat",
+          "rows": 7,
+          "hours": "6 jam"
+        }
+      ],
+      "noMinutes": "PASS",
+      "pageErrors": [],
+      "memberNavigation": "PASS",
+      "databaseMutations": 0
+    },
+    "member": {
+      "domain": "https://masjawalaundry.web.id",
+      "homepageCTA": "PASS",
+      "scanner": "PASS",
+      "noPublicLoginLinks": "PASS",
+      "mobileOverflow": 0,
+      "invalidTokenStatus": 404,
+      "privacyHeaders": "PASS",
+      "unifiedLoginForms": "PASS",
+      "realAuthentication": "PHYSICAL_UAT_REQUIRED",
+      "databaseMutations": 0
+    },
+    "access": {
+      "status": "PASS",
+      "results": [
+        {
+          "path": "/admin/laporan/export?format=xlsx&start=2026-11-01&end=2026-11-05",
+          "request": "fetch",
+          "status": 403
+        },
+        {
+          "path": "/admin/laporan/export?format=xlsx&start=2026-11-01&end=2026-11-05",
+          "status": 303,
+          "workbookExposed": false
+        },
+        {
+          "path": "/admin/kas",
+          "status": 303,
+          "location": "/admin/login?notice=reauth"
+        },
+        {
+          "path": "/kasir/laporan/export?format=xlsx&start=2026-11-01&end=2026-11-05",
+          "status": 403,
+          "workbookExposed": false
+        },
+        {
+          "path": "/kasir/kas",
+          "status": 307,
+          "location": "/kasir"
+        }
+      ],
+      "authenticatedJourney": "PHYSICAL_UAT_REQUIRED",
+      "databaseMutations": 0
+    },
+    "cross_renderer": {
+      "status": "PASS",
+      "source": "Actual QA RPC results, synthetic rollback fixture",
+      "snapshots": 5,
+      "states": [
+        "PARTIAL/QUEUED",
+        "PAID/QUEUED",
+        "PAID/COLLECTED",
+        "REFUNDED/COLLECTED",
+        "CANCELLED/CANCELLED"
+      ],
+      "sharedValidation": "PASS",
+      "whatsApp": "PASS",
+      "thermal58and80": "PASS",
+      "productionWrites": 0,
+      "physicalPrinter": "PHYSICAL_UAT_REQUIRED"
+    }
+  },
+  "review_findings_resolved": [
+    "P1 volatile point calculation timestamp prevented final print; fingerprint ignores only read timestamps, preserves monetary/rule changes.",
+    "P2 refund after collection rejected historical read; NEW/audit permits refund, handover draft still PAID only.",
+    "Legacy receipt remaining contract preserved via versioned RPCs."
+  ],
+  "acceptance": {
+    "A": "IMPLEMENTED_QA_PASS",
+    "B": "AUTOMATED_PASS_PHYSICAL_UAT_REQUIRED",
+    "C": "IMPLEMENTED_QA_PASS",
+    "D": "IMPLEMENTED_QA_PASS",
+    "E": "IMPLEMENTED_QA_PASS",
+    "F": "CI_QA_DEPLOY_SMOKE_PASS_PHYSICAL_PENDING",
+    "g8_real_financial": "NO_GO",
+    "pilot_test_only": true
+  },
+  "remaining": [
+    {
+      "owner": "Owner/kasir",
+      "status": "PHYSICAL_UAT_REQUIRED",
+      "action": "Actual login and printer58/80, model/driver/browser, clipping/font/cut, paper/network failure and repeat print. Attach dated operator results."
+    },
+    {
+      "owner": "Owner/database operator",
+      "status": "EXTERNAL_EVIDENCE_REQUIRED",
+      "action": "Production restore/reconciliation and cutover/rollback sign-off; review leaked-password Auth protection configuration."
+    }
+  ],
+  "documentation": "docs/pos/implementation-plan-v3.1.md",
+  "visual_evidence": [
+    "artifacts/pos-v3-thermal-58.pdf",
+    "artifacts/pos-v3-thermal-80.pdf",
+    "artifacts/screenshots/pos-v31-system-320.png"
+  ],
+  "antislop": "PASS automatic scope; per-item R01-R38/C01-C05 report in implementation plan, physical limits explicit"
+}

@@ -15,7 +15,7 @@ for(const width of [320,390,768,1440])test(`internal audit wraps references and 
  await page.setContent(`<style>${readFileSync('app/kasir/pesanan/orders.module.css','utf8')}body{margin:0;padding:16px}*{box-sizing:border-box}small{display:block}section{max-width:100%}</style>${html}`);
  await expect(page.getByText('Owner MasJawa',{exact:true})).toBeVisible();
  await expect(page.getByText(/Kasir Kedua Dengan Nama/)).toBeVisible();
- await expect(page.getByRole('link',{name:'Lihat mutasi terkait'})).toHaveAttribute('href','/kasir/kas#mutasi-cccccccc-cccc-4ccc-8ccc-cccccccccccc');
+ await expect(page.getByRole('link',{name:'Lihat mutasi terkait'})).toHaveAttribute('href','/kasir/kas?entry=cccccccc-cccc-4ccc-8ccc-cccccccccccc#mutasi-cccccccc-cccc-4ccc-8ccc-cccccccccccc');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
  mkdirSync('artifacts/screenshots',{recursive:true});await page.screenshot({path:`artifacts/screenshots/pos-v31-system-${width}.png`,fullPage:true});
 });

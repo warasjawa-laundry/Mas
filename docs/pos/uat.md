@@ -2,6 +2,8 @@
 
 ## V3.1, 6 November 2026
 
+Tambahan review kas: akun cash_entry-only tidak melihat Modal/perpindahan dana atau kuantitas nota; forged request kedua kategori harus ditolak. Owner mencatat perpindahan laci dengan sumber/tujuan wajib; ini bukan rekonsiliasi bank. Dari nota lama buka Lihat mutasi terkait setelah ada lebih80 mutasi lain, pastikan entri tepat ditampilkan. Ulangi transaksi dummy buat nota→DP→mutasi→pelunasan→cetak ulang→Excel dengan login/perangkat nyata. Otomatis belum menjadi physical UAT PASS.
+
 Status **PHYSICAL_UAT_REQUIRED**: Owner/kasir menguji login nyata, printer58/80, model/koneksi/driver/kertas/browser/Android, nominal besar,0.75/1.25/2.375kg, meter/pcs, nama/catatan panjang, DP/lunas/refund/batal dan penanda nota uji. Catat ukuran huruf, clipping, potong kertas, cetak ulang, habis kertas/putus koneksi. Perubahan pembayaran setelah preview harus meminta pemeriksaan ulang sebelum print. Verifikasi penerima yang sudah diprefill; ubah nomor harus membatalkan konfirmasi lama. Uji filter tanggal, CSV/Excel tanpa logout, kategori kas serta tautan audit. Gunakan data sintetis selama pilot; jangan menerima uang nyata atau mengirim pesan uji ke pelanggan. [Bukti otomatis dan batasannya](implementation-plan-v3.1.md).
 
 ## V3, 5 November 2026

@@ -21,7 +21,7 @@ export default function SystemOrderDetail({snapshot,role,canViewCash,version}:{s
    <div><strong>{p.type} · {paymentMethodLabel(p.method)}</strong><small>Penerima/petugas: {p.receiver} · {new Date(p.received_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</small>
     {p.internal_reference&&<small style={{overflowWrap:'anywhere'}}>Referensi internal: {p.internal_reference}</small>}
     {p.original_receipt_id&&<small style={{overflowWrap:'anywhere'}}>Pembayaran asal: {p.original_receipt_id}</small>}
-    {canViewCash&&p.cash_ledger_id&&<Link className={styles.mainLink} href={`${role==='owner'?'/admin':'/kasir'}/kas#mutasi-${p.cash_ledger_id}`}>Lihat mutasi terkait</Link>}
+    {canViewCash&&p.cash_ledger_id&&<Link className={styles.mainLink} href={`${role==='owner'?'/admin':'/kasir'}/kas?entry=${encodeURIComponent(p.cash_ledger_id)}#mutasi-${p.cash_ledger_id}`}>Lihat mutasi terkait</Link>}
    </div><strong>{p.type==='Refund'?'−':'+'}{formatIdr(p.amount_idr)}</strong>
   </div>)}
   {data.member&&<p>Poin member {data.member.year}: {data.member.balance} poin aktif · {data.member.awarded} poin dari nota ini.</p>}

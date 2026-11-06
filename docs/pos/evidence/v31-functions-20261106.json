@@ -1,0 +1,223 @@
+[
+  {
+    "schema": "laundry_private",
+    "name": "pos_v31_actor_label",
+    "args": "p_owner uuid, p_staff uuid",
+    "definition_hash": "5de2eb9dccd3569e04a51b07dc669d4a",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "laundry_private",
+    "name": "pos_v31_cash_base",
+    "args": "p_device_token text, p_login_token text",
+    "definition_hash": "7f3a0448a44be94396feecffe33e8be5",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "laundry_private",
+    "name": "pos_v31_cash_metadata_json",
+    "args": "p_command_id uuid",
+    "definition_hash": "a56e1150fe4b8f60e4af2da540e44d1e",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "laundry_private",
+    "name": "pos_v31_contact_draft",
+    "args": "p_order_id uuid",
+    "definition_hash": "279f0738c854cf9abf7df05f97a91a4e",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "laundry_private",
+    "name": "pos_v31_item_summary",
+    "args": "p_order_id uuid",
+    "definition_hash": "bc3cb43991d04cff6ed11f510cdf1e98",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "laundry_private",
+    "name": "pos_v31_receipt_snapshot",
+    "args": "p_order_id uuid, p_kind text, p_device_token text, p_login_token text, p_permission text, p_audit boolean",
+    "definition_hash": "c95fae88d587a3577c3d850935b8f67d",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "laundry_private",
+    "name": "pos_v31_report_base",
+    "args": "p_start timestamp with time zone, p_end timestamp with time zone, p_device_token text, p_login_token text",
+    "definition_hash": "0fede6d83af5537edd376fcb16a460aa",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "laundry_private",
+    "name": "pos_v3_receipt_core",
+    "args": "p_order_id uuid, p_kind text, p_device_token text, p_login_token text, p_permission text",
+    "definition_hash": "3e6b3b2d7822ac8842884c3895953fa9",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": false,
+    "authenticated_execute": false
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_order_audit",
+    "args": "p_order_id uuid, p_device_token text, p_login_token text",
+    "definition_hash": "dcf9bfce8ab6079d5c5e966b040867cd",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_print_receipt",
+    "args": "p_order_id uuid, p_device_token text, p_login_token text",
+    "definition_hash": "f97d226007ce5a55f2fe8a82db607ef3",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_v31_cash_entry",
+    "args": "p_request_id uuid, p_direction text, p_amount_idr text, p_category_code text, p_note text, p_device_token text, p_login_token text",
+    "definition_hash": "d6d9063a82353421bd2f3c40dc2857ab",
+    "security_definer": true,
+    "volatility": "v",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_v31_create_order",
+    "args": "p_request_id uuid, p_guest_name text, p_member_number text, p_items jsonb, p_perfume text, p_notes text, p_delivery_code text, p_delivery_revision bigint, p_phone text, p_address text, p_device_token text, p_login_token text",
+    "definition_hash": "7e3408f50cf8fd55e703263f9495b503",
+    "security_definer": true,
+    "volatility": "v",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_v31_print_receipt",
+    "args": "p_order_id uuid, p_device_token text, p_login_token text",
+    "definition_hash": "ce0cd6bc92b442e11a05b3c6019ab115",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_v31_whatsapp_receipt",
+    "args": "p_order_id uuid, p_kind text, p_device_token text, p_login_token text",
+    "definition_hash": "059fbdff6afd45e6fb9ed67ec5458466",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_v3_cash",
+    "args": "p_device_token text, p_login_token text",
+    "definition_hash": "e4e3b36c12c3d4d0f28c8da784132004",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_v3_report",
+    "args": "p_start timestamp with time zone, p_end timestamp with time zone, p_device_token text, p_login_token text",
+    "definition_hash": "f89638236a0913cffe0adcfcdcdeac4f",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  },
+  {
+    "schema": "public",
+    "name": "laundry_pos_whatsapp_receipt",
+    "args": "p_order_id uuid, p_kind text, p_device_token text, p_login_token text",
+    "definition_hash": "2fff654c503bdaf8764ed28ae59297d5",
+    "security_definer": true,
+    "volatility": "s",
+    "config": [
+      "search_path=\"\""
+    ],
+    "anon_execute": true,
+    "authenticated_execute": true
+  }
+]

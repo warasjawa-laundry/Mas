@@ -1,5 +1,7 @@
 # Rollback dan penghentian POS
 
+Closure review V3.1: pertahankan pembatasan kategori Owner, privasi item serta lookup jurnal saat rollback aplikasi. Jangan memulihkan fungsi lama yang membuka kembali temuan akses. Migrasi06040000 tidak menulis ulang histori. Transaksi perpindahan lama yang identik tetap memakai alasan/digest aslinya. Jika UI lama tidak mengisi sumber/tujuan, API menolak pencatatan baru tersebut; lakukan forward fix UI, bukan melemahkan backend. Saldo rekening tidak direkonsiliasi oleh catatan laci satu sisi.
+
 V3.1: rollback aplikasi ke deployment terverifikasi sebelumnya di proyek mas. Pertahankan snapshot/read RPC V3.1 dan metadata kategori/kontak; jangan menghapus jurnal atau draf sebagai rollback otomatis. Legacy print/WhatsApp RPC mempertahankan saldo akuntansi lama, sedangkan V3.1 menampilkan saldo yang dapat ditagih nol pada refund/batal. Core keuangan tidak ditulis ulang. Rutin V3 cash/report kini membungkus base private yang tetap berizin; jangan membuka EXECUTE base helper ke anon/authenticated. Forward fix harus QA/CI, bukan menonaktifkan pilot. [Rincian](implementation-plan-v3.1.md).
 
 V3: rollback aplikasi ke deployment terverifikasi sebelumnya. Pertahankan rutin/table additive serta metadata payment-method/reconciliation agar audit baru tidak hilang. Jangan menyusutkan constraint opening jika carried balance sudah dipakai, jangan menghapus transaksi sebagai rollback, dan jangan mematikan pilot_test_only untuk mengatasi masalah. [Rincian V3](./implementation-plan-v3.md).

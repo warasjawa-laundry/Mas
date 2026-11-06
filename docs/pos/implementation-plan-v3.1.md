@@ -88,3 +88,28 @@ PASS berikut terbatas pada source/otomatis; printer dan login fisik tetap pendin
 | C-5 | PASS: otomatis dan perangkat fisik dibedakan. |
 
 Supplement UI/copy/human/mobile: PASS untuk lingkup otomatis; label/fokus native, kontras terukur, reflow, copy spesifik tanpa klaim bisnis baru. Printer, TalkBack dan login akun nyata tetap PHYSICAL_UAT_REQUIRED.
+
+## Penutupan review V3.1, 6 November 2026
+
+Baseline review `bcf6947`; bagian ini melanjutkan dokumen yang sama. Tidak ada audit G8 baru atau perubahan keputusan NO_GO.
+
+| Temuan | Perbaikan dan batasnya | Bukti |
+| --- | --- | --- |
+| Perpindahan dana satu sisi | Label menjadi Perpindahan uang laci (satu sisi); sumber untuk IN/tujuan untuk OUT wajib. Tidak membuat saldo rekening atau pasangan jurnal bank. Label jurnal/CSV baru juga eksplisit. | QA rollback: arah/prefix, label jurnal, retry lama, konflik nominal/arah dan histori tetap. |
+| Modal/perpindahan dana oleh kasir | Kedua kategori hanya Owner. Kasir tidak mendapat opsi UI dan forged API ditolak backend sebelum menulis. | SQL cash_entry-only cashier, forged CAPITAL/CASH_TRANSFER serta retry sensitif ditolak. |
+| Ringkasan layanan tanpa izin nota | can_view_order=false menghapus item_count, quantities_milli dan quantity_summary pada backend; UI juga tidak merendernya. reports_view tetap izin laporan terpisah. | QA overview/detail tanpa order_view; owner/order_view positif; reports_view diuji tersendiri. |
+| Tautan jurnal lebih lama dari80 entri | Tautan membawa ?entry=UUID; lookup primary-key memeriksa cash_view dan outlet, lalu menyertakan satu entri yang diminta tanpa memuat seluruh histori. | QA entri di luar80 terbaru, missing/wrong-outlet/anon/inactive ditolak; tes kedua halaman dan bounded81/no duplikasi. |
+
+Migrasi function-only `20261106040000_pos_v31_cash_review_closure.sql`: tidak memperbarui nominal, alasan, atau metadata historis. Retry Owner yang identik mempertahankan alasan/digest transaksi lama; ketentuan sumber/tujuan berlaku untuk pencatatan baru. Ini membatasi fitur laci secara jujur, bukan implementasi transfer dua rekening. Rekonsiliasi bank tetap di luar cakupan dan sebelum uang nyata tetap perlu keputusan/prosedur Owner.
+
+Verifikasi lokal: **370 Node**, **168 browser**, build+TypeScript lulus. Empat suite QA rollback terkait lulus: cash-review baru, cash V3.1, V3 dan receipt V3.1. Review independen kode tidak menemukan P0/P1/P2 tambahan. Tes baseline reproduksi menerima perpindahan tanpa tujuan; setelah perbaikan ditolak. Fixture lintas outlet sempat gagal karena pembuatan kasir dilakukan setelah menambah outlet sintetis; urutan fixture diperbaiki tanpa melonggarkan fungsi Production. Dua tes UI sempat memakai locator label yang keliru; locator role combobox dipakai dan tes kembali lulus. CI exact SHA dan rilis tetap wajib sebelum migrasi Production/deployment.
+
+Antislop closure PASS pada lingkup otomatis: direction/dials dan warna tetap; R-03/R-32 kontrol dua peran320/1440, field sumber/tujuan required, target44px; R-24 lookup historis nyata; R-26/R-27 kategori/arah/invalid/denied/selected states diuji; R-35 build370Node/168browser dan SQL QA; R-36 tidak mengklaim bank/printer/login/G8 lulus. R-01..R-38/C-1..C-5 pada tabel di atas tetap berlaku untuk perubahan ini. UAT login dan printer fisik masih diperlukan.
+
+### Bukti rilis awal yang dapat diakses reviewer
+
+- [Manifest rilis bcf6947, termasuk fingerprint14 tabel sebelum/sesudah](evidence/v31-release-20261106.json).
+- [Fingerprint17 fungsi dan ACL saat rilis](evidence/v31-functions-20261106.json).
+- [Query baca pembanding](evidence/v31-fingerprint-query.sql).
+
+Salinan ini berasal dari capture rilis asli pada6November03:32:50UTC, bukan rekonstruksi data sebelum migrasi. Tidak memuat baris pelanggan, nomor telepon, token, atau rahasia. Timestamp tersebut waktu pencatatan receipt; timestamp terpisah untuk tiap query capture tidak dicatat. Fingerprint MD5 membuktikan hasil perbandingan yang direkam, bukan backup, tanda tangan kriptografis atau attestasi auditor independen. Perubahan sah setelah waktu capture dapat membuat hash live berbeda. Live read saat tindak lanjut masih cocok dengan fingerprint sesudah pada manifest. CI/deployment awal dapat diperiksa dari ID/URL pada manifest.

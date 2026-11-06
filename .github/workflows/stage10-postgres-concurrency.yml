@@ -82,6 +82,7 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-v3-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-v31-receipt-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-v31-cash-rollback.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-v31-cash-review-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-v31-contact-rollback.sql
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/pos-whatsapp-receipts-rollback.sql
       - name: Synthetic backup and restore rehearsal (no Production data)

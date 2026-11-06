@@ -8,6 +8,7 @@ const page="/kasir/kas";
 export async function postNonSaleCash(form:FormData):Promise<CommandActionResult>{
  const access=await cashierRpcAccess("cash_entry");if(!access)redirect("/kasir");
  const item=parseStructuredCashEntry(form);if(!item)return {error:"Periksa nominal, kategori, arah kas, dan catatan. Pengeluaran memakai Kas keluar. Isian tetap tersedia."};
+ if(item.categoryCode==='CAPITAL'||item.categoryCode==='CASH_TRANSFER')return {error:'Modal dan perpindahan uang laci hanya dapat dicatat Owner.'};
  const {data,error}=await access.client.rpc("laundry_pos_v31_cash_entry",{
   ...access.tokens,p_request_id:item.requestId,p_direction:item.direction,
   p_amount_idr:item.amountIdr,p_category_code:item.categoryCode,p_note:item.note

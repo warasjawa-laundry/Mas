@@ -22,10 +22,10 @@ begin
  begin perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),'OUT','1','OTHER',E'\n');raise exception 'control note accepted';exception when invalid_parameter_value then null;end;
  begin perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),'OUT','1','OTHER',repeat('x',301));raise exception 'long note accepted';exception when invalid_parameter_value then null;end;
  foreach category_v in array array['DETERGENT','PERFUME','UTILITIES','TRANSPORT','MAINTENANCE','PAYROLL','OTHER','CAPITAL','CASH_TRANSFER'] loop
-  perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),'OUT','10',category_v,'QA');
+  perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),'OUT','10',category_v,case when category_v='CASH_TRANSFER' then 'Tujuan: QA kas' else 'QA' end);
  end loop;
  perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),'IN','100','CAPITAL','Modal awal');
- perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),'IN','100','CASH_TRANSFER','Dari kas lain');
+ perform public.laundry_pos_v31_cash_entry(gen_random_uuid(),'IN','100','CASH_TRANSFER','Sumber: QA kas lain');
  perform public.laundry_pos_v3_finance('CASH_ENTRY',legacy_v,null,'20',null,null,'QA legacy cash','OUT');
  begin perform public.laundry_pos_v31_cash_entry(legacy_v,'OUT','20','OTHER',null);raise exception 'legacy request silently recategorized';exception when unique_violation then null;end;
  cash_v:=public.laundry_pos_v3_cash();

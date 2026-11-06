@@ -1,5 +1,7 @@
 # POS Mas Jawa Laundry Implementation Plan V2 — revisi eksekusi 1 Nov 2026
 
+6November: [V3.1 dan penutupan review](./implementation-plan-v3.1.md) menjadi acuan nota thermal/WhatsApp/audit, kategori kas Owner, privasi rincian layanan, dan tautan jurnal historis. Perpindahan dana dibatasi sebagai catatan laci satu sisi dengan sumber/tujuan, tanpa klaim saldo bank berpasangan. Bukti hash rilis V3.1 kini disertakan di repository; UAT fisik dan G8 NO_GO tidak berubah.
+
 5November: [eksekusi terpadu V3](./implementation-plan-v3.md) mencakup kuantitas desimal, kas otomatis, rincian nota, Excel4sheet dan thermal58/80. Empat tahap pada V3 adalah acuan permintaan terbaru. API lama tetap kompatibel, tanpa aktivasi finansial riil; UAT fisik dan G8 NO_GO tetap terpisah.
 
 Pembaruan4November: [audit/perbaikan homepage dan katalog publik](../2026-11-04-homepage-catalog.md) memakai sumber tarif POS Reguler/Ekspres/Kilat, durasi jam, filter kode paket tetap dan status data yang jujur. Migrasi20261104160718 hanya menambah fungsi baca katalog tanpa hak tabel publik atau mutasi pelanggan/poin/finansial. QA rollback PASS,319 Node/130 browser/build/typecheck lokal PASS; exact-SHA CI dan receipt deployment menutup rilis. G8 tetap NO_GO, flag pilot dan Auth tidak berubah.
