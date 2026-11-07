@@ -45,7 +45,10 @@ Generator OOXML existing dipertahankan agar tidak menambah dependency runtime. W
 | UI | AUTOMATED_PASS | Preset, batas inklusif, granularitas, navigasi Next dan unduh fetch. Uji komponen pada 320, 390 dan 1440 px |
 | Integrasi | LOCAL_PASS | 394 Node, 171 Playwright, build dan TypeScript. CI commit rilis tetap wajib |
 | Rilis | PENDING | Fingerprint Production, migration, deployment/domain SHA |
-| Excel dan akun nyata | PENDING | Sesi kendali Excel dihentikan sebelum workbook dibuka. UAT unduhan Owner/kasir nyata dan print preview Excel masih diperlukan |
+| Microsoft Excel | ENGINE_PASS | Excel 16.0 membuka ketiga workbook QA dalam mode baca, dengan enam tabel, filter, freeze pane, A4 dan angka lintas bulan yang sesuai |
+| UAT akun nyata | PENDING | Unduhan dengan akun Owner/kasir nyata dan pemeriksaan visual print preview masih diperlukan |
+
+Uji Microsoft Excel menemukan bahwa konfigurasi tabel dengan baris total di dalam tabel ditolak oleh Excel walaupun lolos pembaca OOXML independen. Generator kini memakai satu filter per tabel dan menaruh total statis di luar rentang tabel. Pengujian pembukaan dengan Excel 16.0 memakai file yang dihasilkan ulang setelah perbaikan.
 
 Fixture lintas bulan menghasilkan satu tagihan Rp100.000 dan DP Rp30.000 pada Oktober. November memiliki pelunasan Rp70.000 dan refund Rp30.000 tanpa tagihan baru dari nota itu. Kuantitas 1,25 kg, 2,35 m, dan 3 pcs hanya muncul dalam rekap Oktober. Fixture SQL juga menguji penolakan pembayaran tanpa jurnal dan memverifikasi data tetap sama setelah pembacaan.
 

@@ -26,7 +26,7 @@ test('six native tables, formatted numeric values and dates, freeze/filter/A4 an
  const f=entries(buildPosV32ReportXlsx(fixture(),{granularity:'week',generatedAt:'2026-11-07T04:10:00Z'}));
  const names=['Ringkasan','Rekap Periode','Daftar Nota','Rincian Layanan','Mutasi Keuangan','Rekonsiliasi Kas'];for(const name of names)assert.ok(f['xl/workbook.xml'].includes(name));
  assert.equal(Object.keys(f).filter(n=>/^xl\/tables\/table\d.xml$/.test(n)).length,6);
- for(let i=1;i<=6;i++){const s=f[`xl/worksheets/sheet${i}.xml`];for(const pattern of [/<pane .*state="frozen"/,/<autoFilter /,/<pageSetup .*paperSize="9"/,/<tableParts count="1"/,/<row /])assert.match(s,pattern);assert.ok(f[`xl/worksheets/_rels/sheet${i}.xml.rels`]);}
+ for(let i=1;i<=6;i++){const s=f[`xl/worksheets/sheet${i}.xml`];for(const pattern of [/<pane .*state="frozen"/,/<pageSetup .*paperSize="9"/,/<tableParts count="1"/,/<row /])assert.match(s,pattern);assert.ok(f[`xl/worksheets/_rels/sheet${i}.xml.rels`]);assert.doesNotMatch(s,/<autoFilter /);const table=f[`xl/tables/table${i}.xml`];assert.match(table,/<autoFilter /);assert.doesNotMatch(table,/totalsRowCount|totalsRowShown/);}
  assert.match(f['xl/worksheets/sheet3.xml'],/t="inlineStr"[^]*=HYPERLINK/);assert.match(f['xl/worksheets/sheet4.xml'],/<v>2.375<\/v>/);
  assert.match(f['xl/worksheets/sheet6.xml'],/BELUM DIVERIFIKASI/);assert.match(f['xl/worksheets/sheet1.xml'],/Piutang akhir periode belum tersedia/);
  assert.ok(!Object.values(f).some(s=>/<f[ >]|externalLink|vbaProject|TargetMode="External"/.test(s)));
