@@ -5,6 +5,7 @@ import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 import * as xlsx from '../lib/pos/report-xlsx.ts';
 import * as cash from '../lib/pos/g6-cash.ts';
+import * as periods from '../lib/pos/report-v32.ts';
 const {buildReportXlsx}=xlsx;
 
 const order={id:'o1',invoice:'NOTA-1',created_at:'2026-11-01T18:30:00Z',customer:'=HYPERLINK("evil")',creator:'Owner',created_in_period:true,total:'71300',paid:'30000',refunded:'1000',remaining:'41300',status:'PARTIAL',is_test_order:false};
@@ -25,8 +26,8 @@ test('four sheets keep amounts, quantities, independent cash events and CURRENT 
  for(let i=1;i<=4;i++)assert.match(f[`xl/worksheets/sheet${i}.xml`],/<autoFilter/);
 });
 function route(role,authorized=true,error=null){
- const calls=[];const rpc=async(name,args)=>{calls.push({name,args});return {data:fixture(),error};};const tokens={p_device_token:'device',p_login_token:'login'};
- const mocks={'@/lib/supabase/owner':{getVerifiedOwner:async()=>authorized?{supabase:{rpc}}:null},'@/lib/pos/g4-server':{cashierRpcAccess:async(permission)=>{assert.equal(permission,'reports_view');return authorized?{client:{rpc},tokens}:null;}},'@/lib/pos/g6-cash':cash,'@/lib/pos/g6-import':{escapeCsv:v=>String(v)},'@/lib/pos/report-xlsx':xlsx};
+ const calls=[];const rpc=async(name,args)=>{calls.push({name,args});return {data:name==='laundry_pos_v32_report'?{schema_version:32,start:args.p_start,end:args.p_end,snapshot_at:'2026-11-07T04:00:00Z',timezone:'Asia/Jakarta',balance_scope:'CURRENT',can_view_orders:true,pilot_test_only:true,outlet:{name:'Outlet uji'},orders:[],items:[],cash:[],period_activity:[],summary:{order_count:0,order_total:'0',service_item_count:0,unique_customer_count:0,quantities_milli:{kg:0,m:0,pcs:0}},completeness:{complete:true,truncated:false},cash_reconciliation:{available:false,physical_checks:[]}}:fixture(),error};};const tokens={p_device_token:'device',p_login_token:'login'};
+ const mocks={'@/lib/supabase/owner':{getVerifiedOwner:async()=>authorized?{supabase:{rpc}}:null},'@/lib/pos/g4-server':{cashierRpcAccess:async(permission)=>{assert.equal(permission,'reports_view');return authorized?{client:{rpc},tokens}:null;}},'@/lib/pos/g6-cash':cash,'@/lib/pos/g6-import':{escapeCsv:v=>String(v)},'@/lib/pos/report-xlsx':xlsx,'@/lib/pos/report-v32':periods,'@/lib/pos/cashier-permissions':{hasCashierGrant:()=>true}};
  const module={exports:{}};runInNewContext(ts.transpileModule(readFileSync(`app/${role}/laporan/export/route.ts`,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText,{exports:module.exports,module,require:n=>mocks[n],URL,Response,Date});
  return {get:module.exports.GET,calls};
 }
@@ -34,7 +35,7 @@ test('owner and cashier Excel routes authorize before calling the read-only repo
  for(const role of ['admin','kasir']){
   const url='https://example.test/laporan/export?format=xlsx&start=2026-11-02&end=2026-11-03';
   const denied=route(role,false);assert.equal((await denied.get(new Request(url))).status,403);assert.equal(denied.calls.length,0);
-  const allowed=route(role);const response=await allowed.get(new Request(url));assert.equal(response.status,200);assert.match(response.headers.get('Content-Type'),/spreadsheetml/);assert.match(response.headers.get('Cache-Control'),/no-store/);assert.equal(allowed.calls.length,1);assert.equal(allowed.calls[0].name,'laundry_pos_v3_report');
+  const allowed=route(role);const response=await allowed.get(new Request(url));assert.equal(response.status,200);assert.match(response.headers.get('Content-Type'),/spreadsheetml/);assert.match(response.headers.get('Cache-Control'),/no-store/);assert.equal(allowed.calls.length,1);assert.equal(allowed.calls[0].name,'laundry_pos_v32_report');assert.equal(allowed.calls[0].args.p_end,'2026-11-02T17:00:00.000Z');
   if(role==='kasir')assert.equal(allowed.calls[0].args.p_login_token,'login');
   const bad=route(role);assert.equal((await bad.get(new Request(url.replace('2026-11-03','2026-11-01')))).status,400);assert.equal(bad.calls.length,0);
  }

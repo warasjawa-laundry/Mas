@@ -1,5 +1,7 @@
 # Rollback dan penghentian POS
 
+V3.2: kembalikan aplikasi ke deployment terverifikasi `3d6c04a` pada proyek mas existing bila laporan baru bermasalah. RPC V3 dan CSV lama tetap tersedia. Pertahankan RPC baca additive V3.2 sampai tidak ada reader; tidak perlu restore data karena migrasi hanya menambah fungsi baca. Jangan mengganti jurnal, mengubah hasil Cocokkan Kas, menghapus nota atau melepas Mode Uji sebagai rollback laporan. Forward fix harus melewati QA/CI dan pembandingan fingerprint. [Kontrak](implementation-plan-v3.2.md).
+
 Validasi07010000: pertahankan pemeriksaan sumber/tujuan sebelum separator saat rollback aplikasi. Request baru tanpa nama minimal3 karakter ditolak; retry transaksi historis yang identik tetap mendapat hasil asli. Jangan menghapus atau memperbarui metadata/jurnal lama untuk memperbaiki validasi ini.
 
 Closure review V3.1: pertahankan pembatasan kategori Owner, privasi item serta lookup jurnal saat rollback aplikasi. Jangan memulihkan fungsi lama yang membuka kembali temuan akses. Migrasi06040000 tidak menulis ulang histori. Transaksi perpindahan lama yang identik tetap memakai alasan/digest aslinya. Jika UI lama tidak mengisi sumber/tujuan, API menolak pencatatan baru tersebut; lakukan forward fix UI, bukan melemahkan backend. Saldo rekening tidak direkonsiliasi oleh catatan laci satu sisi.

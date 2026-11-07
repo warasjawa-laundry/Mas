@@ -1,5 +1,11 @@
 # UAT G7/G8
 
+## V3.2 — unduh laporan
+
+Gunakan login Owner nyata dan kasir berizin reports_view, lalu ulangi dengan izin order_view dicabut serta reports_view dicabut saat sesi aktif. Pilih Hari Ini/Kemarin/Minggu Ini/Minggu Lalu/Bulan Ini/Bulan Lalu/Kustom, tanggal akhir inklusif dan granularitas hari/minggu/bulan. Tampilkan laporan dan unduh tanpa logout. Kasir tanpa izin harus ditolak melalui URL langsung, sedangkan kasir reports-only tidak menerima identitas pelanggan/detail nota. Uji HP dan desktop dengan sesi nyata tetap REAL_AUTH_UAT_REQUIRED sampai operator menyimpan hasilnya.
+
+Buka XLSX dengan Microsoft Excel; cocokkan enam sheet, nilai rupiah/tanggal/kuantitas, filter, freeze, tabel, catatan uji, serta print preview A4. Tidak ada input ulang/refresh/macro. Pengujian aplikasi Excel oleh agen dicatat terpisah dari persetujuan Owner. Uji printer fisik tetap PHYSICAL_UAT_REQUIRED. Bandingkan DP lintas bulan dan refund berikutnya terhadap jurnal, bukan total nota yang digandakan. Physical cash hanya diisi dari Cocokkan Kas yang sah; timestamp pemeriksaan tidak otomatis menjadi saldo akhir periode. [Kontrak dan hasil](implementation-plan-v3.2.md).
+
 ## V3.1, 6 November 2026
 
 Tambahan review kas: akun cash_entry-only tidak melihat Modal/perpindahan dana atau kuantitas nota; forged request kedua kategori harus ditolak. Owner mencatat perpindahan laci dengan sumber/tujuan wajib; ini bukan rekonsiliasi bank. Dari nota lama buka Lihat mutasi terkait setelah ada lebih80 mutasi lain, pastikan entri tepat ditampilkan. Ulangi transaksi dummy buat nota→DP→mutasi→pelunasan→cetak ulang→Excel dengan login/perangkat nyata. Otomatis belum menjadi physical UAT PASS.

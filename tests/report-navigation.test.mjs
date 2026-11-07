@@ -7,9 +7,10 @@ import ts from 'typescript';
 import {NextRequest} from 'next/server.js';
 const require=createRequire(import.meta.url);
 const RouterForm=()=>null;
+const PeriodFields=()=>null;
 function load(file,mocks,extra={}){
  const module={exports:{}};
- runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{module,exports:module.exports,require:n=>mocks[n]??require(n),Date,URL,...extra});
+ runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{module,exports:module.exports,require:n=>mocks[n]??require(n),Date,URL,URLSearchParams,...extra});
  return module.exports;
 }
 function find(node,predicate){
@@ -27,6 +28,8 @@ for(const role of ['admin','kasir'])test(`${role} date filtering uses router nav
   '@/components/pos/context-notice':{default:()=>null,readDisplayContext:()=>null},
   '@/components/pos/pos-workspace':()=>null,
   '@/components/pos/report-download':()=>null,
+  '@/components/pos/report-period-fields':{default:PeriodFields},
+  '@/lib/pos/report-selection':load('lib/pos/report-selection.ts',{'./report-v32':load('lib/pos/report-v32.ts',{})}),
   '@/lib/pos/ui-labels':{},'@/lib/pos/cashier-permissions':{hasCashierGrant:()=>true},
   '@/lib/supabase/owner':{requireOwner:async()=>({supabase:client})},
   '@/lib/pos/g4-server':{cashierRpcAccess:async grant=>{assert.equal(grant,'reports_view');return {client,tokens:{p_login_token:'synthetic'},session:{permissions:{}}};}},
@@ -38,8 +41,9 @@ for(const role of ['admin','kasir'])test(`${role} date filtering uses router nav
  assert.ok(form,'native GET form reloads the Owner document and revokes the session');
  assert.equal(form.props.action,`/${role}/laporan`);
  assert.equal(form.props.prefetch,false);
- for(const [name,value] of [['start','2026-11-01'],['end','2026-11-05']])assert.equal(find(form,n=>n.type==='input'&&n.props.name===name).props.defaultValue,value);
- assert.equal(calls[1].args.p_start,'2026-11-01');assert.equal(calls[1].args.p_end,'2026-11-05');
+ const fields=find(form,n=>n.type===PeriodFields);
+ assert.equal(fields.props.startDate,'2026-11-01');assert.equal(fields.props.endDate,'2026-11-04');
+ assert.equal(calls[1].args.p_start,'2026-10-31T17:00:00.000Z');assert.equal(calls[1].args.p_end,'2026-11-04T17:00:00.000Z');
 });
 
 test('report router navigation preserves session; native reload still requires reauthentication',async()=>{

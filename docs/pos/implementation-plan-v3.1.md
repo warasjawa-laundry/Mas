@@ -1,5 +1,7 @@
 # POS V3.1: nota pelanggan dan audit transaksi
 
+Pelaporan enam sheet, periode inklusif dan rekonsiliasi kini dilanjutkan di [V3.2](implementation-plan-v3.2.md). Dokumen ini mempertahankan bukti baseline V3.1; perubahan laporan tidak mengaktifkan G8 uang nyata.
+
 Tanggal mulai: 6 November 2026 (WIB). Baseline `47f517c`. Spesifikasi V3.1 dari Owner menjadi otoritas; desain Argon dipertahankan. Antislop selama pengerjaan, ENERGY2/RHYTHM2/MOTION1, cetak monokrom.
 
 | Tahap | Lingkup dan bukti yang diperlukan | Status |

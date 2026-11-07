@@ -1,19 +1,28 @@
 import {getVerifiedOwner} from "@/lib/supabase/owner";
 import { reportingPeriod,isReport } from "@/lib/pos/g6-cash";
 import { escapeCsv } from "@/lib/pos/g6-import";
-import {reportXlsxResponse} from "@/lib/pos/report-xlsx";
+import {reportV32XlsxResponse} from "@/lib/pos/report-xlsx";
+import {reportPeriodBounds,type ReportGranularity} from "@/lib/pos/report-v32";
 export const dynamic="force-dynamic";
 export async function GET(request:Request){
  const owner=await getVerifiedOwner();if(!owner)return new Response("Tidak berhak",{status:403});
  const url=new URL(request.url);
  const start=url.searchParams.get('start')||'',end=url.searchParams.get('end')||'';
- const p=reportingPeriod(start,end);if(!p)return new Response("Tanggal tidak valid",{status:400});
  if(url.searchParams.get('format')==='xlsx'){
-  const {data,error}=await owner.supabase.rpc('laundry_pos_v3_report',p);
+  const granularity=url.searchParams.get('granularity')||'day';
+  if(!['day','week','month'].includes(granularity))return new Response('Granularitas tidak valid',{status:400});
+  // Existing export URLs use an exclusive end date; period marks the inclusive UI contract.
+  const legacyPeriod=url.searchParams.has('period')?null:reportingPeriod(start,end);
+  if(!url.searchParams.has('period')&&!legacyPeriod)return new Response('Tanggal tidak valid',{status:400});
+  const endInclusive=url.searchParams.has('period')?end:new Date(new Date(end+'T00:00:00Z').getTime()-86400_000).toISOString().slice(0,10);
+  let bounds;try{bounds=reportPeriodBounds(start,endInclusive);}catch{return new Response('Tanggal tidak valid. Maksimal 93 hari.',{status:400});}
+  const p={p_start:bounds.start,p_end:bounds.end};
+  const {data,error}=await owner.supabase.rpc('laundry_pos_v32_report',p);
   if(error?.message?.includes('POS_REPORT_LIMIT'))return new Response('Data terlalu banyak. Persempit periode laporan.',{status:422});
   if(error)return new Response("Laporan tidak tersedia",{status:503});
-  return reportXlsxResponse(data,start,end);
+  return reportV32XlsxResponse(data,start,endInclusive,granularity as ReportGranularity);
  }
+ const p=reportingPeriod(start,end);if(!p)return new Response("Tanggal tidak valid",{status:400});
  const {data,error}=await owner.supabase.rpc('laundry_pos_owner_report',p);
  if(error||!isReport(data))return new Response("Laporan tidak tersedia",{status:503});
  if(data.truncated)return new Response("Persempit tanggal agar tidak ada data terpotong",{status:422});

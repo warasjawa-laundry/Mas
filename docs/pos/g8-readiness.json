@@ -315,6 +315,24 @@
     "evidence": "docs/2026-11-04-homepage-catalog.md",
     "releasePolicy": "Exact-SHA CI first; new tariff read function only in Production; final deployment receipt external"
   },
+  "posV32": {
+    "baselineMain": "3d6c04ab4a2bf842d6ad150c5497a37820839b5d",
+    "status": "QA_PASS_RELEASE_CI_REQUIRED",
+    "migration": "20261107020000_pos_v32_report_snapshot.sql",
+    "nodeTests": 394,
+    "browserTests": 171,
+    "qa": "PASS_ROLLBACK_AND_FINGERPRINT_18_SOURCES",
+    "buildAndTypecheck": "PASS_LOCAL",
+    "workbookIndependentInspection": "PASS_THREE_SYNTHETIC_QA_WORKBOOKS",
+    "nativeExcelUat": false,
+    "evidence": "docs/pos/implementation-plan-v3.2.md",
+    "realAuthUat": false,
+    "physicalPrinterUat": false,
+    "historicalReceivables": "UNAVAILABLE",
+    "operationalFlagChanges": false,
+    "g8RealGo": false,
+    "releasePolicy": "Exact-SHA CI before additive read-only Production migration and existing mas deployment; no financial cutover"
+  },
   "posV31": {
     "reviewClosure": {
       "counterpartyValidation": {
