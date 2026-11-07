@@ -317,7 +317,12 @@
   },
   "posV32": {
     "baselineMain": "3d6c04ab4a2bf842d6ad150c5497a37820839b5d",
-    "status": "QA_PASS_RELEASE_CI_REQUIRED",
+    "status": "RELEASED_MODE_UJI",
+    "verifiedReleaseSha": "fb084ebdd040bf809c99c5e7aeb822b912605941",
+    "verifiedDeploymentId": "dpl_FdMEfrb6xnKvvCUmyyevhFvDWPZx",
+    "verifiedMigrationEnvironments": ["QA", "Production"],
+    "productionFingerprintUnchangedSources": 21,
+    "releaseCiRuns": [42379812659, 42379812668],
     "migration": "20261107020000_pos_v32_report_snapshot.sql",
     "nodeTests": 394,
     "browserTests": 171,

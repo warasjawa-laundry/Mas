@@ -28,7 +28,11 @@ export default async function OwnerReports({searchParams}:{searchParams:Promise<
  <Link className={styles.mainLink} href="/admin/kas">Mutasi Kas</Link></nav>
  <Form action="/admin/laporan" prefetch={false} className={styles.paymentForm}><ReportPeriodFields key={`${selection.preset}-${start}-${end}-${granularity}`} preset={selection.preset} startDate={start} endDate={end} granularity={granularity}/>
  <button className={styles.mainButton}>Tampilkan laporan</button></Form>
- {!report?<p role="status" className={styles.warning}>{!period?'Pilih rentang tanggal yang valid, maksimal 93 hari (tanggal akhir termasuk).':'Laporan belum dapat dimuat. Muat ulang untuk mencoba lagi.'}</p>:<>
+ {period&&<section className={styles.card} aria-label="Ekspor Excel">
+ <ReportDownload className={styles.mainLink} format="xlsx" filename={`masjawa-mutasi-${start}-${end}.xlsx`} href={`/admin/laporan/export?${excelQuery}`}>Unduh laporan Excel</ReportDownload>
+ <p className={styles.muted}>Unduhan memuat enam sheet dari data terbaru untuk periode yang ditampilkan. Saldo nota menunjukkan kondisi saat unduh.</p>
+ </section>}
+ {!report?<p role="status" className={styles.warning}>{!period?'Pilih rentang tanggal yang valid, maksimal 93 hari (tanggal akhir termasuk).':'Ringkasan belum dapat dimuat. Anda masih bisa mencoba unduh Excel.'}</p>:<>
  <section className={styles.card}><h2>Ringkasan operasional</h2><div className={styles.paymentTotals}>
  <div><small>Kas masuk tunai</small><strong>{formatIdr(report.cash_in_idr)}</strong></div>
  <div><small>Kas keluar tunai</small><strong>{formatIdr(report.cash_out_idr)}</strong></div>
@@ -37,9 +41,7 @@ export default async function OwnerReports({searchParams}:{searchParams:Promise<
  <p>Nota dibuat: <strong>{report.orders_created}</strong></p>
  <p className={styles.muted}>Laporan ini merangkum arus kas tercatat. Modal dan perpindahan laci dapat termasuk kas masuk/keluar. Angka ini bukan laba bersih.</p>
  {!report.truncated&&<ReportDownload className={styles.mainLink} format="csv" filename={`masjawa-mutasi-${start}-${end}.csv`} href={`/admin/laporan/export?start=${encodeURIComponent(start)}&end=${encodeURIComponent(endExclusive)}`}>Unduh laporan CSV</ReportDownload>}
- <ReportDownload className={styles.mainLink} format="xlsx" filename={`masjawa-mutasi-${start}-${end}.xlsx`} href={`/admin/laporan/export?${excelQuery}`}>Unduh laporan Excel</ReportDownload>
- <p className={styles.muted}>Setiap unduhan Excel membaca data terbaru dan menghasilkan snapshot tetap dengan enam sheet. File tersimpan tidak memperbarui diri. Saldo nota memakai kondisi terkini; piutang akhir periode historis belum tersedia. Status Mode Uji dan verifikasi kas tercantum dalam file.</p>
- {report.truncated&&<p className={styles.warning}>Hasil terlalu banyak untuk ekspor aman (lebih dari 300 mutasi). Persempit tanggal.</p>}
+ {report.truncated&&<p className={styles.warning}>Ringkasan melebihi 300 mutasi. Persempit periode untuk melihat semua mutasi atau mengunduh CSV.</p>}
  </section><section className={styles.card}><h2>Mutasi dalam periode</h2>
  {report.rows.length===0?<p className={styles.muted}>Tidak ada mutasi.</p>:report.rows.map((x,i)=><div key={i} className={styles.receipt}>
  <div><strong>{x.invoice_no||cashCategoryLabel(x.category)}</strong><small>{paymentMethodLabel(x.method)} · {new Date(x.occurred_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</small></div>

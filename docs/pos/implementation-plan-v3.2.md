@@ -44,7 +44,7 @@ Generator OOXML existing dipertahankan agar tidak menambah dependency runtime. W
 | Workbook | AUTOMATED_PASS | Tiga file dari snapshot sintetis QA dibaca independen dengan openpyxl. Enam tabel, freeze A8, tanggal numerik, A4, tanpa formula, macro atau tautan eksternal |
 | UI | AUTOMATED_PASS | Preset, batas inklusif, granularitas, navigasi Next dan unduh fetch. Uji komponen pada 320, 390 dan 1440 px |
 | Integrasi | LOCAL_PASS | 394 Node, 171 Playwright, build dan TypeScript. CI commit rilis tetap wajib |
-| Rilis | PENDING | Fingerprint Production, migration, deployment/domain SHA |
+| Rilis V3.2 awal | LIVE_MODE_UJI | `fb084ebdd040bf809c99c5e7aeb822b912605941`, deployment `dpl_FdMEfrb6xnKvvCUmyyevhFvDWPZx`, migrasi `20261107020000` di QA dan Production. Fingerprint 21 sumber Production identik sebelum dan sesudah migrasi. [Audit Release Gate](https://github.com/warasjawa-laundry/Mas/actions/runs/42379812659) dan [PostgreSQL QA](https://github.com/warasjawa-laundry/Mas/actions/runs/42379812668) lulus. |
 | Microsoft Excel | ENGINE_PASS | Excel 16.0 membuka ketiga workbook QA dalam mode baca, dengan enam tabel, filter, freeze pane, A4 dan angka lintas bulan yang sesuai |
 | UAT akun nyata | PENDING | Unduhan dengan akun Owner/kasir nyata dan pemeriksaan visual print preview masih diperlukan |
 
@@ -53,3 +53,9 @@ Uji Microsoft Excel menemukan bahwa konfigurasi tabel dengan baris total di dala
 Fixture lintas bulan menghasilkan satu tagihan Rp100.000 dan DP Rp30.000 pada Oktober. November memiliki pelunasan Rp70.000 dan refund Rp30.000 tanpa tagihan baru dari nota itu. Kuantitas 1,25 kg, 2,35 m, dan 3 pcs hanya muncul dalam rekap Oktober. Fixture SQL juga menguji penolakan pembayaran tanpa jurnal dan memverifikasi data tetap sama setelah pembacaan.
 
 Antislop diterapkan selama pengerjaan. Argon dan warna existing dipertahankan; kontrol diberi label, tanggal akhir dijelaskan, status kosong/error/izin terlihat. Hasil otomatis tidak menggantikan login nyata, uji fisik atau persetujuan operasional G8.
+
+## Tindak lanjut review rilis
+
+Pratinjau PDF dari Excel 16.0 memperlihatkan teks Daftar Nota terlalu kecil ketika 18 kolom dipaksa muat selebar satu halaman A4. Paket tindak lanjut memakai skala 85% untuk sheet lebar, mengulang header dan kolom pertama, serta menampilkan periode dan Mode Uji di header cetak. Ringkasan tetap A4 portrait. Unduhan Excel tersedia saat ringkasan lama gagal selama rentang valid dan izin laporan berlaku. Rute ekspor tetap memeriksa sesi dan izin.
+
+Pemeriksaan ini menggunakan data sintetis QA. Owner menyetujui rilis paket tindak lanjut dalam Mode Uji setelah CI lulus. UAT unduhan dengan akun Owner dan kasir nyata dijadwalkan setelah rilis.

@@ -8,6 +8,7 @@ import {NextRequest} from 'next/server.js';
 const require=createRequire(import.meta.url);
 const RouterForm=()=>null;
 const PeriodFields=()=>null;
+const Download=()=>null;
 function load(file,mocks,extra={}){
  const module={exports:{}};
  runInNewContext(ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{module,exports:module.exports,require:n=>mocks[n]??require(n),Date,URL,URLSearchParams,...extra});
@@ -27,7 +28,7 @@ for(const role of ['admin','kasir'])test(`${role} date filtering uses router nav
   'next/navigation':{redirect:path=>{throw Error(path);}},
   '@/components/pos/context-notice':{default:()=>null,readDisplayContext:()=>null},
   '@/components/pos/pos-workspace':()=>null,
-  '@/components/pos/report-download':()=>null,
+  '@/components/pos/report-download':{default:Download},
   '@/components/pos/report-period-fields':{default:PeriodFields},
   '@/lib/pos/report-selection':load('lib/pos/report-selection.ts',{'./report-v32':load('lib/pos/report-v32.ts',{})}),
   '@/lib/pos/ui-labels':{},'@/lib/pos/cashier-permissions':{hasCashierGrant:()=>true},
@@ -44,6 +45,13 @@ for(const role of ['admin','kasir'])test(`${role} date filtering uses router nav
  const fields=find(form,n=>n.type===PeriodFields);
  assert.equal(fields.props.startDate,'2026-11-01');assert.equal(fields.props.endDate,'2026-11-04');
  assert.equal(calls[1].args.p_start,'2026-10-31T17:00:00.000Z');assert.equal(calls[1].args.p_end,'2026-11-04T17:00:00.000Z');
+ const download=find(tree,n=>n.type===Download);
+ assert.equal(download?.props.format,'xlsx','a failed legacy summary must leave Excel available');
+ const href=new URL(download.props.href,'https://example.invalid');
+ assert.equal(href.pathname,`/${role}/laporan/export`);
+ assert.equal(href.searchParams.get('end'),'2026-11-04');
+ const invalid=await page({searchParams:Promise.resolve({period:'custom',start:'2026-11-05',end:'2026-11-01'})});
+ assert.equal(find(invalid,n=>n.type===Download),null);
 });
 
 test('report router navigation preserves session; native reload still requires reauthentication',async()=>{
